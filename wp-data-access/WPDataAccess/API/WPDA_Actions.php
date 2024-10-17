@@ -254,6 +254,7 @@ class WPDA_Actions extends WPDA_API_Core {
         $dbs = $request->get_param( 'dbs' );
         $from_tbl = $request->get_param( 'from_tbl' );
         $to_tbl = $request->get_param( 'to_tbl' );
+        $typ = $request->get_param( 'typ' );
         if ( '' === $dbs || '' === $from_tbl || '' === $to_tbl ) {
             return $this->bad_request();
         }
@@ -481,7 +482,9 @@ class WPDA_Actions extends WPDA_API_Core {
                     $sql = rtrim( substr( $this->file_content, 0, $sql_end ) );
                     $this->file_content = substr( $this->file_content, strpos( $this->file_content, $sql ) + strlen( $sql ) + 1 );
                     if ( false === $wpdadb->query( $sql ) ) {
-                        $errors[] = $wpdadb->last_error;
+                        if ( '' !== $wpdadb->last_error ) {
+                            $errors[] = $wpdadb->last_error;
+                        }
                     }
                     // Find next SQL statement.
                     $sql_end_unix = strpos( $this->file_content, ";\n" );

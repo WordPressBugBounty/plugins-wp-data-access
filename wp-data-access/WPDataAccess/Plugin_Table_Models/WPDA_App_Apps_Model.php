@@ -64,9 +64,19 @@ namespace WPDataAccess\Plugin_Table_Models {
 			}
 		}
 
-		public static function delete( $app_id ) {
+		public static function delete( $app_id, $delete_as_detail = false ) {
 
-			global $wpdb;
+            global $wpdb;
+
+            if ( $delete_as_detail ) {
+                $wpdb->delete(
+                    static::get_base_table_name(),
+                    array(
+                        'app_id_detail' => $app_id,
+                    )
+                );
+            }
+
 			return $wpdb->delete(
 				static::get_base_table_name(),
 				array(

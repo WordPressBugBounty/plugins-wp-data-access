@@ -4,7 +4,7 @@
  * Plugin Name:       WP Data Access
  * Plugin URI:        https://wpdataaccess.com/
  * Description:       The best WordPress table plugin with an intuitive table builder and a highly customizable form builder to support data entry
- * Version:           5.5.14
+ * Version:           5.5.16
  * Author:            Passionate Programmers B.V.
  * Author URI:        https://wpdataaccess.com/
  * Text Domain:       wp-data-access

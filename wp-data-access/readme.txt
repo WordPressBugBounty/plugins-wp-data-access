@@ -3,14 +3,14 @@ Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, form builder, data table, datatables, table
 Tested up to: 6.6
 Requires PHP: 7.0
-Stable tag: 5.5.14
+Stable tag: 5.5.16
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A powerful data-driven WordPress App Builder with an intuitive Table Builder and highly customizable Form Builder
+A powerful data-driven App Builder with an intuitive Table Builder and highly customizable Form Builder
 
 == Description ==
-Our data-driven App Builder includes an intuitive Table Builder and a highly customizable Form Builder, with real-time configuration changes. Apps can operate on both the back-end and front-end, with simple authorization management based on WordPress user and role principles. The App Builder supports 35 languages to localize your apps.
+A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and real-time configuration changes. Apps can operate on both the back-end and front-end, with simple authorization management based on WordPress user and role principles. The App Builder supports 35 languages to localize your apps.
 
 == App Builder ==
 > Build data-driven apps with an intuitive Table Builder and Form Builder
@@ -143,6 +143,47 @@ Our data-driven App Builder includes an intuitive Table Builder and a highly cus
 And you're all set!
 
 == Changelog ==
+
+= 5.5.16 =
+* Released 2024-10-16
+* Added: Registration form
+* Added: Save view selection in App Builder
+* Added: Cascading app deletion
+* Added: Allow user to show | hide table columns
+* Optimized: Hook editor updates to prevent unnecessary re-renders
+* Changed: Bulk action column selection showing labels instead of column names
+* Fixed: Join and relation table settings not saved correctly
+* Fixed: Class names for styles not applied to lookup fields
+* Fixed: XML export not processing null values correctly
+* Fixed: App copy missing multi-level relationships
+* Fixed: App export missing multi-level relationships
+* Fixed: App export missing WordPress table prefix
+* Fixed: App copy Data App missing detail apps
+* Fixed: App export Data App missing detail apps
+* Fixed: Responsiveness of data tables also set to scroll for views
+* Fixed: Column filter layout when field layout is filled
+* Fixed: Default detail panel overflow on mobile devices
+* Fixed: Media button labels in Form Builder DELETE and SELECT not translated
+* Fixed: Disable column render hook for computed fields
+* Fixed: Border radius first line App Builder and Data Explorer incorrect
+* Fixed: Color button labels in header
+* Fixed: Border radius incorrect App Builder and Data Explorer
+* Fixed: Null pointer exception on toLowerCase
+* Fixed: Handle references to deleted apps
+* Fixed: Cannot open table builder for data explorer
+* Fixed: Show more button relation table
+* Fixed: Cleanup relation table references on cancel
+* Fixed: Column filter processing join and relation table columns
+* Fixed: App crashes when filter is changed on detail table
+* Fixed: Special characters added to column label end are moved to the front in detail view
+* Fixed: Searchbox highlight replicating selected values
+* Fixed: Last column disappears when it is invisible and a computed field is added
+* Removed: Refresh icon from table table when inline editing is enabled
+* Removed: Copy/export data apps (copy only real containers)
+* Removed: Redundant free code from premium version (does not affect free version)
+* Updated: Opt-in icons
+* Updated: Freemius SDK
+
 = 5.5.14 =
 * Released 2024-09-17
 * Added: Manage relationships from Table Builder and Form Builder

@@ -386,7 +386,7 @@ class WPDA_Apps extends WPDA_API_Core {
                 'target'            => array(
                     'required'          => true,
                     'type'              => 'string',
-                    'description'       => __( 'Target: table or form', 'wp-data-access' ),
+                    'description'       => __( 'Target: table or (r)form', 'wp-data-access' ),
                     'sanitize_callback' => 'sanitize_text_field',
                     'validate_callback' => 'rest_validate_request_arg',
                 ),
@@ -650,7 +650,6 @@ class WPDA_Apps extends WPDA_API_Core {
             $app_tbl,
             json_encode( $app_cls ),
             $app_title,
-            null,
             $app_relation
         ) );
     }
@@ -971,9 +970,16 @@ class WPDA_Apps extends WPDA_API_Core {
                     $lookup = json_decode( (string) $container[0]['cnt_form'], true );
                 }
             } else {
-                // Handle table lookup
-                if ( isset( $container[0]['cnt_table'] ) ) {
-                    $lookup = json_decode( (string) $container[0]['cnt_table'], true );
+                if ( 'rform' === $target ) {
+                    // Handle form lookup
+                    if ( isset( $container[0]['cnt_rform'] ) ) {
+                        $lookup = json_decode( (string) $container[0]['cnt_rform'], true );
+                    }
+                } else {
+                    // Handle table lookup
+                    if ( isset( $container[0]['cnt_table'] ) ) {
+                        $lookup = json_decode( (string) $container[0]['cnt_table'], true );
+                    }
                 }
             }
             if ( isset( $lookup['columns'] ) && is_array( $lookup['columns'] ) ) {
@@ -1315,7 +1321,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $settings,
         $theme
     ) {
-        if ( 1 > $app_id || 1 > $cnt_id || 'table' !== $target && 'form' !== $target && 'theme' !== $target ) {
+        if ( 1 > $app_id || 1 > $cnt_id || 'table' !== $target && 'form' !== $target && 'rform' !== $target && 'theme' !== $target ) {
             return $this->bad_request();
         }
         if ( null === $settings || '' === $settings ) {
@@ -1359,12 +1365,22 @@ class WPDA_Apps extends WPDA_API_Core {
                 ));
             }
         } else {
-            // Update form settings
-            $error_msg = WPDA_App_Container_Model::update_form_settings( $cnt_id, $settings );
-            if ( '' !== $error_msg ) {
-                return new \WP_Error('error', $error_msg, array(
-                    'status' => 403,
-                ));
+            if ( 'rform' === $target ) {
+                // Update rform settings
+                $error_msg = WPDA_App_Container_Model::update_rform_settings( $cnt_id, $settings );
+                if ( '' !== $error_msg ) {
+                    return new \WP_Error('error', $error_msg, array(
+                        'status' => 403,
+                    ));
+                }
+            } else {
+                // Update form settings
+                $error_msg = WPDA_App_Container_Model::update_form_settings( $cnt_id, $settings );
+                if ( '' !== $error_msg ) {
+                    return new \WP_Error('error', $error_msg, array(
+                        'status' => 403,
+                    ));
+                }
             }
         }
         $error_msg = WPDA_App_Model::update_theme( $app_id, $theme );
@@ -1377,7 +1393,7 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     private function do_app_remove( $app_id ) {
-        WPDA_App_Apps_Model::delete( $app_id );
+        WPDA_App_Apps_Model::delete( $app_id, true );
         WPDA_App_Container_Model::delete( $app_id );
         WPDA_App_Model::delete( $app_id );
         return $this->WPDA_Rest_Response( __( 'Successfully deleted app', 'wp-data-access' ) );
@@ -1607,22 +1623,31 @@ class WPDA_Apps extends WPDA_API_Core {
         }
     }
 
-    private function do_app_export( $app_id ) {
+    private function do_app_export_app( $app_id ) {
         global $wpdb;
         $quotes = function ( $value ) {
-            return str_replace( "'", "''", $value );
+            return str_replace( array(
+                "'",
+                '\\"',
+                "\\t",
+                "\\n",
+                "\\r\\n",
+                "\\r"
+            ), array(
+                "''",
+                '\\\\"',
+                "\\\\t",
+                "\\\\n",
+                "\\\\r\\\\n",
+                "\\\\r"
+            ), $value );
         };
         $app = WPDA_App_Model::get_by_id( $app_id );
         $app_settings = ( null === $app[0]['app_settings'] ? 'null' : "{$quotes( $app[0]['app_settings'] )}" );
         $app_theme = ( null === $app[0]['app_theme'] ? 'null' : "{$quotes( $app[0]['app_theme'] )}" );
         $app_sql = <<<SQL
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES {$wpdb->charset} */;
-
 # Import app
-insert into `{$wpdb->prefix}wpda_app`
+insert into `{wp_prefix}wpda_app`
 \t(`app_name`
 \t,`app_title`
 \t,`app_type`
@@ -1638,7 +1663,13 @@ values
 \t,'{$app_theme}'
 \t,{$app[0]['app_add_to_menu']}
 \t);
+
 SET @APP_ID = LAST_INSERT_ID();
+insert into `wpda_transfer_apps`
+values    
+    ({$app[0]['app_id']}
+    ,(select LAST_INSERT_ID(`app_id`) from `{wp_prefix}wpda_app` order by 1 desc limit 1)
+    );
 
 
 SQL;
@@ -1654,7 +1685,7 @@ SQL;
             $cnt_form = str_replace( "\"dbs\":\"{$wpdb->dbname}\"", "\"dbs\":\"{wp_schema}\"", $cnt_form );
             $containers_sql .= <<<SQL
 # Import app container
-insert into `{$wpdb->prefix}wpda_app_container`
+insert into `{wp_prefix}wpda_app_container`
 \t(`cnt_dbs`
 \t,`cnt_tbl`
 \t,`cnt_cls`
@@ -1677,33 +1708,11 @@ values
 \t,'{$cnt_relation}'
 \t);
 
-
-SQL;
-            if ( 0 === $container['cnt_seq_nr'] || '0' === $container['cnt_seq_nr'] ) {
-                $containers_sql .= <<<SQL
-# Save master container ID
-SET @CNT_ID_MASTER_OLD = {$container['cnt_id']};
-select LAST_INSERT_ID(`cnt_id`) into @CNT_ID_MASTER_NEW from `{$wpdb->prefix}wpda_app_container` order by 1 desc limit 1;
-
-
-SQL;
-            }
-        }
-        $apps = WPDA_App_Apps_Model::select_all( $app_id );
-        $apps_sql = '';
-        foreach ( $apps as $app ) {
-            $apps_sql .= <<<SQL
-# Import app relationships
-insert into `{$wpdb->prefix}wpda_app_apps`
-\t(`app_id`
-\t,`app_id_detail`
-\t,`seq_nr`\t\t\t\t\t
-\t)
+insert into `wpda_transfer_containers`
 values
-\t(@APP_ID
-\t,{$app['app_id_detail']}
-\t,{$app['seq_nr']}\t\t\t\t\t
-\t);
+    ({$container['cnt_id']}
+    ,(select LAST_INSERT_ID(`cnt_id`) from `{wp_prefix}wpda_app_container` order by 1 desc limit 1)
+    );
 
 
 SQL;
@@ -1711,18 +1720,86 @@ SQL;
         // Post update: update master container ids
         $containers_sql .= <<<SQL
 # Update app master container IDs
-update `{$wpdb->prefix}wpda_app_container`
-set `cnt_relation` = replace(cnt_relation, '"cnt_id_master":"' + @CNT_ID_MASTER_OLD + '"', '"cnt_id_master":"' + @CNT_ID_MASTER_NEW + '"')
-where `app_id` = @APP_ID
-  and `cnt_relation` is not null;
+update `{wp_prefix}wpda_app_container` c
+set c.`cnt_relation` =
+    (
+        select replace(
+\t\t\ta.`cnt_relation`, 
+\t\t\tconcat('"cnt_id_master":"', b.cnt_id_old, '"'), 
+\t\t\tconcat('"cnt_id_master":"', b.cnt_id_new, '"')
+\t\t)
+\t\tfrom `{wp_prefix}wpda_app_container` a, `wpda_transfer_containers` b
+\t\twhere a.cnt_id = c.cnt_id
+\t\t  and a.`cnt_relation` like concat('%"cnt_id_master":"', b.cnt_id_old, '"%')
+    )
+where c.`app_id` = @APP_ID
+  and c.`cnt_relation` is not null;
 
+
+SQL;
+        $apps = WPDA_App_Apps_Model::select_all( $app_id );
+        $apps_sql = '';
+        foreach ( $apps as $app ) {
+            $apps_sql .= $this->do_app_export_app( $app['app_id_detail'] );
+        }
+        foreach ( $apps as $app ) {
+            $apps_sql .= <<<SQL
+# Import app relationships
+insert into `{wp_prefix}wpda_app_apps`
+\t(`app_id`
+\t,`app_id_detail`
+\t,`seq_nr`\t\t\t\t\t
+\t)
+values
+\t((select `app_id_new` from `wpda_transfer_apps` where `app_id_old` = {$app['app_id']})
+\t,(select `app_id_new` from `wpda_transfer_apps` where `app_id_old` = {$app['app_id_detail']})
+\t,{$app['seq_nr']}\t\t\t\t\t
+\t);
+
+
+SQL;
+        }
+        return $app_sql . $containers_sql . $apps_sql;
+    }
+
+    private function do_app_export( $app_id ) {
+        global $wpdb;
+        $sql = '';
+        $begin_sql = <<<SQL
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES {$wpdb->charset} */;
+
+# Create temporary table
+CREATE TEMPORARY TABLE `wpda_transfer_containers`
+(cnt_id_old bigint(20) unsigned
+,cnt_id_new bigint(20) unsigned
+);
+
+CREATE TEMPORARY TABLE `wpda_transfer_apps`
+(app_id_old bigint(20) unsigned
+,app_id_new bigint(20) unsigned
+);
+       
+SET @APP_ID = NULL;
+
+
+SQL;
+        $sql .= $this->do_app_export_app( $app_id );
+        $end_sql = <<<SQL
+# Drop temporary table
+DROP TEMPORARY TABLE `wpda_transfer_containers`;
+DROP TEMPORARY TABLE `wpda_transfer_apps`;
+            
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
+
 SQL;
         $data = array(
-            'data' => $app_sql . $containers_sql . $apps_sql,
+            'data' => $begin_sql . $sql . $end_sql,
         );
         return $this->WPDA_Rest_Response( __( 'App successfully exported', 'wp-data-access' ), $data );
     }

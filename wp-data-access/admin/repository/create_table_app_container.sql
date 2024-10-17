@@ -8,6 +8,7 @@ CREATE TABLE {wp_prefix}wpda_app_container{wpda_postfix}
 ,cnt_seq_nr		smallint unsigned	not null
 ,cnt_table		longtext
 ,cnt_form		longtext
+,cnt_rform		longtext
 ,cnt_relation   longtext
 ,primary key (cnt_id)
 ) {wpda_collate};

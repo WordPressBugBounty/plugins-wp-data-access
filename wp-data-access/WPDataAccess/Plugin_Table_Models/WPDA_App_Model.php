@@ -144,6 +144,68 @@ namespace WPDataAccess\Plugin_Table_Models {
 
 		}
 
+        public static function copy_all(
+            $app
+        ) {
+
+            $app_id   = $app[0]['app_id'];
+            $app_name = $app[0]['app_name'];
+
+            // Determine new app name
+            $copy_nr      = 1;
+            $new_app_name = "{$app_name}_{$copy_nr} (copy)";
+            $app_exists = self::get_by_name( $new_app_name );
+            while ( false !== $app_exists ) {
+                $copy_nr++;
+                $new_app_name = "{$app_name}_{$copy_nr} (copy)";
+                $app_exists   = self::get_by_name( $new_app_name );
+            }
+
+            // Copy app
+            global $wpdb;
+            if ( 1 === $wpdb->insert(
+                    static::get_base_table_name(),
+                    array(
+                        'app_name'     => $new_app_name,
+                        'app_title'    => $app[0]['app_title'],
+                        'app_type'     => $app[0]['app_type'],
+                        'app_settings' => $app[0]['app_settings'],
+                        'app_theme'    => $app[0]['app_theme'],
+                    )
+                )
+            ) {
+                $new_app_id = $wpdb->insert_id;
+
+                // Copy containers
+                WPDA_App_Container_Model::copy( $app_id, $new_app_id );
+
+                if ( 5 === $app[0]['app_type'] || '5' === $app[0]['app_type'] ) {
+                    // App container, copy details
+                    $apps = WPDA_App_Apps_Model::select_all( $app_id );
+                    foreach ( $apps as $app ) {
+                        $detail_app = self::get_by_id( $app['app_id_detail'] );
+                        if ( false !== $detail_app ) {
+                            $detail_app_ids = static::copy_all($detail_app);
+                            if ( false !== $detail_app_ids['app_id'] ) {
+                                WPDA_App_Apps_Model::create($new_app_id, $detail_app_ids['app_id'], $app['seq_nr']);
+                            }
+                        }
+                    }
+                }
+
+                return array(
+                    'app_id' => $new_app_id,
+                    'msg'    => '',
+                );
+            } else {
+                return array(
+                    'app_id' => false,
+                    'msg'    => $wpdb->last_error,
+                );
+            }
+
+        }
+
 		public static function copy(
 			$app_id
 		) {
@@ -153,46 +215,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 				return false;
 			}
 
-			$app_name     = $app[0]['app_name'];
-
-			// Determine new app name
-			$copy_nr      = 1;
-			$new_app_name = "{$app_name}_{$copy_nr} (copy)";
-			$app_exists = self::get_by_name( $new_app_name );
-			while ( false !== $app_exists ) {
-				$copy_nr++;
-				$new_app_name = "{$app_name}_{$copy_nr} (copy)";
-				$app_exists   = self::get_by_name( $new_app_name );
-			}
-
-			// Copy app
-			global $wpdb;
-			if ( 1 === $wpdb->insert(
-					static::get_base_table_name(),
-					array(
-						'app_name'     => $new_app_name,
-						'app_title'    => $app[0]['app_title'],
-						'app_type'     => $app[0]['app_type'],
-						'app_settings' => $app[0]['app_settings'],
-						'app_theme'    => $app[0]['app_theme'],
-					)
-				)
-			) {
-				$new_app_id = $wpdb->insert_id;
-
-				// Copy containers
-				WPDA_App_Container_Model::copy( $app_id, $new_app_id );
-
-				return array(
-					'app_id' => $new_app_id,
-					'msg'    => '',
-				);
-			} else {
-				return array(
-					'app_id' => false,
-					'msg'    => $wpdb->last_error,
-				);
-			}
+			return static::copy_all( $app );
 
 		}
 

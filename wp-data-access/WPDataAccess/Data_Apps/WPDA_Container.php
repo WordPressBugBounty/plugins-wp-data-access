@@ -62,7 +62,10 @@ abstract class WPDA_Container {
         echo json_encode( $app_site, true );
         ?>,
 					appLicenses: <?php 
-        echo json_encode( $app_licenses, true );
+        echo json_encode( array(
+            'license' => $app_licenses,
+            'local'   => wpda_freemius()->can_use_premium_code__premium_only(),
+        ), true );
         ?>,
 					appTarget: "<?php 
         echo ( is_admin() ? 'backend' : 'frontend' );

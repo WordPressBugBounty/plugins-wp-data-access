@@ -234,7 +234,11 @@
     height: 24px;
 }
 
-.wpda-navi-container-content-items,
+.wpda-navi-container-content-items {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
 .wpda-navi-container-content-item.wpda-hot-topics .wpda-navi-container-content-item-facts {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -249,7 +253,7 @@
 }
 
 @media screen and (max-width: 1540px) {
-    .wpda-navi-container-content-items,
+    /*.wpda-navi-container-content-items,*/
     .wpda-navi-container-content-item.wpda-hot-topics .wpda-navi-container-content-item-facts {
         grid-template-columns: 1fr 1fr;
     }

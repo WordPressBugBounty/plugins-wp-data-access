@@ -26,6 +26,8 @@ class WPDA_Table extends WPDA_API_Core {
         'lessThanOrEqualTo'
     );
 
+    const RELATIONTABLEPREFIX = 'relationTableColumn___';
+
     public function register_rest_routes() {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'table/meta', array(
             'methods'             => array('POST'),
@@ -888,6 +890,8 @@ class WPDA_Table extends WPDA_API_Core {
             // Prepare query.
             $sql = "\n\t\t\t\t\tselect `" . implode( "`,`", array_keys( $column_names ) ) . "`\n\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t{$where}\n\t\t\t\t\t{$sqlorder}\n\t\t\t\t";
             $sql_tables = array($tbl);
+            // Perpare query.
+            $sql = $wpdadb->prepare( $sql . (( 0 < $page_size ? " limit {$page_size} offset {$offset} " : '' )), $sql_tables );
             // Prepare debug info.
             if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
                 $debug = array(
@@ -901,7 +905,7 @@ class WPDA_Table extends WPDA_API_Core {
                 $debug = null;
             }
             // Perform query.
-            $dataset = $wpdadb->get_results( $wpdadb->prepare( $sql . (( 0 < $page_size ? " limit {$page_size} offset {$offset} " : '' )), $sql_tables ), 'ARRAY_A' );
+            $dataset = $wpdadb->get_results( $sql, 'ARRAY_A' );
             if ( $wpdadb->last_error ) {
                 // Handle SQL errors.
                 return new \WP_Error('error', $wpdadb->last_error, array(
@@ -988,23 +992,12 @@ class WPDA_Table extends WPDA_API_Core {
     }
 
     private function convert_column_name( $m2m_relationship, $column_name ) {
-        if ( 0 < count( $m2m_relationship ) ) {
-            // Map join table and relation table columns.
-            if ( 'd.' === substr( $column_name, 0, 2 ) ) {
-                return 'd`.`' . $this->sanitize_db_identifier( substr( $column_name, 2 ) );
-            } else {
-                return 'm`.`' . $this->sanitize_db_identifier( $column_name );
-            }
-        } else {
-            // Return plaing column name.
-            return $this->sanitize_db_identifier( $column_name );
-        }
     }
 
     private function map_columns( $prefix, $column_names ) {
         return implode( ",", array_map( function ( $v ) use($prefix) {
             $c = $this->sanitize_db_identifier( $v );
-            $r = ( 'd' === $prefix ? "d.{$c}" : $c );
+            $r = ( 'd' === $prefix ? static::RELATIONTABLEPREFIX . $c : $c );
             return "`{$prefix}`.`{$c}` as \"{$r}\"";
         }, array_keys( $column_names ) ) );
     }
