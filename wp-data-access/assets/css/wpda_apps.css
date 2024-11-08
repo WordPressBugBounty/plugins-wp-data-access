@@ -30,7 +30,6 @@
     padding-right: 0 !important;
 }
 
-.wpda-pp-container p,
 .wpda-pp-container .pp-container-explorer ul,
 .wpda-pp-container .pp-container-explorer li {
     margin: 0 !important;
@@ -141,6 +140,10 @@
     margin-bottom: 15px;
 }
 
+body.pp-fullscreen .wrap.wpda-apps-backend h1.wp-heading-inline {
+    margin-bottom: 0;
+}
+
 .wpda-pp-container .pp-container-applist .MuiButtonBase-root.MuiAccordionSummary-root {
     background-color: unset !important;
 }
@@ -225,4 +228,8 @@
 .wpda-pp-container input[type=radio]:disabled:checked:before,
 .wpda-pp-container input[type=radio][aria-disabled=true] {
     opacity: 0;
+}
+
+.wpda-pp-container div.pp-axis-field input {
+    padding: 12px 8px;
 }

@@ -895,11 +895,9 @@ class WPDA_Table extends WPDA_API_Core {
             // Prepare debug info.
             if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
                 $debug = array(
-                    'debug' => array(
-                        'sql'      => preg_replace( "/\\s+/", " ", $sql ),
-                        'where'    => $where,
-                        'order by' => $sqlorder,
-                    ),
+                    'sql'      => preg_replace( "/\\s+/", " ", $sql ),
+                    'where'    => $where,
+                    'order by' => $sqlorder,
                 );
             } else {
                 $debug = null;
@@ -910,18 +908,18 @@ class WPDA_Table extends WPDA_API_Core {
                 // Handle SQL errors.
                 return new \WP_Error('error', $wpdadb->last_error, array(
                     'status' => 420,
-                    'debug'  => ( isset( $debug['debug'] ) ? $debug : null ),
+                    'debug'  => $debug,
                 ));
             }
             if ( is_numeric( $last_row_count ) and 0 <= $last_row_count ) {
-                // Prevents an extra query.
+                // Prevents additional unnecessary queries.
                 $rowcount = $last_row_count;
             } else {
                 $estimate = false;
                 if ( '1' === $row_count_estimate && '' === $where ) {
                     // Perform row count estimate
                     $countrows = $wpdadb->get_results( $wpdadb->prepare( "\n\t\t\t\t\t\t\t\t\tselect table_rows as rowcount\n\t\t\t\t\t\t\t\t\t from  information_schema.tables\n\t\t\t\t\t\t\t\t\twhere  table_schema = %s\n\t\t\t\t\t\t\t\t\t  and  table_name = %s\n\t\t\t\t\t\t\t\t", [$wpdadb->dbname, $tbl] ), 'ARRAY_A' );
-                    if ( isset( $countrows[0]['rowcount'] ) ) {
+                    if ( isset( $countrows[0]['rowcount'] ) && 0 != $countrows[0]['rowcount'] ) {
                         $estimate = true;
                     }
                 }
@@ -945,8 +943,8 @@ class WPDA_Table extends WPDA_API_Core {
             }
             // Add context node to response
             $context = array();
-            if ( isset( $debug['debug'] ) && 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
-                $context['debug'] = $debug['debug'];
+            if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
+                $context['debug'] = $debug;
             }
             if ( 0 < count( $media_columns ) ) {
                 // Handle WP media library

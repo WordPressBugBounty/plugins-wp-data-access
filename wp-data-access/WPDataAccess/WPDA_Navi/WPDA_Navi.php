@@ -63,7 +63,7 @@ namespace WPDataAccess\WPDA_Navi {
 									<path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"></path>
 								</svg>
 							</span>
-							<h3>App Builder <span class="wpda-new">NEW</span></h3>
+							<h3>App Builder</h3>
 							<div class="wpda-navi-container-content-item-title-help">
 								<a
 										href="https://wpdataaccess.com/docs/app-builder/whats-the-app-builder/"
@@ -96,7 +96,7 @@ namespace WPDataAccess\WPDA_Navi {
 								<li>Intuitive Table Builder for creating data tables with ease</li>
 								<li>Highly customizable Form Builder for designing data entry forms</li>
 								<li>Integrated Theme Builder to personalize app styling</li>
-								<li>Real-time configuration updates for instant adjustments</li>
+								<li>Interactive Chart Builder for real-time data analysis <span class="wpda-new"><i>NEW</i></span></li>
 							</ul>
 						</div>
 					</div>
@@ -183,83 +183,7 @@ namespace WPDataAccess\WPDA_Navi {
 						</div>
 					</div>
 
-<!--					<div class="wpda-navi-container-content-item">-->
-<!--						<div class="wpda-navi-container-content-item-title">-->
-<!--							<span class="fa-solid fa-table wpda-icon"></span>-->
-<!--							<h3>Tables</h3>-->
-<!--							<div class="wpda-navi-container-content-item-title-help">-->
-<!--								<a-->
-<!--										href="https://wpdataaccess.com/docs/data-tables/data-tables-getting-started/"-->
-<!--										target="_blank"-->
-<!--										class="wpda_tooltip"-->
-<!--										title="View online documentation"-->
-<!--								>-->
-<!--									<i class="fa-solid fa-question-circle wpda-icon-help"></i>-->
-<!--								</a>-->
-<!--							</div>-->
-<!--						</div>-->
-<!---->
-<!--						<div class="wpda-navi-container-content-item-slogan">-->
-<!--							Create responsive data tables in minutes-->
-<!--						</div>-->
-<!---->
-<!--						<div class="wpda-navi-container-content-item-content">-->
-<!--							<ul>-->
-<!--								<li>-->
-<!--									<a href="?page=wpda_publisher">Start old Table Builder</a>-->
-<!--								</li>-->
-<!--							</ul>-->
-<!--						</div>-->
-<!---->
-<!--						<div class="wpda-navi-container-content-item-facts">-->
-<!--							<ul>-->
-<!--								<li><strong>Soon replaced by the App Builder</strong></li>-->
-<!--								<li>Available until at least summer 2025</li>-->
-<!--								<li>Use to maintain old tables</li>-->
-<!--								<li>Use new App Builder for new projects</li>-->
-<!--							</ul>-->
-<!--						</div>-->
-<!--					</div>-->
-
-<!--					<div class="wpda-navi-container-content-item">-->
-<!--						<div class="wpda-navi-container-content-item-title">-->
-<!--							<span class="fa-solid fa-wand-magic-sparkles wpda-icon"></span>-->
-<!--							<h3>Forms</h3>-->
-<!--							<div class="wpda-navi-container-content-item-title-help">-->
-<!--								<a-->
-<!--										href="https://wpdataaccess.com/docs/data-apps/data-projects/"-->
-<!--										target="_blank"-->
-<!--										class="wpda_tooltip"-->
-<!--										title="View online documentation"-->
-<!--								>-->
-<!--									<i class="fa-solid fa-question-circle wpda-icon-help"></i>-->
-<!--								</a>-->
-<!--							</div>-->
-<!--						</div>-->
-<!---->
-<!--						<div class="wpda-navi-container-content-item-slogan">-->
-<!--							Create responsive master-detail forms-->
-<!--						</div>-->
-<!---->
-<!--						<div class="wpda-navi-container-content-item-content">-->
-<!--							<ul>-->
-<!--								<li>-->
-<!--									<a href="?page=wpda_wpdp">Start old Form Builder</a>-->
-<!--								</li>-->
-<!--							</ul>-->
-<!--						</div>-->
-<!---->
-<!--						<div class="wpda-navi-container-content-item-facts">-->
-<!--							<ul>-->
-<!--								<li><strong>Soon replaced by the App Builder</strong></li>-->
-<!--								<li>Available until at least summer 2025</li>-->
-<!--								<li>Use to maintain old forms</li>-->
-<!--								<li>Use new App Builder for new projects</li>-->
-<!--							</ul>-->
-<!--						</div>-->
-<!--					</div>-->
-
-					<div class="wpda-navi-container-content-item"
+					<div class="wpda-navi-container-content-item wpda-featured"
 						 style="grid-template-rows: auto 1fr"
 					>
 						<div class="wpda-navi-container-content-item-title">
@@ -279,39 +203,29 @@ namespace WPDataAccess\WPDA_Navi {
 
                         <div class="wpda-navi-container-content-item-slogan">
                             <div style="display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: center;">
-                                <div>
+                                <div style="font-weight: bold;">
                                     Continuously innovating with new features and enhancements
-                                </div>
-                                <div style="color: #ff9f1c; font-weight: bold;">
-                                    NEW DEMO APPS
                                 </div>
                             </div>
                         </div>
 
-                        <div class="wpda-navi-container-content-item-content">
-                            <ul class="wpda-navi-container-content-item-content-grid">
-                                <li>
-                                    <a href="https://wpdataaccess.com/docs/app-demos/app-student-administration-system/" target="_blank">
-                                        <i class="fa-solid fa-download"></i>
-                                        Student Administration System demo app
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://wpdataaccess.com/docs/app-demos/app-classic-models/" target="_blank">
-                                        <i class="fa-solid fa-download"></i>
-                                        Classic Models demo app
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
+                                <li>
+                                    Create <strong>Charts</strong> with the <strong>App Builder</strong>
+                                    <br/>
+                                    <span class="wpda-new">
+                                        Now supporting chart apps and interactive charts within data tables
+                                    </span>
+                                    <span>
+                                        (free and premium)
+                                    </span>
+                                </li>
 								<li>
-                                    New app type <strong>Registration Form</strong> available<br/>> Add new app > Select App Type
+                                    Build <strong>Registration Forms</strong> with the <strong>App Builder</strong>
 								</li>
 								<li>
-									Customize the plugin’s behavior using hooks<br/>> App Builder > Table Builder > Hooks
+                                    Customize app behavior using <strong>hooks</strong>
                                     &nbsp;
                                     <a href="https://wpdataaccess.com/docs/table-hooks/getting-started-with-hooks/"
                                        target="_blank"
@@ -321,6 +235,18 @@ namespace WPDataAccess\WPDA_Navi {
                                         <i class="fa-solid fa-question-circle"></i>
                                     </a>
 								</li>
+                                <li>
+                                    <a href="https://wpdataaccess.com/docs/app-demos/app-student-administration-system/" target="_blank">
+                                        <i class="fa-solid fa-up-right-from-square"></i>
+                                        Student Administration System demo app (downloadable)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://wpdataaccess.com/docs/app-demos/app-classic-models/" target="_blank">
+                                        <i class="fa-solid fa-up-right-from-square"></i>
+                                        Classic Models demo app (downloadable)
+                                    </a>
+                                </li>
 							</ul>
 						</div>
 					</div>

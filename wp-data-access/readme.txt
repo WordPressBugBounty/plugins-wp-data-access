@@ -1,16 +1,16 @@
-=== WP Data Access - WordPress App, Table and Form Builder plugin ===
+=== WP Data Access – App, Table, Form and Chart Builder plugin ===
 Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, form builder, data table, datatables, table
-Tested up to: 6.6
+Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 5.5.16
+Stable tag: 5.5.17
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A powerful data-driven App Builder with an intuitive Table Builder and highly customizable Form Builder
+A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive Chart Support in 35 languages
 
 == Description ==
-A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and real-time configuration changes. Apps can operate on both the back-end and front-end, with simple authorization management based on WordPress user and role principles. The App Builder supports 35 languages to localize your apps.
+A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive Chart Support. Apps can operate on both the back-end and front-end, with simple authorization management based on WordPress user and role principles. The App Builder supports 35 languages to localize your apps.
 
 == App Builder ==
 > Build data-driven apps with an intuitive Table Builder and Form Builder
@@ -18,10 +18,12 @@ A powerful data-driven App Builder with an intuitive Table Builder, a highly cus
 * Experience the simplicity of app building with our App Wizard
 * Generate data tables with the Table Builder
 * Manage data with the grid-driven Form Builder
+* Create interactive charts using the Chart Builder
 * Customize with ease using the Intuitive Theme Builder
 * Create (multi-level) master-detail pages with the Relationship Wizard
 * Utilize real-time updatable computed fields through inline fields
 * Perform real-time aggregations through inline fields
+* Allow users to create charts interactively from table data
 * Create (conditional) lookups with the Lookup Wizard
 * Access numerous global and inline filter options
 * Edit data inline seamlessly
@@ -143,6 +145,27 @@ A powerful data-driven App Builder with an intuitive Table Builder, a highly cus
 And you're all set!
 
 == Changelog ==
+
+= 5.5.17 =
+* Released 2024-11-07
+* Added: Charts to App Builder
+* Added: Rename database feature
+* Added: Allow computed fields in forms as own element (instead of inside an input element)
+* Added: Tip to improve performance on first table load
+* Improved: Usability builder column icons
+* Fixed: Pagination issue, next button not clickable on second page
+* Fixed: Fields with inline editing enabled reflect first row value when second row is filtered
+* Fixed: Column header to wide when inline search in header is enabled
+* Fixed: Default full screen not defined
+* Fixed: Row count issue with large table support
+* Fixed: Missing mandatory column does not show error on insert
+* Fixed: Passing incorrect form mode
+* Fixed: Disable inline editing for parent ID column
+* Fixed: Populating M2M list returns unknown column in field list
+* Fixed: Insert M2M form using auto increment column
+* Fixed: Lookup relation tables returning bad request
+* Fixed: Mandatory columns not in forms prevent saving data
+* Updated: Freemius SDK
 
 = 5.5.16 =
 * Released 2024-10-16

@@ -99,10 +99,11 @@ class WPDA_Apps extends WPDA_API_Core {
                 'app_table'    => array(
                     'required'          => true,
                     'type'              => 'string',
-                    'description'       => __( 'Table settings', 'wp-data-access' ),
+                    'description'       => __( 'App table', 'wp-data-access' ),
                     'sanitize_callback' => 'sanitize_text_field',
                     'validate_callback' => 'rest_validate_request_arg',
                 ),
+                'app_query'    => $this->get_param( 'app_query' ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/createapp', array(
@@ -223,6 +224,7 @@ class WPDA_Apps extends WPDA_API_Core {
                 'app_dbs'         => $this->get_param( 'dbs' ),
                 'app_tbl'         => $this->get_param( 'tbl' ),
                 'app_cls'         => $this->get_param( 'app_cls' ),
+                'app_query'       => $this->get_param( 'app_query' ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/saveapp', array(
@@ -435,6 +437,28 @@ class WPDA_Apps extends WPDA_API_Core {
                 'cnt_id' => $this->get_param( 'cnt_id' ),
                 'dbs'    => $this->get_param( 'dbs' ),
                 'tbl'    => $this->get_param( 'tbl' ),
+            ),
+        ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/qb/list', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'app_qb_list'),
+            'permission_callback' => '__return_true',
+        ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/chart/data', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'app_chart_data'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'app_id' => $this->get_param( 'app_id' ),
+            ),
+        ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/dbs/rename', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'app_dbs_rename'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'dbs_source'      => $this->get_param( 'dbs' ),
+                'dbs_destination' => $this->get_param( 'dbs' ),
             ),
         ) );
     }
@@ -1116,6 +1140,97 @@ class WPDA_Apps extends WPDA_API_Core {
         }
     }
 
+    public function app_qb_list( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        $queries = get_user_meta( WPDA::get_current_user_id(), 'wpda_query_builder' );
+        if ( false === $queries ) {
+            $queries = array();
+        }
+        return $this->WPDA_Rest_Response( '', $queries );
+    }
+
+    public function app_dbs_rename( $request ) {
+        if ( !$this->current_user_can_access( true ) ) {
+            // Only admins
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        $dbs_source = $request->get_param( 'dbs_source' );
+        $dbs_destination = $request->get_param( 'dbs_destination' );
+        if ( '' === trim( $dbs_source ) || '' === trim( $dbs_destination ) ) {
+            return new \WP_Error('error', 'Invalid arguments', array(
+                'status' => 401,
+            ));
+        }
+        global $wpdb;
+        $renamed = 0;
+        // Rename all occurrences in repository tables and apps
+        $sqls = array(
+            "update `{$wpdb->prefix}wpda_publisher` set `pub_schema_name` = %s where `pub_schema_name` = %s",
+            "update `{$wpdb->prefix}wpda_project_page` set `page_schema_name` = %s where `page_schema_name` = %s",
+            "update `{$wpdb->prefix}wpda_project_table` set `wpda_schema_name` = %s where `wpda_schema_name` = %s",
+            "update `{$wpdb->prefix}wpda_media` set `media_schema_name` = %s where `media_schema_name` = %s",
+            "update `{$wpdb->prefix}wpda_menus` set `menu_schema_name` = %s where `menu_schema_name` = %s",
+            "update `{$wpdb->prefix}wpda_table_design` set `wpda_schema_name` = %s where `wpda_schema_name` = %s",
+            "update `{$wpdb->prefix}wpda_table_settings` set `wpda_schema_name` = %s where `wpda_schema_name` = %s",
+            "update `{$wpdb->prefix}wpda_container` set `cnt_dbs` = %s where `cnt_dbs` = %s"
+        );
+        foreach ( $sqls as $sql ) {
+            $renamed += $wpdb->query( $wpdb->prepare( $sql, array($dbs_destination, $dbs_source) ) );
+        }
+        $sql_content = array("update `{$wpdb->prefix}wpda_container` set `cnt_table` = replace(`cnt_table`, '\"dbs\":\"%1s\"', '\"dbs\":\"%1s\"') where `cnt_table` like '%\"dbs\":\"%1s\"%'", "update `{$wpdb->prefix}wpda_container` set `cnt_form` = replace(`cnt_form`, '\"dbs\":\"%1s\"', '\"dbs\":\"%1s\"') where `cnt_form` like '%\"dbs\":\"%1s\"%'");
+        foreach ( $sql_content as $sql ) {
+            $renamed += $wpdb->query( $wpdb->prepare( $sql, array($dbs_source, $dbs_destination, $dbs_source) ) );
+        }
+        return $this->WPDA_Rest_Response( sprintf( __( 'Successfully renamed %s database occurrences', 'wp-data-access' ), $renamed ) );
+    }
+
+    public function app_chart_data( $request ) {
+        $app_id = $request->get_param( 'app_id' );
+        if ( !$this->main_app_access( $app_id, $msg ) ) {
+            if ( 'rest_cookie_invalid_nonce' === $msg ) {
+                return $this->invalid_nonce();
+            }
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        $app_container = WPDA_App_Container_Model::select( $app_id, 0 );
+        if ( 1 === count( $app_container ) && null !== $app_container[0]['cnt_query'] && '' !== trim( (string) $app_container[0]['cnt_query'] ) ) {
+            $dbs = $app_container[0]['cnt_dbs'];
+            $query = $app_container[0]['cnt_query'];
+            $wpdadb = WPDADB::get_db_connection( $dbs );
+            if ( null === $wpdadb ) {
+                // Error connecting.
+                return new \WP_Error('error', "Error connecting to database {$dbs}", array(
+                    'status' => 420,
+                ));
+            }
+            $suppress = $wpdadb->suppress_errors( true );
+            $chart_data = $wpdadb->get_results( $query, 'ARRAY_A' );
+            $wpdadb->get_results( "create temporary table `wpda_chart_data_types` as {$query}", 'ARRAY_A' );
+            $explain = $wpdadb->get_results( "desc `wpda_chart_data_types`", 'ARRAY_A' );
+            $wpdadb->get_results( "drop temporary table `wpda_chart_data_types`", 'ARRAY_A' );
+            $wpdadb->suppress_errors( $suppress );
+            return array(
+                'data'    => $chart_data,
+                'explain' => $explain,
+            );
+        } else {
+            return new \WP_Error('error', $msg, array(
+                'status' => 401,
+            ));
+        }
+    }
+
     public function app_lang( $request ) {
         if ( !$this->current_user_can_access() ) {
             return $this->unauthorized();
@@ -1214,6 +1329,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $app_tbl = $request->get_param( 'app_tbl' );
         $app_cls = $request->get_param( 'app_cls' );
         $app_table = $request->get_param( 'app_table' );
+        $app_query = $request->get_param( 'app_query' );
         return $this->do_app_create(
             $app_name,
             $app_title,
@@ -1222,7 +1338,8 @@ class WPDA_Apps extends WPDA_API_Core {
             $app_dbs,
             $app_tbl,
             $app_cls,
-            $app_table
+            $app_table,
+            $app_query
         );
     }
 
@@ -1276,6 +1393,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $app_dbs = $request->get_param( 'app_dbs' );
         $app_tbl = $request->get_param( 'app_tbl' );
         $app_cls = $request->get_param( 'app_cls' );
+        $app_query = $request->get_param( 'app_query' );
         return $this->do_app_save(
             $app_id,
             $app_name,
@@ -1285,7 +1403,8 @@ class WPDA_Apps extends WPDA_API_Core {
             $app_add_to_menu,
             $app_dbs,
             $app_tbl,
-            $app_cls
+            $app_cls,
+            $app_query
         );
     }
 
@@ -1321,7 +1440,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $settings,
         $theme
     ) {
-        if ( 1 > $app_id || 1 > $cnt_id || 'table' !== $target && 'form' !== $target && 'rform' !== $target && 'theme' !== $target ) {
+        if ( 1 > $app_id || 1 > $cnt_id || 'table' !== $target && 'form' !== $target && 'rform' !== $target && 'theme' !== $target && 'chart' !== $target ) {
             return $this->bad_request();
         }
         if ( null === $settings || '' === $settings ) {
@@ -1374,12 +1493,22 @@ class WPDA_Apps extends WPDA_API_Core {
                     ));
                 }
             } else {
-                // Update form settings
-                $error_msg = WPDA_App_Container_Model::update_form_settings( $cnt_id, $settings );
-                if ( '' !== $error_msg ) {
-                    return new \WP_Error('error', $error_msg, array(
-                        'status' => 403,
-                    ));
+                if ( 'chart' === $target ) {
+                    // Update chart settings
+                    $error_msg = WPDA_App_Container_Model::update_chart_settings( $cnt_id, $settings );
+                    if ( '' !== $error_msg ) {
+                        return new \WP_Error('error', $error_msg, array(
+                            'status' => 403,
+                        ));
+                    }
+                } else {
+                    // Update form settings
+                    $error_msg = WPDA_App_Container_Model::update_form_settings( $cnt_id, $settings );
+                    if ( '' !== $error_msg ) {
+                        return new \WP_Error('error', $error_msg, array(
+                            'status' => 403,
+                        ));
+                    }
                 }
             }
         }
@@ -1407,7 +1536,8 @@ class WPDA_Apps extends WPDA_API_Core {
         $app_dbs,
         $app_tbl,
         $app_cls,
-        $app_table
+        $app_table,
+        $app_query
     ) {
         // Add app
         $insert = WPDA_App_Model::create(
@@ -1426,7 +1556,9 @@ class WPDA_Apps extends WPDA_API_Core {
                 json_encode( $app_cls ),
                 $app_title,
                 0,
-                $app_table
+                $app_table,
+                null,
+                $app_query
             );
             if ( false !== $container['cnt_id'] ) {
                 // App and container successfully saved
@@ -1850,7 +1982,8 @@ SQL;
         $app_add_to_menu,
         $app_dbs,
         $app_tbl,
-        $app_cls
+        $app_cls,
+        $app_query
     ) {
         $error_msg = WPDA_App_Model::update(
             $app_id,
@@ -1870,7 +2003,7 @@ SQL;
             $app_dbs,
             $app_tbl,
             json_encode( $app_cls ),
-            0
+            $app_query
         );
         if ( '' !== $error_msg ) {
             return new \WP_Error('error', $error_msg, array(

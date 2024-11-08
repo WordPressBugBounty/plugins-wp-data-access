@@ -152,6 +152,13 @@ abstract class WPDA_API_Core {
                     return is_array( $param );
                 },
             ),
+            'app_query'          => array(
+                'required'          => false,
+                'type'              => 'string',
+                'description'       => __( 'Custom query', 'wp-data-access' ),
+                'sanitize_callback' => 'sanitize_textarea_field',
+                'validate_callback' => 'rest_validate_request_arg',
+            ),
             'col'                => array(
                 'required'          => true,
                 'type'              => 'string',
@@ -545,7 +552,7 @@ abstract class WPDA_API_Core {
                 return array(
                     'type'   => $resultset[0][0],
                     'engine' => $resultset[0][1],
-                    'count'  => ( '' === $default_where ? ( $resultset[0][2] === 0 ? null : $resultset[0][2] ) : null ),
+                    'count'  => ( '' === $default_where ? ( $resultset[0][2] == 0 ? null : $resultset[0][2] ) : null ),
                 );
             } else {
                 $count = $this->get_row_count_estimate( $dbs, $tbl );

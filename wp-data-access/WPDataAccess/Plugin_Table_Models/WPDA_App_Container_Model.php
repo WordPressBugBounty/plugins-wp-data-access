@@ -69,7 +69,8 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
         $cnt_title,
         $cnt_seq_nr,
         $cnt_table,
-        $cnt_relation = null
+        $cnt_relation = null,
+        $cnt_query = null
     ) {
         global $wpdb;
         if ( 1 === $cnt_seq_nr ) {
@@ -96,6 +97,7 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
             'cnt_seq_nr'   => $cnt_seq_nr,
             'cnt_table'    => $cnt_table,
             'cnt_relation' => $cnt_relation,
+            'cnt_query'    => $cnt_query,
         ) ) ) {
             // Return new container
             $cnt_id = $wpdb->insert_id;
@@ -152,13 +154,15 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
         $app_id,
         $app_dbs,
         $app_tbl,
-        $app_cls
+        $app_cls,
+        $app_query
     ) {
         global $wpdb;
         $wpdb->update( static::get_base_table_name(), array(
-            'cnt_dbs' => $app_dbs,
-            'cnt_tbl' => $app_tbl,
-            'cnt_cls' => $app_cls,
+            'cnt_dbs'   => $app_dbs,
+            'cnt_tbl'   => $app_tbl,
+            'cnt_cls'   => $app_cls,
+            'cnt_query' => $app_query,
         ), array(
             'app_id'     => $app_id,
             'cnt_seq_nr' => 0,
@@ -190,6 +194,16 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
         global $wpdb;
         $wpdb->update( static::get_base_table_name(), array(
             'cnt_form' => $cnt_form_settings,
+        ), array(
+            'cnt_id' => $cnt_id,
+        ) );
+        return $wpdb->last_error;
+    }
+
+    public static function update_chart_settings( $cnt_id, $cnt_chart_settings ) {
+        global $wpdb;
+        $wpdb->update( static::get_base_table_name(), array(
+            'cnt_chart' => $cnt_chart_settings,
         ), array(
             'cnt_id' => $cnt_id,
         ) );
