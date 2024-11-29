@@ -214,7 +214,7 @@ body.pp-fullscreen .wrap.wpda-apps-backend h1.wp-heading-inline {
 }
 
 .wpda-pp-container .pp-component .pp-form {
-    z-index: 9999;
+    z-index: 999;
 }
 
 .wpda-pp-container input[type=checkbox].disabled,

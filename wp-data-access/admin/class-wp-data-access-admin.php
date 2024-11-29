@@ -17,7 +17,10 @@ use WPDataAccess\List_Table\WPDA_List_View;
 use WPDataAccess\Plugin_Table_Models\WPDA_App_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_Design_Table_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_Publisher_Model;
+use WPDataAccess\Plugin_Table_Models\WPDA_Table_Settings_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_User_Menus_Model;
+use WPDataAccess\Plugin_Table_Models\WPDP_Project_Model;
+use WPDataAccess\Premium\WPDAPRO_Dashboard\WPDAPRO_Dashboard;
 use WPDataAccess\Premium\WPDAPRO_Data_Publisher\WPDAPRO_Data_Publisher_Manage_Styles;
 use WPDataAccess\Query_Builder\WPDA_Query_Builder;
 use WPDataAccess\Settings\WPDA_Settings;
@@ -762,6 +765,9 @@ class WP_Data_Access_Admin {
         if ( current_user_can( 'manage_options' ) ) {
             $hidden_submenus = array(
                 self::PAGE_DASHBOARD,
+                self::PAGE_CHARTS,
+                self::PAGE_PUBLISHER,
+                WPDP::PAGE_MAIN,
                 self::PAGE_DESIGNER,
                 WPDP::PAGE_TEMPLATES,
                 self::MAIN_PAGE_SLUG . '-account',
@@ -942,6 +948,32 @@ class WP_Data_Access_Admin {
     }
 
     public function data_navi() {
+        if ( isset( $_POST['wpda-legacy-tool-status'] ) ) {
+            // Legacy tools update
+            $update_status = json_decode( sanitize_text_field( wp_unslash( $_POST['wpda-legacy-tool-status'] ) ), true );
+            if ( null !== $update_status ) {
+                if ( isset( 
+                    $update_status['tables'],
+                    $update_status['forms'],
+                    $update_status['templates'],
+                    $update_status['designer'],
+                    $update_status['dashboards'],
+                    $update_status['charts']
+                 ) ) {
+                    // Get current legacy tool settings
+                    $option_legacy_tools = \WPDataAccess\Utilities\WPDA_Legacy_Tool_Visibility::get();
+                    // Update legacy tool settings
+                    $option_legacy_tools['tables'][0] = $update_status['tables'];
+                    $option_legacy_tools['forms'][0] = $update_status['forms'];
+                    $option_legacy_tools['templates'][0] = $update_status['templates'];
+                    $option_legacy_tools['designer'][0] = $update_status['designer'];
+                    $option_legacy_tools['dashboards'][0] = $update_status['dashboards'];
+                    $option_legacy_tools['charts'][0] = $update_status['charts'];
+                    // Save legacy tool settings
+                    WPDA::set_option( WPDA::OPTION_PLUGIN_LEGACY_TOOLS, $option_legacy_tools );
+                }
+            }
+        }
         WPDA_Dashboard::add_dashboard();
         $navi = new WPDA_Navi();
         $navi->show();

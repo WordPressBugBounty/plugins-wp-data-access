@@ -1,0 +1,1 @@
+import{cf as a,l,d2 as u}from"./main-1.0.23.js";import{u as t}from"./RestApi-1.0.23-cc179eb9.js";const r=o=>{const e=t(s=>a(s,o));return l.debug("tableColumns",e),e},c=o=>{const e=t(s=>u(s,o));return l.debug("tableCode",e),e};export{c as a,r as u};

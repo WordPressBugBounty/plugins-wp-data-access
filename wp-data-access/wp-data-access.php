@@ -3,8 +3,8 @@
 /**
  * Plugin Name:       WP Data Access
  * Plugin URI:        https://wpdataaccess.com/
- * Description:       The best WordPress table plugin with an intuitive table builder and a highly customizable form builder to support data entry
- * Version:           5.5.17
+ * Description:       A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive Chart support in 35 languages
+ * Version:           5.5.22
  * Author:            Passionate Programmers B.V.
  * Author URI:        https://wpdataaccess.com/
  * Text Domain:       wp-data-access
@@ -25,9 +25,7 @@ if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
 // Add freemius to WP Data Access.
-if ( function_exists( 'wpda_freemius' ) ) {
-    wpda_freemius()->set_basename( false, __FILE__ );
-} else {
+if ( !function_exists( 'wpda_freemius' ) ) {
     // Load WPDataAccess namespace.
     require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
     /**
@@ -38,7 +36,7 @@ if ( function_exists( 'wpda_freemius' ) ) {
     function wpda_freemius() {
         global $wpda_freemius;
         if ( !isset( $wpda_freemius ) ) {
-            // Include Freemius SDK.
+            // Create a helper function for easy SDK access.
             require_once dirname( __FILE__ ) . '/freemius/start.php';
             $wpda_freemius = fs_dynamic_init( array(
                 'id'             => '6189',

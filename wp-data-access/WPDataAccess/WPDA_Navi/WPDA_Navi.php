@@ -2,7 +2,15 @@
 
 namespace WPDataAccess\WPDA_Navi {
 
-	class WPDA_Navi {
+    use WPDataAccess\WPDA;
+
+    class WPDA_Navi {
+
+        private $option_legacy_tools;
+
+        public function __construct() {
+            $this->option_legacy_tools = WPDA::get_option( WPDA::OPTION_PLUGIN_LEGACY_TOOLS );
+        }
 
 		public function show() {
 			?>
@@ -11,14 +19,13 @@ namespace WPDataAccess\WPDA_Navi {
 				$this->header();
 				$this->tool_guide();
 				$this->hot_topics();
-				// $this->tool_selector();
 				?>
 			</div>
 			<?php
 		}
 
 		private function header() {
-			?>
+            ?>
 			<div class="wpda-navi-container-header">
 				<div class="wpda-navi-container-header-title">
 					<div>
@@ -27,8 +34,7 @@ namespace WPDataAccess\WPDA_Navi {
 						</h1>
 
 						<h2>
-							A powerful data-driven WordPress App Builder with an intuitive Table Builder and highly
-							customizable Form Builder
+                            A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive Chart support in 35 languages
 						</h2>
 					</div>
 
@@ -42,11 +48,122 @@ namespace WPDataAccess\WPDA_Navi {
 			<?php
 		}
 
+        private function tool_status( $tool ) {
+            ?>
+            <div onclick="setLegacyToolStatus(this)" class="tool_status_icon">
+                <?php
+                if ( true === $tool[0] ) {
+                    ?>
+                    <i class="fas fa-toggle-on" style="font-size: 28px;"></i>
+                    <?php
+                } else {
+                    ?>
+                    <i class="fas fa-toggle-off" style="font-size: 28px;"></i>
+                    <?php
+                }
+                ?>
+            </div>
+            <?php
+        }
+
 		private function tool_guide() {
 			?>
-			<h2>
-				Tool Guide
-			</h2>
+            <div class="wpda-navi-container-content"
+                 style="display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: center; padding-bottom: 0;"
+            >
+                <h2>
+                    Tool Guide
+                </h2>
+
+                <div id="wpda-legacy-tool-settings">
+                    <a href="javascript:void(0)" onclick="setLegacyTools()">
+                        <?php
+                        if (
+                                !$this->option_legacy_tools['tables'][0] &&
+                                !$this->option_legacy_tools['forms'][0] &&
+                                !$this->option_legacy_tools['templates'][0] &&
+                                !$this->option_legacy_tools['designer'][0] &&
+                                !$this->option_legacy_tools['dashboards'][0] &&
+                                !$this->option_legacy_tools['charts'][0]
+                        ) {
+                            ?>
+                            <i class="fas fa-toggle-off" style="font-size: 28px;"></i>
+                            <?php
+                        } else {
+                            ?>
+                            <i class="fas fa-toggle-on" style="font-size: 28px;"></i>
+                            <?php
+                        }
+                        ?>
+                        &nbsp;&nbsp;
+                        <span>
+                            Legacy Tools
+                        </span>
+                    </a>
+                    <div id="wpda-legacy-tool-settings-panel">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>LEGACY TOOL</th>
+                                    <th class="items">ACTIVE ITEMS</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Tables</td>
+                                    <td class="items"><?php echo esc_attr( $this->option_legacy_tools['tables'][1] ); ?></td>
+                                    <td class="status" data-tool="tables"><?php echo $this->tool_status( $this->option_legacy_tools['tables'] ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Forms</td>
+                                    <td class="items"><?php echo esc_attr( $this->option_legacy_tools['forms'][1] ); ?></td>
+                                    <td class="status" data-tool="forms"><?php echo $this->tool_status( $this->option_legacy_tools['forms'] ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Templates</td>
+                                    <td class="items"><?php echo esc_attr( $this->option_legacy_tools['templates'][1] ); ?></td>
+                                    <td class="status" data-tool="templates"><?php echo $this->tool_status( $this->option_legacy_tools['templates'] ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Designer</td>
+                                    <td class="items"><?php echo esc_attr( $this->option_legacy_tools['designer'][1] ); ?></td>
+                                    <td class="status" data-tool="designer"><?php echo $this->tool_status( $this->option_legacy_tools['designer'] ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Dashboards</td>
+                                    <td class="items"><?php echo esc_attr( $this->option_legacy_tools['dashboards'][1] ); ?></td>
+                                    <td class="status" data-tool="dashboards"><?php echo $this->tool_status( $this->option_legacy_tools['dashboards'] ); ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Charts</td>
+                                    <td class="items"><?php echo esc_attr( $this->option_legacy_tools['charts'][1] ); ?></td>
+                                    <td class="status" data-tool="charts"><?php echo $this->tool_status( $this->option_legacy_tools['charts'] ); ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div id="wpda-legacy-tool-settings-submit">
+                            <button type="submit" onclick="updateLegacyTools()">UPDATE STATUS</button>
+                            <button type="button" onclick="setLegacyTools()">CANCEL</button>
+                        </div>
+
+                        <div style="display: none">
+                            <form
+                                id="wpda-legacy-tool-settings-form-data"
+                                action="<?php echo admin_url( 'admin.php' ); ?>?page=wpda_navi"
+                                method="POST"
+                            >
+                                <input
+                                    type="text"
+                                    name="wpda-legacy-tool-status"
+                                    id="wpda-legacy-tool-settings-legacy-tool-data"
+                                />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 			<div class="wpda-navi-container-content">
 				<div class="wpda-navi-container-content-items">
@@ -201,25 +318,22 @@ namespace WPDataAccess\WPDA_Navi {
 							</div>
 						</div>
 
-                        <div class="wpda-navi-container-content-item-slogan">
-                            <div style="display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: center;">
-                                <div style="font-weight: bold;">
-                                    Continuously innovating with new features and enhancements
-                                </div>
-                            </div>
-                        </div>
-
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
-                                    Create <strong>Charts</strong> with the <strong>App Builder</strong>
-                                    <br/>
                                     <span class="wpda-new">
-                                        Now supporting chart apps and interactive charts within data tables
+                                        Legacy tools auto disabled if not used
                                     </span>
+                                    <br/>
                                     <span>
-                                        (free and premium)
+                                        (use link below header on this page to enable manually)
                                     </span>
+                                </li>
+                                <li>
+                                    Add save button to table header for inline updates<br/>(Table Builder > Table > Inline editing settings)
+                                </li>
+                                <li>
+                                    Create <strong>Charts</strong> with the <strong>App Builder</strong>
                                 </li>
 								<li>
                                     Build <strong>Registration Forms</strong> with the <strong>App Builder</strong>
@@ -364,18 +478,6 @@ namespace WPDataAccess\WPDA_Navi {
 						</button>
 					</div>
 				</div>
-			</div>
-			<?php
-		}
-
-		private function tool_selector() {
-			?>
-			<h2>
-				Tool Selector
-			</h2>
-
-			<div class="wpda-navi-container-content">
-				???
 			</div>
 			<?php
 		}

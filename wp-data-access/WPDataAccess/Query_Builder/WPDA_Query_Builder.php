@@ -328,8 +328,8 @@ class WPDA_Query_Builder {
                                     //phpcs:ignore - 8.1 proof
                                     $var_name = ( isset( $use_cmd[1] ) ? $use_cmd[1] : null );
                                     if ( $var_name !== null ) {
-                                        $vars[$var_name] = count( $tabs );
-                                        $tmps[$var_name] = $this->get_create_table( $wpdadb, count( $tabs ) );
+                                        $vars[$var_name] = $tabs;
+                                        $tmps[$var_name] = $this->wpdavar_table( $wpdadb, $tabs[$i - 1], $var_name );
                                         $exequery = false;
                                     }
                                     break;
@@ -337,7 +337,13 @@ class WPDA_Query_Builder {
                                     $use_cmd = explode( ' ', trim( $sqlcmds[$i] ) );
                                     $var_name = ( isset( $use_cmd[1] ) ? $use_cmd[1] : null );
                                     if ( $var_name !== null ) {
-                                        $wpdadb_saved = $this->create_tmp_table( $wpdadb, $tmps[$var_name], $vars[$var_name] );
+                                        $wpdadb_saved = $this->wpdatmp_table(
+                                            $wpdadb,
+                                            $tmps[$var_name],
+                                            $tmps[$var_name]['data'],
+                                            $tmps[$var_name]['table_name'],
+                                            $var_name
+                                        );
                                         $exequery = false;
                                     }
                                     $var_name = null;
@@ -392,23 +398,32 @@ class WPDA_Query_Builder {
         echo json_encode( $response );
     }
 
-    private function create_tmp_table( $wpdadb, $sql, $data ) {
+    private function wpdatmp_table(
+        $wpdadb,
+        $sql,
+        $data,
+        $table_name,
+        $var_name
+    ) {
         // Create temporary table
-        $wpdadb->query( str_ireplace( 'CREATE TABLE', 'CREATE TEMPORARY TABLE', $sql['create_table'] ) );
+        $wpdadb->query( str_ireplace( array('CREATE TABLE', $table_name), array('CREATE TEMPORARY TABLE', $var_name), $sql['create_table'] ) );
         $wpdadb_created = clone $wpdadb;
         // Copy data to temporary table
-        foreach ( $data['status']->last_result as $resultset ) {
+        foreach ( $data as $resultset ) {
             $column_values = array();
             foreach ( $resultset as $key => $val ) {
                 $column_values[$key] = $val;
             }
-            $wpdadb->insert( $sql['table_name'], $column_values );
+            $wpdadb->insert( $var_name, $column_values );
         }
         return $wpdadb_created;
     }
 
-    private function get_create_table( $wpdadb, $query ) {
+    private function wpdavar_table( $wpdadb, $query, $var_name ) {
         $wpdadb->query( "set sql_quote_show_create = 'ON'" );
+        if ( null === $query['status'] ) {
+            return null;
+        }
         $explain = $wpdadb->get_results( "explain {$query['status']->last_query}", 'ARRAY_A' );
         if ( '' !== $wpdadb->last_error ) {
             return null;
@@ -420,13 +435,12 @@ class WPDA_Query_Builder {
         }
         $sql = str_replace( "\n", '', $create_table[0][1] );
         $pos = stripos( $sql, ') ENGINE=' );
-        return ( false === $pos ? array(
+        $tbl = ( false === $pos ? $sql : substr( $sql, 0, $pos + 1 ) );
+        return array(
             'table_name'   => $table_name,
-            'create_table' => $sql,
-        ) : array(
-            'table_name'   => $table_name,
-            'create_table' => substr( $sql, 0, $pos + 1 ),
-        ) );
+            'create_table' => $tbl,
+            'data'         => $query['status']->last_result,
+        );
     }
 
     private function check_query( $wpda_protect, $wpda_schemaname, $wpda_sqlquery ) {

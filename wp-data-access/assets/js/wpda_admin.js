@@ -911,3 +911,33 @@ function wpdaSetMediaSelection(mediaItem, frame) {
 		}
 	);
 }
+
+const setLegacyTools = () => {
+	jQuery("#wpda-legacy-tool-settings-panel").toggle();
+}
+
+const setLegacyToolStatus = (element) => {
+	if (jQuery(element).find("i.fas.fa-toggle-off").length === 1) {
+		// Turn on
+		jQuery(element).html('<i class="fas fa-toggle-on" style="font-size: 28px;"></i>');
+	} else {
+		// Turn off
+		jQuery(element).html('<i class="fas fa-toggle-off" style="font-size: 28px;"></i>');
+	}
+}
+
+const updateLegacyTools = () => {
+	const toolStatus = {}
+
+	jQuery.each(
+		jQuery("#wpda-legacy-tool-settings-panel table td.status"),
+		function(key, value) {
+			const tool = jQuery(value).data("tool");
+			const status = jQuery(value).find("i.fas.fa-toggle-off").length === 0
+			toolStatus[tool] = status;
+		}
+	);
+
+	jQuery("#wpda-legacy-tool-settings-legacy-tool-data").val(JSON.stringify(toolStatus));
+	jQuery("#wpda-legacy-tool-settings-form-data").submit();
+}

@@ -347,6 +347,17 @@ class WPDA_Apps extends WPDA_API_Core {
                 'rel_tab'  => $this->get_param( 'rel_tab' ),
             ),
         ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/update/inline', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'app_update_inline'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'app_id' => $this->get_param( 'app_id' ),
+                'cnt_id' => $this->get_param( 'cnt_id' ),
+                'key'    => $this->get_param( 'key' ),
+                'val'    => $this->get_param( 'val' ),
+            ),
+        ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/delete', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_delete'),
@@ -916,6 +927,52 @@ class WPDA_Apps extends WPDA_API_Core {
                 return new \WP_Error('error', $msg, array(
                     'status' => 401,
                 ));
+            }
+        }
+    }
+
+    public function app_update_inline( $request ) {
+        $app_id = $request->get_param( 'app_id' );
+        $cnt_id = $request->get_param( 'cnt_id' );
+        $key = $request->get_param( 'key' );
+        $val = $request->get_param( 'val' );
+        if ( $this->check_app_access(
+            $app_id,
+            $cnt_id,
+            'select',
+            $dbs,
+            $tbl,
+            $msg,
+            $settings
+        ) ) {
+            foreach ( $val as $column_name => $column ) {
+                $found = false;
+                foreach ( $settings['table']['columns'] as $settings_column ) {
+                    if ( isset( $settings_column['columnName'] ) && $column_name === $settings_column['columnName'] ) {
+                        $found = true;
+                    }
+                }
+                if ( !$found ) {
+                    return $this->unauthorized();
+                }
+            }
+            $column_names = $this->get_app_form_columns( $settings );
+            if ( false === $column_names ) {
+                $column_names = array();
+            }
+            $table_api = new WPDA_Table();
+            return $table_api->update(
+                $dbs,
+                $tbl,
+                $key,
+                $val,
+                $column_names
+            );
+        } else {
+            if ( 'rest_cookie_invalid_nonce' === $msg ) {
+                return $this->invalid_nonce();
+            } else {
+                return $this->unauthorized();
             }
         }
     }

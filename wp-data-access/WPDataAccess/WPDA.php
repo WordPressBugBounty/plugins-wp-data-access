@@ -51,8 +51,8 @@ namespace WPDataAccess {
 		/**
 		 * Option wpda_version and it's default value
 		 */
-		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.17' );
-		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.18' );
+		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.22' );
+		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.23' );
 		const OPTION_WPDA_UPGRADED        = array( 'wpda_upgraded', false );
 		/**
 		 * Option wpda_setup_error and it's default value
@@ -86,6 +86,19 @@ namespace WPDataAccess {
 
 		const OPTION_PLUGIN_SECRET_KEY_DEFAULT = 'enter-your-secret-key-here';
 		const OPTION_PLUGIN_SECRET_IV_DEFAULT  = 'enter-your-secret-iv-here';
+
+        const OPTION_PLUGIN_LEGACY_TOOLS =
+            array(
+                'wpda_plugin_legacy_tools',
+                array(
+                    'tables'     => array(false, 0),
+                    'forms'      => array(false, 0),
+                    'templates'  => array(false, 0),
+                    'designer'   => array(false, 0),
+                    'dashboards' => array(false, 0),
+                    'charts'     => array(false, 0),
+                )
+        );
 
 		const OPTION_PLUGIN_SECRET_KEY = array( 'wpda_plugin_secret_key', self::OPTION_PLUGIN_SECRET_KEY_DEFAULT);
 		const OPTION_PLUGIN_SECRET_IV  = array( 'wpda_plugin_secret_iv', self::OPTION_PLUGIN_SECRET_IV_DEFAULT);

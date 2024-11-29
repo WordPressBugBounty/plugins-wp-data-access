@@ -335,80 +335,84 @@ function showTabs(activeIndex, msg) {
 }
 
 function showRows(activeIndex, msg) {
-	if (msg.status===null || msg.status===undefined) {
-		jQuery("#wpda_query_builder_result_" + activeIndex).html("<strong>WP Data Access error:</strong> Query failed");
+	if (msg.wpdavar !== undefined) {
+		jQuery("#wpda_query_builder_result_" + activeIndex).html('<p style="padding-left: 15px">Done</p>');
 	} else {
-		if (msg.status.last_result===null || msg.status.last_result===undefined) {
-			if (typeof msg.status!=="string") {
-				jQuery("#wpda_query_builder_result_" + activeIndex).html("<strong>WP Data Access error:</strong> Query OK");
-			} else {
-				jQuery("#wpda_query_builder_result_" + activeIndex).html(msg.status);
-			}
+		if (msg.status === null || msg.status === undefined) {
+			jQuery("#wpda_query_builder_result_" + activeIndex).html("<strong>WP Data Access error:</strong> Query failed");
 		} else {
-			if (msg.status.last_error==="") {
-				if (msg.status.last_result.length > 0) {
-					rows = msg.status.last_result;
-					first_row = rows[0];
-					header = "<tr>";
-					for (var col in first_row) {
-						header += "<th>" + col + "</th>";
-					}
-					header += "</tr>";
-					body = "";
-					for (var i = 0; i < rows.length; i++) {
-						body += "<tr>";
-						for (var col in rows[i]) {
-							let columnClassName = "";
-							if (msg.columns===null || msg.columns===undefined) {
-								// No data type available
-							} else {
-								columnClassName = "wpda_data_type_" + getColumnDataType(msg.columns, col);
-							}
-							if (rows[i][col]===null) {
-								columnClassName += " wpda_data_value_null";
-							}
-							body +=
-								"<td class='" + columnClassName + "'>" +
-									jQuery("<textarea/>").text(rows[i][col]).html() +
-								"</td>";
-						}
-						body += "</tr>";
-					}
-					table =
-						jQuery('<table class="wpda_query_builder_table" data-id="' + activeIndex + '"/>')
-						.append(jQuery('<thead/>').append(header))
-						.append(jQuery('<tbody/>').append(body));
-					jQuery("#wpda_query_builder_menubar_" + activeIndex).show();
-					jQuery("#wpda_query_builder_result_" + activeIndex).html(table);
-					rowLabel = rows.length === 1 ? "row" : "rows";
-					html = rows.length + " " + rowLabel;
-					if (msg.status.queries !== null) {
-						html += " (" + msg.status.queries[msg.status.num_queries - 1][1].toFixed(5) + " sec)";
-					}
-					jQuery("#wpda_query_builder_statusbar_" + activeIndex + " span.wpda_query_builder_statusbar_message").html(
-						html
-					);
-					jQuery("#wpda_query_builder_statusbar_" + activeIndex).show();
-					jQuery("#wpda_query_builder_json_" + activeIndex).jsonViewer(msg.status);
-					jQuery("#wpda_query_builder_json_" + activeIndex + " ul li a.json-toggle").click();
-
-					setResultDivHeight(activeIndex);
+			if (msg.status.last_result === null || msg.status.last_result === undefined) {
+				if (typeof msg.status !== "string") {
+					jQuery("#wpda_query_builder_result_" + activeIndex).html("<strong>WP Data Access error:</strong> Query OK");
 				} else {
-					rowLabel = msg.status.rows_affected === 1 ? "row" : "rows";
-					html = "Query OK, " + msg.status.rows_affected + " " + rowLabel + " affected";
-					if (msg.status.queries !== null) {
-						html += " (" + msg.status.queries[msg.status.num_queries - 1][1].toFixed(5) + " sec)"
-					}
-					jQuery("#wpda_query_builder_menubar_" + activeIndex).hide();
-					jQuery("#wpda_query_builder_result_" + activeIndex).html("");
-					jQuery("#wpda_query_builder_statusbar_" + activeIndex + " span.wpda_query_builder_statusbar_message").html(html);
-					jQuery("#wpda_query_builder_statusbar_" + activeIndex).show();
-					jQuery("#wpda_query_builder_json_" + activeIndex).jsonViewer(msg.status);
-					jQuery("#wpda_query_builder_json_" + activeIndex + " ul li a.json-toggle").click();
+					jQuery("#wpda_query_builder_result_" + activeIndex).html(msg.status);
 				}
 			} else {
-				error = `<strong>WordPress database error:</strong> ${msg.status.last_error}<br/><br/><code>${msg.status.last_query}</code>`;
-				jQuery("#wpda_query_builder_result_" + activeIndex).html(error);
+				if (msg.status.last_error === "") {
+					if (msg.status.last_result.length > 0) {
+						rows = msg.status.last_result;
+						first_row = rows[0];
+						header = "<tr>";
+						for (var col in first_row) {
+							header += "<th>" + col + "</th>";
+						}
+						header += "</tr>";
+						body = "";
+						for (var i = 0; i < rows.length; i++) {
+							body += "<tr>";
+							for (var col in rows[i]) {
+								let columnClassName = "";
+								if (msg.columns === null || msg.columns === undefined) {
+									// No data type available
+								} else {
+									columnClassName = "wpda_data_type_" + getColumnDataType(msg.columns, col);
+								}
+								if (rows[i][col] === null) {
+									columnClassName += " wpda_data_value_null";
+								}
+								body +=
+									"<td class='" + columnClassName + "'>" +
+									jQuery("<textarea/>").text(rows[i][col]).html() +
+									"</td>";
+							}
+							body += "</tr>";
+						}
+						table =
+							jQuery('<table class="wpda_query_builder_table" data-id="' + activeIndex + '"/>')
+								.append(jQuery('<thead/>').append(header))
+								.append(jQuery('<tbody/>').append(body));
+						jQuery("#wpda_query_builder_menubar_" + activeIndex).show();
+						jQuery("#wpda_query_builder_result_" + activeIndex).html(table);
+						rowLabel = rows.length === 1 ? "row" : "rows";
+						html = rows.length + " " + rowLabel;
+						if (msg.status.queries !== null) {
+							html += " (" + msg.status.queries[msg.status.num_queries - 1][1].toFixed(5) + " sec)";
+						}
+						jQuery("#wpda_query_builder_statusbar_" + activeIndex + " span.wpda_query_builder_statusbar_message").html(
+							html
+						);
+						jQuery("#wpda_query_builder_statusbar_" + activeIndex).show();
+						jQuery("#wpda_query_builder_json_" + activeIndex).jsonViewer(msg.status);
+						jQuery("#wpda_query_builder_json_" + activeIndex + " ul li a.json-toggle").click();
+
+						setResultDivHeight(activeIndex);
+					} else {
+						rowLabel = msg.status.rows_affected === 1 ? "row" : "rows";
+						html = "Query OK, " + msg.status.rows_affected + " " + rowLabel + " affected";
+						if (msg.status.queries !== null) {
+							html += " (" + msg.status.queries[msg.status.num_queries - 1][1].toFixed(5) + " sec)"
+						}
+						jQuery("#wpda_query_builder_menubar_" + activeIndex).hide();
+						jQuery("#wpda_query_builder_result_" + activeIndex).html("");
+						jQuery("#wpda_query_builder_statusbar_" + activeIndex + " span.wpda_query_builder_statusbar_message").html(html);
+						jQuery("#wpda_query_builder_statusbar_" + activeIndex).show();
+						jQuery("#wpda_query_builder_json_" + activeIndex).jsonViewer(msg.status);
+						jQuery("#wpda_query_builder_json_" + activeIndex + " ul li a.json-toggle").click();
+					}
+				} else {
+					error = `<strong>WordPress database error:</strong> ${msg.status.last_error}<br/><br/><code>${msg.status.last_query}</code>`;
+					jQuery("#wpda_query_builder_result_" + activeIndex).html(error);
+				}
 			}
 		}
 	}

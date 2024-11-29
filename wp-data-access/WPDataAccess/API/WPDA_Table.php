@@ -490,11 +490,13 @@ class WPDA_Table extends WPDA_API_Core {
                     return WPDA::remove_backticks( $column_name );
                 }, $column_names ) ) . '`';
             }
-            $dataset = $wpdadb->get_results( $wpdadb->prepare( "\n\t\t\t\t\t\t\tselect {$selected_columns}\n\t\t\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t\t\t{$where}\n\t\t\t\t\t\t", array($tbl) ), 'ARRAY_A' );
+            $sql = $wpdadb->prepare( "select {$selected_columns} from `%1s` {$where}", array($tbl) );
+            $dataset = $wpdadb->get_results( $sql, 'ARRAY_A' );
             // Prepare debug info.
             if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
                 $debug = array(
                     'debug' => array(
+                        'sql'   => $sql,
                         'where' => $where,
                     ),
                 );
@@ -504,8 +506,9 @@ class WPDA_Table extends WPDA_API_Core {
             $wpdadb->suppress_errors( $suppress );
             // Send response.
             if ( 0 === count( $dataset ) ) {
-                return new \WP_Error('error', "No data found", array(
+                return new \WP_Error('error', 'No data found', array(
                     'status' => 420,
+                    'debug'  => $debug['debug'],
                 ));
             } elseif ( 1 === count( $dataset ) ) {
                 $media = array();
@@ -545,6 +548,15 @@ class WPDA_Table extends WPDA_API_Core {
                 'status' => 420,
             ));
         } else {
+            // Get column default values
+            $column_list = WPDA_List_Columns_Cache::get_list_columns( $dbs, $tbl );
+            $table_columns = $column_list->get_table_columns();
+            foreach ( $table_columns as $table_column_type ) {
+                if ( isset( $column_values[$table_column_type['column_name']] ) && $column_values[$table_column_type['column_name']] === $table_column_type['column_default'] ) {
+                    // Remove default values if send values equals column default to support defaults using functions
+                    unset($column_values[$table_column_type['column_name']]);
+                }
+            }
             // Sanitize column names and values.
             $sanitized_column_values = self::sanitize_column_values( $dbs, $tbl, $column_values );
             if ( false === $sanitized_column_values ) {
@@ -990,6 +1002,8 @@ class WPDA_Table extends WPDA_API_Core {
     }
 
     private function convert_column_name( $m2m_relationship, $column_name ) {
+        // Return plain column name.
+        return $this->sanitize_db_identifier( $column_name );
     }
 
     private function map_columns( $prefix, $column_names ) {

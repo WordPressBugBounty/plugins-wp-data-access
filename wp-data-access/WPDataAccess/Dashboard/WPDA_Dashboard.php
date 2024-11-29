@@ -177,6 +177,8 @@ class WPDA_Dashboard {
 
     private $current_version;
 
+    private $option_legacy_tools;
+
     /**
      * Constructor
      *
@@ -195,6 +197,7 @@ class WPDA_Dashboard {
         if ( $widget_mode ) {
             update_user_meta( WPDA::get_current_user_id(), self::USER_DASHBOARD, array() );
         }
+        $this->option_legacy_tools = WPDA::get_option( WPDA::OPTION_PLUGIN_LEGACY_TOOLS );
     }
 
     /**
@@ -391,8 +394,8 @@ class WPDA_Dashboard {
 							<a class="wpda-dashboard-item wpda_tooltip_icons" href="<?php 
         echo admin_url( 'admin.php' );
         // phpcs:ignore WordPress.Security.EscapeOutput
-        ?>?page=wpda_apps" title="Build data-driven Apps with
-the new Table Builder and Form Builder">
+        ?>?page=wpda_apps" title="Build data-driven Apps with the new
+Table Builder, Form Builder and Chart Builder">
 								<div class="fa-solid">
 									<svg xmlns="http://www.w3.org/2000/svg" height="26px" width="26px" viewBox="4 4 16 16" fill="inherit">
 										<path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/>
@@ -403,7 +406,9 @@ the new Table Builder and Form Builder">
 							<a class="wpda-dashboard-item wpda_tooltip_icons" href="<?php 
         echo admin_url( 'admin.php' );
         // phpcs:ignore WordPress.Security.EscapeOutput
-        ?>?page=wpda" title="Manage local and remote data and databases">
+        ?>?page=wpda" title="Data Explorer
+
+Manage local and remote data and databases">
 								<div class="fa-solid fa-database"></div>
 								<div class="label">Explorer</div>
 							</a>
@@ -417,44 +422,84 @@ the new Table Builder and Form Builder">
 						</div>
 						<div class="subject">Data(base) Administration & App Development</div>
 					</div>
-					<?php 
+					<div class="wpda-dashboard-group wpda-dashboard-group-projects"
+                        <?php 
+        if ( !$this->option_legacy_tools['tables'][0] && !$this->option_legacy_tools['forms'][0] && !$this->option_legacy_tools['templates'][0] && !$this->option_legacy_tools['designer'][0] && !$this->option_legacy_tools['dashboards'][0] && !$this->option_legacy_tools['charts'][0] ) {
+            echo 'style="display: none"';
+        }
         ?>
-					<div class="wpda-dashboard-group wpda-dashboard-group-projects">
+                    >
 						<div class="icons">
-							<a class="wpda-dashboard-item wpda_tooltip_icons" href="<?php 
+							<a class="wpda-dashboard-item wpda_tooltip_icons"
+                               href="<?php 
         echo admin_url( 'admin.php' );
         // phpcs:ignore WordPress.Security.EscapeOutput
-        ?>?page=wpda_publisher" title="OLD Table Builder
+        ?>?page=wpda_publisher"
+                               title="OLD Table Builder
 
 Use App Builder to access the NEW Table Builder
-">
+"
+                                <?php 
+        if ( !$this->option_legacy_tools['tables'][0] ) {
+            echo 'style="display: none"';
+        }
+        ?>
+                            >
 								<div class="fa-solid fa-table"></div>
 								<div class="label">Tables</div>
 							</a>
-							<a class="wpda-dashboard-item wpda_tooltip_icons" href="<?php 
+							<a class="wpda-dashboard-item wpda_tooltip_icons"
+                               href="<?php 
         echo admin_url( 'admin.php' );
         // phpcs:ignore WordPress.Security.EscapeOutput
-        ?>?page=wpda_wpdp" title="OLD Form Builder
+        ?>?page=wpda_wpdp"
+                               title="OLD Form Builder
 
 Use App Builder to access the NEW Form Builder
-">
+"
+                                <?php 
+        if ( !$this->option_legacy_tools['forms'][0] ) {
+            echo 'style="display: none"';
+        }
+        ?>
+                            >
 								<div class="fa-solid fa-wand-magic-sparkles"></div>
 								<div class="label">Forms</div>
 							</a>
-							<a class="wpda-dashboard-item wpda_tooltip_icons" href="<?php 
+							<a class="wpda-dashboard-item wpda_tooltip_icons"
+                               href="<?php 
         echo admin_url( 'admin.php' );
         // phpcs:ignore WordPress.Security.EscapeOutput
-        ?>?page=wpda_templates" title="Customize forms using templates">
+        ?>?page=wpda_templates"
+                               title="OLD Form Templates
+
+Customize forms using templates"
+                                <?php 
+        if ( !$this->option_legacy_tools['templates'][0] ) {
+            echo 'style="display: none"';
+        }
+        ?>
+                            >
 								<div class="fa-solid fa-desktop"></div>
 								<div class="label">Templates</div>
 							</a>
-							<a class="wpda-dashboard-item wpda_tooltip_icons" href="<?php 
+							<a class="wpda-dashboard-item wpda_tooltip_icons"
+                               href="<?php 
         echo admin_url( 'admin.php' );
         // phpcs:ignore WordPress.Security.EscapeOutput
-        ?>?page=wpda_designer" title="Create database tables and indexes">
+        ?>?page=wpda_designer"
+                               title="Create database tables and indexes"
+                                <?php 
+        if ( !$this->option_legacy_tools['designer'][0] ) {
+            echo 'style="display: none"';
+        }
+        ?>
+                            >
 								<div class="fa-solid fa-drafting-compass"></div>
 								<div class="label">Designer</div>
 							</a>
+                            <?php 
+        ?>
 						</div>
 						<div class="subject">Legacy Tools</div>
 					</div>
@@ -2080,8 +2125,9 @@ Use App Builder to access the NEW Form Builder
             case 'publisher':
             case 'projects':
             case 'templates':
+            case 'charts':
                 $promotions = array(array(
-                    'This tool will be replaced by the new App Builder. Please migrate before summer 2025.' => array(null, 'fa-lightbulb'),
+                    'This tool will transition to the new App Builder. Please migrate on time.' => array(null, 'fa-lightbulb'),
                 ));
                 break;
             case 'csv':

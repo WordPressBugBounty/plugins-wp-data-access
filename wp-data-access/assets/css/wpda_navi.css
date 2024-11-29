@@ -23,8 +23,8 @@
     color: #ff9f1c;
 }
 
-.wpda-navi-container > h2 {
-    margin: 30px 0 0 30px;
+.wpda-navi-container > div > h2 {
+    margin: 0;
     text-transform: uppercase;
     font-weight: bold;
     font-size: 140%;
@@ -49,6 +49,16 @@
 .wpda-navi-container-header-title {
     display: grid;
     grid-template-columns: 1fr 296px;
+}
+@media screen and (max-width: 800px) {
+    .wpda-navi-container-header-title {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .wpda-navi-container-header-image {
+        display: none;
+    }
 }
 
 .wpda-navi-container-header h1,
@@ -305,4 +315,75 @@
     .wpda-navi-container-content-item.wpda-hot-topics .wpda-navi-container-content-item-facts {
         grid-template-columns: 1fr;
     }
+}
+
+#wpda-legacy-tool-settings {
+    position: relative;
+}
+
+#wpda-legacy-tool-settings a {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+#wpda-legacy-tool-settings-panel {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    border: 4px solid #ff9f1c;
+    border-radius: 4px;
+    background-color: white;
+    padding: 30px;
+}
+
+#wpda-legacy-tool-settings-panel table th,
+#wpda-legacy-tool-settings-panel table td {
+    white-space: nowrap;
+    padding-right: 20px;
+}
+
+#wpda-legacy-tool-settings-panel table th:last-of-type,
+#wpda-legacy-tool-settings-panel table td:last-of-type {
+    padding-right: 0;
+}
+
+#wpda-legacy-tool-settings-panel table th.items,
+#wpda-legacy-tool-settings-panel table td.items {
+    text-align: right;
+}
+
+#wpda-legacy-tool-settings-panel table th.status,
+#wpda-legacy-tool-settings-panel table td.status {
+    text-align: center;
+}
+
+#wpda-legacy-tool-settings-submit {
+    margin-top: 15px;
+    text-align: right;
+}
+
+#wpda-legacy-tool-settings-submit button {
+    padding: 5px 10px;
+    font-weight: bold;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#wpda-legacy-tool-settings-submit button[type=submit] {
+    background-color: #4399fa;
+    color: #fff;
+}
+
+#wpda-legacy-tool-settings-submit button[type=button] {
+    color: #4399fa;
+    background-color: #fff;
+    border: 1px solid #4399fa;
+}
+
+#wpda-legacy-tool-settings-panel table .tool_status_icon {
+    color: #4399fa;
+    cursor: pointer;
 }

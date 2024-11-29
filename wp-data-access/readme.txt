@@ -1,70 +1,83 @@
 === WP Data Access – App, Table, Form and Chart Builder plugin ===
 Contributors: peterschulznl, maxxschulz, kimmyx, freemius
-Tags: table builder, form builder, data table, datatables, table
+Tags: table builder plugin, form builder plugin, tables, data management, charts
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 5.5.17
+Stable tag: 5.5.22
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive Chart Support in 35 languages
+A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive chart support in 35 languages
 
 == Description ==
-A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive Chart Support. Apps can operate on both the back-end and front-end, with simple authorization management based on WordPress user and role principles. The App Builder supports 35 languages to localize your apps.
+A powerful data-driven **App Builder** with an intuitive **Table Builder**, a highly customizable **Form Builder** and **interactive Chart support**. Apps can operate on both the **back-end** and **front-end**, with simple **authorization management based on WordPress user and role principles**. The **App Builder** supports **35 languages** to localize your apps.
 
 == App Builder ==
-> Build data-driven apps with an intuitive Table Builder and Form Builder
+> Unlock the simplicity of building powerful apps with our **App Wizard**. Customize effortlessly with our suite of **Builders**, **Managers**, and **Wizards** for complete control.
 
-* Experience the simplicity of app building with our App Wizard
-* Generate data tables with the Table Builder
-* Manage data with the grid-driven Form Builder
-* Create interactive charts using the Chart Builder
-* Customize with ease using the Intuitive Theme Builder
-* Create (multi-level) master-detail pages with the Relationship Wizard
-* Utilize real-time updatable computed fields through inline fields
-* Perform real-time aggregations through inline fields
-* Allow users to create charts interactively from table data
-* Create (conditional) lookups with the Lookup Wizard
-* Access numerous global and inline filter options
-* Edit data inline seamlessly
-* Connect to both local and remote databases
-* Integrate with the WordPress media library
-* Integrate with WordPress users and roles
-* Export to PDF, CSV, JSON, XML, SQL, and Excel
-* Manage authorizations with the App Manager
-* Run apps on both the back-end and front-end
-* Experience real-time build and run functionality
-* Enjoy a fully responsive design
-* Support manual styling options
+* **Build dynamic, data-driven apps** for both front-end and back-end
+* **Run apps in 35 languages** to reach a global audience
+* **Create fully customizable data tables** for precise data display with the **Table Builder**
+* **Design grid-based forms** for streamlined data management with the **Form Builder**
+* **Add multi-level master-detail relationships** effortlessly with the **Relationship Wizard**
+* **Edit data instantly with inline editing**
+* **Create lookups in a snap** with the **Lookup Wizard**
+* **Implement real-time, updatable computed fields** with the **Computed Field Wizard**
+* **Enable real-time aggregations** for up-to-the-minute insights
+* **Customize apps seamlessly** with theme support with the **Theme Builder**
+* **Powerful filtering options** on global and column levels
+* **Integrate charts** for robust data analysis
+* **Add custom JavaScript hooks for advanced customization**
+* **Manage roles and permissions** with WordPress-based user authorization
+* **Access the WordPress media library** for enhanced functionality
+* **Export to PDF, CSV, JSON, XML, SQL, and Excel**
+* **Real-time build and run capabilities**
+* **Optimized for large tables**
+* **Connect to local and remote databases** through a visual interface
+* **Execute SQL queries directly** from the WordPress dashboard
+* **Enjoy a fully responsive design** for any device
 
-== Data Management ==
-> Manage local and remote data and databases directly from the WordPress dashboard
+== Data Explorer ==
+> Take control of your data with our intuitive, **GUI-driven Data Explorer** that lets you seamlessly **manage both local and remote databases right from your WordPress dashboard**.
 
-* Manage both local and remote data and databases
-* Perform global search and replace across multiple databases and tables
-* [Import SQL and CSV files, with ZIP support for large files](https://wpdataaccess.com/docs/data-explorer-manage/imports-sql-csv/)
-* [Export data in various formats: SQL, CSV, JSON, and XML, with support for large tables](https://wpdataaccess.com/docs/data-explorer-actions/actions/)
-* Execute table operations such as rename, copy, truncate, drop, optimize, and alter
-* [Access advanced table and column settings including search, geolocation, inline editing, and more](https://wpdataaccess.com/docs/data-explorer-settings/table-and-view-settings/)
-
-== Remote Databases and Remote Data Files ==
-> Connect and auto-sync with remote databases and data files
-
-* Compatible with all plugin tools
-* [Premium remote connection wizard for easy setup:](https://wpdataaccess.com/docs/remote-connection-wizard/remote-connection-wizard/)
-  * Remote Databases: SQL Server, Oracle, PostgreSQL, MariaDB, MySQL, and MS Access (file-based)
-  * Remote Data Files: CSV, JSON, and XML files (e.g., sync with Google Sheets)
+* Effortlessly **manage data across local and remote databases**
+* **Global search and replace** across multiple databases and tables
+* [Easily **import SQL and CSV files**, with ZIP support for handling large datasets](https://wpdataaccess.com/docs/data-explorer-manage/imports-sql-csv/)
+* [**Export data in various formats**, including SQL, CSV, JSON, and XML—even for large tables](https://wpdataaccess.com/docs/data-explorer-actions/actions/)
+* Perform essential **table actions** like rename, copy, truncate, drop, optimize, and alter
+* [Unlock **advanced table and column options**, such as geolocation, inline editing, and enhanced search](https://wpdataaccess.com/docs/data-explorer-settings/table-and-view-settings/)
+* **Transform data management from complex to effortless with a tool designed for both flexibility and precision**
 
 == SQL Query Builder ==
-> Execute SQL queries directly from the WordPress dashboard
+> **Run SQL queries directly within WordPress.**
 
-* [Work on multiple SQL queries using tabs](https://wpdataaccess.com/docs/query-builder/query-builder-tutorials/)
-* Save and reuse queries for data tables and charts
-* Protect WordPress table structures and data
-* [Interactive Visual Query Builder for users with limited SQL knowledge](https://wpdataaccess.com/docs/query-builder/visual-query-builder/)
+* [Execute multiple SQL queries with **tabbed workflows** for seamless multitasking](https://wpdataaccess.com/docs/query-builder/query-builder-tutorials/)
+* **Save and reuse queries** for data tables and charts
+* **Built-in safeguards to protect WordPress tables** and data integrity
+* [Ready to optimize? Explore the intuitive **Visual Query Builder** for easy query creation, even without SQL expertise](https://wpdataaccess.com/docs/query-builder/visual-query-builder/)
+
+== Premium Data Services ==
+> **Effortlessly connect, sync, and manage remote databases and data files.**
+
+* **Seamlessly compatible with all plugin features**
+* [Premium Remote Connection Wizard for fast, no-fuss setup](https://wpdataaccess.com/docs/remote-connection-wizard/remote-connection-wizard/)
+  * **Remote Databases**: Connect to SQL Server, Oracle, PostgreSQL, MariaDB, MySQL, and MS Access (file-based)
+  * **Remote Data Files**: Sync with CSV, JSON, and XML files for dynamic updates (e.g., Google Sheets sync)
+
+== Plugin Settings ==
+> Detailed settings for **managing the user interface and behavior**.
+
+* Tailor your experience with a wide range of detailed settings to control both the user interface and functionality of the plugin
+
+== Legacy Tools ==
+> Soon replaced by the **App Builder**.
+
+* Available until at least summer 2025
+* Use to maintain old solutions
+* Use **App Builder** for new projects
 
 == Dashboards and Widgets ==
-> Customizable widgets for dashboards (back-end), webpages (front-end), and external websites
+> Customizable widgets for dashboards (back-end), webpages (front-end), and external websites. **(functionality will be moved to App Builder)**
 
 * Centralized data management
 * Share data widgets anywhere
@@ -73,65 +86,12 @@ A powerful data-driven App Builder with an intuitive Table Builder, a highly cus
 * Cost-effective Business Intelligence solution
 
 == Geolocation search ==
-> Create searchable geolocation maps from database tables
+> Create searchable geolocation maps from database tables. **(functionality will be moved to App Builder)**
 
 * Google Maps integration – Seamlessly incorporate Google Maps for geolocation features
 * Customizable settings – Tailor map settings for each database table to fit your needs
 * [DataTables integration – Combine with DataTables for enhanced functionality](https://wpdataaccess.com/publication-using-geolocation/)
 * [Adjustable radius search map – Enable users to perform searches within a customizable radius](https://wpdataaccess.com/demos/geolocation-demo/)
-
-== Charts ==
-> Build charts from SQL queries
-
-* Seamless integration with Google Charts
-* Compatible with both the Query Builder and Visual Query Builder
-* [Select from a variety of chart types using drop-down menus](https://wpdataaccess.com/2022/06/16/chart-demo/)
-
-== Plugin Settings ==
-> Detailed settings for managing user interface and behavior
-
-* Tailor your experience with a wide range of detailed settings to control both the user interface and functionality of the plugin
-
-== Legacy Tools ==
-> Soon replaced by the App Builder
-
-* Available until at least summer 2025
-* Use to maintain old solutions
-* Use new App Builder for new projects
-
-== Data Tables (Legacy Tool) ==
-> Create professional data tables for back-end and front-end in minutes
-
-* User-friendly and highly customizable
-* Fully responsive design
-* Extensive styling options with an intuitive [Style Manager](https://wpdataaccess.com/docs/data-tables/extension-manager/)
-* Various [searching and sorting algorithms](https://wpdataaccess.com/docs/data-explorer-settings/search-settings/)
-* Numerous static and interactive filters including ([search panes](https://wpdataaccess.com/search-panes-demo-without-buttons/), [search forms](https://wpdataaccess.com/publication-search-form-demo/), [search builder](https://wpdataaccess.com/search-builder-demo/) and [more](https://wpdataaccess.com/docs/data-tables-demos-and-tutorials/data-tables-demos/))
-* Server-side processing for handling large tables
-* Client-side processing for fast search and sorting of smaller tables
-* Export options: [CSV, Excel, PDF, and SQL](https://wpdataaccess.com/export-buttons-demo/)
-* [Customizable and programmable buttons](https://wpdataaccess.com/docs/data-tables-buttons/data-tables-custom-buttons/)
-* Integrated [geolocation search](https://wpdataaccess.com/publication-using-geolocation/)
-* Support of custom queries and custom post types
-
-== Data Apps (Legacy Tool) ==
-> Build highly customizable data-driven WordPress apps for back-end and front-end
-
-* Automatically generated CRUD pages
-* [Customizable through Project Templates](https://wpdataaccess.com/docs/data-apps/projects-and-templates/)
-* Lookups with drop-down lists and autocomplete fields
-* Master-detail pages for comprehensive data management
-* Transform Data Projects into responsive apps with [Data Forms](https://wpdataaccess.com/data-forms-project-demo/)
-* [Inline editing capabilities](https://wpdataaccess.com/docs/data-explorer-settings/search-settings/)
-* Extensive [search features](https://wpdataaccess.com/docs/data-explorer-settings/search-settings/)
-* Integration with WordPress user roles
-* Seamless integration with the WordPress media library
-
-== Data Designer (Legacy Tool) ==
-> Intuitive interface for creating and managing tables and indexes
-
-* Easily create and modify tables and indexes
-* Support for reverse engineering and reconciliation
 
 == Useful Links ==
 - [Plugin Website](https://wpdataaccess.com/)
@@ -145,6 +105,39 @@ A powerful data-driven App Builder with an intuitive Table Builder, a highly cus
 And you're all set!
 
 == Changelog ==
+
+= 5.5.22 =
+* Released 2024-11-28
+* Added: Table component reference to table hooks
+* Added: Parameter pp-page to jump to specific page on page load
+* Added: Allow inline editing with row update disabled
+* Added: Save button to table header for inline updates
+* Added: Hide auto-increment columns during insert if visibility = off
+* Fixed: Missing form column code causes fatal error
+* Fixed: WPDAVAR and WDPATMP no longer working in SQL Query Builder
+* Fixed: Insert fails when primary key contains and auto_increment and additional columns
+* Fixed: Global search not working in free version
+* Fixed: Less than character not unescaped
+* Fixed: Lookup wizard update does not update related tables and columns
+* Changed: Freemius SDK integration
+* Optimized: Bundles and store
+
+= 5.5.20 =
+* Released 2024-11-15
+* Fixed: Apply + OK buttons not working after closing Form Builder
+* Fixed: Null value validation not triggered on update
+* Fixed: All legacy tools removed from toolbar
+
+= 5.5.19 =
+* Released 2024-11-15
+* Added: Enable | Disable legacy tools from tool guide page
+* Added: Allow server side default values on insert
+* Moved: Dashboards and Charts menu items to legacy tools section
+* Fixed: Tool guide header too wide on small devices
+* Fixed: Hidden elements using dashboard space
+* Fixed: Trailing comma causing error with PHP7
+* Fixed: Selector returns different results when called with same arguments
+* Fixed: Join Builder and Relation Builder button access
 
 = 5.5.17 =
 * Released 2024-11-07
