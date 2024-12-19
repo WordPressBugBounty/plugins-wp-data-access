@@ -4,7 +4,7 @@
  * Plugin Name:       WP Data Access
  * Plugin URI:        https://wpdataaccess.com/
  * Description:       A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive Chart support in 35 languages
- * Version:           5.5.22
+ * Version:           5.5.23
  * Author:            Passionate Programmers B.V.
  * Author URI:        https://wpdataaccess.com/
  * Text Domain:       wp-data-access
@@ -37,7 +37,7 @@ if ( !function_exists( 'wpda_freemius' ) ) {
         global $wpda_freemius;
         if ( !isset( $wpda_freemius ) ) {
             // Create a helper function for easy SDK access.
-            require_once dirname( __FILE__ ) . '/freemius/start.php';
+            require_once dirname( __FILE__ ) . '/vendor/freemius/start.php';
             $wpda_freemius = fs_dynamic_init( array(
                 'id'             => '6189',
                 'slug'           => 'wp-data-access',
@@ -214,7 +214,7 @@ if ( !function_exists( 'wpda_freemius' ) ) {
      * @return string
      */
     function wpda_freemius_icon() {
-        return dirname( __FILE__ ) . '/freemius/assets/img/wpda.png';
+        return dirname( __FILE__ ) . '/vendor/freemius/assets/img/wpda.png';
     }
 
     wpda_freemius()->add_filter( 'plugin_icon', 'wpda_freemius_icon' );

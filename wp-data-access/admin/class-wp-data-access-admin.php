@@ -17,10 +17,7 @@ use WPDataAccess\List_Table\WPDA_List_View;
 use WPDataAccess\Plugin_Table_Models\WPDA_App_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_Design_Table_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_Publisher_Model;
-use WPDataAccess\Plugin_Table_Models\WPDA_Table_Settings_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_User_Menus_Model;
-use WPDataAccess\Plugin_Table_Models\WPDP_Project_Model;
-use WPDataAccess\Premium\WPDAPRO_Dashboard\WPDAPRO_Dashboard;
 use WPDataAccess\Premium\WPDAPRO_Data_Publisher\WPDAPRO_Data_Publisher_Manage_Styles;
 use WPDataAccess\Query_Builder\WPDA_Query_Builder;
 use WPDataAccess\Settings\WPDA_Settings;
@@ -684,6 +681,9 @@ class WP_Data_Access_Admin {
             );
             // Add data explorer to WPDA menu.
             $current_data_explorer_version = get_user_meta( WPDA::get_current_user_id(), 'wpda_data_explorer', true );
+            if ( isset( $_POST['explorer'] ) && 'OLD' === $_POST['explorer'] ) {
+                $current_data_explorer_version = true;
+            }
             $this->wpda_data_explorer_menu = add_submenu_page(
                 self::MAIN_PAGE_SLUG,
                 'WP Data Access',

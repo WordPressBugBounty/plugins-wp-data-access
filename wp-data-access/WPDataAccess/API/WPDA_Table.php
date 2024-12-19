@@ -505,37 +505,38 @@ class WPDA_Table extends WPDA_API_Core {
             }
             $wpdadb->suppress_errors( $suppress );
             // Send response.
-            if ( 0 === count( $dataset ) ) {
-                return new \WP_Error('error', 'No data found', array(
-                    'status' => 420,
-                    'debug'  => $debug['debug'],
-                ));
-            } elseif ( 1 === count( $dataset ) ) {
-                $media = array();
-                if ( 0 < count( $media_columns ) ) {
-                    foreach ( $media_columns as $media_column_name => $media_column_type ) {
-                        if ( isset( $dataset[0][$media_column_name] ) ) {
-                            if ( in_array( $media_column_type, [
-                                'WP-Image',
-                                'WP-Attachment',
-                                'WP-Audio',
-                                'WP-Video'
-                            ] ) ) {
-                                $media[$media_column_name] = WPDA_WP_Media::get_media_url( $dataset[0][$media_column_name] );
-                            }
+            $media = array();
+            if ( 0 < count( $media_columns ) ) {
+                foreach ( $media_columns as $media_column_name => $media_column_type ) {
+                    if ( isset( $dataset[0][$media_column_name] ) ) {
+                        if ( in_array( $media_column_type, [
+                            'WP-Image',
+                            'WP-Attachment',
+                            'WP-Audio',
+                            'WP-Video'
+                        ] ) ) {
+                            $media[$media_column_name] = WPDA_WP_Media::get_media_url( $dataset[0][$media_column_name] );
                         }
                     }
                 }
-                $context = array();
-                $context['media'] = $media;
-                if ( isset( $debug['debug'] ) && 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
-                    $context['debug'] = $debug['debug'];
-                }
-                return $this->WPDA_Rest_Response( '', $dataset, $context );
+            }
+            $context = array();
+            $context['media'] = $media;
+            if ( isset( $debug['debug'] ) && 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
+                $context['debug'] = $debug['debug'];
+            }
+            if ( 0 === count( $dataset ) ) {
+                return $this->WPDA_Rest_Response( 'No data found', $dataset, array(
+                    'debug' => $debug['debug'],
+                ) );
             } else {
-                return new \WP_Error('error', "Invalid arguments", array(
-                    'status' => 420,
-                ));
+                if ( 1 === count( $dataset ) ) {
+                    return $this->WPDA_Rest_Response( '', $dataset, $context );
+                } else {
+                    return $this->WPDA_Rest_Response( 'Query returned more than one row', $dataset, array(
+                        'debug' => $debug['debug'],
+                    ) );
+                }
             }
         }
     }
@@ -590,7 +591,9 @@ class WPDA_Table extends WPDA_API_Core {
         $tbl,
         $primary_key,
         $column_values,
-        $column_names = array()
+        $column_names = array(),
+        $code_columns = array(),
+        $html_columns = array()
     ) {
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
@@ -600,7 +603,13 @@ class WPDA_Table extends WPDA_API_Core {
             ));
         } else {
             // Sanitize column names and values.
-            $sanitized_column_values = self::sanitize_column_values( $dbs, $tbl, $column_values );
+            $sanitized_column_values = self::sanitize_column_values(
+                $dbs,
+                $tbl,
+                $column_values,
+                $code_columns,
+                $html_columns
+            );
             if ( false === $sanitized_column_values ) {
                 return new \WP_Error('error', "Invalid arguments", array(
                     'status' => 420,
@@ -1264,7 +1273,13 @@ class WPDA_Table extends WPDA_API_Core {
         }
     }
 
-    private function sanitize_column_values( $dbs, $tbl, $column_values ) {
+    private function sanitize_column_values(
+        $dbs,
+        $tbl,
+        $column_values,
+        $code_columns = array(),
+        $html_columns = array()
+    ) {
         $wpda_list_columns = WPDA_List_Columns_Cache::get_list_columns( $dbs, $tbl );
         $sanitized_column_values = [];
         foreach ( $column_values as $column_name => $column_value ) {
@@ -1275,7 +1290,11 @@ class WPDA_Table extends WPDA_API_Core {
                 case 'mediumtext':
                 case 'longtext':
                     if ( null !== $column_value ) {
-                        $column_value = wp_kses_post( $column_value );
+                        if ( in_array( $column_name, $html_columns ) ) {
+                            $column_value = sanitize_textarea_field( $column_value );
+                        } else {
+                            $column_value = wp_kses_post( $column_value );
+                        }
                     }
                     break;
                 default:

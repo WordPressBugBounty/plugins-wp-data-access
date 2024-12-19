@@ -398,26 +398,30 @@ EOL;
 					jQuery("#totalMatches").html(totalMatches);
 				}
 
+                function cleanId(id) {
+                    return id.replaceAll(".", "\\.").replaceAll(":", "\\:")
+                }
+
 				function showTableResults(schemaName, tableName, rows) {
-					jQuery(`#result_${schemaName}_${tableName}`).html(rows + " rows");
-					jQuery(`#result_${schemaName}_${tableName}`).closest("a").find(".linkSpinner").hide();
+					jQuery(cleanId(`#result_${schemaName}_${tableName}`)).html(rows + " rows");
+					jQuery(cleanId(`#result_${schemaName}_${tableName}`)).closest("a").find(".linkSpinner").hide();
 
 					if (parseInt(rows)!==NaN && parseInt(rows)>0) {
-						jQuery(`#result_${schemaName}_${tableName}`).closest("div").find(".match").addClass("matches");
+						jQuery(cleanId(`#result_${schemaName}_${tableName}`)).closest("div").find(".match").addClass("matches");
 						updateTotalMatches(parseInt(rows));
-						jQuery(`#result_${schemaName}_${tableName}`).closest("a").removeClass("disableLink");
-						jQuery(`#view_${schemaName}_${tableName}`).closest("span").find("button").show();
+						jQuery(cleanId(`#result_${schemaName}_${tableName}`)).closest("a").removeClass("disableLink");
+						jQuery(cleanId(`#view_${schemaName}_${tableName}`)).closest("span").find("button").show();
 					}
 				}
 
 				function submitForm(schemaName, tableName) {
 					if (jQuery("#matchesInNewTab").is(":checked")) {
-						jQuery(`#view_${schemaName}_${tableName}`).attr("target", "_blank");
+						jQuery(cleanId(`#view_${schemaName}_${tableName}`)).attr("target", "_blank");
 					} else {
-						jQuery(`#view_${schemaName}_${tableName}`).removeAttr("target");
+						jQuery(cleanId(`#view_${schemaName}_${tableName}`)).removeAttr("target");
 					}
 
-					jQuery(`#view_${schemaName}_${tableName}`).submit();
+					jQuery(cleanId(`#view_${schemaName}_${tableName}`)).submit();
 				}
 
 				function showTableOutput(schemaName, tableName, addReplaceButtons, searchString, searchCase, replaceString) {
@@ -437,6 +441,7 @@ EOL;
 									<input type="hidden" name="table_name" value="${tableName}" />
 									<input type="hidden" name="wpda_s" value="${searchString}" />
 									<input type="hidden" name="wpda_c" value="${searchCase}" />
+                                    <input type="hidden" name="explorer" value="OLD" />
 								</form>
 								<a href="javascript:submitForm('${schemaName}', '${tableName}')" class="disableLink">
 									<span class="linkSpinner">
@@ -499,10 +504,10 @@ EOL;
 				}
 
 				function showError(schemaName, tableName) {
-					jQuery(`#result_${schemaName}_${tableName}`).html("");
-					jQuery(`#result_${schemaName}_${tableName}`).closest("a").find(".linkSpinner").hide();
+					jQuery(cleanId(`#result_${schemaName}_${tableName}`)).html("");
+					jQuery(cleanId(`#result_${schemaName}_${tableName}`)).closest("a").find(".linkSpinner").hide();
 
-					jQuery(`#view_${schemaName}_${tableName}`).closest("span").append(`
+					jQuery(cleanId(`#view_${schemaName}_${tableName}`)).closest("span").append(`
 						<span class="communication_error wpda_tooltip" title="Please check the console for more information">
 							ERROR
 							<i class="fas fa-exclamation-triangle"></i>
@@ -612,7 +617,7 @@ EOL;
 						wpdaTables[schemaName][tableName] = isChecked;
 					}
 
-					jQuery("#chk_" + schemaName).prop(
+					jQuery("#chk_" + cleanId(schemaName)).prop(
 						"checked",
 						jQuery("#selectionTables .selectionFrameBody input[type=checkbox]:checked").length>0
 					);
@@ -657,11 +662,11 @@ EOL;
 
 					if (wpdaTables[schemaName][tableName]) {
 						// At least one table selected: enable search for current database
-						jQuery("#chk_" + schemaName).prop("checked", true);
+						jQuery("#chk_" + cleanId(schemaName)).prop("checked", true);
 					} else {
 						if (jQuery("#selectionTables .selectionFrameBody input[type=checkbox]:checked").length===0) {
 							// No tables selected: disable search for current database
-							jQuery("#chk_" + schemaName).prop("checked", false);
+							jQuery("#chk_" + cleanId(schemaName)).prop("checked", false);
 						}
 					}
 				}
@@ -692,7 +697,7 @@ EOL;
 						}
 
 						jQuery("#selectionDatabases .databaseSelected").removeClass("databaseSelected");
-						jQuery("#" + schemaName).addClass("databaseSelected");
+						jQuery("#" + cleanId(schemaName)).addClass("databaseSelected");
 
 						jQuery("#selectionTables .selectionFrameHeader input[type=checkbox]").prop("checked", false);
 					}
@@ -798,17 +803,32 @@ EOL;
 		}
 
 		private static function execute_query( $wpdadb, $schema_name, $table_name, $columns, $search_value, $search_case, $just_count = false ) {
-			$query = true === $just_count ?
-				'select count(*) from `%1s`.`%1s`' : 'select * from `%1s`.`%1s`';
+            if ( 'rdb:' === substr( $schema_name, 0, 4) ) {
+                // Remote database
+                $query = true === $just_count ?
+                    'select count(*) from `%1s`' : 'select * from `%1s`';
 
-			// Define query.
-			$query = $wpdadb->prepare(
-				$query,
-				array(
-					WPDA::remove_backticks( $schema_name ),
-					WPDA::remove_backticks( $table_name ),
-				)
-			);
+                // Define query.
+                $query = $wpdadb->prepare(
+                    $query,
+                    array(
+                        WPDA::remove_backticks( $table_name ),
+                    )
+                );
+            } else {
+                // Local database
+                $query = true === $just_count ?
+                    'select count(*) from `%1s`.`%1s`' : 'select * from `%1s`.`%1s`';
+
+                // Define query.
+                $query = $wpdadb->prepare(
+                    $query,
+                    array(
+                        WPDA::remove_backticks( $schema_name ),
+                        WPDA::remove_backticks( $table_name ),
+                    )
+                );
+            }
 
 			// Construct where clause.
 			$where = WPDA::construct_where_clause(

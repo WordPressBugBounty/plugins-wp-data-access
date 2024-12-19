@@ -596,7 +596,7 @@ abstract class WPDA_API_Core {
                     break;
                 case 'Hyperlink':
                     // Get table settings.
-                    $table_settings_db = WPDA_Table_Settings_Model::query( $dbs, $tbl );
+                    $table_settings_db = WPDA_Table_Settings_Model::query( $tbl, $dbs );
                     if ( isset( $table_settings_db[0]['wpda_table_settings'] ) ) {
                         $table_settings = json_decode( $table_settings_db[0]['wpda_table_settings'], true );
                     } else {

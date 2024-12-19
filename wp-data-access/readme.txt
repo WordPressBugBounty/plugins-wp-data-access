@@ -3,7 +3,7 @@ Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder plugin, form builder plugin, tables, data management, charts
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 5.5.22
+Stable tag: 5.5.23
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,33 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 And you're all set!
 
 == Changelog ==
+
+= 5.5.23 =
+* Released 2024-12-18
+* Added: Enable|disable embedded HTML in text columns
+* Added: Customizable height for multi line text fields
+* Added: Default user adjustable column filter value
+* Fixed: Cannot save legacy tool status with free version
+* Fixed: Lovs not unescaping HTML characters
+* Fixed: Lookups not unescaping HTML characters
+* Fixed: Input font sizing not working
+* Fixed: When adding a new row, dropdown fields that set to be non-editable or hidden still appear visible and editable
+* Fixed: Date localization UK not working correctly
+* Fixed: Selection checkboxes visibility not toggled when fullscreen toggled
+* Fixed: Plain text hyperlink not processed correctly
+* Fixed: App type search not working when text search is empty
+* Fixed: Form not showing if default where contains error
+* Fixed: Give a proper console error when table lookup fails
+* Fixed: 1:1 relationship issues
+* Fixed: Search & replace gives no results for remote databases
+* Fixed: Invalid hyperlink format throws error and shows blank screen
+* Fixed: Change order direction handling
+* Changed: Builder menu structure to accommodate more menu items
+* Changed: Math library to reduce bundle size
+* Optimized: Client bundle
+* Optimized: Store handling
+* Optimized: Lazy load language files
+* Updated: Freemius SDK
 
 = 5.5.22 =
 * Released 2024-11-28

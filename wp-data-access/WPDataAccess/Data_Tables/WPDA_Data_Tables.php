@@ -829,7 +829,7 @@ class WPDA_Data_Tables {
                 if ( isset( $order_column['column'] ) ) {
                     $orderby_args[] = array(
                         'column' => sanitize_sql_orderby( wp_unslash( $order_column['column'] ) ),
-                        'dir'    => ( isset( $order_column['dir'] ) ? sanitize_text_field( wp_unslash( $order_column['dir'] ) ) : '' ),
+                        'dir'    => ( isset( $order_column['dir'] ) && 'desc' === $order_column['dir'] ? 'desc' : 'asc' ),
                     );
                 }
             }

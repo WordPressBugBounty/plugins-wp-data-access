@@ -912,13 +912,24 @@ class WPDA_Apps extends WPDA_API_Core {
             if ( false === $column_names ) {
                 $column_names = array();
             }
+            $code_columns = array();
+            $html_columns = array();
+            if ( isset( $settings['form']['columns'] ) ) {
+                foreach ( $settings['form']['columns'] as $column ) {
+                    if ( isset( $column['allowHtml'] ) && false === $column['allowHtml'] ) {
+                        $html_columns[] = $column['columnName'];
+                    }
+                }
+            }
             $table_api = new WPDA_Table();
             return $table_api->update(
                 $dbs,
                 $tbl,
                 $key,
                 $val,
-                $column_names
+                $column_names,
+                $code_columns,
+                $html_columns
             );
         } else {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {
@@ -947,13 +958,15 @@ class WPDA_Apps extends WPDA_API_Core {
         ) ) {
             foreach ( $val as $column_name => $column ) {
                 $found = false;
-                foreach ( $settings['table']['columns'] as $settings_column ) {
-                    if ( isset( $settings_column['columnName'] ) && $column_name === $settings_column['columnName'] ) {
-                        $found = true;
+                if ( isset( $settings['table']['columns'] ) ) {
+                    foreach ( $settings['table']['columns'] as $settings_column ) {
+                        if ( isset( $settings_column['columnName'] ) && $column_name === $settings_column['columnName'] ) {
+                            $found = true;
+                        }
                     }
-                }
-                if ( !$found ) {
-                    return $this->unauthorized();
+                    if ( !$found ) {
+                        return $this->unauthorized();
+                    }
                 }
             }
             $column_names = $this->get_app_form_columns( $settings );

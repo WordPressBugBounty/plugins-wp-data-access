@@ -97,14 +97,14 @@ namespace WPDataAccess\WPDA_Navi {
                         ?>
                         &nbsp;&nbsp;
                         <span>
-                            Legacy Tools
+                            LEGACY TOOL USAGE
                         </span>
                     </a>
                     <div id="wpda-legacy-tool-settings-panel">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>LEGACY TOOL</th>
+                                    <th>LEGACY TOOL USAGE</th>
                                     <th class="items">ACTIVE ITEMS</th>
                                     <th>STATUS</th>
                                 </tr>
@@ -321,16 +321,7 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
-                                    <span class="wpda-new">
-                                        Legacy tools auto disabled if not used
-                                    </span>
-                                    <br/>
-                                    <span>
-                                        (use link below header on this page to enable manually)
-                                    </span>
-                                </li>
-                                <li>
-                                    Add save button to table header for inline updates<br/>(Table Builder > Table > Inline editing settings)
+                                    <strong>Save button</strong> in table header for inline updates<br/>(Table Builder > Table > Inline editing settings)
                                 </li>
                                 <li>
                                     Create <strong>Charts</strong> with the <strong>App Builder</strong>
@@ -349,18 +340,6 @@ namespace WPDataAccess\WPDA_Navi {
                                         <i class="fa-solid fa-question-circle"></i>
                                     </a>
 								</li>
-                                <li>
-                                    <a href="https://wpdataaccess.com/docs/app-demos/app-student-administration-system/" target="_blank">
-                                        <i class="fa-solid fa-up-right-from-square"></i>
-                                        Student Administration System demo app (downloadable)
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://wpdataaccess.com/docs/app-demos/app-classic-models/" target="_blank">
-                                        <i class="fa-solid fa-up-right-from-square"></i>
-                                        Classic Models demo app (downloadable)
-                                    </a>
-                                </li>
 							</ul>
 						</div>
 					</div>
@@ -444,14 +423,19 @@ namespace WPDataAccess\WPDA_Navi {
 							</span>
 						</button>
 
-						<button
-							onClick="window.open('https://wordpress.org/support/plugin/wp-data-access/', '_blank')"
-						>
+						<button>
 							<span class="wpda-hot-title">
-								Online Support
+								Downloadable Demo Apps
 							</span>
-							<span class="wpda-hot-topic">
-								Where can I get online support?
+							<span class="wpda-hot-topic" style="display: inline-grid; grid-template-columns: auto auto; gap: 20px;">
+                                <a href="https://wpdataaccess.com/docs/app-demos/app-student-administration-system/" target="_blank">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                    Student Administration System
+                                </a>
+                                <a href="https://wpdataaccess.com/docs/app-demos/app-classic-models/" target="_blank">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                    Classic Models
+                                </a>
 							</span>
 						</button>
 
