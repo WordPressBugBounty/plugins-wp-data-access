@@ -53,5 +53,18 @@
     "deleteRowTitle": "Delete row?",
     "deleteRowMessage": "Are you sure you want to permanently delete this row? This action cannot be undone!",
     "deleteRowsTitle": "Delete selected row?",
-    "deleteRowsMessage": "Are you sure you want to permanently delete the selected row? This action cannot be undone!"
+    "deleteRowsMessage": "Are you sure you want to permanently delete the selected row? This action cannot be undone!",
+    "page": "Page",
+    "powered": "Powered by WP Data Access",
+    "settings": "Settings",
+    "portrait": "Portrait",
+    "landscape": "Landscape",
+    "striped": "Striped",
+    "grid": "Grid",
+    "text": "Text",
+    "title": "Title",
+    "columnSettings": "Column Settings",
+    "wrap": "Wrap text",
+    "nowrap": "Don't wrap text",
+    "selectAll": "Select All"
 }

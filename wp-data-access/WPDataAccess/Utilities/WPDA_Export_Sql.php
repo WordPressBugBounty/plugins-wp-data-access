@@ -348,7 +348,8 @@ namespace WPDataAccess\Utilities {
 				$engine = WPDA::get_table_engine( $this->schema_name, $table_name );
 				if ( 'connect' === strtolower( $engine ) ) {
 					// Remove table options for CONNECT tables
-					$wpdadb->query( "SET sql_mode = 'NO_TABLE_OPTIONS'" );
+                    // NO_TABLE_OPTIONS is deprecated in V8
+					// $wpdadb->query( "SET sql_mode = 'NO_TABLE_OPTIONS'" );
 				}
 				$query = "show create table {$this->schema_name_prefix}`" . str_replace( '`', '', (string) $table_name ) . '`';
 				$ctcmd = $wpdadb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode

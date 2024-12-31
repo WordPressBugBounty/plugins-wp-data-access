@@ -319,7 +319,8 @@ class WPDA_Actions extends WPDA_API_Core {
         $suppress_errors_to = $wpdadb_to->suppress_errors;
         $wpdadb_to->suppress_errors = true;
         // Get create table statement.
-        $wpdadb_from->query( "SET sql_mode = 'NO_TABLE_OPTIONS'" );
+        // NO_TABLE_OPTIONS is deprecated in V8
+        // $wpdadb_from->query( "SET sql_mode = 'NO_TABLE_OPTIONS'" );
         $sql_cmd = $wpdadb_from->get_results( $wpdadb_from->prepare( 'show create table `%1s`', array($from_tbl) ), 'ARRAY_A' );
         // Check for errors.
         if ( '' !== $wpdadb_from->last_error ) {

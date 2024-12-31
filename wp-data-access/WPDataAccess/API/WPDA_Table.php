@@ -861,7 +861,8 @@ class WPDA_Table extends WPDA_API_Core {
         $lookups = array(),
         $md = array(),
         $m2m_relationship = array(),
-        $search_data_types = array()
+        $search_data_types = array(),
+        $client_side = false
     ) {
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
@@ -912,7 +913,7 @@ class WPDA_Table extends WPDA_API_Core {
             $sql = "\n\t\t\t\t\tselect `" . implode( "`,`", array_keys( $column_names ) ) . "`\n\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t{$where}\n\t\t\t\t\t{$sqlorder}\n\t\t\t\t";
             $sql_tables = array($tbl);
             // Perpare query.
-            $sql = $wpdadb->prepare( $sql . (( 0 < $page_size ? " limit {$page_size} offset {$offset} " : '' )), $sql_tables );
+            $sql = $wpdadb->prepare( ( true === $client_side ? $sql : $sql . (( 0 < $page_size ? " limit {$page_size} offset {$offset} " : '' )) ), $sql_tables );
             // Prepare debug info.
             if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
                 $debug = array(
@@ -936,30 +937,34 @@ class WPDA_Table extends WPDA_API_Core {
                 // Prevents additional unnecessary queries.
                 $rowcount = $last_row_count;
             } else {
-                $estimate = false;
-                if ( '1' === $row_count_estimate && '' === $where ) {
-                    // Perform row count estimate
-                    $countrows = $wpdadb->get_results( $wpdadb->prepare( "\n\t\t\t\t\t\t\t\t\tselect table_rows as rowcount\n\t\t\t\t\t\t\t\t\t from  information_schema.tables\n\t\t\t\t\t\t\t\t\twhere  table_schema = %s\n\t\t\t\t\t\t\t\t\t  and  table_name = %s\n\t\t\t\t\t\t\t\t", [$wpdadb->dbname, $tbl] ), 'ARRAY_A' );
-                    if ( isset( $countrows[0]['rowcount'] ) && 0 != $countrows[0]['rowcount'] ) {
-                        $estimate = true;
-                    }
-                }
-                if ( !$estimate ) {
-                    if ( !$estimate ) {
-                        // (Re)Count rows.
-                        $countrows = $wpdadb->get_results( $wpdadb->prepare( "\n\t\t\t\t\t\t\t\t\t\tselect count(1) as rowcount\n\t\t\t\t\t\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t\t\t\t\t\t{$where}\n\t\t\t\t\t\t\t\t\t", array($tbl) ), 'ARRAY_A' );
-                    }
-                }
-                if ( $wpdadb->last_error ) {
-                    // Handle SQL errors.
-                    return new \WP_Error('error', $wpdadb->last_error, array(
-                        'status' => 420,
-                    ));
-                }
-                if ( isset( $countrows[0]['rowcount'] ) ) {
-                    $rowcount = $countrows[0]['rowcount'];
-                } else {
+                if ( true === $client_side ) {
                     $rowcount = 0;
+                } else {
+                    $estimate = false;
+                    if ( '1' === $row_count_estimate && '' === $where ) {
+                        // Perform row count estimate
+                        $countrows = $wpdadb->get_results( $wpdadb->prepare( "\n\t\t\t\t\t\t\t\t\tselect table_rows as rowcount\n\t\t\t\t\t\t\t\t\t from  information_schema.tables\n\t\t\t\t\t\t\t\t\twhere  table_schema = %s\n\t\t\t\t\t\t\t\t\t  and  table_name = %s\n\t\t\t\t\t\t\t\t", [$wpdadb->dbname, $tbl] ), 'ARRAY_A' );
+                        if ( isset( $countrows[0]['rowcount'] ) && 0 != $countrows[0]['rowcount'] ) {
+                            $estimate = true;
+                        }
+                    }
+                    if ( !$estimate ) {
+                        if ( !$estimate ) {
+                            // (Re)Count rows.
+                            $countrows = $wpdadb->get_results( $wpdadb->prepare( "\n\t\t\t\t\t\t\t\t\t\tselect count(1) as rowcount\n\t\t\t\t\t\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t\t\t\t\t\t{$where}\n\t\t\t\t\t\t\t\t\t", array($tbl) ), 'ARRAY_A' );
+                        }
+                    }
+                    if ( $wpdadb->last_error ) {
+                        // Handle SQL errors.
+                        return new \WP_Error('error', $wpdadb->last_error, array(
+                            'status' => 420,
+                        ));
+                    }
+                    if ( isset( $countrows[0]['rowcount'] ) ) {
+                        $rowcount = $countrows[0]['rowcount'];
+                    } else {
+                        $rowcount = 0;
+                    }
                 }
             }
             // Add context node to response
@@ -1065,7 +1070,8 @@ class WPDA_Table extends WPDA_API_Core {
             if ( null !== $wpdadb ) {
                 $suppress_errors = $wpdadb->suppress_errors;
                 $wpdadb->suppress_errors = true;
-                $wpdadb->query( "SET sql_mode = 'NO_TABLE_OPTIONS'" );
+                // NO_TABLE_OPTIONS is deprecated in V8
+                // $wpdadb->query( "SET sql_mode = 'NO_TABLE_OPTIONS'" );
                 $sql = $wpdadb->get_results( $wpdadb->prepare( 'show create table `%1s`', array($tbl) ), 'ARRAY_N' );
                 if ( isset( $sql[0][1] ) ) {
                     $sql_create_table = $sql[0][1];

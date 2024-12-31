@@ -308,6 +308,13 @@ class WPDA_Apps extends WPDA_API_Core {
                 'row_count_estimate' => $this->get_param( 'row_count_estimate' ),
                 'media'              => $this->get_param( 'media' ),
                 'rel_tab'            => $this->get_param( 'rel_tab' ),
+                'client_side'        => array(
+                    'required'          => false,
+                    'type'              => 'boolean',
+                    'description'       => __( 'Server side processing', 'wp-data-access' ),
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'validate_callback' => 'rest_validate_request_arg',
+                ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/get', array(
@@ -739,6 +746,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $row_count_estimate = $request->get_param( 'row_count_estimate' );
         $media = $request->get_param( 'media' );
         $rel_tab = $request->get_param( 'rel_tab' );
+        $client_side = '1' === $request->get_param( 'client_side' );
         $default_where = '';
         $default_orderby = '';
         $lookups = array();
@@ -796,7 +804,8 @@ class WPDA_Apps extends WPDA_API_Core {
                 $lookups,
                 $md,
                 $m2m_relationship,
-                $search_data_types
+                $search_data_types,
+                $client_side
             );
         } else {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {

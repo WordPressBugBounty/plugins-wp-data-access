@@ -321,14 +321,19 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
-                                    <strong>Save button</strong> in table header for inline updates<br/>(Table Builder > Table > Inline editing settings)
+                                    Added <strong>Client-Side Processing</strong><br/>
+                                    (Table Builder > Table > Performance)
                                 </li>
                                 <li>
                                     Create <strong>Charts</strong> with the <strong>App Builder</strong>
                                 </li>
-								<li>
+                                <li>
                                     Build <strong>Registration Forms</strong> with the <strong>App Builder</strong>
-								</li>
+                                </li>
+                                <li>
+                                    <strong>Save button</strong> in table header for inline updates<br/>
+                                    (Table Builder > Table > Inline editing settings)
+                                </li>
 								<li>
                                     Customize app behavior using <strong>hooks</strong>
                                     &nbsp;

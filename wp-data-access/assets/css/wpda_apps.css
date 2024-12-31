@@ -233,3 +233,8 @@ body.pp-fullscreen .wrap.wpda-apps-backend h1.wp-heading-inline {
 .wpda-pp-container div.pp-axis-field input {
     padding: 12px 8px;
 }
+
+div[role=presentation].MuiPopover-root.MuiModal-root input[type=checkbox].PrivateSwitchBase-input {
+    width: 42px;
+    height: 42px;
+}

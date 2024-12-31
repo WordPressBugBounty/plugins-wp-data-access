@@ -3,7 +3,7 @@ Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder plugin, form builder plugin, tables, data management, charts
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 5.5.23
+Stable tag: 5.5.29
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,29 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 And you're all set!
 
 == Changelog ==
+
+= 5.5.29 =
+* Released 2024-12-31
+* Added: Client-Side processing
+* Added: Export all rows (client-side processing)
+* Added: Duration input element for storing durations up to 99 hours in the MySQL time format
+* Added: Hide powered by label in PDF footer
+* Fixed: Math function requires two values
+* Fixed: Computed field output in PDF
+
+= 5.5.25 =
+* Released 2024-12-28
+* Fixed: Lookups blank in PDF
+* Fixed: Handle local storage exceptions
+
+= 5.5.24 =
+* Released 2024-12-24
+* Added: New onAppOpen and onAppClose hooks
++ Added: Requery table programmatically
+* Improved: PDF export and user interface
+* Fixed: Expanded rows not closed on page change
+* Fixed: Aggregation decimals
+* Fixed: NO_TABLE_OPTIONS is deprecated in MySQL V8
 
 = 5.5.23 =
 * Released 2024-12-18

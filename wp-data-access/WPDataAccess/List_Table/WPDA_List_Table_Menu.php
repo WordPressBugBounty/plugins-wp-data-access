@@ -1172,7 +1172,8 @@ EOT;
         $suppress_wpdadb_dst = $wpdadb_dst->suppress_errors;
         $wpdadb_dst->suppress_errors = true;
         // Get create table statement from $wpdadb_src.
-        $wpdadb_src->query( "SET sql_mode = 'NO_TABLE_OPTIONS'" );
+        // NO_TABLE_OPTIONS is deprecated in V8
+        // $wpdadb_src->query( "SET sql_mode = 'NO_TABLE_OPTIONS'" );
         $query = "show create table `{$copy_table_name_src}`";
         $ctcmd = $wpdadb_src->get_results( $query, 'ARRAY_A' );
         // phpcs:ignore Standard.Category.SniffName.ErrorCode
