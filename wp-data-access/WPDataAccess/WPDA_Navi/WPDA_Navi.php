@@ -321,30 +321,26 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
-                                    Added <strong>Client-Side Processing</strong><br/>
-                                    (Table Builder > Table > Performance)
+                                    Open form in modal window
                                 </li>
                                 <li>
-                                    Create <strong>Charts</strong> with the <strong>App Builder</strong>
+                                    Client-side processing
                                 </li>
                                 <li>
-                                    Build <strong>Registration Forms</strong> with the <strong>App Builder</strong>
+                                    Sticky header and footer
                                 </li>
                                 <li>
-                                    <strong>Save button</strong> in table header for inline updates<br/>
-                                    (Table Builder > Table > Inline editing settings)
+                                    Hide table header and footer
                                 </li>
-								<li>
-                                    Customize app behavior using <strong>hooks</strong>
-                                    &nbsp;
-                                    <a href="https://wpdataaccess.com/docs/table-hooks/getting-started-with-hooks/"
-                                       target="_blank"
-                                       class="wpda_tooltip"
-                                       title="View online documentation"
-                                    >
-                                        <i class="fa-solid fa-question-circle"></i>
-                                    </a>
-								</li>
+                                <li>
+                                    Interactively change table column visibility and order
+                                </li>
+                                <li>
+                                    Limit input size textarea
+                                </li>
+                                <li>
+                                    Redirect user after completing registration
+                                </li>
 							</ul>
 						</div>
 					</div>

@@ -29,7 +29,7 @@ class WPDA_Remote_Database {
             // input var okay.
         }
         $this->user_can_create_db = WPDA_Dictionary_Access::can_create_db();
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             if ( isset( $_REQUEST['action'] ) ) {
                 // Process create, drop and alter database actions.
                 if ( 'create_db' === $_REQUEST['action'] ) {
@@ -377,7 +377,7 @@ class WPDA_Remote_Database {
 			<div id="wpda_manage_databases">
 				<div id="wpda_db_tabs">
 					<ul>
-						<li><a href="#wpda_tab-1">Management Databases</a></li>
+						<li><a href="#wpda_tab-1">Manage Databases</a></li>
 						<li><a href="#wpda_tab-2">Create Remote Database Connection</a></li>
 						<li><a href="#wpda_tab-3">Create Local Database</a></li>
 					</ul>
@@ -482,7 +482,16 @@ class WPDA_Remote_Database {
         ?>
 				</select>
 
-			</div>
+                <a id="manage_db_create_wp_user_access"
+                   class="dashicons dashicons-admin-plugins wpda_tooltip"
+                   style="display: none"
+                   href="javascript:void(0)"
+                   style="vertical-align:middle;"
+                   title="<?php 
+        echo __( "Create function wpda_get_wp_user_id() to access the WordPress user ID from database views", 'wp-data-access' );
+        ?>">&nbsp;</a>
+
+            </div>
 
 			<?php 
         $this->edit_local_database();
@@ -1030,7 +1039,20 @@ class WPDA_Remote_Database {
 								}
 							}
 						}
+
+                        if (db_name === '') {
+                            jQuery("#manage_db_create_wp_user_access").hide();
+                        } else {
+                            jQuery("#manage_db_create_wp_user_access").show();
+                        }
 					})
+
+                    jQuery("#manage_db_create_wp_user_access").on('click', function() {
+                        const selectedDatabase = jQuery("#manage_db_selection").val()
+                        wpda_dbinit_admin( selectedDatabase, '<?php 
+        echo wp_create_nonce( 'wpda_dbinit_admin_' . WPDA::get_current_user_login() );
+        ?>' )
+                    })
 
 					jQuery("#edit_local_database_action").on('click', function () {
 						if (confirm('Warning! All your tables and views will be deleted. This action cannot be undone! Are you sure you want to delete this database?')) {

@@ -251,7 +251,7 @@ class WPDA_Query_Builder {
         WPDA::sent_header( 'application/json' );
         ob_start();
         // Only for admins
-        if ( current_user_can( 'manage_options' ) && isset( 
+        if ( WPDA::current_user_is_admin() && isset( 
             $_POST['wpda_wpnonce'],
             $_POST['wpda_schemaname'],
             $_POST['wpda_sqlquery'],
@@ -472,7 +472,7 @@ class WPDA_Query_Builder {
         );
         WPDA::sent_header( 'application/json' );
         // Only for admins
-        if ( current_user_can( 'manage_options' ) && isset( 
+        if ( WPDA::current_user_is_admin() && isset( 
             $_POST['wpda_wpnonce'],
             $_POST['wpda_schemaname'],
             $_POST['wpda_sqlqueryname'],
@@ -519,7 +519,7 @@ class WPDA_Query_Builder {
         );
         WPDA::sent_header( 'application/json' );
         // Only for admins
-        if ( current_user_can( 'manage_options' ) && isset( $_POST['wpda_wpnonce'], $_POST['wpda_exclude'] ) ) {
+        if ( WPDA::current_user_is_admin() && isset( $_POST['wpda_wpnonce'], $_POST['wpda_exclude'] ) ) {
             $wpda_wpnonce = sanitize_text_field( wp_unslash( $_POST['wpda_wpnonce'] ) );
             // input var okay.
             $wpda_exclude = sanitize_text_field( wp_unslash( $_POST['wpda_exclude'] ) );
@@ -545,7 +545,7 @@ class WPDA_Query_Builder {
         );
         WPDA::sent_header( 'application/json' );
         // Only for admins
-        if ( current_user_can( 'manage_options' ) && isset( $_POST['wpda_wpnonce'], $_POST['wpda_sqlqueryname'] ) ) {
+        if ( WPDA::current_user_is_admin() && isset( $_POST['wpda_wpnonce'], $_POST['wpda_sqlqueryname'] ) ) {
             $wpda_wpnonce = sanitize_text_field( wp_unslash( $_POST['wpda_wpnonce'] ) );
             // input var okay.
             $wpda_sqlqueryname = sanitize_text_field( wp_unslash( $_POST['wpda_sqlqueryname'] ) );
@@ -640,7 +640,7 @@ class WPDA_Query_Builder {
             'status' => 'OK',
         );
         WPDA::sent_header( 'application/json' );
-        if ( current_user_can( 'manage_options' ) && isset( $_REQUEST['wpda_wpnonce'], $_REQUEST['wpda_schemaname'] ) ) {
+        if ( WPDA::current_user_is_admin() && isset( $_REQUEST['wpda_wpnonce'], $_REQUEST['wpda_schemaname'] ) ) {
             $wpda_wpnonce = sanitize_text_field( wp_unslash( $_REQUEST['wpda_wpnonce'] ) );
             // input var okay.
             $wpda_schemaname = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schemaname'] ) );
@@ -671,7 +671,7 @@ class WPDA_Query_Builder {
             'status' => 'OK',
         );
         WPDA::sent_header( 'application/json' );
-        if ( current_user_can( 'manage_options' ) && isset( $_REQUEST['wpda_wpnonce'], $_REQUEST['wpda_sqlhints'] ) ) {
+        if ( WPDA::current_user_is_admin() && isset( $_REQUEST['wpda_wpnonce'], $_REQUEST['wpda_sqlhints'] ) ) {
             $wpda_wpnonce = sanitize_text_field( wp_unslash( $_REQUEST['wpda_wpnonce'] ) );
             // input var okay.
             $wpda_sqlhints = sanitize_text_field( wp_unslash( $_REQUEST['wpda_sqlhints'] ) );

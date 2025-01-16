@@ -39,6 +39,13 @@ abstract class WPDA_API_Core {
                     return $this->validate_db_identifier( $param );
                 },
             ),
+            'client_side'        => array(
+                'required'          => false,
+                'type'              => 'boolean',
+                'description'       => __( 'Server side processing', 'wp-data-access' ),
+                'sanitize_callback' => 'sanitize_text_field',
+                'validate_callback' => 'rest_validate_request_arg',
+            ),
             'app_id'             => array(
                 'required'          => true,
                 'type'              => 'integer',
@@ -432,7 +439,7 @@ abstract class WPDA_API_Core {
     }
 
     protected function current_user_can_access( $admins_only = false ) {
-        return current_user_can( 'manage_options' );
+        return WPDA::current_user_is_admin();
     }
 
     protected function unauthorized() {

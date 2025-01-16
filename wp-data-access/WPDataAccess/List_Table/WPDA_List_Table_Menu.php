@@ -2495,7 +2495,7 @@ EOT;
         ?>' )"
 				   style="vertical-align:middle;"
 				   title="<?php 
-        echo __( "Create function wpda_get_wp_user_id()\nto get access to the WordPress user ID from database views", 'wp-data-access' );
+        echo __( "Create function wpda_get_wp_user_id() to access the WordPress user ID from database views", 'wp-data-access' );
         ?>">&nbsp;</a>
 				&nbsp;<span style="font-weight: bold;"><?php 
         echo __( 'Favourites', 'wp-data-access' );

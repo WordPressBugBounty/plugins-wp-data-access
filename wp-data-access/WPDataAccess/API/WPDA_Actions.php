@@ -281,7 +281,7 @@ class WPDA_Actions extends WPDA_API_Core {
 
     private function rename( $dbs, $from_tbl, $to_tbl ) {
         // All values have already been validated and sanitized in the rest route registration.
-        if ( !current_user_can( 'manage_options' ) ) {
+        if ( !WPDA::current_user_is_admin() ) {
             return 'Unauthorized';
         }
         $wpdadb = WPDADB::get_db_connection( $dbs );
@@ -303,7 +303,7 @@ class WPDA_Actions extends WPDA_API_Core {
         $copy_data
     ) {
         // All values have already been validated and sanitized in the rest route registration.
-        if ( !current_user_can( 'manage_options' ) ) {
+        if ( !WPDA::current_user_is_admin() ) {
             return 'Unauthorized';
         }
         $wpdadb_from = WPDADB::get_db_connection( $from_dbs );
@@ -385,7 +385,7 @@ class WPDA_Actions extends WPDA_API_Core {
 
     private function truncate( $dbs, $tbl ) {
         // All values have already been validated and sanitized in the rest route registration.
-        if ( !current_user_can( 'manage_options' ) ) {
+        if ( !WPDA::current_user_is_admin() ) {
             return 'Unauthorized';
         }
         $wpdadb = WPDADB::get_db_connection( $dbs );
@@ -401,7 +401,7 @@ class WPDA_Actions extends WPDA_API_Core {
 
     private function drop( $dbs, $tbl, $typ ) {
         // All values have already been validated and sanitized in the rest route registration.
-        if ( !current_user_can( 'manage_options' ) ) {
+        if ( !WPDA::current_user_is_admin() ) {
             return 'Unauthorized';
         }
         $wpdadb = WPDADB::get_db_connection( $dbs );
@@ -445,7 +445,7 @@ class WPDA_Actions extends WPDA_API_Core {
     }
 
     private function import( $file_name, $dbs ) {
-        if ( !current_user_can( 'manage_options' ) ) {
+        if ( !WPDA::current_user_is_admin() ) {
             return array(
                 'status' => 'error',
                 'msg'    => 'Unauthorized',

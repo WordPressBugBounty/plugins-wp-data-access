@@ -3,7 +3,7 @@ Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder plugin, form builder plugin, tables, data management, charts
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 5.5.29
+Stable tag: 5.5.31
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,31 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 And you're all set!
 
 == Changelog ==
+
+= 5.5.31 =
+* Released 2025-01-16
+* Added: Allow user to interactively change table column order
+* Added: Show | hide table header and footer
+* Added: Sticky header and footer
+* Added: Limit input size textarea
+* Added: Redirect user after registration completed
+* Added: Labels and hints to attachment/upload fields
+* Added: Open form in modal window
+* Added: Aggregation calculation hint text
+* Added: Install function wpda_get_wp_user_id() from Data Explorer - Manage Databases
+* Fixed: Alignment of several types of input fields
+* Fixed: Client-Side processing not working in Data Explorer
+* Fixed: Date fields not localized in PDF export
+* Fixed: Import detail apps not working with MySQL V8
+* Fixed: Undefined rest api action causes Data Explorer crash
+* Fixed: Empty theme settings panel shown for relationships
+* Fixed: External CSS overwrites fieldset and legend styles
+* Fixed: Missing super-admin capabilities
+* Fixed: Blocked aria-hidden on an element because its descendant retained focus
+
+= 5.5.30 =
+* Released 2025-01-02
+* Fixed: PDF export not working with inline editing enabled columns
 
 = 5.5.29 =
 * Released 2024-12-31

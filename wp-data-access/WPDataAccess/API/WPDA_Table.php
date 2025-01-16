@@ -60,6 +60,7 @@ class WPDA_Table extends WPDA_API_Core {
                 'row_count'          => $this->get_param( 'row_count' ),
                 'row_count_estimate' => $this->get_param( 'row_count_estimate' ),
                 'media'              => $this->get_param( 'media' ),
+                'client_side'        => $this->get_param( 'client_side' ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'table/get', array(
@@ -303,6 +304,7 @@ class WPDA_Table extends WPDA_API_Core {
         $row_count = $request->get_param( 'row_count' );
         $row_count_estimate = $request->get_param( 'row_count_estimate' );
         $media = $request->get_param( 'media' );
+        $client_side = '1' === $request->get_param( 'client_side' );
         if ( $this->check_table_access(
             $dbs,
             $tbl,
@@ -322,7 +324,14 @@ class WPDA_Table extends WPDA_API_Core {
                 $sorting,
                 $row_count,
                 $row_count_estimate,
-                $media
+                $media,
+                '',
+                '',
+                array(),
+                array(),
+                array(),
+                array(),
+                $client_side
             );
         } else {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {
@@ -1057,7 +1066,7 @@ class WPDA_Table extends WPDA_API_Core {
      */
     public function get_table_meta_data( $dbs, $tbl, $waa ) {
         $sql_create_table = '';
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             // Admin user has access to all resources
             $access = array(
                 'select' => array('POST'),
@@ -1204,7 +1213,7 @@ class WPDA_Table extends WPDA_API_Core {
         $action,
         &$msg = ''
     ) {
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             // Grant access to administrators always.
             return true;
         }

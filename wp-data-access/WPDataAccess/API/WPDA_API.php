@@ -25,7 +25,11 @@ namespace WPDataAccess\API {
 						? untrailingslashit( $GLOBALS['wp']->query_vars['rest_route'] )
 						: '';
 
-					if ( '/' . self::WPDA_NAMESPACE === $rest_route && ! current_user_can( 'manage_options' ) ) {
+					if (
+                        '/' . self::WPDA_NAMESPACE === $rest_route &&
+                        ! current_user_can( 'manage_options' ) &&
+                        ! current_user_can( 'manage_sites' )
+                    ) {
 						return new \WP_Error(
 							'rest_cannot_access',
 							__( 'Only authenticated admin users can access the REST API.', 'wp-data-access' ),

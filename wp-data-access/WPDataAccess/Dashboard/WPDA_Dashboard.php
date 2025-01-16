@@ -220,7 +220,7 @@ class WPDA_Dashboard {
     public function dashboard() {
         wp_enqueue_style( 'wpdataaccess_dashboard' );
         wp_enqueue_script( 'wpdataaccess_dashboard' );
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             $this->dashboard_default();
             $this->dashboard_mobile();
         }
@@ -691,7 +691,7 @@ Customize forms using templates"
 				<div class="wpda-nowrap">
 					<div>
 					<?php 
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             ?>
 							<div>
 								<a href="javascript:addPanel()"

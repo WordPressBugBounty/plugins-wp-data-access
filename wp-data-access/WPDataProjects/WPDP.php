@@ -118,7 +118,7 @@ class WPDP {
      * Adds Data Projects tool to dashboard menu.
      */
     public function add_menu_items() {
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_HIDE_ADMIN_MENU ) ) {
                 // Hide admin menu
                 return;

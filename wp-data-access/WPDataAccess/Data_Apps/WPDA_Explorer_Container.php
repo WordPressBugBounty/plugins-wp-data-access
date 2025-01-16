@@ -5,6 +5,7 @@ namespace WPDataAccess\Data_Apps;
 use WPDataAccess\Connection\WPDADB;
 use WPDataAccess\Utilities\WPDA_Message_Box;
 use WPDataAccess\Utilities\WPDA_Remote_Database;
+use WPDataAccess\WPDA;
 class WPDA_Explorer_Container extends WPDA_Container {
     private $dbs = null;
 
@@ -16,7 +17,7 @@ class WPDA_Explorer_Container extends WPDA_Container {
     }
 
     public function show() {
-        if ( !current_user_can( 'manage_options' ) ) {
+        if ( !WPDA::current_user_is_admin() ) {
             if ( !is_admin() && !$this->send_feedback() ) {
                 return;
             }

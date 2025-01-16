@@ -2,9 +2,10 @@
 
 namespace WPDataAccess\Data_Apps;
 
+use WPDataAccess\WPDA;
 class WPDA_Apps_List extends WPDA_Container {
     public function show() {
-        if ( !current_user_can( 'manage_options' ) ) {
+        if ( !WPDA::current_user_is_admin() ) {
             if ( !is_admin() && !$this->send_feedback() ) {
                 return;
             }

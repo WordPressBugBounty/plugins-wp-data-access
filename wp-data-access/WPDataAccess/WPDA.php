@@ -51,8 +51,8 @@ namespace WPDataAccess {
 		/**
 		 * Option wpda_version and it's default value
 		 */
-		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.29' );
-		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.29' );
+		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.31' );
+		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.31' );
 		const OPTION_WPDA_UPGRADED        = array( 'wpda_upgraded', false );
 		/**
 		 * Option wpda_setup_error and it's default value
@@ -1687,6 +1687,10 @@ namespace WPDataAccess {
 
 			return $rows;
 		}
+
+        public static function current_user_is_admin() {
+            return current_user_can( 'manage_options' );
+        }
 
 	}
 

@@ -248,7 +248,7 @@ class WP_Data_Access {
                 }
                 $wpnonce = sanitize_text_field( wp_unslash( $_REQUEST['wpnonce'] ) );
                 // input var okay.
-                if ( !current_user_can( 'manage_options' ) || !wp_verify_nonce( $wpnonce, 'wpda_dbinit_admin_' . WPDA::get_current_user_login() ) ) {
+                if ( !WPDA::current_user_is_admin() || !wp_verify_nonce( $wpnonce, 'wpda_dbinit_admin_' . WPDA::get_current_user_login() ) ) {
                     WPDA::sent_header( 'application/json' );
                     echo WPDA::sent_msg( 'ERROR', 'Not authorized' );
                     // phpcs:ignore WordPress.Security.EscapeOutput
@@ -266,9 +266,8 @@ class WP_Data_Access {
                 $suppress_errors = $wpdadb->suppress_errors( true );
                 $wpdadb->query( 'create function wpda_get_wp_user_id() returns integer deterministic no sql return @wpda_wp_user_id' );
                 $error = $wpdadb->last_error;
-                $fnc = $wpdadb->dbh->query( "show function status like 'wpda_get_wp_user_id'" );
                 $wpdadb->suppress_errors( $suppress_errors );
-                if ( 1 === count( (array) $fnc ) ) {
+                if ( '' === $error ) {
                     //phpcs:ignore - 8.1 proof
                     echo WPDA::sent_msg( 'OK', '' );
                     // phpcs:ignore WordPress.Security.EscapeOutput

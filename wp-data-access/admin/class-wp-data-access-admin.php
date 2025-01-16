@@ -364,7 +364,7 @@ class WP_Data_Access_Admin {
                 WPDA::get_option( WPDA::OPTION_WPDA_VERSION )
             );
         }
-        if ( !current_user_can( 'manage_options' ) ) {
+        if ( !WPDA::current_user_is_admin() ) {
             wp_enqueue_style(
                 'wpda_non_admin',
                 plugins_url( '../assets/css/wpda_non_admin.css', __FILE__ ),
@@ -634,7 +634,7 @@ class WP_Data_Access_Admin {
      * @since   1.0.0
      */
     public function add_menu_items() {
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_HIDE_ADMIN_MENU ) ) {
                 // Show Data Projects.
                 $this->add_data_projects();
@@ -762,7 +762,7 @@ class WP_Data_Access_Admin {
      * @return mixed
      */
     public function wpda_submenu_filter( $submenu_file ) {
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             $hidden_submenus = array(
                 self::PAGE_DASHBOARD,
                 self::PAGE_CHARTS,
@@ -1062,7 +1062,7 @@ class WP_Data_Access_Admin {
      * Show Data Tables main page
      */
     public function data_publisher_page() {
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             WPDA_Dashboard::add_dashboard();
         }
         $data_publisher_table_found = WPDA_Publisher_Model::table_exists();
@@ -1090,7 +1090,7 @@ class WP_Data_Access_Admin {
      * Data Tables repository table not found
      */
     public function data_publisher_page_not_found() {
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             WPDA_Dashboard::add_dashboard();
         }
         $wpda_repository = new WPDA_Repository();

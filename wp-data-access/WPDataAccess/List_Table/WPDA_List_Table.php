@@ -1353,7 +1353,7 @@ EOT;
             ?>
 				<h1 class="wp-heading-inline">
 					<?php 
-            if ( self::LIST_BASE_TABLE !== $this->table_name && (current_user_can( 'manage_options' ) && \WP_Data_Access_Admin::PAGE_MAIN === $this->page) ) {
+            if ( self::LIST_BASE_TABLE !== $this->table_name && (WPDA::current_user_is_admin() && \WP_Data_Access_Admin::PAGE_MAIN === $this->page) ) {
                 ?>
 						<a
 							href="?page=<?php 

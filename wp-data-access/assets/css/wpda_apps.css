@@ -238,3 +238,9 @@ div[role=presentation].MuiPopover-root.MuiModal-root input[type=checkbox].Privat
     width: 42px;
     height: 42px;
 }
+
+div[role=presentation].MuiPopover-root.MuiModal-root input[type=checkbox].PrivateSwitchBase-input:disabled {
+    background: unset;
+    border-color: transparent;
+    box-shadow: unset;
+}

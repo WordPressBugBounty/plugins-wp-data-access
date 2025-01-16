@@ -104,7 +104,7 @@ namespace WPDataAccess\Data_Apps {
 			}
 
 			if (
-				! current_user_can( 'manage_options' ) &&
+				! WPDA::current_user_is_admin() &&
 				'anonymous' !== $app_settings['rest_api']['authorization']
 			) {
 				// Check authorization

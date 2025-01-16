@@ -308,13 +308,7 @@ class WPDA_Apps extends WPDA_API_Core {
                 'row_count_estimate' => $this->get_param( 'row_count_estimate' ),
                 'media'              => $this->get_param( 'media' ),
                 'rel_tab'            => $this->get_param( 'rel_tab' ),
-                'client_side'        => array(
-                    'required'          => false,
-                    'type'              => 'boolean',
-                    'description'       => __( 'Server side processing', 'wp-data-access' ),
-                    'sanitize_callback' => 'sanitize_text_field',
-                    'validate_callback' => 'rest_validate_request_arg',
-                ),
+                'client_side'        => $this->get_param( 'client_side' ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/get', array(
@@ -1778,7 +1772,7 @@ class WPDA_Apps extends WPDA_API_Core {
             'app' => array(
                 'app'       => $app,
                 'container' => array_map( function ( $value ) {
-                    $show = current_user_can( 'manage_options' );
+                    $show = WPDA::current_user_is_admin();
                     if ( !$show ) {
                         // Hide database and table name in responses for non admin users.
                         unset($value['cnt_dbs']);
@@ -1834,7 +1828,7 @@ class WPDA_Apps extends WPDA_API_Core {
         }
     }
 
-    private function do_app_export_app( $app_id ) {
+    private function do_app_export_app( $app_id, $main_app_id ) {
         global $wpdb;
         $quotes = function ( $value ) {
             return str_replace( array(
@@ -1876,7 +1870,7 @@ values
 \t);
 
 SET @APP_ID = LAST_INSERT_ID();
-insert into `wpda_transfer_apps`
+insert into `wpda_transfer_apps_{$main_app_id}`
 values    
     ({$app[0]['app_id']}
     ,(select LAST_INSERT_ID(`app_id`) from `{wp_prefix}wpda_app` order by 1 desc limit 1)
@@ -1919,7 +1913,7 @@ values
 \t,'{$cnt_relation}'
 \t);
 
-insert into `wpda_transfer_containers`
+insert into `wpda_transfer_containers_{$main_app_id}`
 values
     ({$container['cnt_id']}
     ,(select LAST_INSERT_ID(`cnt_id`) from `{wp_prefix}wpda_app_container` order by 1 desc limit 1)
@@ -1931,27 +1925,26 @@ SQL;
         // Post update: update master container ids
         $containers_sql .= <<<SQL
 # Update app master container IDs
-update `{wp_prefix}wpda_app_container` c
-set c.`cnt_relation` =
+update `{wp_prefix}wpda_app_container` as a
+set a.`cnt_relation` =
     (
         select replace(
-\t\t\ta.`cnt_relation`, 
-\t\t\tconcat('"cnt_id_master":"', b.cnt_id_old, '"'), 
-\t\t\tconcat('"cnt_id_master":"', b.cnt_id_new, '"')
-\t\t)
-\t\tfrom `{wp_prefix}wpda_app_container` a, `wpda_transfer_containers` b
-\t\twhere a.cnt_id = c.cnt_id
-\t\t  and a.`cnt_relation` like concat('%"cnt_id_master":"', b.cnt_id_old, '"%')
+            a.`cnt_relation`, 
+            concat('"cnt_id_master":"', b.cnt_id_old, '"'), 
+            concat('"cnt_id_master":"', b.cnt_id_new, '"')
+        )
+        from `wpda_transfer_containers_{$main_app_id}` as b
+        where a.`cnt_relation` like concat('%"cnt_id_master":"', b.cnt_id_old, '"%')
     )
-where c.`app_id` = @APP_ID
-  and c.`cnt_relation` is not null;
+where a.`app_id` = @APP_ID
+  and a.`cnt_relation` is not null;
 
 
 SQL;
         $apps = WPDA_App_Apps_Model::select_all( $app_id );
         $apps_sql = '';
         foreach ( $apps as $app ) {
-            $apps_sql .= $this->do_app_export_app( $app['app_id_detail'] );
+            $apps_sql .= $this->do_app_export_app( $app['app_id_detail'], $main_app_id );
         }
         foreach ( $apps as $app ) {
             $apps_sql .= <<<SQL
@@ -1962,8 +1955,8 @@ insert into `{wp_prefix}wpda_app_apps`
 \t,`seq_nr`\t\t\t\t\t
 \t)
 values
-\t((select `app_id_new` from `wpda_transfer_apps` where `app_id_old` = {$app['app_id']})
-\t,(select `app_id_new` from `wpda_transfer_apps` where `app_id_old` = {$app['app_id_detail']})
+\t((select `app_id_new` from `wpda_transfer_apps_{$main_app_id}` where `app_id_old` = {$app['app_id']})
+\t,(select `app_id_new` from `wpda_transfer_apps_{$main_app_id}` where `app_id_old` = {$app['app_id_detail']})
 \t,{$app['seq_nr']}\t\t\t\t\t
 \t);
 
@@ -1983,12 +1976,12 @@ SQL;
 /*!40101 SET NAMES {$wpdb->charset} */;
 
 # Create temporary table
-CREATE TEMPORARY TABLE `wpda_transfer_containers`
+CREATE TABLE `wpda_transfer_containers_{$app_id}`
 (cnt_id_old bigint(20) unsigned
 ,cnt_id_new bigint(20) unsigned
 );
 
-CREATE TEMPORARY TABLE `wpda_transfer_apps`
+CREATE TABLE `wpda_transfer_apps_{$app_id}`
 (app_id_old bigint(20) unsigned
 ,app_id_new bigint(20) unsigned
 );
@@ -1997,11 +1990,11 @@ SET @APP_ID = NULL;
 
 
 SQL;
-        $sql .= $this->do_app_export_app( $app_id );
+        $sql .= $this->do_app_export_app( $app_id, $app_id );
         $end_sql = <<<SQL
 # Drop temporary table
-DROP TEMPORARY TABLE `wpda_transfer_containers`;
-DROP TEMPORARY TABLE `wpda_transfer_apps`;
+DROP TABLE `wpda_transfer_containers_{$app_id}`;
+DROP TABLE `wpda_transfer_apps_{$app_id}`;
             
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
