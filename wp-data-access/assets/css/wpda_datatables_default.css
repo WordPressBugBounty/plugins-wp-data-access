@@ -115,6 +115,11 @@ body div.dtr-modal div.dtr-modal-display {
     display: inline-table;
     height: unset;
 }
+@-moz-document url-prefix() {
+    body div.dtr-modal div.dtr-modal-display {
+        height: inherit;
+    }
+}
 div.dtr-modal-content table.wpda-child-modal thead,
 div.dtr-modal-content table.wpda-child-modal tbody,
 div.dtr-modal-content table.wpda-child-modal tfoot {

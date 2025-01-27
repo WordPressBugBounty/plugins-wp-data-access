@@ -94,8 +94,7 @@ namespace WPDataAccess\API {
 				case 'rest_api':
 					return $this->save_rest_api_settings( $dbs, $tbl, $settings );
 				case 'admin_settings':
-					$theme = $request->get_param( 'theme' );
-					return $this->save_admin_settings( $dbs, $tbl, $settings, $theme );
+					return $this->save_admin_settings( $dbs, $tbl, $settings );
 				case 'explorer_settings':
 					return $this->save_explorer_settings( $dbs, $tbl, $settings );
 			}
@@ -514,7 +513,7 @@ namespace WPDataAccess\API {
 			);
 		}
 
-		private function save_admin_settings( $schema_name, $table_name, $settings, $theme ) {
+		private function save_admin_settings( $schema_name, $table_name, $settings ) {
 			if (
 				!
 					(
@@ -534,8 +533,7 @@ namespace WPDataAccess\API {
 						) &&
 						(
 							'table' === $settings['target'] ||
-							'form' === $settings['target'] ||
-							'theme' === $settings['target']
+							'form' === $settings['target']
 						)
 
 					)
@@ -553,15 +551,6 @@ namespace WPDataAccess\API {
 				// Store settings globally.
 				if ( null !== $settings['data'] ) {
 					update_option( $admin_settings, $settings['data'] );
-
-					if ( null !== $theme ) {
-						$theme_settings = WPDA_Settings::get_admin_settings_key(
-							'theme',
-							$schema_name ,
-							$table_name
-						);
-						update_option( $theme_settings, $theme );
-					}
 				} else {
 					delete_option( $admin_settings );
 				}
@@ -569,15 +558,6 @@ namespace WPDataAccess\API {
 				// Store settings for login user.
 				if ( null !== $settings['data'] ) {
 					update_user_option( $admin_settings, $settings['data'] );
-
-					if ( null !== $theme ) {
-						$theme_settings = WPDA_Settings::get_admin_settings_key(
-							'theme',
-							$schema_name ,
-							$table_name
-						);
-						update_user_option( $theme_settings, $theme );
-					}
 				} else {
 					delete_user_option( $admin_settings );
 				}
@@ -603,13 +583,6 @@ namespace WPDataAccess\API {
 							$table_name
 						)
 					),
-					'theme'  => get_option(
-						WPDA_Settings::get_admin_settings_key(
-							'theme',
-							$schema_name,
-							$table_name
-						)
-					),
 				),
 				'local'  => array(
 					'table' => get_user_option(
@@ -622,13 +595,6 @@ namespace WPDataAccess\API {
 					'form'  => get_user_option(
 						WPDA_Settings::get_admin_settings_key(
 							'form',
-							$schema_name,
-							$table_name
-						)
-					),
-					'theme'  => get_user_option(
-						WPDA_Settings::get_admin_settings_key(
-							'theme',
 							$schema_name,
 							$table_name
 						)

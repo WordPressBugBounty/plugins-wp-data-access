@@ -321,6 +321,10 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
+                                    View our progress with the App Builder:
+                                    <a href="https://wpdataaccess.com/docs/app-builder/road-map/" target="_blank">ROAD MAP</a>
+                                </li>
+                                <li>
                                     Open form in modal window
                                 </li>
                                 <li>

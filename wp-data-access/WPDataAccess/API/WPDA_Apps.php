@@ -268,10 +268,17 @@ class WPDA_Apps extends WPDA_API_Core {
                     'type'              => 'string',
                     'description'       => __( 'App settings - JSON string', 'wp-data-access' ),
                     'sanitize_callback' => function ( $param ) {
-                        $satitized_settings = $this->sanitize_settings( json_decode( (string) $param, true ) );
+                        $sanitized_settings = $this->sanitize_settings( json_decode( (string) $param, true ) );
                         // Save sanitized JSON as string
-                        return json_encode( $satitized_settings );
+                        return json_encode( $sanitized_settings );
                     },
+                    'validate_callback' => 'rest_validate_request_arg',
+                ),
+                'chart'    => array(
+                    'required'          => false,
+                    'type'              => 'string',
+                    'description'       => __( 'Chart settings - JSON string', 'wp-data-access' ),
+                    'sanitize_callback' => 'sanitize_text_field',
                     'validate_callback' => 'rest_validate_request_arg',
                 ),
                 'theme'    => array(
@@ -1341,12 +1348,14 @@ class WPDA_Apps extends WPDA_API_Core {
         $cnt_id = $request->get_param( 'cnt_id' );
         $target = $request->get_param( 'target' );
         $settings = $request->get_param( 'settings' );
+        $chart = $request->get_param( 'chart' );
         $theme = $request->get_param( 'theme' );
         return $this->do_app_settings(
             $app_id,
             $cnt_id,
             $target,
             $settings,
+            $chart,
             $theme
         );
     }
@@ -1511,6 +1520,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $cnt_id,
         $target,
         $settings,
+        $chart,
         $theme
     ) {
         if ( 1 > $app_id || 1 > $cnt_id || 'table' !== $target && 'form' !== $target && 'rform' !== $target && 'theme' !== $target && 'chart' !== $target ) {
@@ -1529,6 +1539,14 @@ class WPDA_Apps extends WPDA_API_Core {
                     break;
                 case 'form':
                     $error_msg = WPDA_App_Container_Model::update_form_settings( $cnt_id, null );
+                    if ( '' !== $error_msg ) {
+                        return new \WP_Error('error', $error_msg, array(
+                            'status' => 403,
+                        ));
+                    }
+                    break;
+                case 'chart':
+                    $error_msg = WPDA_App_Container_Model::update_chart_settings( $cnt_id, null );
                     if ( '' !== $error_msg ) {
                         return new \WP_Error('error', $error_msg, array(
                             'status' => 403,
@@ -1556,6 +1574,13 @@ class WPDA_Apps extends WPDA_API_Core {
                     'status' => 403,
                 ));
             }
+            // Update chart settings
+            $error_msg = WPDA_App_Container_Model::update_chart_settings( $cnt_id, $chart );
+            if ( '' !== $error_msg ) {
+                return new \WP_Error('error', $error_msg, array(
+                    'status' => 403,
+                ));
+            }
         } else {
             if ( 'rform' === $target ) {
                 // Update rform settings
@@ -1575,12 +1600,14 @@ class WPDA_Apps extends WPDA_API_Core {
                         ));
                     }
                 } else {
-                    // Update form settings
-                    $error_msg = WPDA_App_Container_Model::update_form_settings( $cnt_id, $settings );
-                    if ( '' !== $error_msg ) {
-                        return new \WP_Error('error', $error_msg, array(
-                            'status' => 403,
-                        ));
+                    if ( 'form' === $target ) {
+                        // Update form settings
+                        $error_msg = WPDA_App_Container_Model::update_form_settings( $cnt_id, $settings );
+                        if ( '' !== $error_msg ) {
+                            return new \WP_Error('error', $error_msg, array(
+                                'status' => 403,
+                            ));
+                        }
                     }
                 }
             }

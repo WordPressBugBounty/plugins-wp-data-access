@@ -3,7 +3,7 @@ Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder plugin, form builder plugin, tables, data management, charts
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 5.5.31
+Stable tag: 5.5.32
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,25 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 And you're all set!
 
 == Changelog ==
+
+= 5.5.32 =
+* Released 2025-01-27
+* Added: Chart configuration to Table Settings
+* Added: Chart integration with data table
+* Added: Link to online roadmap
+* Improved: On open form jump, to form top
+* Improved: Hints on copy and export app
+* Removed: Hooks, Charts and Theme from Data Explorer menu
+* Fixed: Predefined search builder criteria not working
+* Fixed: Column Filters shown twice when HEADER selected
+* Fixed: Cannot use multiple URL parameters in where clause
+* Fixed: Popup height incorrect in Firefox
+* Fixed: Column filter update performs server request with client-side processing
+* Fixed: Column filter update not seeing empty string with server-side processing
+* Fixed: Column sorting performs server request with client-side processing
+* Fixed: Pagination update performs server request with client-side processing
+* Fixed: Inline-editing in Data Explorer returns Error 400
+* Updated: Freemius SDK
 
 = 5.5.31 =
 * Released 2025-01-16
