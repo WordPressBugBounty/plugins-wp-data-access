@@ -648,7 +648,7 @@ function chartLayout(widgetId) {
 					<textarea id="wpda_chart_advanced_options_${widgetId}">${chartAdvancedOptions}</textarea>
 					<div style="display: none">
 						Add chart options in JSON format
-						<a href="https://wpdataaccess.com/docs/widgets/chart-widgets/#advanced-chart-options" target="_blank">
+						<a href="https://wpdataaccess.com/docs/charts-legacy/chart-widgets/#advanced-chart-options" target="_blank">
 							(read more...)
 						</a>
 					</div>

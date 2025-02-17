@@ -459,7 +459,7 @@ class WPDA_Remote_Database {
 			<div class="restyle_link">
 				<strong>NOTE</strong>
 				Please activate your Premium Data Services access <a href="options-general.php?page=wpdataaccess&tab=pds">here</a> to remotely connect to foreign DBMSs and remote files.
-				<a href="https://wpdataaccess.com/docs/remote-connection-wizard/remote-connection-wizard/" class="restyle_link" target="_blank">(read more...)</a>
+				<a href="https://wpdataaccess.com/docs/remote-connection-wizard/remote-wizard/" class="restyle_link" target="_blank">(read more...)</a>
 			</div>
 			<?php 
     }

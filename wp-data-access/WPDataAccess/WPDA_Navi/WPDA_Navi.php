@@ -193,8 +193,12 @@ namespace WPDataAccess\WPDA_Navi {
 							</div>
 						</div>
 
-						<div class="wpda-navi-container-content-item-slogan">
-							Build Apps with the new Table Builder and Form Builder
+						<div class="wpda-navi-container-content-item-slogan" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>
+							    Build Apps with the new Table Builder and Form Builder
+                            </span>
+
+                            <a href="https://wpdataaccess.com/docs/app-builder/road-map/" target="_blank" class="roadmap">ROAD MAP</a>
 						</div>
 
 						<div class="wpda-navi-container-content-item-content">
@@ -269,7 +273,7 @@ namespace WPDataAccess\WPDA_Navi {
 							<h3>SQL</h3>
 							<div class="wpda-navi-container-content-item-title-help">
 								<a
-										href="https://wpdataaccess.com/docs/query-builder/query-builder-getting-started/"
+										href="https://wpdataaccess.com/docs/sql-query-builder/query-builder-getting-started/"
 										target="_blank"
 										class="wpda_tooltip"
 										title="View online documentation"
@@ -321,14 +325,13 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
-                                    View our progress with the App Builder:
-                                    <a href="https://wpdataaccess.com/docs/app-builder/road-map/" target="_blank">ROAD MAP</a>
+                                    Online documentation streamlined with dashboard
+                                </li>
+                                <li>
+                                    Filtering now lightning fast with client-side processing
                                 </li>
                                 <li>
                                     Open form in modal window
-                                </li>
-                                <li>
-                                    Client-side processing
                                 </li>
                                 <li>
                                     Sticky header and footer
@@ -338,9 +341,6 @@ namespace WPDataAccess\WPDA_Navi {
                                 </li>
                                 <li>
                                     Interactively change table column visibility and order
-                                </li>
-                                <li>
-                                    Limit input size textarea
                                 </li>
                                 <li>
                                     Redirect user after completing registration

@@ -341,7 +341,7 @@ class WPDA_Dashboard {
                     $help_url = $help_root . 'data-explorer/data-explorer-getting-started/';
                     break;
                 case \WP_Data_Access_Admin::PAGE_QUERY_BUILDER:
-                    $help_url = $help_root . 'query-builder/query-builder-getting-started/';
+                    $help_url = $help_root . 'sql-query-builder/query-builder-getting-started/';
                     break;
                 case \WP_Data_Access_Admin::PAGE_DESIGNER:
                     $help_url = $help_root . 'data-designer/data-designer-getting-started/';
@@ -353,22 +353,60 @@ class WPDA_Dashboard {
                     $help_url = $help_root . 'dashboards-and-widgets/bi-getting-started/';
                     break;
                 case \WP_Data_Access_Admin::PAGE_CHARTS:
-                    $help_url = $help_root . 'widgets/chart-widgets/';
+                    $help_url = $help_root . 'charts-legacy/chart-widgets/';
                     break;
                 case WPDP::PAGE_MAIN:
-                    $help_url = $help_root . 'data-apps/data-projects/';
+                    $help_url = $help_root . 'data-forms/data-projects/';
                     break;
                 case WPDP::PAGE_TEMPLATES:
-                    $help_url = $help_root . 'data-apps-templates/project-templates/';
+                    $help_url = $help_root . 'templates/project-templates/';
                     break;
                 case 'wpdataaccess':
-                    $help_url = $help_root . 'plugin-settings/getting-started/';
+                    $current_tab = ( isset( $_REQUEST['tab'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['tab'] ) ) : 'plugin' );
+                    // phpcs:ignore WordPress.Security.NonceVerification
+                    switch ( $current_tab ) {
+                        case 'backend':
+                            $help_url = $help_root . 'plugin-settings/back-end/';
+                            break;
+                        case 'frontend':
+                            $help_url = $help_root . 'plugin-settings/front-end/';
+                            break;
+                        case 'pds':
+                            $help_url = $help_root . 'remote-connection-wizard/start-here/';
+                            break;
+                        case 'dashboard':
+                            $help_url = $help_root . 'plugin-settings/dashboard/';
+                            break;
+                        case 'datatables':
+                            $help_url = $help_root . 'plugin-settings/data-table/';
+                            break;
+                        case 'dataforms':
+                            $help_url = $help_root . 'plugin-settings/data-form/';
+                            break;
+                        case 'databackup':
+                            $help_url = $help_root . 'plugin-settings/data-backup/';
+                            break;
+                        case 'uninstall':
+                            $help_url = $help_root . 'plugin-settings/uninstall/';
+                            break;
+                        case 'repository':
+                            $help_url = $help_root . 'plugin-settings/manage-repository/';
+                            break;
+                        case 'roles':
+                            $help_url = $help_root . 'plugin-settings/manage-roles/';
+                            break;
+                        case 'system':
+                            $help_url = $help_root . 'plugin-settings/system-info/';
+                            break;
+                        default:
+                            $help_url = $help_root . 'plugin-settings/getting-started/';
+                    }
                     break;
                 default:
-                    $help_url = $help_root . 'getting-started/wp-data-access-getting-started/';
+                    $help_url = $help_root . 'tool-guide/wp-data-access-getting-started/';
             }
         } else {
-            $help_url = $help_root . 'getting-started/wp-data-access-getting-started/';
+            $help_url = $help_root . 'tool-guide/wp-data-access-getting-started/';
         }
         return $help_url;
     }
@@ -659,7 +697,7 @@ Customize forms using templates"
 						<?php 
         }
         ?>
-					<li class="menu-item"><a target="_blank" href="https://wpdataaccess.com/docs/getting-started/overview/"><i class="fas fa-question"></i> Online Documentation</a></li>
+					<li class="menu-item"><a target="_blank" href="https://wpdataaccess.com/docs/tool-guide/wp-data-access-getting-started/"><i class="fas fa-question"></i> Online Documentation</a></li>
 					<li class="menu-item"><a target="_blank" href="https://wordpress.org/support/plugin/wp-data-access/"><i class="fas fa-life-ring"></i> Support Forum</a></li>
 					<?php 
         ?>
@@ -773,7 +811,7 @@ Customize forms using templates"
 							</td>
 							<td style="white-space:nowrap">
 								<a href="https://wpdataaccess.com/pricing/" target="_blank" class="button button-primary">UPGRADE TO PREMIUM</a>
-								<a href="https://wpdataaccess.com/docs/dashboards-and-widgets/getting-started/" target="_blank" class="button">READ MORE</a>
+								<a href="https://wpdataaccess.com/docs/dashboards-and-widgets/bi-getting-started/" target="_blank" class="button">READ MORE</a>
 							</td>
 						</tr>
 					</table>
@@ -1540,7 +1578,7 @@ Customize forms using templates"
 							<?php 
         if ( !class_exists( 'Code_Manager\\Code_Manager_Model' ) || !class_exists( 'WPDataAccess\\Premium\\WPDAPRO_Dashboard\\WPDAPRO_Widget_Project' ) ) {
             ?>
-								<a href="https://wpdataaccess.com/docs/dashboards-and-widgets/getting-started/" target="_blank">
+								<a href="https://wpdataaccess.com/docs/dashboards-and-widgets/bi-getting-started/" target="_blank">
 									<i class="fas fa-question-circle pointer wpda_tooltip"
 									   style="font-size: 170%; vertical-align: middle"
 									   title="Your installation does not support all available widget types! Click to learn how to install more widget types..."></i>
@@ -2166,7 +2204,7 @@ Customize forms using templates"
                         'Access your PostgreSQL tables from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-database-connections/postgresql/', 'fa-database'),
                     ),
                     array(
-                        'Access your Oracle tables from the Data Explorer.' => array('https://wpdataaccess.com/data-explorer/remote-connection-wizard/remote-database-connections/oracle/', 'fa-database'),
+                        'Access your Oracle tables from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-database-connections/oracle/', 'fa-database'),
                     ),
                     array(
                         'Access your remote MariaDB | MySQL tables from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-database-connections/mariadb-mysql/', 'fa-database'),

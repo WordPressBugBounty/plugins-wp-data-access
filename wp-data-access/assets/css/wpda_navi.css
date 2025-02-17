@@ -283,9 +283,9 @@
         padding: 20px;
     }
 
-    .wpda-navi-container-content-items .wpda-navi-container-content-item .wpda-navi-container-content-item-facts {
-        display: none;
-    }
+    /*.wpda-navi-container-content-items .wpda-navi-container-content-item .wpda-navi-container-content-item-facts {*/
+    /*    display: none;*/
+    /*}*/
 
     .wpda-navi-container-content-items .wpda-navi-container-content-item .wpda-navi-container-content-item-facts.whats-new {
         max-height: 70px !important;
@@ -386,4 +386,14 @@
 #wpda-legacy-tool-settings-panel table .tool_status_icon {
     color: #4399fa;
     cursor: pointer;
+}
+
+a.roadmap {
+    text-decoration: none;
+    font-weight: bold;
+    color: #ff9f1c;
+}
+
+a.roadmap:hover {
+    color: #4399fa;
 }

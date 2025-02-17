@@ -1836,7 +1836,7 @@ class WPDA_Apps extends WPDA_API_Core {
         return $this->WPDA_Rest_Response( '', $response );
     }
 
-    private function get_app_meta( $app_id ) {
+    public function get_app_meta( $app_id ) {
         $app = WPDA_App_Model::get_by_id( $app_id );
         if ( !isset( $app[0]['app_type'] ) ) {
             return $this->bad_request();

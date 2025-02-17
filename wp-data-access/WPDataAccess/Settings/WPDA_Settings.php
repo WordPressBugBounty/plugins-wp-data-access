@@ -56,13 +56,6 @@ class WPDA_Settings {
     protected $wpda_import;
 
     /**
-     * URL to help page on plugin website
-     *
-     * @var string
-     */
-    protected $help_url;
-
-    /**
      * WPDA_Settings constructor
      *
      * Member $this->tabs is filled in the constructor to support i18n.
@@ -72,11 +65,10 @@ class WPDA_Settings {
      * inform the user if any errors were reported.
      *
      * @param $current_tab Current tab label
-     * @param $help_url URL help page plugin website
      *
      * @since   1.0.0
      */
-    public function __construct( $current_tab, $help_url ) {
+    public function __construct( $current_tab ) {
         // Get menu slag of current page.
         if ( isset( $_REQUEST['page'] ) ) {
             $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) );
@@ -86,7 +78,6 @@ class WPDA_Settings {
             wp_die( __( 'ERROR: Wrong arguments [missing page argument]', 'wp-data-access' ) );
         }
         $this->current_tab = $current_tab;
-        $this->help_url = $help_url;
         // Tabs array is filled in constructor to add i18n.
         $this->tabs = array(
             'plugin'     => 'Plugin',

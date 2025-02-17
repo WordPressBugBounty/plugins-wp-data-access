@@ -2,7 +2,8 @@
 
 namespace WPDataAccess\Data_Apps {
 
-	use WPDataAccess\Plugin_Table_Models\WPDA_App_Model;
+    use WPDataAccess\Plugin_Table_Models\WPDA_App_Apps_Model;
+    use WPDataAccess\Plugin_Table_Models\WPDA_App_Model;
 	use WPDataAccess\WPDA;
 
 	class WPDA_App_Container extends WPDA_Container {
@@ -29,6 +30,22 @@ namespace WPDataAccess\Data_Apps {
 
 		}
 
+        private function get_app_metadata( $app_id ) {
+
+            $app      = new \WPDataAccess\API\WPDA_Apps();
+            $response = $app->get_app_meta( $app_id );
+
+            if (
+                isset( $response->data['code'], $response->data['data'] ) &&
+                'ok' === $response->data['code']
+            ) {
+                return $response->data['data'];
+            }
+
+            return null;
+
+        }
+
 		public function show() {
 
 			$app = WPDA_App_Model::get_by_id( $this->app_id );
@@ -49,6 +66,26 @@ namespace WPDataAccess\Data_Apps {
 				$this->show_feedback( __( 'Not authorized', 'wp-data-access' ) );
 				return;
 			}
+
+            $metadata = array();
+            $metadata_master = $this->get_app_metadata( $this->app_id);
+            if ( null !== $metadata_master) {
+                $metadata[$this->app_id] = $metadata_master;
+            }
+
+            if ( isset( $app[0]['app_type'] ) && '5' == $app[0]['app_type'] ) {
+                // Add metadata children
+                $detail_apps = WPDA_App_Apps_Model::select_all( $this->app_id );
+                foreach ( $detail_apps as $detail_app ) {
+                    if ( isset( $detail_app['app_id_detail'] ) ) {
+                        $app_id_detail = $detail_app['app_id_detail'];
+                        $metadata_detail = $this->get_app_metadata($app_id_detail);
+                        if (null !== $metadata_detail) {
+                            $metadata[$app_id_detail] = $metadata_detail;
+                        }
+                    }
+                }
+            }
 
 			?>
 
@@ -75,9 +112,27 @@ namespace WPDataAccess\Data_Apps {
 				></div>
 			</div>
 
+            <?php
+            if ( 0 < count( $metadata ) ) {
+                ?>
+                <script>
+                    <?php
+                        foreach ( $metadata as $app_id => $data ) {
+                            ?>
+                            window.pp_app_<?php echo esc_attr( $app_id ); ?> = {
+                                metadata: <?php echo json_encode( $data, true ); ?>
+                            }
+                            <?php
+                        }
+                    ?>
+                </script>
+                <?php
+                }
+            ?>
+
 			<?php
 
-			$this->add_client();
+			$this->add_client( $this->app_id );
 
 		}
 

@@ -22,8 +22,8 @@ namespace WPDataAccess\Settings {
 
 	class WPDA_Settings_ManageRepository extends WPDA_Settings {
 
-		public function __construct( $current_tab, $help_url ) {
-			parent::__construct( $current_tab, $help_url );
+		public function __construct( $current_tab ) {
+			parent::__construct( $current_tab );
 
 			// Recreation of repository must be performed before checking the availability of menu items (done next).
 			if ( isset( $_REQUEST['repos'] ) && 'true' === sanitize_text_field( wp_unslash( $_REQUEST['repos'] ) ) ) {

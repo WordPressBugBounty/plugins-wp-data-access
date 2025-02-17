@@ -203,7 +203,7 @@ class WPDP {
         echo $this->projects_page_title;
         ?></span>
 					<a href="<?php 
-        echo 'https://wpdataaccess.com/docs/data-apps/data-projects/';
+        echo 'https://wpdataaccess.com/docs/data-forms/data-projects/';
         ?>" target="_blank">
 						<span class="dashicons dashicons-editor-help"
 							  style="text-decoration:none;vertical-align:top;font-size:30px;">
@@ -228,7 +228,7 @@ class WPDP {
         echo $this->projects_page_title;
         ?></span>
 					<a href="<?php 
-        echo 'https://wpdataaccess.com/docs/data-apps-templates/project-templates/';
+        echo 'https://wpdataaccess.com/docs/templates/project-templates/';
         ?>" target="_blank">
 						<span class="dashicons dashicons-editor-help"
 							  style="text-decoration:none;vertical-align:top;font-size:30px;">

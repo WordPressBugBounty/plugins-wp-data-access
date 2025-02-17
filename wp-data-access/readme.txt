@@ -3,7 +3,7 @@ Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder plugin, form builder plugin, tables, data management, charts
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 5.5.32
+Stable tag: 5.5.34
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,16 +51,16 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 == SQL Query Builder ==
 > **Run SQL queries directly within WordPress.**
 
-* [Execute multiple SQL queries with **tabbed workflows** for seamless multitasking](https://wpdataaccess.com/docs/query-builder/query-builder-tutorials/)
+* [Execute multiple SQL queries with **tabbed workflows** for seamless multitasking](https://wpdataaccess.com/docs/sql-query-builder/query-builder-tutorials/)
 * **Save and reuse queries** for data tables and charts
 * **Built-in safeguards to protect WordPress tables** and data integrity
-* [Ready to optimize? Explore the intuitive **Visual Query Builder** for easy query creation, even without SQL expertise](https://wpdataaccess.com/docs/query-builder/visual-query-builder/)
+* [Ready to optimize? Explore the intuitive **Visual Query Builder** for easy query creation, even without SQL expertise](https://wpdataaccess.com/docs/sql-query-builder/visual-query-builder/)
 
 == Premium Data Services ==
 > **Effortlessly connect, sync, and manage remote databases and data files.**
 
 * **Seamlessly compatible with all plugin features**
-* [Premium Remote Connection Wizard for fast, no-fuss setup](https://wpdataaccess.com/docs/remote-connection-wizard/remote-connection-wizard/)
+* [Premium Remote Connection Wizard for fast, no-fuss setup](https://wpdataaccess.com/docs/remote-connection-wizard/remote-wizard/)
   * **Remote Databases**: Connect to SQL Server, Oracle, PostgreSQL, MariaDB, MySQL, and MS Access (file-based)
   * **Remote Data Files**: Sync with CSV, JSON, and XML files for dynamic updates (e.g., Google Sheets sync)
 
@@ -105,6 +105,28 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 And you're all set!
 
 == Changelog ==
+
+= 5.5.34 =
+* Released 2025-02-17
+* Updated: Documentation links
+* Fixed: Charts showing Chart Builder icon for non admin users
+* Fixed: Row export to SQL not working from Data Explorer
+* Fixed: Builder icon vissibility fails  with multiple shortcodes on same page
+* Fixed: Start app in fullscreen mode
+
+= 5.5.33 =
+* Released 2025-02-06
+* Added: Element ID's to improve end-to-end testing
+* Added: Autocompletion to column filter
+* Improved: Add metadata server side to improve app load time on public pages
+* Improved: Skip LOV rest api call with client-side processing
+* Improved: State management large table support
+* Improved: State management server/client-side processing
+* Fixed: Invalid row count after insert and delete with server-side processing
+* Fixed: Invalid row count update with search panes and server-side processing
+* Fixed: Invalid row count on search with client side processing
+* Fixed: Multi-select column filter and search panes not working with client-side processing
+* Fixed: Search panes for lookups not working with client-side processing
 
 = 5.5.32 =
 * Released 2025-01-27

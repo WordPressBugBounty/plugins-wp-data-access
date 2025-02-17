@@ -35,7 +35,7 @@ abstract class WPDA_Container {
         wp_enqueue_media();
     }
 
-    protected function add_client() {
+    protected function add_client( $app_id = null ) {
         $mainjs = 'main-' . WPDA::get_option( WPDA::OPTION_WPDA_CLIENT_VERSION ) . '.js';
         $script_path = plugin_dir_url( __DIR__ ) . "../assets/dist/";
         $script_url = "{$script_path}/{$mainjs}";
@@ -51,44 +51,60 @@ abstract class WPDA_Container {
         ?>
 
 			<script>
-				window.PP_APP_CONFIG = {
-					appDebug: <?php 
+                if (! window.PP_APP_CONFIG) {
+                    window.PP_APP_CONFIG = {
+                        appDebug: <?php 
         echo ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ? 'true' : 'false' );
         ?>,
-					appLocales: "<?php 
+                        appLocales: "<?php 
         echo esc_url( $script_path ) . 'locales/';
         ?>",
-					appSite: <?php 
+                        appSite: <?php 
         echo json_encode( $app_site, true );
         ?>,
-					appLicenses: <?php 
+                        appLicenses: <?php 
         echo json_encode( array(
             'license' => $app_licenses,
             'local'   => wpda_freemius()->can_use_premium_code__premium_only(),
         ), true );
         ?>,
-					appTarget: "<?php 
+                        appTarget: "<?php 
         echo ( is_admin() ? 'backend' : 'frontend' );
         ?>",
-					appIp: "<?php 
+                        appIp: "<?php 
         echo esc_attr( $_SERVER['REMOTE_ADDR'] );
         ?>",
-					appUser:  "<?php 
+                        appUser: "<?php 
         echo esc_attr( WPDA::get_current_user_login() );
         ?>",
-					appRoles: <?php 
+                        appRoles: <?php 
         echo ( false === $this->builders ? json_encode( array() ) : json_encode( WPDA::get_current_user_roles() ) );
         ?>,
-					appLogin: <?php 
+                        appLogin: <?php 
         echo ( 'anonymous' !== WPDA::get_current_user_login() ? 'true' : 'false' );
         ?>,
-					appVars: <?php 
+                        appVars: <?php 
         echo json_encode( $_POST, true );
         ?>,
-					appFullscreen: <?php 
-        echo ( $this->fullscreen ? 'true' : 'false' );
-        ?>,
-				}
+                    }
+                }
+                <?php 
+        if ( null !== $app_id ) {
+            // Supporting multiple apps on same page with different settings
+            ?>
+                        window.PP_APP_CONFIG[<?php 
+            echo esc_attr( $app_id );
+            ?>] = {
+                            appRoles: <?php 
+            echo ( false === $this->builders ? json_encode( array() ) : json_encode( WPDA::get_current_user_roles() ) );
+            ?>,
+                            appFullscreen: <?php 
+            echo ( $this->fullscreen ? 'true' : 'false' );
+            ?>,
+                        }
+                        <?php 
+        }
+        ?>
 			</script>
 			<script type="module" src="<?php 
         echo esc_attr( $script_url );

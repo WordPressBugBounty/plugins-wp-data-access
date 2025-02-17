@@ -427,54 +427,42 @@ class WP_Data_Access {
         switch ( $current_tab ) {
             case 'backend':
                 $wpda_settings_class_name = 'WPDA_Settings_BackEnd';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/back-end/';
                 break;
             case 'frontend':
                 $wpda_settings_class_name = 'WPDA_Settings_FrontEnd';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/front-end/';
                 break;
             case 'pds':
                 $wpda_settings_class_name = 'WPDA_Settings_PDS';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/premium-data-services/';
                 break;
             case 'dashboard':
                 $wpda_settings_class_name = 'WPDA_Settings_Dashboard';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/dashboard/';
                 break;
             case 'datatables':
                 $wpda_settings_class_name = 'WPDA_Settings_DataTables';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/data-tables/';
                 break;
             case 'dataforms':
                 $wpda_settings_class_name = 'WPDA_Settings_DataForms';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/data-forms/';
                 break;
             case 'databackup':
                 $wpda_settings_class_name = 'WPDA_Settings_DataBackup';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/data-backup/';
                 break;
             case 'uninstall':
                 $wpda_settings_class_name = 'WPDA_Settings_Uninstall';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/uninstall/';
                 break;
             case 'repository':
                 $wpda_settings_class_name = 'WPDA_Settings_ManageRepository';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/manage-repository/';
                 break;
             case 'roles':
                 $wpda_settings_class_name = 'WPDA_Settings_ManageRoles';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/manage-roles/';
                 break;
             case 'system':
                 $wpda_settings_class_name = 'WPDA_Settings_SystemInfo';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/system-info/';
                 break;
             default:
                 $wpda_settings_class_name = 'WPDA_Settings_Plugin';
-                $help_url = 'https://wpdataaccess.com/docs/plugin-settings/plugin/';
         }
         $wpda_settings_class_name = '\\WPDataAccess\\Settings\\' . $wpda_settings_class_name;
-        $wpda_settings = new $wpda_settings_class_name($current_tab, $help_url);
+        $wpda_settings = new $wpda_settings_class_name($current_tab);
         $wpda_settings->show();
     }
 

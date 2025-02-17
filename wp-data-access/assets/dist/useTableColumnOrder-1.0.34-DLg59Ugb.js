@@ -1,0 +1,1 @@
+import{u as t}from"./RestApi-1.0.34-BxEfvjo_.js";import{l}from"./lib-1.0.34-CKToGW0d.js";const a=r=>{const e=t(o=>o.tables[r].state.sortedColumns);return l.debug("tableColumnOrder",e),e};export{a as u};
