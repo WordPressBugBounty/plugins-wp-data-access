@@ -3,7 +3,7 @@ Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder plugin, form builder plugin, tables, data management, charts
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 5.5.34
+Stable tag: 5.5.35
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -106,12 +106,21 @@ And you're all set!
 
 == Changelog ==
 
+= 5.5.35 =
+* Released 2025-02-24
+* Added: Key icon to primary key fields
+* Improved: Layout hook settings
+* Fixed: Allow hiding mandatory fields that have a default value
+* Fixed (with limitations): Media library window shows behind modal form window
+* Fixed: Changing grid settings requires reload
+* Fixed: Table footer not visible in full-screen mode
+
 = 5.5.34 =
 * Released 2025-02-17
 * Updated: Documentation links
-* Fixed: Charts showing Chart Builder icon for non admin users
+* Fixed: Charts showing Chart Builder icon for non-admin users
 * Fixed: Row export to SQL not working from Data Explorer
-* Fixed: Builder icon vissibility fails  with multiple shortcodes on same page
+* Fixed: Builder icon visibility fails  with multiple shortcodes on same page
 * Fixed: Start app in fullscreen mode
 
 = 5.5.33 =
