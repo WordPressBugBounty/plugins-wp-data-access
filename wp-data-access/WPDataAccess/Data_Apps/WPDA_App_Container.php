@@ -10,9 +10,9 @@ namespace WPDataAccess\Data_Apps {
 
 		private $app_id = '';
 
-		public function __construct( $args = array(), $shortcode_args = array() ) {
+		public function __construct( $args = array() ) {
 
-			parent::__construct( $args, $shortcode_args );
+			parent::__construct( $args );
 
 			if ( isset( $args['app_id'] ) ) {
 				$this->app_id = $args['app_id'];
@@ -69,6 +69,7 @@ namespace WPDataAccess\Data_Apps {
 
             $metadata = array();
             $metadata_master = $this->get_app_metadata( $this->app_id);
+
             if ( null !== $metadata_master) {
                 $metadata[$this->app_id] = $metadata_master;
             }
@@ -87,12 +88,26 @@ namespace WPDataAccess\Data_Apps {
                 }
             }
 
+            $app_type_class = '';
+            switch ($app[0]['app_type']) {
+                case '3':
+                    // Registration form
+                    $app_type_class = 'pp-container-registration';
+                    break;
+                case '5':
+                    // Data App
+                    $app_type_class = 'pp-container-apps';
+                    break;
+                case '6':
+                    // Chart
+                    $app_type_class = 'pp-container-chart';
+            }
 			?>
 
 			<div class="wpda-pp-container">
 				<div
-					class="pp-container-app"
-					data-source="{ 'id': '<?php echo $this->app_id; ?>' }"
+					class="pp-container-app <?php echo esc_attr( $app_type_class ); ?>"
+					data-source="{ 'id': '<?php echo esc_attr( $this->app_id ); ?>' }"
 
 					<?php
 					if ( null !== $this->filter_field_name && null !== $this->filter_field_value ) {
@@ -114,6 +129,7 @@ namespace WPDataAccess\Data_Apps {
 
             <?php
             if ( 0 < count( $metadata ) ) {
+                // Add metadata detail apps to decrease load time
                 ?>
                 <script>
                     <?php

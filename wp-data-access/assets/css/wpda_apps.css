@@ -100,16 +100,16 @@
     position: relative;
 }
 
-.wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist {
+.wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder {
     margin-bottom: 0;
 }
 
-.wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist .pp-applist .MuiPaper-root .pp-app-details:nth-child(1 of .pp-app-details-visible) {
+.wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder .pp-applist .MuiPaper-root .pp-app-details:nth-child(1 of .pp-app-details-visible) {
     border-radius: 14px;
     border-top: unset;
 }
 
-.wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist > div.MuiBox-root.pp-applist > header {
+.wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder > div.MuiBox-root.pp-applist > header {
     transition: unset;
     box-shadow: unset;
     background-color: transparent;
@@ -118,21 +118,21 @@
     top: 7px;
 }
 
-.wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist > div.MuiBox-root.pp-applist > header .pp-applist-toolbar {
+.wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder > div.MuiBox-root.pp-applist > header .pp-applist-toolbar {
     gap: 5px;
     align-items: center;
 }
 
-.wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist > div.MuiBox-root.pp-applist > header .pp-applist-toolbar {
+.wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder > div.MuiBox-root.pp-applist > header .pp-applist-toolbar {
     min-height: 0;
     padding-right: 0 !important;
 }
 
-.wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist .pp-applist-title {
+.wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder .pp-applist-title {
     justify-content: end;
     visibility: hidden;
 }
-.wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist .pp-applist-search {
+.wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder .pp-applist-search {
     gap: 5px;
 }
 
@@ -144,41 +144,41 @@ body.pp-fullscreen .wrap.wpda-apps-backend h1.wp-heading-inline {
     margin-bottom: 0;
 }
 
-.wpda-pp-container .pp-container-applist .MuiButtonBase-root.MuiAccordionSummary-root {
+.wpda-pp-container .pp-container-app-builder .MuiButtonBase-root.MuiAccordionSummary-root {
     background-color: unset !important;
 }
 
-.wpda-pp-container .pp-container-applist header .MuiAutocomplete-root .MuiInputBase-root {
+.wpda-pp-container .pp-container-app-builder header .MuiAutocomplete-root .MuiInputBase-root {
     padding: 0 20px 0 10px;
     max-height: unset;
 }
-.wpda-pp-container .pp-container-applist header .MuiInputBase-root input[type=text].MuiInputBase-input {
+.wpda-pp-container .pp-container-app-builder header .MuiInputBase-root input[type=text].MuiInputBase-input {
     padding: 8px;
     border: none !important;
     box-shadow: none !important;
 }
 
 @media screen and (max-width: 1018px) {
-    .wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist > div.MuiBox-root.pp-applist > header {
+    .wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder > div.MuiBox-root.pp-applist > header {
         position: relative;
         top: 0;
     }
-    .wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist > div.MuiBox-root.pp-applist > header > .MuiToolbar-root {
+    .wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder > div.MuiBox-root.pp-applist > header > .MuiToolbar-root {
         padding-bottom: 0;
         padding-left: 0;
     }
 }
 
 @media screen and (max-width: 900px) {
-    .wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist header .pp-applist-toolbar .pp-applist-title {
+    .wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder header .pp-applist-toolbar .pp-applist-title {
         display: none;
     }
-    .wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist {
+    .wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder {
         margin-bottom: 0;
     }
 }
 
-.wrap.wpda-apps-backend .wpda-pp-container .pp-container-applist header .pp-applist-toolbar .pp-applist-search button {
+.wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder header .pp-applist-toolbar .pp-applist-search button {
     color: rgb(66, 66, 66);
 }
 

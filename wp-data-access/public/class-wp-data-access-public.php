@@ -6,12 +6,12 @@
  * @package plugin\public
  */
 use WPDataAccess\API\WPDA_API;
-use WPDataAccess\Data_Apps\WPDA_Apps;
 use WPDataAccess\Data_Dictionary\WPDA_Dictionary_Exist;
 use WPDataAccess\Data_Tables\WPDA_Data_Tables;
 use WPDataAccess\List_Table\WPDA_List_View;
-use WPDataAccess\WPDA;
 use WPDataAccess\Premium\WPDAPRO_Data_Publisher\WPDAPRO_Data_Publisher_Init;
+use WPDataAccess\Utilities\WPDA_Add_App_To_Menu;
+use WPDataAccess\WPDA;
 /**
  * Class WP_Data_Access_Public
  *
@@ -230,7 +230,7 @@ class WP_Data_Access_Public {
             return;
         }
         // Add Apps.
-        $apps = new WPDA_Apps();
+        $apps = new WPDA_Add_App_To_Menu();
         $apps->add_apps_to_menu();
     }
 
@@ -255,14 +255,14 @@ class WP_Data_Access_Public {
      * @since   1.0.0
      */
     public function register_shortcodes() {
-        add_shortcode( 'wpda_apps', array($this, 'wpda_apps') );
+        add_shortcode( 'wpda_app_builder', array($this, 'wpda_app_builder') );
         add_shortcode( 'wpda_app', array($this, 'wpda_app') );
         add_shortcode( 'wpda_data_explorer', array($this, 'wpda_data_explorer') );
         add_shortcode( 'wpdataaccess', array($this, 'wpdataaccess') );
         add_shortcode( 'wpdadiehard', array($this, 'wpdadiehard') );
     }
 
-    public function wpda_apps( $atts ) {
+    public function wpda_app_builder( $atts ) {
         $editing = WPDA::is_editing_post();
         if ( false !== $editing ) {
             // Prevent errors when user is editing a post.
@@ -274,7 +274,7 @@ class WP_Data_Access_Public {
             'feedback' => false,
         ), $atts );
         ob_start();
-        $apps = new WPDataAccess\Data_Apps\WPDA_Apps_List($wp_atts);
+        $apps = new WPDataAccess\Data_Apps\WPDA_App_Builder($wp_atts);
         $apps->show();
         return ob_get_clean();
     }
@@ -304,12 +304,13 @@ class WP_Data_Access_Public {
             'app_id'             => null,
             'feedback'           => false,
             'builders'           => true,
+            'hidetitlebar'       => false,
+            'fullscreen'         => false,
             'filter_field_name'  => null,
             'filter_field_value' => null,
         ), $atts );
-        $shortcode_args = array_diff( $atts, $wp_atts );
         ob_start();
-        $app = new WPDataAccess\Data_Apps\WPDA_App_Container($wp_atts, $shortcode_args);
+        $app = new WPDataAccess\Data_Apps\WPDA_App_Container($wp_atts);
         $app->show();
         return ob_get_clean();
     }
@@ -326,7 +327,7 @@ class WP_Data_Access_Public {
             'feedback' => false,
         ), $atts );
         ob_start();
-        $explorer = new WPDataAccess\Data_Apps\WPDA_Explorer_Container($wp_atts);
+        $explorer = new WPDataAccess\Data_Apps\WPDA_Data_Explorer($wp_atts);
         $explorer->show();
         return ob_get_clean();
     }

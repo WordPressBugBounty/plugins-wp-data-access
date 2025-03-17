@@ -325,25 +325,73 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
-                                    Online documentation streamlined with dashboard
+                                    <i class="wpda-new" style="text-transform: uppercase">
+                                        Form Hooks now available in Form Builder!
+                                    </i>
                                 </li>
                                 <li>
-                                    Filtering now lightning fast with client-side processing
+                                    Form Hooks:
+                                    <a href="https://wpdataaccess.com/docs/app-form-hooks/customactionsbottom/" target="_blank" class="whatsnew">
+                                        customActionsBottom
+                                    </a>,
+                                    <a href="https://wpdataaccess.com/docs/app-form-hooks/onrowinit/" target="_blank" class="whatsnew">
+                                        onRowInit
+                                    </a>,
+                                    <a href="https://wpdataaccess.com/docs/app-form-hooks/preformsubmit/" target="_blank" class="whatsnew">
+                                        preFormSubmit
+                                    </a>,
+                                    <a href="https://wpdataaccess.com/docs/app-form-hooks/postformsubmit/" target="_blank" class="whatsnew">
+                                        postFormSubmit
+                                    </a>
                                 </li>
                                 <li>
-                                    Open form in modal window
+                                    Form Column Hooks:
+                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onblur/" target="_blank" class="whatsnew">
+                                        onBlur
+                                    </a>,
+                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onchange/" target="_blank" class="whatsnew">
+                                        onChange
+                                    </a>,
+                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onclick/" target="_blank" class="whatsnew">
+                                        onClick
+                                    </a>,
+                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/ondoubleclick/" target="_blank" class="whatsnew">
+                                        onDoubleClick
+                                    </a>,
+                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onfocus/" target="_blank" class="whatsnew">
+                                        onFocus
+                                    </a>,
+                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onkeydown/" target="_blank" class="whatsnew">
+                                        onKeyDown
+                                    </a>,
+                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onkeyup/" target="_blank" class="whatsnew">
+                                        onKeyUp
+                                    </a>
                                 </li>
                                 <li>
-                                    Sticky header and footer
+                                    New Table Hook:
+                                    <a href="https://wpdataaccess.com/docs/app-table-hooks/postquery/" target="_blank" class="whatsnew">
+                                        postQuery
+                                    </a>
                                 </li>
                                 <li>
-                                    Hide table header and footer
+                                    <a href="https://wpdataaccess.com/docs/built-ins/built-ins-overview/" target="_blank" class="whatsnew">
+                                        Built-in Functions for Hooks
+                                    </a>
                                 </li>
                                 <li>
-                                    Interactively change table column visibility and order
+                                    The <strong>log</strong> parameter has been removed from some hooks.
+                                    Use the built-in
+                                    <a href="https://wpdataaccess.com/docs/built-ins/wpda-log/" target="_blank" class="whatsnew">
+                                        wpda.log
+                                    </a>
+                                    instead &minus; now available in all hooks!
                                 </li>
                                 <li>
-                                    Redirect user after completing registration
+                                    Lightning-Fast Filtering with
+                                    <a href="https://wpdataaccess.com/docs/table-builder-performance/server-client-side-processing/" target="_blank" class="whatsnew">
+                                        Client-Side Processing
+                                    </a>
                                 </li>
 							</ul>
 						</div>

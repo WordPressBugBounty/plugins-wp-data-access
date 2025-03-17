@@ -3,7 +3,7 @@ Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder plugin, form builder plugin, tables, data management, charts
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 5.5.35
+Stable tag: 5.5.36
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,27 +15,39 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 == App Builder ==
 > Unlock the simplicity of building powerful apps with our **App Wizard**. Customize effortlessly with our suite of **Builders**, **Managers**, and **Wizards** for complete control.
 
-* **Build dynamic, data-driven apps** for both front-end and back-end
+* **Table Builder**
+  * **Powerful filtering options** on global and column level
+  * Export to **PDF, CSV, JSON, XML, SQL, and Excel**
+  * Add **real-time, updatable computed fields** with the **Computed Field Wizard**
+  * Show **real-time aggregations** for up-to-the-minute insights
+  * **Integrate charts** for robust data analysis
+  * **JavaScript hooks** to customize layout and behavior
+  * Add **lookups** with the **Lookup Wizard**
+  * Edit data instantly with **inline editing**
+  * **WordPress media library** integration
+* **Form Builder**
+  * Design **grid-based forms** for streamlined data management
+  * Add **multi-level master-detail relationships** effortlessly with the **Relationship Wizard**
+  * Create **lookups** in a snap with the **Lookup Wizard**
+  * Implement **custom fields** with the **Computed Field Wizard**
+  * Add custom business rules with **JavaScript hooks**
+  * Perform custom validations using **JavaScript hooks**
+  * Auto generates interactive validations based on database constraints
+  * Access the **WordPress media library** for enhanced functionality
+* **Chart Builder**
+  * Create **charts** from SQL queries
+  * Allow user to **configure charts interactively**
+  * **Print chart** feature
+* **App Manager**
+  * **Manage roles and permissions** with **WordPress-based user authorization**
+  * Make app available from **back-end dashboard menu**
+  * Add app to **front-end** using shortcodes
+  * **Safe mode** support
+* **Build dynamic, data-driven apps** for both **front-end** and **back-end**
 * **Run apps in 35 languages** to reach a global audience
-* **Create fully customizable data tables** for precise data display with the **Table Builder**
-* **Design grid-based forms** for streamlined data management with the **Form Builder**
-* **Add multi-level master-detail relationships** effortlessly with the **Relationship Wizard**
-* **Edit data instantly with inline editing**
-* **Create lookups in a snap** with the **Lookup Wizard**
-* **Implement real-time, updatable computed fields** with the **Computed Field Wizard**
-* **Enable real-time aggregations** for up-to-the-minute insights
-* **Customize apps seamlessly** with theme support with the **Theme Builder**
-* **Powerful filtering options** on global and column levels
-* **Integrate charts** for robust data analysis
-* **Add custom JavaScript hooks for advanced customization**
-* **Manage roles and permissions** with WordPress-based user authorization
-* **Access the WordPress media library** for enhanced functionality
-* **Export to PDF, CSV, JSON, XML, SQL, and Excel**
+* **Connect to local and remote databases**
 * **Real-time build and run capabilities**
-* **Optimized for large tables**
-* **Connect to local and remote databases** through a visual interface
-* **Execute SQL queries directly** from the WordPress dashboard
-* **Enjoy a fully responsive design** for any device
+* **Customize apps seamlessly** with the **Theme Builder**
 
 == Data Explorer ==
 > Take control of your data with our intuitive, **GUI-driven Data Explorer** that lets you seamlessly **manage both local and remote databases right from your WordPress dashboard**.
@@ -105,6 +117,18 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 And you're all set!
 
 == Changelog ==
+
+= 5.5.36 =
+* Released 2025-03-17
+* Added: Form hooks
+* Added: Builtins to table and form hooks
+* Added: OK and CANCEL buttons to full-screen code editor
+* Added: Allow hiding title bar on web page via shortcode parameter
+* Added: Table hook postQuery
+* Added: Allow empty value selection from drop-down list (client-side processing only)
+* Fixed: Table hook onAppOpen not working
+* Fixed: Slovak app language falls back to English
+* Fixed: Removed unused buttons from actions menu
 
 = 5.5.35 =
 * Released 2025-02-24

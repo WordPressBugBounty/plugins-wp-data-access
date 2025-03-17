@@ -9,9 +9,8 @@ use WPDataAccess\API\WPDA_API;
 use WPDataAccess\Backup\WPDA_Data_Export;
 use WPDataAccess\CSV_Files\WPDA_CSV_Import;
 use WPDataAccess\Dashboard\WPDA_Dashboard;
-use WPDataAccess\Data_Apps\WPDA_Apps;
-use WPDataAccess\Data_Apps\WPDA_Explorer_Container;
-use WPDataAccess\Data_Apps\WPDA_Apps_List;
+use WPDataAccess\Data_Apps\WPDA_App_Builder;
+use WPDataAccess\Data_Apps\WPDA_Data_Explorer;
 use WPDataAccess\Global_Search\WPDA_Global_Search;
 use WPDataAccess\List_Table\WPDA_List_View;
 use WPDataAccess\Plugin_Table_Models\WPDA_App_Model;
@@ -21,10 +20,11 @@ use WPDataAccess\Plugin_Table_Models\WPDA_User_Menus_Model;
 use WPDataAccess\Premium\WPDAPRO_Data_Publisher\WPDAPRO_Data_Publisher_Manage_Styles;
 use WPDataAccess\Query_Builder\WPDA_Query_Builder;
 use WPDataAccess\Settings\WPDA_Settings;
+use WPDataAccess\Utilities\WPDA_Add_App_To_Menu;
 use WPDataAccess\Utilities\WPDA_Repository;
 use WPDataAccess\WPDA;
-use WPDataProjects\WPDP;
 use WPDataAccess\WPDA_Navi\WPDA_Navi;
+use WPDataProjects\WPDP;
 /**
  * Class WP_Data_Access_Admin
  *
@@ -791,7 +791,7 @@ class WP_Data_Access_Admin {
      */
     protected function add_apps() {
         // Add apps to dashbaord menu
-        $apps = new WPDA_Apps();
+        $apps = new WPDA_Add_App_To_Menu();
         $apps->add_apps_to_menu();
     }
 
@@ -942,7 +942,7 @@ class WP_Data_Access_Admin {
             // phpcs:ignore WordPress.Security.NonceVerification
             $this->advanced_search();
         } else {
-            $explorer = new WPDA_Explorer_Container();
+            $explorer = new WPDA_Data_Explorer();
             $explorer->show();
         }
     }
@@ -981,8 +981,8 @@ class WP_Data_Access_Admin {
 
     public function data_apps() {
         WPDA_Dashboard::add_dashboard();
-        $wpda_apps_list = new WPDA_Apps_List();
-        $wpda_apps_list->show();
+        $wpda_app_builder = new WPDA_App_Builder();
+        $wpda_app_builder->show();
     }
 
     public function advanced_search() {

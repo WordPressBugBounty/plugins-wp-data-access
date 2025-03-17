@@ -9,28 +9,34 @@ abstract class WPDA_Container {
 
     private $fullscreen = false;
 
+    private $hideTitleBar = false;
+
     protected $builders = true;
 
     protected $filter_field_name = null;
 
     protected $filter_field_value = null;
 
-    protected $shortcode_args = null;
+    protected $shortcode_args = array();
 
-    public function __construct( $args = array(), $shortcode_args = array() ) {
+    public function __construct( $args = array() ) {
         if ( isset( $args['feedback'] ) ) {
             $this->feedback = true === $args['feedback'] || 'true' === $args['feedback'];
         }
-        if ( isset( $shortcode_args['fullscreen'] ) ) {
-            $this->fullscreen = true === $shortcode_args['fullscreen'] || 'true' === $shortcode_args['fullscreen'];
+        if ( isset( $args['fullscreen'] ) ) {
+            $this->fullscreen = true === $args['fullscreen'] || 'true' === $args['fullscreen'];
+        }
+        if ( isset( $args['hidetitlebar'] ) ) {
+            $this->hideTitleBar = true === $args['hidetitlebar'] || 'true' === $args['hidetitlebar'];
         }
         if ( isset( $args['filter_field_name'] ) ) {
             $this->filter_field_name = WPDA_API_Core::sanitize_db_identifier( $args['filter_field_name'] );
+            $this->shortcode_args['filter_field_name'] = $this->filter_field_name;
         }
         if ( isset( $args['filter_field_value'] ) ) {
             $this->filter_field_value = sanitize_text_field( $args['filter_field_value'] );
+            $this->shortcode_args['filter_field_value'] = $this->filter_field_value;
         }
-        $this->shortcode_args = $shortcode_args;
         wp_enqueue_style( 'wpda_apps' );
         wp_enqueue_media();
     }
@@ -101,6 +107,9 @@ abstract class WPDA_Container {
                             appFullscreen: <?php 
             echo ( $this->fullscreen ? 'true' : 'false' );
             ?>,
+                            hideTitleBar: <?php 
+            echo ( $this->hideTitleBar ? 'true' : 'false' );
+            ?>,
                         }
                         <?php 
         }
@@ -121,7 +130,7 @@ abstract class WPDA_Container {
         ?>
 			<div style="padding: 30px 0">
 				<div style="font-weight: normal; margin-bottom: 5px">
-					WP Data Access error in shortcode<?php 
+					WP Data Access error in shortcode <?php 
         echo esc_attr( $this->get_shortcode_from_class() );
         ?>:
 				</div>
@@ -137,11 +146,11 @@ abstract class WPDA_Container {
 
     private function get_shortcode_from_class() {
         if ( strpos( get_class( $this ), 'WPDA_App_Container' ) !== false ) {
-            return ' wpda_app';
-        } elseif ( strpos( get_class( $this ), 'WPDA_Apps_List' ) !== false ) {
-            return ' wpda_apps';
-        } elseif ( strpos( get_class( $this ), 'WPDA_Explorer_Container' ) !== false ) {
-            return ' wpda_data_explorer';
+            return 'wpda_app';
+        } elseif ( strpos( get_class( $this ), 'WPDA_App_Builder' ) !== false ) {
+            return 'wpda_app_builder';
+        } elseif ( strpos( get_class( $this ), 'WPDA_Data_Explorer' ) !== false ) {
+            return 'wpda_data_explorer';
         }
         return '';
     }
