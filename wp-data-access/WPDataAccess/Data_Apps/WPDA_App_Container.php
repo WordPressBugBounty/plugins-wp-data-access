@@ -2,6 +2,7 @@
 
 namespace WPDataAccess\Data_Apps {
 
+    use WPDataAccess\API\WPDA_Apps;
     use WPDataAccess\Plugin_Table_Models\WPDA_App_Apps_Model;
     use WPDataAccess\Plugin_Table_Models\WPDA_App_Model;
 	use WPDataAccess\WPDA;
@@ -10,7 +11,10 @@ namespace WPDataAccess\Data_Apps {
 
 		private $app_id = '';
 
-		public function __construct( $args = array() ) {
+		public function __construct(
+                $args = array(),
+                $shortcode_args = array()
+        ) {
 
 			parent::__construct( $args );
 
@@ -28,11 +32,13 @@ namespace WPDataAccess\Data_Apps {
 				$this->builders = false;
 			}
 
+            $this->shortcode_args = $shortcode_args;
+
 		}
 
         private function get_app_metadata( $app_id ) {
 
-            $app      = new \WPDataAccess\API\WPDA_Apps();
+            $app      = new WPDA_Apps();
             $response = $app->get_app_meta( $app_id );
 
             if (
@@ -90,6 +96,10 @@ namespace WPDataAccess\Data_Apps {
 
             $app_type_class = '';
             switch ($app[0]['app_type']) {
+                case '2':
+                    // Map
+                    $app_type_class = 'pp-container-map';
+                    break;
                 case '3':
                     // Registration form
                     $app_type_class = 'pp-container-registration';
@@ -112,8 +122,8 @@ namespace WPDataAccess\Data_Apps {
 					<?php
 					if ( null !== $this->filter_field_name && null !== $this->filter_field_value ) {
 						?>
-						data-filter_field_name="<?php echo $this->filter_field_name; ?>"
-						data-filter_field_value="<?php echo $this->filter_field_value; ?>"
+						data-filter_field_name="<?php echo esc_attr( $this->filter_field_name ); ?>"
+						data-filter_field_value="<?php echo esc_attr( $this->filter_field_value ); ?>"
 						<?php
 					}
 

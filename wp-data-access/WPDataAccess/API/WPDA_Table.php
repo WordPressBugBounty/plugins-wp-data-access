@@ -300,6 +300,7 @@ class WPDA_Table extends WPDA_API_Core {
         $search = $request->get_param( 'search' );
         $search_columns = $request->get_param( 'search_columns' );
         $search_column_fns = $request->get_param( 'search_column_fns' );
+        $search_data_types = $request->get_param( 'search_data_types' );
         $sorting = $request->get_param( 'sorting' );
         $row_count = $request->get_param( 'row_count' );
         $row_count_estimate = $request->get_param( 'row_count_estimate' );
@@ -330,7 +331,7 @@ class WPDA_Table extends WPDA_API_Core {
                 array(),
                 array(),
                 array(),
-                array(),
+                $search_data_types,
                 $client_side
             );
         } else {
@@ -493,13 +494,18 @@ class WPDA_Table extends WPDA_API_Core {
                     $where .= " and {$default_where} ";
                 }
             }
-            $selected_columns = '*';
-            if ( 0 < count( $column_names ) ) {
-                $selected_columns = '`' . implode( '`,`', array_map( function ( $column_name ) {
-                    return WPDA::remove_backticks( $column_name );
-                }, $column_names ) ) . '`';
+            // Get table column data types
+            $column_list = WPDA_List_Columns_Cache::get_list_columns( $dbs, $tbl );
+            $table_columns = $column_list->get_table_columns();
+            // Prepare selected column list
+            $columns_selected = array();
+            $search_data_types = array();
+            foreach ( $table_columns as $table_column ) {
+                $columns_selected[$table_column['column_name']] = true;
+                $search_data_types[$table_column['column_name']] = $table_column['data_type'];
             }
-            $sql = $wpdadb->prepare( "select {$selected_columns} from `%1s` {$where}", array($tbl) );
+            $selected_columns = $this->get_selected_columns( $columns_selected, $search_data_types );
+            $sql = $wpdadb->prepare( "\n                        select {$selected_columns}\n                        from `%1s`\n                        {$where}\n                    ", array($tbl) );
             $dataset = $wpdadb->get_results( $sql, 'ARRAY_A' );
             // Prepare debug info.
             if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
@@ -811,7 +817,8 @@ class WPDA_Table extends WPDA_API_Core {
         $lookups,
         $search_columns,
         $search_column_fns,
-        $search_data_types
+        $search_data_types,
+        $geo_radius = array()
     ) {
         // Default where.
         if ( '' !== trim( $default_where ) && 'where' !== strtolower( substr( trim( $default_where ), 0, 5 ) ) ) {
@@ -830,7 +837,46 @@ class WPDA_Table extends WPDA_API_Core {
         if ( 0 < count( $where_global ) ) {
             $where .= (( '' === trim( $where ) ? ' where ' : ' and ' )) . $this->add_condition( $where_global, 'or' );
         }
+        if ( is_array( $geo_radius ) && 0 < count( $geo_radius ) ) {
+            // Add geo radius to query
+            // Variable $geo_radius already sanitized in REST API
+            $unit = ( "km" == $geo_radius['unit'] ? 1000 : 1609.344 );
+            // km versus miles
+            if ( $geo_radius['col']['lat'] === $geo_radius['col']['lng'] ) {
+                // Location stored in GEOMETRY or POINT data type
+                $geocol = $geo_radius['col']['lat'];
+                $geo_where = " ( st_distance_sphere(point(st_y(`{$geocol}`), st_x(`{$geocol}`)), point({$geo_radius['loc']['lng']}, {$geo_radius['loc']['lat']})) / {$unit} ) < {$geo_radius['radius']} ";
+            } else {
+                // Latitude and longitude stored separately
+                $geo_where = " ( st_distance_sphere(point(`{$geo_radius['col']['lng']}`, `{$geo_radius['col']['lat']}`), point({$geo_radius['loc']['lng']}, {$geo_radius['loc']['lat']})) / {$unit} ) < {$geo_radius['radius']} ";
+            }
+            if ( '' === $where ) {
+                $where = " where {$geo_where} ";
+            } else {
+                $where .= " and {$geo_where} ";
+            }
+        }
         return $where;
+    }
+
+    private function get_selected_columns( $column_names, $search_data_types ) {
+        // Check for geo columns
+        $geometryColumns = array();
+        if ( is_array( $search_data_types ) ) {
+            foreach ( $search_data_types as $column_name => $search_data_type ) {
+                if ( 'geometry' === strtolower( $search_data_type ) || 'point' === strtolower( $search_data_type ) ) {
+                    $geometryColumns[] = $column_name;
+                }
+            }
+        }
+        return implode( ",", array_map( function ( $column_name ) use($geometryColumns) {
+            if ( in_array( $column_name, $geometryColumns ) ) {
+                return 'ST_AsText(`' . WPDA::remove_backticks( $column_name ) . '`) ' . " as `{$column_name}` ";
+                // Convert geo data to string
+            } else {
+                return '`' . WPDA::remove_backticks( $column_name ) . '`';
+            }
+        }, array_keys( $column_names ) ) );
     }
 
     /**
@@ -871,7 +917,8 @@ class WPDA_Table extends WPDA_API_Core {
         $md = array(),
         $m2m_relationship = array(),
         $search_data_types = array(),
-        $client_side = false
+        $client_side = false,
+        $geo_radius = array()
     ) {
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
@@ -892,7 +939,8 @@ class WPDA_Table extends WPDA_API_Core {
                 $lookups,
                 $search_columns,
                 $search_column_fns,
-                $search_data_types
+                $search_data_types,
+                $geo_radius
             );
             // Build order by.
             $sqlorder = '';
@@ -919,7 +967,7 @@ class WPDA_Table extends WPDA_API_Core {
                 $offset = 0;
             }
             // Prepare query.
-            $sql = "\n\t\t\t\t\tselect `" . implode( "`,`", array_keys( $column_names ) ) . "`\n\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t{$where}\n\t\t\t\t\t{$sqlorder}\n\t\t\t\t";
+            $sql = "\n\t\t\t\t\tselect " . $this->get_selected_columns( $column_names, $search_data_types ) . "\n\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t{$where}\n\t\t\t\t\t{$sqlorder}\n\t\t\t\t";
             $sql_tables = array($tbl);
             // Perpare query.
             $sql = $wpdadb->prepare( ( true === $client_side ? $sql : $sql . (( 0 < $page_size ? " limit {$page_size} offset {$offset} " : '' )) ), $sql_tables );

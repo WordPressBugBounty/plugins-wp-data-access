@@ -11,6 +11,7 @@ CREATE TABLE {wp_prefix}wpda_app_container{wpda_postfix}
 ,cnt_rform		longtext
 ,cnt_relation   longtext
 ,cnt_chart		longtext
+,cnt_map		longtext
 ,cnt_query		longtext
 ,primary key (cnt_id)
 ) {wpda_collate};

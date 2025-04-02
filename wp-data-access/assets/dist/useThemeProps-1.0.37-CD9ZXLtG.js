@@ -1,0 +1,1 @@
+import{u as o,w as u,b as a}from"./Typography-1.0.37-DjtXWQnP.js";import{g as f}from"./getThemeProps-1.0.37-BGc0S4YC.js";function h({props:r,name:s,defaultTheme:m,themeId:t}){let e=o(m);return t&&(e=e[t]||e),f({theme:e,name:s,props:r})}function T({props:r,name:s}){return h({props:r,name:s,defaultTheme:u,themeId:a})}export{h as a,T as u};

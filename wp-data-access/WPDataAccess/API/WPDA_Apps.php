@@ -316,6 +316,30 @@ class WPDA_Apps extends WPDA_API_Core {
                 'media'              => $this->get_param( 'media' ),
                 'rel_tab'            => $this->get_param( 'rel_tab' ),
                 'client_side'        => $this->get_param( 'client_side' ),
+                'geo_radius'         => array(
+                    'required'          => false,
+                    'type'              => 'mixed',
+                    'description'       => __( 'Geo radius segment', 'wp-data-access' ),
+                    'sanitize_callback' => function ( $param ) {
+                        $geo_radius = array();
+                        if ( isset( 
+                            $param['col']['lat'],
+                            $param['col']['lng'],
+                            $param['loc']['lat'],
+                            $param['loc']['lng'],
+                            $param['radius'],
+                            $param['unit']
+                         ) && is_numeric( $param['loc']['lat'] ) && is_numeric( $param['loc']['lng'] ) && is_numeric( $param['radius'] ) && ('km' === $param['unit'] || 'miles' === $param['unit']) ) {
+                            $geo_radius['col']['lat'] = WPDA::remove_backticks( sanitize_text_field( $param['col']['lat'] ) );
+                            $geo_radius['col']['lng'] = WPDA::remove_backticks( sanitize_text_field( $param['col']['lng'] ) );
+                            $geo_radius['loc']['lat'] = (float) sanitize_text_field( $param['loc']['lat'] );
+                            $geo_radius['loc']['lng'] = (float) sanitize_text_field( $param['loc']['lng'] );
+                            $geo_radius['radius'] = (float) sanitize_text_field( $param['radius'] );
+                            $geo_radius['unit'] = sanitize_text_field( $param['unit'] );
+                        }
+                        return $geo_radius;
+                    },
+                ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/get', array(
@@ -748,6 +772,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $media = $request->get_param( 'media' );
         $rel_tab = $request->get_param( 'rel_tab' );
         $client_side = '1' === $request->get_param( 'client_side' );
+        $geo_radius = $request->get_param( 'geo_radius' );
         $default_where = '';
         $default_orderby = '';
         $lookups = array();
@@ -806,7 +831,8 @@ class WPDA_Apps extends WPDA_API_Core {
                 $md,
                 $m2m_relationship,
                 $search_data_types,
-                $client_side
+                $client_side,
+                $geo_radius
             );
         } else {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {
@@ -1523,7 +1549,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $chart,
         $theme
     ) {
-        if ( 1 > $app_id || 1 > $cnt_id || 'table' !== $target && 'form' !== $target && 'rform' !== $target && 'theme' !== $target && 'chart' !== $target ) {
+        if ( 1 > $app_id || 1 > $cnt_id || 'table' !== $target && 'form' !== $target && 'rform' !== $target && 'theme' !== $target && 'chart' !== $target && 'map' !== $target ) {
             return $this->bad_request();
         }
         if ( null === $settings || '' === $settings ) {
@@ -1547,6 +1573,14 @@ class WPDA_Apps extends WPDA_API_Core {
                     break;
                 case 'chart':
                     $error_msg = WPDA_App_Container_Model::update_chart_settings( $cnt_id, null );
+                    if ( '' !== $error_msg ) {
+                        return new \WP_Error('error', $error_msg, array(
+                            'status' => 403,
+                        ));
+                    }
+                    break;
+                case 'map':
+                    $error_msg = WPDA_App_Container_Model::update_map_settings( $cnt_id, null );
                     if ( '' !== $error_msg ) {
                         return new \WP_Error('error', $error_msg, array(
                             'status' => 403,
@@ -1600,13 +1634,23 @@ class WPDA_Apps extends WPDA_API_Core {
                         ));
                     }
                 } else {
-                    if ( 'form' === $target ) {
-                        // Update form settings
-                        $error_msg = WPDA_App_Container_Model::update_form_settings( $cnt_id, $settings );
+                    if ( 'map' === $target ) {
+                        // Update chart settings
+                        $error_msg = WPDA_App_Container_Model::update_map_settings( $cnt_id, $settings );
                         if ( '' !== $error_msg ) {
                             return new \WP_Error('error', $error_msg, array(
                                 'status' => 403,
                             ));
+                        }
+                    } else {
+                        if ( 'form' === $target ) {
+                            // Update form settings
+                            $error_msg = WPDA_App_Container_Model::update_form_settings( $cnt_id, $settings );
+                            if ( '' !== $error_msg ) {
+                                return new \WP_Error('error', $error_msg, array(
+                                    'status' => 403,
+                                ));
+                            }
                         }
                     }
                 }

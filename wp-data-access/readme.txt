@@ -1,53 +1,61 @@
-=== WP Data Access – App, Table, Form and Chart Builder plugin ===
+=== WP Data Access – App, Table, Form, Chart & Map Builder plugin ===
 Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder plugin, form builder plugin, tables, data management, charts
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 5.5.36
+Stable tag: 5.5.37
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive chart support in 35 languages
+A data-driven App Builder with an intuitive Table Builder, a customizable Form Builder, and interactive maps and charts — available in 35 languages
 
 == Description ==
-A powerful data-driven **App Builder** with an intuitive **Table Builder**, a highly customizable **Form Builder** and **interactive Chart support**. Apps can operate on both the **back-end** and **front-end**, with simple **authorization management based on WordPress user and role principles**. The **App Builder** supports **35 languages** to localize your apps.
+A powerful data-driven **App Builder** with an intuitive **Table Builder**, a highly customizable **Form Builder** and **interactive Map and Chart support**. Apps can operate on both the **back-end** and **front-end**, with simple **authorization management based on WordPress user and role principles**. The **App Builder** supports **35 languages** to localize apps.
 
 == App Builder ==
-> Unlock the simplicity of building powerful apps with our **App Wizard**. Customize effortlessly with our suite of **Builders**, **Managers**, and **Wizards** for complete control.
+> A data-driven Rapid Application Development tool featuring **Builders**, **Managers**, and **Wizards** for effortless app creation and **Hooks** for ultimate customization.
 
 * **Table Builder**
-  * **Powerful filtering options** on global and column level
-  * Export to **PDF, CSV, JSON, XML, SQL, and Excel**
-  * Add **real-time, updatable computed fields** with the **Computed Field Wizard**
-  * Show **real-time aggregations** for up-to-the-minute insights
+  * Many powerful static and dynamic **filtering options**
+  * **Real-time, updatable computed fields**
+  * **Real-time aggregations** for up-to-the-minute insights
   * **Integrate charts** for robust data analysis
   * **JavaScript hooks** to customize layout and behavior
-  * Add **lookups** with the **Lookup Wizard**
+  * A **Lookup Wizard** to create lookups in a snap
   * Edit data instantly with **inline editing**
+  * Export to **PDF, CSV, JSON, XML, SQL, and Excel**
   * **WordPress media library** integration
 * **Form Builder**
-  * Design **grid-based forms** for streamlined data management
-  * Add **multi-level master-detail relationships** effortlessly with the **Relationship Wizard**
-  * Create **lookups** in a snap with the **Lookup Wizard**
-  * Implement **custom fields** with the **Computed Field Wizard**
-  * Add custom business rules with **JavaScript hooks**
-  * Perform custom validations using **JavaScript hooks**
-  * Auto generates interactive validations based on database constraints
+  * **Grid-based forms** for streamlined data management
+  * **Multi-level master-detail relationships**
+  * A **Lookup Wizard** to create lookups in a snap
+  * A **Computed Field Wizard** to implement **custom fields**
+  * **JavaScript hooks** to add custom business rules
+  * **JavaScript hooks** to perform custom validations
+  * **JavaScript hooks** to customize layout
+  * Interactive client-side **validations based on database constraints**
   * Access the **WordPress media library** for enhanced functionality
 * **Chart Builder**
-  * Create **charts** from SQL queries
-  * Allow user to **configure charts interactively**
-  * **Print chart** feature
+  * **Google Charts** integration
+  * Create **charts** from **SQL queries**
+  * Interactively adjustable **charts configuration**
+  * **Print/export charts**
+* **Map Builder**
+  * **Google Maps** integration
+  * **Visualize location data** using **SQL queries**
+  * Interactively adjustable **search radius**
+  * Customizable **marker content and layout**
+* **Theme Builder**
+  * **Customize app layout seamlessly**
 * **App Manager**
-  * **Manage roles and permissions** with **WordPress-based user authorization**
+  * **Authorization management based on WordPress user and role principles**
   * Make app available from **back-end dashboard menu**
   * Add app to **front-end** using shortcodes
-  * **Safe mode** support
+  * **Safe mode** support (to temporarily disable hooks)
 * **Build dynamic, data-driven apps** for both **front-end** and **back-end**
 * **Run apps in 35 languages** to reach a global audience
 * **Connect to local and remote databases**
 * **Real-time build and run capabilities**
-* **Customize apps seamlessly** with the **Theme Builder**
 
 == Data Explorer ==
 > Take control of your data with our intuitive, **GUI-driven Data Explorer** that lets you seamlessly **manage both local and remote databases right from your WordPress dashboard**.
@@ -82,9 +90,9 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 * Tailor your experience with a wide range of detailed settings to control both the user interface and functionality of the plugin
 
 == Legacy Tools ==
-> Soon replaced by the **App Builder**.
+> Will be replaced by the **App Builder**.
 
-* Available until at least summer 2025
+* Available until at least december 2026
 * Use to maintain old solutions
 * Use **App Builder** for new projects
 
@@ -96,14 +104,6 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 * Give specific users and user groups access to locked dashboards
 * Support for user-created dashboards
 * Cost-effective Business Intelligence solution
-
-== Geolocation search ==
-> Create searchable geolocation maps from database tables. **(functionality will be moved to App Builder)**
-
-* Google Maps integration – Seamlessly incorporate Google Maps for geolocation features
-* Customizable settings – Tailor map settings for each database table to fit your needs
-* [DataTables integration – Combine with DataTables for enhanced functionality](https://wpdataaccess.com/publication-using-geolocation/)
-* [Adjustable radius search map – Enable users to perform searches within a customizable radius](https://wpdataaccess.com/demos/geolocation-demo/)
 
 == Useful Links ==
 - [Plugin Website](https://wpdataaccess.com/)
@@ -117,6 +117,21 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 And you're all set!
 
 == Changelog ==
+
+= 5.5.37 =
+* Released 2025-04-02
+* Added: New app type MAP
+* Added: Root property control to setColumnStyle
+* Added: Type-checking to reducers and actions
+* Added: Support for spatial columns in tables and forms
+* Added: Support for multiple custom shortcode parameters
+* Improved: Replaced textarea with CodeMirror for SQL editing
+* Fixed: Vulnerability shortcode parameter filter field
+* Fixed: Chart Builder menu uses old format
+* Fixed: Add column data type to all requests
+* Fixed: Added null values to Query Builder CSV export
+* Fixed: Shortcode arguments not processed
+* Fixed: Missing table header border
 
 = 5.5.36 =
 * Released 2025-03-17

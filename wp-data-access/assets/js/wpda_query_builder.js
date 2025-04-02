@@ -662,7 +662,9 @@ function downloadCSV(html, fileName) {
 		row = [];
 		cols = jQuery(rows[i]).find("td, th");
 		for (j=0; j<cols.length; j++) {
-			if (jQuery(cols[j]).hasClass("wpda_data_type_string")) {
+			if (jQuery(cols[j]).hasClass("wpda_data_value_null")) {
+				row.push("null");
+			} else if (jQuery(cols[j]).hasClass("wpda_data_type_string")) {
 				row.push('"' + cols[j].innerText.replaceAll('"', '""') + '"');
 			} else {
 				row.push(cols[j].innerText);

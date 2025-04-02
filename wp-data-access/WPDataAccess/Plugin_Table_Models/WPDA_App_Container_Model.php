@@ -210,6 +210,16 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
         return $wpdb->last_error;
     }
 
+    public static function update_map_settings( $cnt_id, $cnt_map_settings ) {
+        global $wpdb;
+        $wpdb->update( static::get_base_table_name(), array(
+            'cnt_map' => $cnt_map_settings,
+        ), array(
+            'cnt_id' => $cnt_id,
+        ) );
+        return $wpdb->last_error;
+    }
+
     public static function container_move( $cnt_id_from, $cnt_id_to ) {
         // This is a premium feature.
         return '';

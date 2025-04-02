@@ -195,7 +195,7 @@ namespace WPDataAccess\WPDA_Navi {
 
 						<div class="wpda-navi-container-content-item-slogan" style="display: flex; justify-content: space-between; align-items: center;">
                             <span>
-							    Build Apps with the new Table Builder and Form Builder
+                                A data-driven Rapid Application Development tool
                             </span>
 
                             <a href="https://wpdataaccess.com/docs/app-builder/road-map/" target="_blank" class="roadmap">ROAD MAP</a>
@@ -217,7 +217,8 @@ namespace WPDataAccess\WPDA_Navi {
 								<li>Intuitive Table Builder for creating data tables with ease</li>
 								<li>Highly customizable Form Builder for designing data entry forms</li>
 								<li>Integrated Theme Builder to personalize app styling</li>
-								<li>Interactive Chart Builder for real-time data analysis <span class="wpda-new"><i>NEW</i></span></li>
+								<li>Interactive Chart Builder for real-time data analysis</li>
+                                <li>Visualize location data from SQL queries with the Map Builder <span class="wpda-new"><i>NEW</i></span></li>
 							</ul>
 						</div>
 					</div>
@@ -325,53 +326,15 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
-                                    <i class="wpda-new" style="text-transform: uppercase">
-                                        Form Hooks now available in Form Builder!
-                                    </i>
-                                </li>
-                                <li>
-                                    Form Hooks:
-                                    <a href="https://wpdataaccess.com/docs/app-form-hooks/customactionsbottom/" target="_blank" class="whatsnew">
-                                        customActionsBottom
-                                    </a>,
-                                    <a href="https://wpdataaccess.com/docs/app-form-hooks/onrowinit/" target="_blank" class="whatsnew">
-                                        onRowInit
-                                    </a>,
-                                    <a href="https://wpdataaccess.com/docs/app-form-hooks/preformsubmit/" target="_blank" class="whatsnew">
-                                        preFormSubmit
-                                    </a>,
-                                    <a href="https://wpdataaccess.com/docs/app-form-hooks/postformsubmit/" target="_blank" class="whatsnew">
-                                        postFormSubmit
+                                    Visualize location data on
+                                    <a href="https://wpdataaccess.com/docs/map-builder/map-builder-getting-started/" target="_blank" class="whatsnew">
+                                        Maps
                                     </a>
+                                    using SQL queries
                                 </li>
                                 <li>
-                                    Form Column Hooks:
-                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onblur/" target="_blank" class="whatsnew">
-                                        onBlur
-                                    </a>,
-                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onchange/" target="_blank" class="whatsnew">
-                                        onChange
-                                    </a>,
-                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onclick/" target="_blank" class="whatsnew">
-                                        onClick
-                                    </a>,
-                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/ondoubleclick/" target="_blank" class="whatsnew">
-                                        onDoubleClick
-                                    </a>,
-                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onfocus/" target="_blank" class="whatsnew">
-                                        onFocus
-                                    </a>,
-                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onkeydown/" target="_blank" class="whatsnew">
-                                        onKeyDown
-                                    </a>,
-                                    <a href="https://wpdataaccess.com/docs/app-form-column-hooks/onkeyup/" target="_blank" class="whatsnew">
-                                        onKeyUp
-                                    </a>
-                                </li>
-                                <li>
-                                    New Table Hook:
-                                    <a href="https://wpdataaccess.com/docs/app-table-hooks/postquery/" target="_blank" class="whatsnew">
-                                        postQuery
+                                    <a href="https://wpdataaccess.com/docs/hooks/getting-started-with-hooks/" target="_blank" class="whatsnew">
+                                        Hooks for Tables and Forms
                                     </a>
                                 </li>
                                 <li>
@@ -380,12 +343,11 @@ namespace WPDataAccess\WPDA_Navi {
                                     </a>
                                 </li>
                                 <li>
-                                    The <strong>log</strong> parameter has been removed from some hooks.
-                                    Use the built-in
+                                    New built-in
                                     <a href="https://wpdataaccess.com/docs/built-ins/wpda-log/" target="_blank" class="whatsnew">
                                         wpda.log
                                     </a>
-                                    instead &minus; now available in all hooks!
+                                    available in all hooks
                                 </li>
                                 <li>
                                     Lightning-Fast Filtering with

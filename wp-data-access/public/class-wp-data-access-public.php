@@ -309,8 +309,14 @@ class WP_Data_Access_Public {
             'filter_field_name'  => null,
             'filter_field_value' => null,
         ), $atts );
+        $shortcode_params = array();
+        foreach ( $atts as $key => $value ) {
+            if ( !key_exists( $key, $wp_atts ) ) {
+                $shortcode_params[$key] = $value;
+            }
+        }
         ob_start();
-        $app = new WPDataAccess\Data_Apps\WPDA_App_Container($wp_atts);
+        $app = new WPDataAccess\Data_Apps\WPDA_App_Container($wp_atts, $shortcode_params);
         $app->show();
         return ob_get_clean();
     }

@@ -31,11 +31,9 @@ abstract class WPDA_Container {
         }
         if ( isset( $args['filter_field_name'] ) ) {
             $this->filter_field_name = WPDA_API_Core::sanitize_db_identifier( $args['filter_field_name'] );
-            $this->shortcode_args['filter_field_name'] = $this->filter_field_name;
         }
         if ( isset( $args['filter_field_value'] ) ) {
             $this->filter_field_value = sanitize_text_field( $args['filter_field_value'] );
-            $this->shortcode_args['filter_field_value'] = $this->filter_field_value;
         }
         wp_enqueue_style( 'wpda_apps' );
         wp_enqueue_media();
