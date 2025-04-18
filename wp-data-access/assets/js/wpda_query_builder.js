@@ -567,16 +567,18 @@ function openQuery() {
 			jQuery("#wpda_query_builder_open_select").find("option").remove();
 			if (!Array.isArray(msg.data)) {
 				for (var queryName in msg.data) {
-					jQuery("#wpda_query_builder_open_select")
-					.append(
-						jQuery("<option/>", {
-							value: queryName,
-							text: queryName
-						})
-						.attr("data-dbs", msg.data[queryName].schema_name)
-						.attr("data-sql", msg.data[queryName].query)
-						.attr("data-vqb", msg.data[queryName].is_visual===true)
-					);
+					if (msg.data[queryName] !== null && msg.data[queryName] !== undefined) {
+						jQuery("#wpda_query_builder_open_select")
+							.append(
+								jQuery("<option/>", {
+									value: queryName,
+									text: queryName
+								})
+									.attr("data-dbs", msg.data[queryName].schema_name)
+									.attr("data-sql", msg.data[queryName].query)
+									.attr("data-vqb", msg.data[queryName].is_visual === true)
+							);
+					}
 				}
 				jQuery("#wpda_query_builder_open_select").attr("disabled", false);
 				jQuery("#wpda_query_builder_open_open").attr("disabled", false);

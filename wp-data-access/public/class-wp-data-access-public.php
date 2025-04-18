@@ -258,6 +258,7 @@ class WP_Data_Access_Public {
         add_shortcode( 'wpda_app_builder', array($this, 'wpda_app_builder') );
         add_shortcode( 'wpda_app', array($this, 'wpda_app') );
         add_shortcode( 'wpda_data_explorer', array($this, 'wpda_data_explorer') );
+        add_shortcode( 'wpda_query_builder', array($this, 'wpda_query_builder') );
         add_shortcode( 'wpdataaccess', array($this, 'wpdataaccess') );
         add_shortcode( 'wpdadiehard', array($this, 'wpdadiehard') );
     }
@@ -335,6 +336,23 @@ class WP_Data_Access_Public {
         ob_start();
         $explorer = new WPDataAccess\Data_Apps\WPDA_Data_Explorer($wp_atts);
         $explorer->show();
+        return ob_get_clean();
+    }
+
+    public function wpda_query_builder( $atts ) {
+        $editing = WPDA::is_editing_post();
+        if ( false !== $editing ) {
+            // Prevent errors when user is editing a post.
+            return $editing;
+        }
+        $atts = array_change_key_case( (array) $atts, CASE_LOWER );
+        //phpcs:ignore - 8.1 proof
+        $wp_atts = shortcode_atts( array(
+            'feedback' => false,
+        ), $atts );
+        ob_start();
+        $qb = new WPDataAccess\Data_Apps\WPDA_Query_Builder($wp_atts);
+        $qb->show();
         return ob_get_clean();
     }
 

@@ -1,9 +1,9 @@
 === WP Data Access – App, Table, Form, Chart & Map Builder plugin ===
 Contributors: peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder plugin, form builder plugin, tables, data management, charts
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.0
-Stable tag: 5.5.37
+Stable tag: 5.5.40
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,6 +117,24 @@ A powerful data-driven **App Builder** with an intuitive **Table Builder**, a hi
 And you're all set!
 
 == Changelog ==
+
+= 5.5.40 =
+* Released 2025-04-18
+* Added: Previous and next row buttons to data entry form
+* Added: Map integration to Table Builder
+* Added: View maps and charts besides each other in header or footer dock
+* Added: Spy popup to default where clause
+* Added: Slovenian language support
+* Added: Parameter support to chart apps
+* Added: Parameter support to map apps
+* Changed: Media parameters to optional
+* Changed: Powered by hidden by default (added tooltip to UI)
+* Fixed: Map height incorrect when run from shortcode
+* Fixed: Column filter default not working with server-side processing
+* Fixed: Chart data columns expecting length
+* Fixed: Images not shown correctly on Safari (macOS and iOS)
+* Fixed: Incorrect table height on Safari (macOS and iOS)
+* Fixed: Numeric and null values not handle correctly in CSV + JSON export
 
 = 5.5.37 =
 * Released 2025-04-02

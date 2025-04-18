@@ -391,7 +391,7 @@ abstract class WPDA_API_Core {
                 'validate_callback' => 'rest_validate_request_arg',
             ),
             'media'              => array(
-                'required'          => true,
+                'required'          => false,
                 'type'              => 'mixed',
                 'description'       => __( 'Media columns', 'wp-data-access' ),
                 'sanitize_callback' => function ( $param ) {
@@ -404,6 +404,37 @@ abstract class WPDA_API_Core {
                 'validate_callback' => function ( $param ) {
                     return is_array( $param );
                 },
+            ),
+            'access'             => array(
+                'required'          => true,
+                'type'              => 'string',
+                'description'       => __( 'Access (user | global) ', 'wp-data-access' ),
+                'sanitize_callback' => function ( $param ) {
+                    return ( 'global' === $param ? 'global' : 'user' );
+                },
+                'validate_callback' => 'rest_validate_request_arg',
+            ),
+            'query'              => array(
+                'required'          => true,
+                'type'              => 'string',
+                'description'       => __( 'SQL query', 'wp-data-access' ),
+                'sanitize_callback' => function ( $param ) {
+                    return wp_kses_post( $param );
+                },
+            ),
+            'name'               => array(
+                'required'          => true,
+                'type'              => 'string',
+                'description'       => __( 'Query name', 'wp-data-access' ),
+                'sanitize_callback' => 'sanitize_text_field',
+                'validate_callback' => 'rest_validate_request_arg',
+            ),
+            'vqb'                => array(
+                'required'          => false,
+                'type'              => 'boolean',
+                'description'       => __( 'Query uses Visual Query Builder', 'wp-data-access' ),
+                'sanitize_callback' => 'sanitize_text_field',
+                'validate_callback' => 'rest_validate_request_arg',
             ),
         );
     }
@@ -438,7 +469,7 @@ abstract class WPDA_API_Core {
         return WPDA_API_Core::$user_login;
     }
 
-    protected function current_user_can_access( $admins_only = false ) {
+    protected function current_user_can_access() {
         return WPDA::current_user_is_admin();
     }
 
@@ -448,7 +479,7 @@ abstract class WPDA_API_Core {
         ));
     }
 
-    protected function current_user_token_valid( $request, $token_required = false ) {
+    protected function current_user_token_valid( $request ) {
         return wp_verify_nonce( $request->get_header( 'X-WP-Nonce' ), 'wp_rest' );
     }
 

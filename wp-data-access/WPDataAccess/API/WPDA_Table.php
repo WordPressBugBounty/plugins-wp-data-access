@@ -469,7 +469,7 @@ class WPDA_Table extends WPDA_API_Core {
         $dbs,
         $tbl,
         $primary_key,
-        $media_columns,
+        $media_columns = array(),
         $column_names = array(),
         $default_where = ''
     ) {
@@ -521,7 +521,7 @@ class WPDA_Table extends WPDA_API_Core {
             $wpdadb->suppress_errors( $suppress );
             // Send response.
             $media = array();
-            if ( 0 < count( $media_columns ) ) {
+            if ( is_array( $media_columns ) && 0 < count( $media_columns ) ) {
                 foreach ( $media_columns as $media_column_name => $media_column_type ) {
                     if ( isset( $dataset[0][$media_column_name] ) ) {
                         if ( in_array( $media_column_type, [
@@ -910,7 +910,7 @@ class WPDA_Table extends WPDA_API_Core {
         $sorting,
         $last_row_count,
         $row_count_estimate,
-        $media_columns,
+        $media_columns = array(),
         $default_where = '',
         $default_orderby = '',
         $lookups = array(),
@@ -1029,7 +1029,7 @@ class WPDA_Table extends WPDA_API_Core {
             if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
                 $context['debug'] = $debug;
             }
-            if ( 0 < count( $media_columns ) ) {
+            if ( is_array( $media_columns ) && 0 < count( $media_columns ) ) {
                 // Handle WP media library
                 $media = array();
                 for ($i = 0; $i < count( $dataset ); $i++) {

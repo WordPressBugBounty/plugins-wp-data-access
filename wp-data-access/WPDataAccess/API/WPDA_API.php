@@ -76,6 +76,10 @@ namespace WPDataAccess\API {
 			$settings = new WPDA_Settings();
 			$settings->register_rest_routes();
 
+            // Query Builder
+            $qb = new WPDA_QB();
+            $qb->register_rest_routes();
+
 		}
 
 	}

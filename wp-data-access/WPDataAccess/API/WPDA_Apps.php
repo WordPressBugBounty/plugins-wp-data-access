@@ -274,6 +274,13 @@ class WPDA_Apps extends WPDA_API_Core {
                     },
                     'validate_callback' => 'rest_validate_request_arg',
                 ),
+                'map'      => array(
+                    'required'          => false,
+                    'type'              => 'string',
+                    'description'       => __( 'Map settings - JSON string', 'wp-data-access' ),
+                    'sanitize_callback' => 'wp_kses_post',
+                    'validate_callback' => 'rest_validate_request_arg',
+                ),
                 'chart'    => array(
                     'required'          => false,
                     'type'              => 'string',
@@ -492,7 +499,9 @@ class WPDA_Apps extends WPDA_API_Core {
             'callback'            => array($this, 'app_chart_data'),
             'permission_callback' => '__return_true',
             'args'                => array(
-                'app_id' => $this->get_param( 'app_id' ),
+                'app_id'           => $this->get_param( 'app_id' ),
+                'search_custom'    => $this->get_param( 'search_custom' ),
+                'shortcode_params' => $this->get_param( 'search_params' ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/dbs/rename', array(
@@ -787,20 +796,31 @@ class WPDA_Apps extends WPDA_API_Core {
             $settings
         ) ) {
             $container = WPDA_App_Container_Model::get_container( $cnt_id );
-            if ( '1' === $rel_tab ) {
-            } else {
-                $table_settings = $settings['table'] ?? array();
-                // Get default where clause
-                if ( isset( $table_settings['table']['defaultWhere'] ) ) {
-                    $default_where = $table_settings['table']['defaultWhere'];
+            $app = WPDA_App_Model::get_by_id( $app_id );
+            if ( isset( $app[0]['app_type'], $container[0]['cnt_map'] ) && '2' == $app[0]['app_type'] && null !== $container[0]['cnt_map'] ) {
+                // App = Map
+                // Get default where map
+                $map_json = json_decode( (string) $container[0]['cnt_map'], true );
+                if ( isset( $map_json['setup']['defaultWhere'] ) && null !== $map_json['setup']['defaultWhere'] && '' !== trim( $map_json['setup']['defaultWhere'] ) ) {
+                    $default_where = $map_json['setup']['defaultWhere'];
                 }
-                // Get default order by
-                if ( isset( $table_settings['table']['defaultOrderBy'] ) ) {
-                    $default_orderby_db = $table_settings['table']['defaultOrderBy'];
-                    if ( is_array( $default_orderby_db ) ) {
-                        foreach ( $default_orderby_db as $orderby ) {
-                            if ( isset( $orderby['columnName'], $orderby['order'] ) && '' !== trim( $orderby['columnName'] ) ) {
-                                $default_orderby .= (( '' === $default_orderby ? 'order by ' : ',' )) . '`' . WPDA::remove_backticks( $orderby['columnName'] ) . '` ' . (( 'desc' === $orderby['order'] ? 'desc' : 'asc' ));
+            } else {
+                // All other apps (not being a map)
+                if ( '1' === $rel_tab ) {
+                } else {
+                    $table_settings = $settings['table'] ?? array();
+                    // Get default where clause
+                    if ( isset( $table_settings['table']['defaultWhere'] ) ) {
+                        $default_where = $table_settings['table']['defaultWhere'];
+                    }
+                    // Get default order by
+                    if ( isset( $table_settings['table']['defaultOrderBy'] ) ) {
+                        $default_orderby_db = $table_settings['table']['defaultOrderBy'];
+                        if ( is_array( $default_orderby_db ) ) {
+                            foreach ( $default_orderby_db as $orderby ) {
+                                if ( isset( $orderby['columnName'], $orderby['order'] ) && '' !== trim( $orderby['columnName'] ) ) {
+                                    $default_orderby .= (( '' === $default_orderby ? 'order by ' : ',' )) . '`' . WPDA::remove_backticks( $orderby['columnName'] ) . '` ' . (( 'desc' === $orderby['order'] ? 'desc' : 'asc' ));
+                                }
                             }
                         }
                     }
@@ -1247,21 +1267,12 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_qb_list( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
-        $queries = get_user_meta( WPDA::get_current_user_id(), 'wpda_query_builder' );
-        if ( false === $queries ) {
-            $queries = array();
-        }
-        return $this->WPDA_Rest_Response( '', $queries );
+        $qb = new WPDA_QB();
+        return $qb->open( $request );
     }
 
     public function app_dbs_rename( $request ) {
-        if ( !$this->current_user_can_access( true ) ) {
+        if ( !$this->current_user_can_access() ) {
             // Only admins
             return $this->unauthorized();
         }
@@ -1300,6 +1311,8 @@ class WPDA_Apps extends WPDA_API_Core {
 
     public function app_chart_data( $request ) {
         $app_id = $request->get_param( 'app_id' );
+        $search_custom = $request->get_param( 'search_custom' );
+        $shortcode_params = $request->get_param( 'shortcode_params' );
         if ( !$this->main_app_access( $app_id, $msg ) ) {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {
                 return $this->invalid_nonce();
@@ -1313,6 +1326,13 @@ class WPDA_Apps extends WPDA_API_Core {
         if ( 1 === count( $app_container ) && null !== $app_container[0]['cnt_query'] && '' !== trim( (string) $app_container[0]['cnt_query'] ) ) {
             $dbs = $app_container[0]['cnt_dbs'];
             $query = $app_container[0]['cnt_query'];
+            // Process shortcode and url parameters
+            $query = $this->process_params(
+                $query,
+                $search_custom,
+                null,
+                $shortcode_params
+            );
             $wpdadb = WPDADB::get_db_connection( $dbs );
             if ( null === $wpdadb ) {
                 // Error connecting.
@@ -1375,6 +1395,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $target = $request->get_param( 'target' );
         $settings = $request->get_param( 'settings' );
         $chart = $request->get_param( 'chart' );
+        $map = $request->get_param( 'map' );
         $theme = $request->get_param( 'theme' );
         return $this->do_app_settings(
             $app_id,
@@ -1382,6 +1403,7 @@ class WPDA_Apps extends WPDA_API_Core {
             $target,
             $settings,
             $chart,
+            $map,
             $theme
         );
     }
@@ -1547,6 +1569,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $target,
         $settings,
         $chart,
+        $map,
         $theme
     ) {
         if ( 1 > $app_id || 1 > $cnt_id || 'table' !== $target && 'form' !== $target && 'rform' !== $target && 'theme' !== $target && 'chart' !== $target && 'map' !== $target ) {
@@ -1610,6 +1633,13 @@ class WPDA_Apps extends WPDA_API_Core {
             }
             // Update chart settings
             $error_msg = WPDA_App_Container_Model::update_chart_settings( $cnt_id, $chart );
+            if ( '' !== $error_msg ) {
+                return new \WP_Error('error', $error_msg, array(
+                    'status' => 403,
+                ));
+            }
+            // Update map settings
+            $error_msg = WPDA_App_Container_Model::update_map_settings( $cnt_id, $map );
             if ( '' !== $error_msg ) {
                 return new \WP_Error('error', $error_msg, array(
                     'status' => 403,

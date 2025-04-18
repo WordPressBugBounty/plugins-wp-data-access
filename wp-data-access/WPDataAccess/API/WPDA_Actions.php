@@ -68,10 +68,10 @@ class WPDA_Actions extends WPDA_API_Core {
     }
 
     public function action_import( $request ) {
-        if ( !$this->current_user_can_access( true ) ) {
+        if ( !$this->current_user_can_access() ) {
             return $this->unauthorized();
         }
-        if ( !$this->current_user_token_valid( $request, true ) ) {
+        if ( !$this->current_user_token_valid( $request ) ) {
             return $this->invalid_nonce();
         }
         $dbs = $this->sanitize_db_identifier( $request->get_param( 'dbs' ) );
@@ -157,10 +157,10 @@ class WPDA_Actions extends WPDA_API_Core {
     }
 
     public function action_drop( $request ) {
-        if ( !$this->current_user_can_access( true ) ) {
+        if ( !$this->current_user_can_access() ) {
             return $this->unauthorized();
         }
-        if ( !$this->current_user_token_valid( $request, true ) ) {
+        if ( !$this->current_user_token_valid( $request ) ) {
             return $this->invalid_nonce();
         }
         $dbs = $request->get_param( 'dbs' );
@@ -188,10 +188,10 @@ class WPDA_Actions extends WPDA_API_Core {
     }
 
     public function action_truncate( $request ) {
-        if ( !$this->current_user_can_access( true ) ) {
+        if ( !$this->current_user_can_access() ) {
             return $this->unauthorized();
         }
-        if ( !$this->current_user_token_valid( $request, true ) ) {
+        if ( !$this->current_user_token_valid( $request ) ) {
             return $this->invalid_nonce();
         }
         $dbs = $request->get_param( 'dbs' );
@@ -214,10 +214,10 @@ class WPDA_Actions extends WPDA_API_Core {
     }
 
     public function action_copy( $request ) {
-        if ( !$this->current_user_can_access( true ) ) {
+        if ( !$this->current_user_can_access() ) {
             return $this->unauthorized();
         }
-        if ( !$this->current_user_token_valid( $request, true ) ) {
+        if ( !$this->current_user_token_valid( $request ) ) {
             return $this->invalid_nonce();
         }
         $from_dbs = $request->get_param( 'from_dbs' );
@@ -245,10 +245,10 @@ class WPDA_Actions extends WPDA_API_Core {
     }
 
     public function action_rename( $request ) {
-        if ( !$this->current_user_can_access( true ) ) {
+        if ( !$this->current_user_can_access() ) {
             return $this->unauthorized();
         }
-        if ( !$this->current_user_token_valid( $request, true ) ) {
+        if ( !$this->current_user_token_valid( $request ) ) {
             return $this->invalid_nonce();
         }
         $dbs = $request->get_param( 'dbs' );

@@ -63,7 +63,7 @@ namespace WPDataAccess\API {
 		 */
 		public function save_settings( $request ) {
 
-			if ( ! $this->current_user_can_access( true ) ) {
+			if ( ! $this->current_user_can_access() ) {
 				return $this->unauthorized();
 			}
 

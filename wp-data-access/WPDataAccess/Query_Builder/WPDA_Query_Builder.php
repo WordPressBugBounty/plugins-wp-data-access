@@ -6,6 +6,10 @@ use WPDataAccess\Connection\WPDADB;
 use WPDataAccess\Data_Dictionary\WPDA_Dictionary_Lists;
 use WPDataAccess\WPDA;
 class WPDA_Query_Builder {
+    const QUERY_BUILDER_OPTIONS = 'wpda_query_builder';
+
+    const QUERY_BUILDER_HINTS = 'wpda_sql_hints';
+
     const EXPLAIN_COMMANDS = array(
         'select',
         'delete',
@@ -35,7 +39,7 @@ class WPDA_Query_Builder {
             $this->databases[] = $db['schema_name'];
         }
         $this->default_database = WPDA::get_user_default_scheme();
-        $sql_hints = get_option( 'wpda_sql_hints' );
+        $sql_hints = get_option( self::QUERY_BUILDER_HINTS );
         if ( false !== $sql_hints ) {
             $this->sql_hints = $sql_hints;
         }
@@ -398,7 +402,7 @@ class WPDA_Query_Builder {
         echo json_encode( $response );
     }
 
-    private function wpdatmp_table(
+    public function wpdatmp_table(
         $wpdadb,
         $sql,
         $data,
@@ -419,7 +423,7 @@ class WPDA_Query_Builder {
         return $wpdadb_created;
     }
 
-    private function wpdavar_table( $wpdadb, $query, $var_name ) {
+    public function wpdavar_table( $wpdadb, $query, $var_name ) {
         $wpdadb->query( "set sql_quote_show_create = 'ON'" );
         if ( null === $query['status'] ) {
             return null;
@@ -443,7 +447,7 @@ class WPDA_Query_Builder {
         );
     }
 
-    private function check_query( $wpda_protect, $wpda_schemaname, $wpda_sqlquery ) {
+    public function check_query( $wpda_protect, $wpda_schemaname, $wpda_sqlquery ) {
         $sql_parts = explode( ' ', trim( $wpda_sqlquery ) );
         //phpcs:ignore - 8.1 proof
         if ( isset( $sql_parts[0] ) && isset( $sql_parts[2] ) && WPDA::is_wp_table( $sql_parts[2] ) && ('drop' === strtolower( $sql_parts[0] ) || 'alter' === strtolower( $sql_parts[0] ) || 'rename' === strtolower( $sql_parts[0] ) || 'truncate' === strtolower( $sql_parts[0] )) ) {
@@ -492,7 +496,7 @@ class WPDA_Query_Builder {
             $wpda_vqb = null;
             if ( wp_verify_nonce( $wpda_wpnonce, 'wpda-query-builder-' . WPDA::get_current_user_id() ) ) {
                 // Save query
-                if ( false === $this->upd_query(
+                if ( false === $this->update_query(
                     $wpda_schemaname,
                     $wpda_sqlqueryname,
                     $wpda_sqlquery,
@@ -552,7 +556,7 @@ class WPDA_Query_Builder {
             // input var okay.
             if ( wp_verify_nonce( $wpda_wpnonce, 'wpda-query-builder-' . WPDA::get_current_user_id() ) ) {
                 // Save query
-                if ( false === $this->del_query( $wpda_sqlqueryname ) ) {
+                if ( false === $this->delete_query( $wpda_sqlqueryname ) ) {
                     $response['status'] = 'Could not delete query';
                 } else {
                     $response['status'] = 'Query deleted';
@@ -566,9 +570,9 @@ class WPDA_Query_Builder {
         echo json_encode( $response );
     }
 
-    protected function get_query_list( $exclude = '' ) {
-        $wpda_query_builder_data = get_user_meta( WPDA::get_current_user_id(), 'wpda_query_builder' );
-        if ( count( $wpda_query_builder_data ) > 0 ) {
+    public function get_query_list( $exclude = '' ) {
+        $wpda_query_builder_data = get_user_meta( WPDA::get_current_user_id(), self::QUERY_BUILDER_OPTIONS );
+        if ( is_array( $wpda_query_builder_data ) && count( $wpda_query_builder_data ) > 0 ) {
             //phpcs:ignore - 8.1 proof
             $queries = $wpda_query_builder_data[0];
             if ( null !== $exclude && '' !== $exclude ) {
@@ -584,11 +588,33 @@ class WPDA_Query_Builder {
         }
     }
 
-    protected function upd_query_list( $wpda_query_builder_data ) {
-        update_user_meta( WPDA::get_current_user_id(), 'wpda_query_builder', $wpda_query_builder_data );
+    public function get_query_list_global( $exclude = '' ) {
+        $wpda_query_builder_data = get_option( self::QUERY_BUILDER_OPTIONS );
+        if ( is_array( $wpda_query_builder_data ) && count( $wpda_query_builder_data ) > 0 ) {
+            //phpcs:ignore - 8.1 proof
+            $queries = $wpda_query_builder_data;
+            if ( null !== $exclude && '' !== $exclude ) {
+                $exclude_array = explode( ',', $exclude );
+                //phpcs:ignore - 8.1 proof
+                foreach ( $exclude_array as $exclude_item ) {
+                    unset($queries[$exclude_item]);
+                }
+            }
+            return $queries;
+        } else {
+            return array();
+        }
     }
 
-    protected function get_query( $query_name ) {
+    protected function update_query_list( $wpda_query_builder_data ) {
+        update_user_meta( WPDA::get_current_user_id(), self::QUERY_BUILDER_OPTIONS, $wpda_query_builder_data );
+    }
+
+    protected function update_query_list_global( $wpda_query_builder_data ) {
+        update_option( self::QUERY_BUILDER_OPTIONS, $wpda_query_builder_data );
+    }
+
+    public function get_query( $query_name ) {
         $wpda_query_builder_data = $this->get_query_list();
         if ( is_array( $wpda_query_builder_data ) && isset( $wpda_query_builder_data[$query_name] ) ) {
             return $wpda_query_builder_data[$query_name];
@@ -597,7 +623,16 @@ class WPDA_Query_Builder {
         }
     }
 
-    protected function upd_query(
+    public function get_query_global( $query_name ) {
+        $wpda_query_builder_data = $this->get_query_list_global();
+        if ( is_array( $wpda_query_builder_data ) && isset( $wpda_query_builder_data[$query_name] ) ) {
+            return $wpda_query_builder_data[$query_name];
+        } else {
+            return array();
+        }
+    }
+
+    public function update_query(
         $schema_name,
         $query_name,
         $query_sql,
@@ -613,13 +648,44 @@ class WPDA_Query_Builder {
             'query'       => $query_sql,
             'is_visual'   => null !== $wpda_vqb,
         );
-        $this->upd_query_list( $wpda_query_builder_data );
+        $this->update_query_list( $wpda_query_builder_data );
     }
 
-    protected function del_query( $query_name ) {
+    public function update_query_global(
+        $schema_name,
+        $query_name,
+        $query_sql,
+        $query_name_old,
+        $wpda_vqb = null
+    ) {
+        $wpda_query_builder_data = $this->get_query_list_global();
+        if ( '' !== $query_name_old && $query_name !== $query_name_old ) {
+            unset($wpda_query_builder_data[$query_name_old]);
+        }
+        $wpda_query_builder_data[$query_name] = array(
+            'schema_name' => $schema_name,
+            'query'       => $query_sql,
+            'is_visual'   => null !== $wpda_vqb,
+        );
+        $this->update_query_list_global( $wpda_query_builder_data );
+        //            if ( wpda_freemius()->can_use_premium_code__premium_only() ) {
+        //                $this->upd_visual_query( $query_name, $wpda_vqb );
+        //            }
+    }
+
+    public function delete_query( $query_name ) {
         $wpda_query_builder_data = $this->get_query_list();
         unset($wpda_query_builder_data[$query_name]);
-        $this->upd_query_list( $wpda_query_builder_data );
+        $this->update_query_list( $wpda_query_builder_data );
+    }
+
+    public function delete_query_global( $query_name ) {
+        $wpda_query_builder_data = $this->get_query_list_global();
+        unset($wpda_query_builder_data[$query_name]);
+        $this->update_query_list_global( $wpda_query_builder_data );
+        //            if ( wpda_freemius()->can_use_premium_code__premium_only() ) {
+        //                $this->del_visual_query( $query_name );
+        //            }
     }
 
     public function get_visual_query( $query_name ) {
@@ -652,9 +718,9 @@ class WPDA_Query_Builder {
                     $columns = WPDA_Dictionary_Lists::get_table_columns( $table['table_name'], $wpda_schemaname );
                     $hint_cols = array();
                     foreach ( $columns as $column ) {
-                        $hints[$table['table_name']] = $hint_cols;
                         $hint_cols[] = $column['column_name'];
                     }
+                    $hints[$table['table_name']] = $hint_cols;
                 }
                 $response['tables'] = $hints;
             } else {
@@ -677,11 +743,175 @@ class WPDA_Query_Builder {
             $wpda_sqlhints = sanitize_text_field( wp_unslash( $_REQUEST['wpda_sqlhints'] ) );
             // input var okay.
             if ( wp_verify_nonce( $wpda_wpnonce, 'wpda-query-builder-' . WPDA::get_current_user_id() ) ) {
-                update_option( 'wpda_sql_hints', $wpda_sqlhints );
+                update_option( self::QUERY_BUILDER_HINTS, $wpda_sqlhints );
             }
         }
         $response['hint'] = $wpda_sqlhints;
         echo json_encode( $response );
+    }
+
+    public function execute_query(
+        $dbs,
+        $query,
+        $limit,
+        $protect
+    ) {
+        $response = array(
+            'tabs'   => array(),
+            'status' => null,
+        );
+        $qb = new WPDA_Query_Builder();
+        if ( $qb->check_query( $protect, $dbs, $query ) ) {
+            // Execute query
+            $wpdadb = WPDADB::get_db_connection( $dbs );
+            if ( null !== $wpdadb ) {
+                $wpdadb->suppress_errors( true );
+            }
+            $sqllines = explode( "\n", $query );
+            //phpcs:ignore - 8.1 proof
+            $sqlcmds = array();
+            $start_i = 0;
+            for ($i = 0; $i < count( $sqllines ); $i++) {
+                //phpcs:ignore - 8.1 proof
+                if ( '/' === trim( $sqllines[$i] ) ) {
+                    $sql = '';
+                    for ($j = $start_i; $j < $i; $j++) {
+                        if ( '' !== trim( $sqllines[$j] ) ) {
+                            $sql .= "{$sqllines[$j]} ";
+                        }
+                    }
+                    $sqlcmds[] = $sql;
+                    $start_i = $i + 1;
+                }
+            }
+            if ( count( $sqlcmds ) > 0 ) {
+                //phpcs:ignore - 8.1 proof
+                $tabs = array();
+                $vars = array();
+                $tmps = array();
+                // Process multiple SQL commands
+                for ($i = 0; $i < count( $sqlcmds ); $i++) {
+                    //phpcs:ignore - 8.1 proof
+                    if ( '' !== $limit && 'select' === strtolower( substr( $sqlcmds[$i], 0, 6 ) ) ) {
+                        $sqlcmds[$i] .= " limit {$limit} ";
+                    }
+                    $columns = WPDA::get_columns_from_query( $dbs, $sqlcmds[$i] );
+                    // Need to reconnect when switching from local to remote and vice versa
+                    $reconnected = false;
+                    if ( 'use' === substr( strtolower( trim( $sqlcmds[$i] ) ), 0, 3 ) ) {
+                        $use_cmd = explode( ' ', trim( $sqlcmds[$i] ) );
+                        //phpcs:ignore - 8.1 proof
+                        if ( 2 === count( $use_cmd ) && (strtolower( trim( $use_cmd[1] ) ) !== strtolower( trim( $dbs ) ) && 'rdb:' === substr( strtolower( trim( $use_cmd[1] ) ), 0, 4 ) || 'rdb:' === substr( strtolower( trim( $dbs ) ), 0, 4 )) ) {
+                            $dbs = $use_cmd[1];
+                            $wpdadb = WPDADB::get_db_connection( $dbs );
+                            if ( null !== $wpdadb ) {
+                                $wpdadb->suppress_errors( true );
+                            }
+                            $reconnected = true;
+                        }
+                    }
+                    $exequery = true;
+                    $var_name = null;
+                    $wpdadb_saved = null;
+                    switch ( strtolower( substr( trim( $sqlcmds[$i] ), 0, 7 ) ) ) {
+                        case 'wpdavar':
+                            $use_cmd = explode( ' ', trim( $sqlcmds[$i] ) );
+                            //phpcs:ignore - 8.1 proof
+                            $var_name = ( isset( $use_cmd[1] ) ? $use_cmd[1] : null );
+                            if ( $var_name !== null ) {
+                                $vars[$var_name] = $tabs;
+                                $tmps[$var_name] = $qb->wpdavar_table( $wpdadb, $tabs[$i - 1], $var_name );
+                                $exequery = false;
+                            }
+                            break;
+                        case 'wpdatmp':
+                            $use_cmd = explode( ' ', trim( $sqlcmds[$i] ) );
+                            $var_name = ( isset( $use_cmd[1] ) ? $use_cmd[1] : null );
+                            if ( $var_name !== null ) {
+                                $wpdadb_saved = $qb->wpdatmp_table(
+                                    $wpdadb,
+                                    $tmps[$var_name],
+                                    $tmps[$var_name]['data'],
+                                    $tmps[$var_name]['table_name'],
+                                    $var_name
+                                );
+                                $exequery = false;
+                            }
+                            $var_name = null;
+                            // reset
+                            break;
+                    }
+                    if ( !$reconnected && $exequery && null !== $wpdadb ) {
+                        $wpdadb->query( $sqlcmds[$i] );
+                    }
+                    if ( null === $var_name ) {
+                        $status = ( null !== $wpdadb_saved ? $wpdadb_saved : (( null !== $wpdadb ? clone $wpdadb : null )) );
+                        $tabs[] = array(
+                            'cmd'     => $sqlcmds[$i],
+                            'status'  => $status,
+                            'columns' => $columns,
+                        );
+                    } else {
+                        $tabs[] = array(
+                            'cmd'     => $sqlcmds[$i],
+                            'status'  => ( isset( $vars[$var_name]['status'] ) ? $vars[$var_name]['status'] : null ),
+                            'wpdavar' => ( isset( $tmps[$var_name] ) ? $tmps[$var_name] : null ),
+                            'columns' => null,
+                        );
+                    }
+                    if ( null === $wpdadb || '' !== $wpdadb->last_error ) {
+                        break;
+                    }
+                }
+                $response['tabs'] = $tabs;
+            } else {
+                $response['columns'] = WPDA::get_columns_from_query( $dbs, $query );
+                // Process single SQL command
+                if ( '' !== $limit && 'select' === strtolower( substr( $query, 0, 6 ) ) ) {
+                    $query .= " limit {$limit} ";
+                }
+                if ( null !== $wpdadb ) {
+                    $wpdadb->query( $query );
+                }
+                $response['cmd'] = $query;
+                $response['status'] = $wpdadb;
+            }
+        } else {
+            $response['status'] = '<strong>WP Data Access error:</strong> Query not allowed - WordPress tables are protected';
+        }
+        return $response;
+    }
+
+    public function add_query( $query_name, $query ) {
+        $wpda_query_builder_data = $this->get_query_list();
+        $wpda_query_builder_data[$query_name] = $query;
+        $this->update_query_list( $wpda_query_builder_data );
+        //            if ( wpda_freemius()->can_use_premium_code__premium_only() ) {
+        //                $this->del_visual_query( $query_name );
+        //            }
+    }
+
+    public function add_query_global( $query_name, $query ) {
+        $wpda_query_builder_data = $this->get_query_list_global();
+        $wpda_query_builder_data[$query_name] = $query;
+        $this->update_query_list_global( $wpda_query_builder_data );
+        //            if ( wpda_freemius()->can_use_premium_code__premium_only() ) {
+        //                $this->del_visual_query( $query_name );
+        //            }
+    }
+
+    public function get_hints( $dbs ) {
+        $tables = WPDA_Dictionary_Lists::get_tables( true, $dbs );
+        $hints = array();
+        foreach ( $tables as $table ) {
+            $columns = WPDA_Dictionary_Lists::get_table_columns( $table['table_name'], $dbs );
+            $hint_cols = array();
+            foreach ( $columns as $column ) {
+                $hint_cols[] = $column['column_name'];
+            }
+            $hints[$table['table_name']] = $hint_cols;
+        }
+        return $hints;
     }
 
 }
