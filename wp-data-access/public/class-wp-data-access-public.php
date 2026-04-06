@@ -288,7 +288,7 @@ class WP_Data_Access_Public {
         }
         if ( isset( $_POST['is_fb_preview'], $_GET['et_pb_preview'] ) && 'true' === $_POST['is_fb_preview'] && 'true' === $_GET['et_pb_preview'] ) {
             // Divi Visual Builder preview not working!
-            // Styles are not properly loaded into the Divi Visual Builder.
+            // Dynamic resources are not properly loaded into the Divi Visual Builder.
             ob_start();
             ?>
 			<div style="width: 100%; border: 1px solid #ccc; padding: 50px; display: grid; gap: 20px; background-color: rgb(249,249,249); border-radius: 5px;">

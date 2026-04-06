@@ -351,7 +351,10 @@ namespace WPDataAccess\Simple_Form {
 				} else {
 					$this->item_value = (string) $args['item_value']; //phpcs:ignore - 8.1 proof
 				}
-				if ( 'CURRENT_TIMESTAMP' !== $args['item_default_value'] ) {
+				if (
+                    'current_timestamp()' !== strtolower( (string) $args['item_default_value'] ) &&
+                    'current_timestamp' !== strtolower( (string) $args['item_default_value'] )
+                ) {
 					$this->item_default_value = $args['item_default_value'];
 				}
 				$this->item_extra = $args['item_extra'];

@@ -157,57 +157,62 @@ class WP_Data_Access_Switch {
     }
 
     private static function flush_rewrite_rules() {
+        // Unscheduled all WP Data Access events
+        self::unschedule_event( 'wpda_data_backup' );
+        self::unschedule_event( \WPDataAccess\Query_Builder\WPDA_Query_Builder_Scheduler::SCHEDULER_HOOK_NAME );
+        self::unschedule_event( \WPDataAccess\Utilities\WPDA_Export_Scheduler::SCHEDULER_HOOK_NAME );
+    }
+
+    private static function unschedule_event( $hook ) {
+        $crons = _get_cron_array();
+        foreach ( $crons as $timestamp => $cron ) {
+            if ( isset( $cron[$hook] ) ) {
+                foreach ( $cron[$hook] as $event ) {
+                    if ( isset( $event['args'] ) ) {
+                        wp_unschedule_event( $timestamp, $hook, $event['args'] );
+                    }
+                }
+            }
+        }
     }
 
     private static function set_legacy_tools() {
         // Get current legacy tool settings
         $stored_legacy_tools = get_option( 'wpda_plugin_legacy_tools' );
-        $option_legacy_tools = \WPDataAccess\Utilities\WPDA_Legacy_Tool_Visibility::get();
-        // Update legacy tool settings
-        if ( 0 === $option_legacy_tools['tables'] ) {
-            $option_legacy_tools['tables'][0] = false;
-        } else {
-            if ( false === $stored_legacy_tools ) {
-                $option_legacy_tools['tables'][0] = true;
+        if ( false === $stored_legacy_tools ) {
+            // Use default for fresh installation
+            // Update if legacy tool is actively used
+            $option_legacy_tools = \WPDataAccess\Utilities\WPDA_Legacy_Tool_Visibility::get();
+            $option_updated = false;
+            if ( 0 < $option_legacy_tools['tables'][1] ) {
+                $option_legacy_tools['tables'] = array(true, $option_legacy_tools['tables'][1]);
+                $option_updated = true;
+            }
+            if ( 0 < $option_legacy_tools['forms'][1] ) {
+                $option_legacy_tools['forms'] = array(true, $option_legacy_tools['forms'][1]);
+                $option_updated = true;
+            }
+            if ( 0 < $option_legacy_tools['templates'][1] ) {
+                $option_legacy_tools['templates'] = array(true, $option_legacy_tools['templates'][1]);
+                $option_updated = true;
+            }
+            if ( 0 < $option_legacy_tools['designer'][1] ) {
+                $option_legacy_tools['designer'] = array(true, $option_legacy_tools['designer'][1]);
+                $option_updated = true;
+            }
+            if ( 0 < $option_legacy_tools['dashboards'][1] ) {
+                $option_legacy_tools['dashboards'] = array(true, $option_legacy_tools['dashboards'][1]);
+                $option_updated = true;
+            }
+            if ( 0 < $option_legacy_tools['charts'][1] ) {
+                $option_legacy_tools['charts'] = array(true, $option_legacy_tools['charts'][1]);
+                $option_updated = true;
+            }
+            if ( $option_updated ) {
+                // Save legacy tool settings.
+                WPDA::set_option( WPDA::OPTION_PLUGIN_LEGACY_TOOLS, $option_legacy_tools );
             }
         }
-        if ( 0 === $option_legacy_tools['forms'] ) {
-            $option_legacy_tools['forms'][0] = false;
-        } else {
-            if ( false === $stored_legacy_tools ) {
-                $option_legacy_tools['forms'][0] = true;
-            }
-        }
-        if ( 0 === $option_legacy_tools['templates'] ) {
-            $option_legacy_tools['templates'][0] = false;
-        } else {
-            if ( false === $stored_legacy_tools ) {
-                $option_legacy_tools['templates'][0] = true;
-            }
-        }
-        if ( 0 === $option_legacy_tools['designer'] ) {
-            $option_legacy_tools['designer'][0] = false;
-        } else {
-            if ( false === $stored_legacy_tools ) {
-                $option_legacy_tools['designer'][0] = true;
-            }
-        }
-        if ( 0 === $option_legacy_tools['dashboards'] ) {
-            $option_legacy_tools['dashboards'][0] = false;
-        } else {
-            if ( false === $stored_legacy_tools ) {
-                $option_legacy_tools['dashboards'][0] = true;
-            }
-        }
-        if ( 0 === $option_legacy_tools['charts'] ) {
-            $option_legacy_tools['charts'][0] = false;
-        } else {
-            if ( false === $stored_legacy_tools ) {
-                $option_legacy_tools['charts'][0] = true;
-            }
-        }
-        // Save legacy tool settings.
-        WPDA::set_option( WPDA::OPTION_PLUGIN_LEGACY_TOOLS, $option_legacy_tools );
     }
 
 }

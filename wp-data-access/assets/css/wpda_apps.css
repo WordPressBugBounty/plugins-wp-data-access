@@ -8,7 +8,7 @@
     float: right;
     position: absolute;
     right: -12px;
-    top: 10px;
+    top: 2px;
 }
 
 .wrap.wpda-explorer-backend .wpda-pp-container .pp-container-explorer .pp-container-admin .pp-explorer-header {
@@ -50,6 +50,14 @@
 }
 
 .wpda-pp-container .pp-container-explorer input[type=text] {
+    min-height: unset;
+}
+
+/* Remove inset from top search box and unset height */
+.wpda-pp-container .pp-container-explorer .pp-sub-container-explorer > div.MuiPaper-root .MuiFormControl-root.pp-explorer-search-field fieldset {
+    inset: 0;
+}
+.wpda-pp-container .pp-container-explorer .pp-sub-container-explorer > div.MuiPaper-root .MuiFormControl-root.pp-explorer-search-field input {
     min-height: unset;
 }
 
@@ -115,7 +123,7 @@
     background-color: transparent;
     color: #1d2327;
     position: absolute;
-    top: 7px;
+    top: 2px;
 }
 
 .wrap.wpda-apps-backend .wpda-pp-container .pp-container-app-builder > div.MuiBox-root.pp-applist > header .pp-applist-toolbar {
@@ -245,10 +253,25 @@ div[role=presentation].MuiPopover-root.MuiModal-root input[type=checkbox].Privat
     box-shadow: unset;
 }
 
-/* Hide SQL Query Builder header when not in full screen mode */
-div.pp-container-query-builder > .pp-container > header {
+/* Hide SQL Query Builder header on back-end when not in full screen mode */
+.wpda-query-builder-backend div.pp-container-query-builder > .pp-container > header {
     display: none;
 }
 div.wrap.wpda-query-builder-backend h1.wp-heading-inline {
     margin-bottom: 0 !important;
+}
+div[role=presentation].MuiDialog-root.MuiModal-root input[type=checkbox]:disabled {
+    opacity: 0 !important;
+}
+
+/* WP 7 dashboard */
+#wpwrap .wrap.wpda-apps-backend input,
+#wpwrap .wrap.wpda-explorer-backend input,
+#pp-setting-drawer-root input {
+    min-height: 30px;
+    line-height: 2;
+}
+
+#wpwrap .pp-container-query-builder input[type=text] {
+    min-height: unset;
 }

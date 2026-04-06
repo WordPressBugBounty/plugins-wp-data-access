@@ -25,7 +25,7 @@ namespace WPDataAccess\Settings;
  * @author  Peter Schulz
  * @since   1.0.0
  */
-class WPDA_Settings {
+abstract class WPDA_Settings {
     /**
      * Menu slug of the current page
      *
@@ -52,7 +52,7 @@ class WPDA_Settings {
      *
      * Member $this->tabs is filled in the constructor to support i18n.
      *
-     * If a request was send for recreation of the repository, this is done in the constructor. This action must
+     * If a request was sent for recreation of the repository, this is done in the constructor. This action must
      * be performed before checking the user menu model, which is part of the constructor as well, necessary to
      * inform the user if any errors were reported.
      *
@@ -75,15 +75,16 @@ class WPDA_Settings {
             'plugin'     => 'Plugin',
             'backend'    => 'Back-end',
             'frontend'   => 'Front-end',
-            'datatables' => 'Data Tables',
-            'databackup' => 'Data Backup',
             'uninstall'  => 'Uninstall',
             'repository' => 'Repository',
-            'roles'      => 'Roles',
             'mail'       => 'Mail',
+            'drives'     => 'Drives',
+            'legacy'     => 'Legacy Tools',
             'system'     => 'System Info',
         );
     }
+
+    protected abstract function add_content();
 
     /**
      * Show setting page

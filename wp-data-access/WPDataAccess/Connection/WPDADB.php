@@ -255,7 +255,26 @@ namespace WPDataAccess\Connection {
 			}
 		}
 
-		/**
+        /**
+         * Disable remote database connection
+         *
+         * @param string $database Remote database connection name.
+         * @return bool
+         */
+        public static function dis_remote_database( $database, $disabled ) {
+            self::load_remote_databases();
+
+            if ( false === self::get_remote_database( $database, true ) ) {
+                return false;
+            } else {
+                self::$remote_databases[ $database ]['disabled'] = $disabled;
+                self::save_remote_databases();
+
+                return true;
+            }
+        }
+
+        /**
 		 * Update remote connection
 		 *
 		 * @param string $database Database name.

@@ -758,3 +758,23 @@ h1.wp-heading-inline a {
     padding: 10px;
     text-align: center;
 }
+
+/* WP 7 dashboard */
+#wpwrap .button,
+#wpwrap select,
+#wpwrap input[type=date],
+#wpwrap input[type=datetime-local],
+#wpwrap input[type=datetime],
+#wpwrap input[type=email],
+#wpwrap input[type=month],
+#wpwrap input[type=number],
+#wpwrap input[type=password],
+#wpwrap input[type=search],
+#wpwrap input[type=tel],
+#wpwrap input[type=text],
+#wpwrap input[type=time],
+#wpwrap input[type=url],
+#wpwrap input[type=week] {
+    min-height: 30px;
+    line-height: 2;
+}

@@ -1997,15 +1997,6 @@ EOT;
 			</form>
 			<?php 
         $this->wpda_import->add_button();
-        ?>
-			<a href="javascript:void(0)"
-			   onclick="jQuery('#wpda_linkto_backup').submit()"
-			   class="page-title-action wpda_tooltip"
-			   title="Create unattended export jobs"
-			><i class="fas fa-cloud-download wpda_icon_on_button"></i> <?php 
-        echo __( 'Data Backup' );
-        ?></a>
-			<?php 
     }
 
     /**

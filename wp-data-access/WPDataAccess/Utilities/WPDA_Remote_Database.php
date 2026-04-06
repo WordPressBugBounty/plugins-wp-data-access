@@ -38,6 +38,8 @@ class WPDA_Remote_Database {
                     $this->drop_db();
                 } elseif ( 'edit_db' === $_REQUEST['action'] ) {
                     $this->edit_db();
+                } elseif ( 'toggle_db' === $_REQUEST['action'] ) {
+                    $this->toggle_db();
                 }
             }
         }
@@ -163,6 +165,52 @@ class WPDA_Remote_Database {
         }
     }
 
+    private function toggle_db() {
+        if ( !$this->check_wpnonce( 'wpda-toggle-db-from-data-explorer-' . WPDA::get_current_user_login(), '_wpnoncetoggledb' ) ) {
+            return;
+        }
+        if ( !isset( $_REQUEST['database'], $_REQUEST['disabled'] ) ) {
+            $msg = new WPDA_Message_Box(array(
+                'message_text'           => sprintf( __( 'Cannot drop database [missing argument]', 'wp-data-access' ) ),
+                'message_type'           => 'error',
+                'message_is_dismissible' => false,
+            ));
+            $msg->box();
+            return;
+        }
+        global $wpdb;
+        $database = str_replace( '`', '', sanitize_text_field( wp_unslash( $_REQUEST['database'] ) ) );
+        // input var okay.
+        $disabled = $_REQUEST['disabled'] === 'true';
+        // input var okay.
+        if ( 'rdb:' === substr( $database, 0, 4 ) ) {
+            // Toogle remote database
+            if ( false === WPDADB::get_remote_database( $database, true ) ) {
+                $msg = new WPDA_Message_Box(array(
+                    'message_text'           => sprintf( __( 'Cannot disable remote database connection `%s` [remote database connection not found]', 'wp-data-access' ), $database ),
+                    'message_type'           => 'error',
+                    'message_is_dismissible' => false,
+                ));
+                $msg->box();
+            } else {
+                if ( false === WPDADB::dis_remote_database( $database, $disabled ) ) {
+                    $msg = new WPDA_Message_Box(array(
+                        'message_text'           => sprintf( __( 'Cannot disable remote database connection `%s`', 'wp-data-access' ), $database ),
+                        'message_type'           => 'error',
+                        'message_is_dismissible' => false,
+                    ));
+                    $msg->box();
+                } else {
+                    $msg = new WPDA_Message_Box(array(
+                        'message_text' => sprintf( __( 'Remote database connection `%s` disabled', 'wp-data-access' ), $database ),
+                    ));
+                    $msg->box();
+                    $this->switch_schema_name = $wpdb->dbname;
+                }
+            }
+        }
+    }
+
     private function drop_db() {
         if ( !$this->check_wpnonce( 'wpda-drop-db-from-data-explorer-' . WPDA::get_current_user_login(), '_wpnoncedropdb' ) ) {
             return;
@@ -198,7 +246,7 @@ class WPDA_Remote_Database {
                     $msg->box();
                 } else {
                     $msg = new WPDA_Message_Box(array(
-                        'message_text' => sprintf( __( 'Remove database `%s` deleted', 'wp-data-access' ), $database ),
+                        'message_text' => sprintf( __( 'Remote database connection `%s` deleted', 'wp-data-access' ), $database ),
                     ));
                     $msg->box();
                     $this->switch_schema_name = $wpdb->dbname;
@@ -412,6 +460,9 @@ class WPDA_Remote_Database {
 			<?php 
         $this->drop_database();
         ?>
+            <?php 
+        $this->toggle_database();
+        ?>
 
 			<?php 
         $this->js();
@@ -420,7 +471,7 @@ class WPDA_Remote_Database {
 
     private function manage_databases() {
         $tree = new WPDA_Tree();
-        $dbs = $tree->get_dbs();
+        $dbs = $tree->get_dbs( true );
         $this->rdb = array();
         $mdbs = array(
             '' => '',
@@ -433,7 +484,7 @@ class WPDA_Remote_Database {
                     $mdbs[$db['dbs']] = $db['dbs_type'];
                     if ( 'remote' === $db['dbs_type'] ) {
                         // Store remote database info.
-                        $this->rdb[$db['dbs']] = WPDADB::get_remote_database( $db['dbs'] );
+                        $this->rdb[$db['dbs']] = WPDADB::get_remote_database( $db['dbs'], true );
                     }
                 }
             }
@@ -459,7 +510,7 @@ class WPDA_Remote_Database {
 			<div class="restyle_link">
 				<strong>NOTE</strong>
 				Please activate your Premium Data Services access <a href="options-general.php?page=wpdataaccess&tab=pds">here</a> to remotely connect to foreign DBMSs and remote files.
-				<a href="https://wpdataaccess.com/docs/remote-connection-wizard/remote-wizard/" class="restyle_link" target="_blank">(read more...)</a>
+				<a href="https://docs.remote.wpdataaccess.com/pds/remote-wizard.html" class="restyle_link" target="_blank">(read more...)</a>
 			</div>
 			<?php 
     }
@@ -489,7 +540,7 @@ class WPDA_Remote_Database {
                    style="vertical-align:middle;"
                    title="<?php 
         echo __( "Create function wpda_get_wp_user_id() to access the WordPress user ID from database views", 'wp-data-access' );
-        ?>">&nbsp;</a>
+        ?>"></a>
 
             </div>
 
@@ -506,9 +557,9 @@ class WPDA_Remote_Database {
 				<input type="text" name="edit_local_database" id="edit_local_database" readonly>
 				<a href="javascript:void(0)"
 				   id="edit_local_database_action"
-				   class="button button-primary"><i
-							class="fas fa-trash wpda_icon_on_button"></i> Drop database
-				</a>
+                   title="Drop Database"
+				   class="button button-secondary wpda_tooltip"><i
+							class="fas fa-trash wpda_icon_on_button"></i></a>
 			</div>
 
 			<?php 
@@ -533,14 +584,36 @@ class WPDA_Remote_Database {
 					<input type="hidden"
 						   name="edit_remote_database_old"
 						   id="edit_remote_database_old">
-					<a href="javascript:void(0)"
-					   id="remote_local_database_action"
-					   class="button button-secondary"><i
-								class="fas fa-trash wpda_icon_on_button"></i> Drop database
-					</a>
+                    <a href="javascript:void(0)"
+                       id="disable_remote_database"
+                       style="display: none"
+                       title="Disable Remote Connection"
+                       class="button button-secondary wpda_tooltip"><i
+                                class="fas fa-ban wpda_icon_on_button"></i></a>
+                    <a href="javascript:void(0)"
+                       id="enable_remote_database"
+                       style="display: none"
+                       title="Enabled Remote Connection"
+                       class="button button-secondary wpda_tooltip"><i
+                                class="fas fa-check wpda_icon_on_button"></i></a>
+                    <a href="javascript:void(0)"
+                       id="remote_local_database_action"
+                       title="Drop Database"
+                       class="button button-secondary wpda_tooltip"><i
+                                class="fas fa-trash wpda_icon_on_button"></i></a>
 				</div>
 
-				<div>
+                <div
+                    id="remote_connection_is_disabled"
+                    style="display: none"
+                >
+                    <label class="database_item_label"></label>
+                    <span style="color: red; line-height: 30px">
+                        This remote database connection is currently disabled.
+                    </span>
+                </div>
+
+                <div>
 					<label for="edit_remote_host" class="database_item_label">MySQL host:</label>
 					<input type="text"
 						   name="edit_remote_host"
@@ -851,6 +924,25 @@ class WPDA_Remote_Database {
 			<?php 
     }
 
+    private function toggle_database() {
+        ?>
+
+            <form id="wpda_form_toggle_db"
+                  method="post" action="?page=<?php 
+        echo esc_attr( $this->page );
+        ?>"
+            >
+                <input type="hidden" name="database" id="toggle_database">
+                <input type="hidden" name="action" value="toggle_db">
+                <input type="hidden" name="disabled" id="toggle_database_value">
+                <?php 
+        wp_nonce_field( 'wpda-toggle-db-from-data-explorer-' . WPDA::get_current_user_login(), '_wpnoncetoggledb', false );
+        ?>
+            </form>
+
+            <?php 
+    }
+
     private function js() {
         ?>
 
@@ -1024,6 +1116,15 @@ class WPDA_Remote_Database {
 								jQuery("#edit_remote_certificate_path").val(rdb.ssl_path)
 								jQuery("#edit_remote_specified_cipher").val(rdb.ssl_cipher)
 
+                                if (rdb.disabled === true) {
+                                    jQuery("#enable_remote_database").show();
+                                    jQuery("#disable_remote_database").hide();
+                                    jQuery("#remote_connection_is_disabled").show();
+                                } else {
+                                    jQuery("#disable_remote_database").show();
+                                    jQuery("#enable_remote_database").hide();
+                                }
+
 								if (rdb.ssl === "on") {
 									jQuery('#edit_remote_database_block_ssl').show();
 								} else {
@@ -1067,6 +1168,20 @@ class WPDA_Remote_Database {
 							jQuery("#wpda_form_drop_db").submit();
 						}
 					})
+
+                    jQuery("#disable_remote_database").on('click', function() {
+                        if (confirm('Are you sure you want to disable this database?')) {
+                            jQuery("#toggle_database").val(jQuery("#edit_remote_database").val())
+                            jQuery("#toggle_database_value").val(true);
+                            jQuery("#wpda_form_toggle_db").submit();
+                        }
+                    })
+
+                    jQuery("#enable_remote_database").on('click', function() {
+                        jQuery("#toggle_database").val(jQuery("#edit_remote_database").val())
+                        jQuery("#toggle_database_value").val(false);
+                        jQuery("#wpda_form_toggle_db").submit();
+                    })
 				});
 
 				var wpda_rdb = <?php 
@@ -1160,6 +1275,10 @@ class WPDA_Remote_Database {
 					text-decoration: none;
 					font-weight: 700;
 				}
+
+                #manage_db_create_wp_user_access:before {
+                    line-height: 28px;
+                }
 			</style>
 
 			<?php 

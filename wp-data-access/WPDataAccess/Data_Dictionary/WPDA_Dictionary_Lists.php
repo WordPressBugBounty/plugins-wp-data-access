@@ -207,54 +207,58 @@ namespace WPDataAccess\Data_Dictionary {
 			}
 		}
 
-		public static function get_table_widget_info() {
-			$table_info = array();
+        public static function get_table_widget_info_ajax() {
+            $table_info = array();
 
-			if ( isset( $_POST['wpdaschema_name'] ) && isset( $_POST['table_name'] ) && isset( $_POST['wpda_wpnonce'] ) ) {
-				$wpnonce = sanitize_text_field( wp_unslash( $_POST['wpda_wpnonce'] ) ); // input var okay.
-				if ( wp_verify_nonce( $wpnonce, 'wpda-getdata-access-' . WPDA::get_current_user_login() ) ) {
-					$schema_name = isset( $_POST['wpdaschema_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wpdaschema_name'] ) ) : ''; // input var okay.
-					$table_name  = sanitize_text_field( wp_unslash( $_POST['table_name'] ) ); // input var okay.
-					$wpdadb      = WPDADB::get_db_connection( $schema_name );
+            if ( isset( $_POST['wpdaschema_name'] ) && isset( $_POST['table_name'] ) && isset( $_POST['wpda_wpnonce'] ) ) {
+                $wpnonce = sanitize_text_field(wp_unslash($_POST['wpda_wpnonce'])); // input var okay.
+                if (wp_verify_nonce($wpnonce, 'wpda-getdata-access-' . WPDA::get_current_user_login())) {
+                    $schema_name = isset($_POST['wpdaschema_name']) ? sanitize_text_field(wp_unslash($_POST['wpdaschema_name'])) : ''; // input var okay.
+                    $table_name = sanitize_text_field(wp_unslash($_POST['table_name'])); // input var okay.
+                    $table_info = self::get_table_widget_info( $schema_name, $table_name );
+                }
+            }
 
-					if ( $wpdadb !== null ) {
-						$query   = $wpdadb->prepare(
-							'
-							  SELECT column_name AS column_name,
-							         column_type AS column_type
-								FROM information_schema.columns
-							   WHERE table_schema = %s
-								 AND table_name   = %s
-							   ORDER BY ordinal_position
-							',
-							array(
-								$wpdadb->dbname,
-								$table_name,
-							)
-						);
-						$columns = $wpdadb->get_results( $query, 'ARRAY_A' );
+            echo json_encode( $table_info );
+        }
 
-						$schema_name = $wpdadb->dbname;
-						$table_name  = str_replace( '`', '', $table_name );
-						$indexes_dbs = $wpdadb->get_results(
-							"show indexes from `{$schema_name}`.`{$table_name}`",
-							'ARRAY_A'
-						);
+		public static function get_table_widget_info( $schema_name, $table_name ) {
+            $wpdadb = WPDADB::get_db_connection( $schema_name );
 
-						$indexes = array();
-						foreach ( $indexes_dbs as $index_dbs ) {
-							$indexes[] = array_change_key_case( (array) $index_dbs ); //phpcs:ignore - 8.1 proof
-						}
+            if ( $wpdadb !== null ) {
+                $query = $wpdadb->prepare(
+                    '
+                      SELECT column_name AS column_name,
+                             column_type AS column_type
+                        FROM information_schema.columns
+                       WHERE table_schema = %s
+                         AND table_name   = %s
+                       ORDER BY ordinal_position
+                    ',
+                    array(
+                        $wpdadb->dbname,
+                        $table_name,
+                    )
+                );
+                $columns = $wpdadb->get_results($query, 'ARRAY_A');
 
-						$table_info = array(
-							'columns' => $columns,
-							'indexes' => $indexes,
-						);
-					}
-				}
-			}
+                $schema_name = $wpdadb->dbname;
+                $table_name = str_replace('`', '', $table_name);
+                $indexes_dbs = $wpdadb->get_results(
+                    "show indexes from `{$schema_name}`.`{$table_name}`",
+                    'ARRAY_A'
+                );
 
-			echo json_encode( $table_info );
+                $indexes = array();
+                foreach ($indexes_dbs as $index_dbs) {
+                    $indexes[] = array_change_key_case((array)$index_dbs); //phpcs:ignore - 8.1 proof
+                }
+
+                return array(
+                    'columns' => $columns,
+                    'indexes' => $indexes,
+                );
+            }
 		}
 
 		/**

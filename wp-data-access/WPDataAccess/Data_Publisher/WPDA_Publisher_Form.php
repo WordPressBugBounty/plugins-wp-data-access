@@ -108,7 +108,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
         );
         $this->check_table_type = false;
         $this->title = 'Data Tables';
-        $args['help_url'] = 'https://wpdataaccess.com/docs/data-tables/data-tables-getting-started/';
+        $args['help_url'] = 'https://docs.legacy.wpdataaccess.com/docs/data-tables-getting-started/';
         parent::__construct(
             $schema_name,
             $table_name,

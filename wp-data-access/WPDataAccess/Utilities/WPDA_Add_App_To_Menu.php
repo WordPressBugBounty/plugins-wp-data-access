@@ -14,7 +14,6 @@ class WPDA_Add_App_To_Menu {
 
 		$apps = WPDA_App_Model::add_to_dashboard_menu();
 		foreach ( $apps as $app ) {
-
 			$settings = json_decode( $app['app_settings'], true );
 			if (
 				! isset(
@@ -39,7 +38,24 @@ class WPDA_Add_App_To_Menu {
 			}
 
 			$title = $settings['settings']['app_menu_title'];
-			if ( is_admin() ) {
+            $icon = 'dashicons-database-view';
+            switch ($app['app_type']) {
+                case 1:
+                case 3:
+                case 4:
+                    $icon = 'dashicons-edit';
+                    break;
+                case 2:
+                    $icon = 'dashicons-location';
+                    break;
+                case 6:
+                    $icon = 'dashicons-chart-bar';
+                    break;
+                case 7:
+                    $icon = 'dashicons-dashboard';
+                    break;
+            }
+            if ( is_admin() ) {
 				// Add app to dashboard menu
 				add_menu_page(
 					$title,
@@ -47,7 +63,7 @@ class WPDA_Add_App_To_Menu {
 					WPDA::get_current_user_capability(),
 					$title,
 					null,
-					'dashicons-database-view'
+                    $icon
 				);
 
 				add_submenu_page(

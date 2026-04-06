@@ -29,7 +29,7 @@ class WPDA_Data_Explorer extends WPDA_Container {
         } else {
             $this->show_on_frontend();
         }
-        $this->add_client();
+        $this->add_client( 'de' );
     }
 
     private function show_on_backend() {

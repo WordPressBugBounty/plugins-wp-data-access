@@ -5,6 +5,7 @@ namespace WPDataAccess\Dashboard;
 
 use WP_Data_Access_Admin;
 use WPDataAccess\Data_Dictionary\WPDA_Dictionary_Lists;
+use WPDataAccess\Plugin_Table_Models\WPDA_App_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_Design_Table_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_Publisher_Model;
 use WPDataAccess\Plugin_Table_Models\WPDP_Project_Model;
@@ -15,7 +16,7 @@ use WPDataAccess\Utilities\WPDA_Message_Box;
 use WPDataAccess\WPDA;
 use WPDataAccess\Connection\WPDADB;
 use WPDataProjects\WPDP;
-use WPDataAccess\Settings\WPDA_Settings_Dashboard;
+use WPDataAccess\Settings\WPDA_Settings_Legacy_Dashboard;
 /**
  * Dashboard class
  */
@@ -332,81 +333,101 @@ class WPDA_Dashboard {
      * @return string
      */
     protected function get_help_url() {
-        $help_root = 'https://wpdataaccess.com/docs/';
+        $help_url = 'https://docs.wpdataaccess.com/';
         if ( isset( $_REQUEST['page'] ) ) {
             // phpcs:ignore WordPress.Security.NonceVerification
             switch ( $_REQUEST['page'] ) {
                 // phpcs:ignore WordPress.Security.NonceVerification
                 case \WP_Data_Access_Admin::PAGE_MAIN:
-                    $help_url = $help_root . 'data-explorer/data-explorer-getting-started/';
+                    $help_url = 'https://docs.legacy.wpdataaccess.com/docs/data-explorer-getting-started/';
+                    break;
+                case \WP_Data_Access_Admin::PAGE_APPS:
+                    $help_url = 'https://docs.rad.wpdataaccess.com/';
                     break;
                 case \WP_Data_Access_Admin::PAGE_QUERY_BUILDER:
-                    $help_url = $help_root . 'sql-query-builder/query-builder-getting-started/';
+                    $help_url = 'https://docs.sql.wpdataaccess.com/';
                     break;
                 case \WP_Data_Access_Admin::PAGE_DESIGNER:
-                    $help_url = $help_root . 'data-designer/data-designer-getting-started/';
+                    $help_url = 'https://docs.legacy.wpdataaccess.com/docs/data-designer-getting-started/';
                     break;
                 case \WP_Data_Access_Admin::PAGE_PUBLISHER:
-                    $help_url = $help_root . 'data-tables/data-tables-getting-started/';
+                    $help_url = 'https://docs.legacy.wpdataaccess.com/docs/data-tables-getting-started/';
                     break;
                 case \WP_Data_Access_Admin::PAGE_DASHBOARD:
-                    $help_url = $help_root . 'dashboards-and-widgets/bi-getting-started/';
+                    $help_url = 'https://docs.legacy.wpdataaccess.com/docs/bi-getting-started/';
                     break;
                 case \WP_Data_Access_Admin::PAGE_CHARTS:
-                    $help_url = $help_root . 'charts-legacy/chart-widgets/';
+                    $help_url = 'https://docs.legacy.wpdataaccess.com/docs/chart-widgets/';
                     break;
                 case WPDP::PAGE_MAIN:
-                    $help_url = $help_root . 'data-forms/data-projects/';
+                    $help_url = 'https://docs.legacy.wpdataaccess.com/docs/data-projects/';
                     break;
                 case WPDP::PAGE_TEMPLATES:
-                    $help_url = $help_root . 'templates/project-templates/';
+                    $help_url = 'https://docs.legacy.wpdataaccess.com/docs/project-templates/';
                     break;
                 case 'wpdataaccess':
                     $current_tab = ( isset( $_REQUEST['tab'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['tab'] ) ) : 'plugin' );
                     // phpcs:ignore WordPress.Security.NonceVerification
                     switch ( $current_tab ) {
-                        case 'backend':
-                            $help_url = $help_root . 'plugin-settings/back-end/';
-                            break;
-                        case 'frontend':
-                            $help_url = $help_root . 'plugin-settings/front-end/';
+                        case 'plugin':
+                            $help_url = 'https://docs.settings.wpdataaccess.com/plugin.html';
                             break;
                         case 'pds':
-                            $help_url = $help_root . 'remote-connection-wizard/start-here/';
+                            $help_url = 'https://docs.settings.wpdataaccess.com/pds.html';
                             break;
-                        case 'dashboard':
-                            $help_url = $help_root . 'plugin-settings/dashboard/';
+                        case 'backend':
+                            $help_url = 'https://docs.settings.wpdataaccess.com/back-end.html';
                             break;
-                        case 'datatables':
-                            $help_url = $help_root . 'plugin-settings/data-table/';
-                            break;
-                        case 'dataforms':
-                            $help_url = $help_root . 'plugin-settings/data-form/';
-                            break;
-                        case 'databackup':
-                            $help_url = $help_root . 'plugin-settings/data-backup/';
+                        case 'frontend':
+                            $help_url = 'https://docs.settings.wpdataaccess.com/frond-end.html';
                             break;
                         case 'uninstall':
-                            $help_url = $help_root . 'plugin-settings/uninstall/';
+                            $help_url = 'https://docs.settings.wpdataaccess.com/uninstall.html';
                             break;
                         case 'repository':
-                            $help_url = $help_root . 'plugin-settings/manage-repository/';
+                            $help_url = 'https://docs.settings.wpdataaccess.com/repository.html';
                             break;
-                        case 'roles':
-                            $help_url = $help_root . 'plugin-settings/manage-roles/';
+                        case 'mail':
+                            $help_url = 'https://docs.settings.wpdataaccess.com/mail.html';
+                            break;
+                        case 'drives':
+                            $help_url = 'https://docs.settings.wpdataaccess.com/drives.html';
                             break;
                         case 'system':
-                            $help_url = $help_root . 'plugin-settings/system-info/';
+                            $help_url = 'https://docs.settings.wpdataaccess.com/system-info.html';
                             break;
-                        default:
-                            $help_url = $help_root . 'plugin-settings/getting-started/';
+                        case 'legacy':
+                            $vtab = ( isset( $_REQUEST['vtab'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['vtab'] ) ) : 'plugin' );
+                            // phpcs:ignore WordPress.Security.NonceVerification
+                            switch ( $vtab ) {
+                                case 'backend':
+                                    $help_url = 'https://docs.settings.wpdataaccess.com/legacy-tools-back-end.html';
+                                    break;
+                                case 'frontend':
+                                    $help_url = 'https://docs.settings.wpdataaccess.com/legacy-tools-front-end.html';
+                                    break;
+                                case 'datatables':
+                                    $help_url = 'https://docs.settings.wpdataaccess.com/legacy-tools-data-tables.html';
+                                    break;
+                                case 'dataforms':
+                                    $help_url = 'https://docs.settings.wpdataaccess.com/legacy-tools-data-forms.html';
+                                    break;
+                                case 'dashboard':
+                                    $help_url = 'https://docs.settings.wpdataaccess.com/legacy-tools-dashboard.html';
+                                    break;
+                                case 'databackup':
+                                    $help_url = 'https://docs.settings.wpdataaccess.com/legacy-tools-data-backup.html';
+                                    break;
+                                case 'roles':
+                                    $help_url = 'https://docs.settings.wpdataaccess.com/legacy-tools-roles.html';
+                                    break;
+                                default:
+                                    $help_url = 'https://docs.settings.wpdataaccess.com/legacy-tools-plugin.html';
+                            }
+                            break;
                     }
                     break;
-                default:
-                    $help_url = $help_root . 'tool-guide/wp-data-access-getting-started/';
             }
-        } else {
-            $help_url = $help_root . 'tool-guide/wp-data-access-getting-started/';
         }
         return $help_url;
     }
@@ -432,8 +453,7 @@ class WPDA_Dashboard {
 							<a class="wpda-dashboard-item wpda_tooltip_icons" href="<?php 
         echo admin_url( 'admin.php' );
         // phpcs:ignore WordPress.Security.EscapeOutput
-        ?>?page=wpda_apps" title="Build data-driven Apps with the new
-Table Builder, Form Builder and Chart Builder">
+        ?>?page=wpda_apps" title="Data-driven Rapid Application Development">
 								<div class="fa-solid">
 									<svg xmlns="http://www.w3.org/2000/svg" height="26px" width="26px" viewBox="4 4 16 16" fill="inherit">
 										<path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/>
@@ -444,9 +464,7 @@ Table Builder, Form Builder and Chart Builder">
 							<a class="wpda-dashboard-item wpda_tooltip_icons" href="<?php 
         echo admin_url( 'admin.php' );
         // phpcs:ignore WordPress.Security.EscapeOutput
-        ?>?page=wpda" title="Data Explorer
-
-Manage local and remote data and databases">
+        ?>?page=wpda" title="Manage local and remote data and databases">
 								<div class="fa-solid fa-database"></div>
 								<div class="label">Explorer</div>
 							</a>
@@ -578,7 +596,17 @@ Customize forms using templates"
 								<div class="fa-solid fa-gem"></div>
 								<div class="label">Upgrade</div>
 							</a>
-						</div>
+                            <?php 
+        if ( wpda_freemius()->is_free_plan() && !wpda_freemius()->is_trial() && !wpda_freemius()->is_trial_utilized() ) {
+            ?>
+                                <a class="wpda-dashboard-item wpda_tooltip_icons" href="https://wpdataaccess.com/order/?l=0&b=trial" title="Get your 14-day free trial" target="_blank">
+                                    <div class="fa-solid fa-star"></div>
+                                    <div class="label">Free Trial</div>
+                                </a>
+                                <?php 
+        }
+        ?>
+                        </div>
 						<div class="subject">Plugin & User Management</div>
 					</div>
 					<div class="wpda-dashboard-group wpda-dashboard-group-support">
@@ -586,7 +614,7 @@ Customize forms using templates"
 							<a class="wpda-dashboard-item wpda_tooltip_icons" target="_blank" href="<?php 
         echo $this->get_help_url();
         // phpcs:ignore WordPress.Security.EscapeOutput
-        ?>" title="Online help and documentation">
+        ?>" title="Context sensitive help">
 								<div class="fa-solid fa-question-circle"></div>
 								<div class="label">Docs</div>
 							</a>
@@ -697,7 +725,7 @@ Customize forms using templates"
 						<?php 
         }
         ?>
-					<li class="menu-item"><a target="_blank" href="https://wpdataaccess.com/docs/tool-guide/wp-data-access-getting-started/"><i class="fas fa-question"></i> Online Documentation</a></li>
+					<li class="menu-item"><a target="_blank" href="https://docs.wpdataaccess.com/"><i class="fas fa-question"></i> Online Documentation</a></li>
 					<li class="menu-item"><a target="_blank" href="https://wordpress.org/support/plugin/wp-data-access/"><i class="fas fa-life-ring"></i> Support Forum</a></li>
 					<?php 
         ?>
@@ -811,7 +839,7 @@ Customize forms using templates"
 							</td>
 							<td style="white-space:nowrap">
 								<a href="https://wpdataaccess.com/pricing/" target="_blank" class="button button-primary">UPGRADE TO PREMIUM</a>
-								<a href="https://wpdataaccess.com/docs/dashboards-and-widgets/bi-getting-started/" target="_blank" class="button">READ MORE</a>
+								<a href="https://docs.legacy.wpdataaccess.com/docs/bi-getting-started/" target="_blank" class="button">READ MORE</a>
 							</td>
 						</tr>
 					</table>
@@ -937,7 +965,7 @@ Customize forms using templates"
 					</div><div>
 						<div>
 							<?php 
-        if ( 'new' !== $this->current_version ) {
+        if ( 'new' !== $this->current_version && '' !== $this->current_version ) {
             ?>
 								<a onclick="jQuery('#upload_file_container_multi').show();"
 								   href="javascript:void(0)"
@@ -981,20 +1009,37 @@ Customize forms using templates"
 								</div>
 							</a>
 						</div><div>
-							<a href="javascript:void(0)"
-							   id="wpda_toolbar_icon_go_backup"
-							   class="wpda-dashboard-item wpda_tooltip"
-							   title="Data Backup - unattended exports"
-							>
-								<i class="fas fa-file-archive"></i>
-								<div>
-									Data Backup
-								</div>
-							</a>
-						</div>
+                            <a onclick="window.ppActionEnableExport();"
+                               href="javascript:void(0)"
+                               class="wpda-dashboard-item wpda_tooltip"
+                               title="Unattended scheduled exports"
+                            >
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    Export
+                                </div>
+                            </a>
+                        </div><?php 
+        $wpda_db_options_activated = get_option( 'wpda_db_options_activated' );
+        if ( is_array( $wpda_db_options_activated ) && 0 < count( $wpda_db_options_activated ) ) {
+            // Show old Data Backup feature only if still in use
+            ?><div>
+                            <a href="javascript:void(0)"
+                               id="wpda_toolbar_icon_go_backup"
+                               class="wpda-dashboard-item wpda_tooltip"
+                               title="Data Backup - unattended exports"
+                            >
+                                <i class="fas fa-file-archive"></i>
+                                <div>
+                                    Data Backup
+                                </div>
+                            </a>
+                        </div><?php 
+        }
+        ?>
 					</div><div>
 						<?php 
-        if ( 'new' !== $this->current_version ) {
+        if ( 'new' !== $this->current_version && '' !== $this->current_version ) {
             ?>
 							<div>
 								<a onclick="jQuery('#wpda_db_container').show(); jQuery('#local_database').focus();"
@@ -1031,7 +1076,7 @@ Customize forms using templates"
 				</div>
 				<div class="wpda-promotion" style="font-size: 16px">
 					<?php 
-        if ( 'new' !== $this->current_version ) {
+        if ( 'new' !== $this->current_version && '' !== $this->current_version ) {
             ?>
 						<a href="?page=<?php 
             echo esc_attr( WP_Data_Access_Admin::PAGE_MAIN );
@@ -1055,15 +1100,6 @@ Customize forms using templates"
 								<i class="fas fa-toggle-on"></i>
 								<span>Switch to old Data Explorer</span>
 							</a>
-							<span>
-								<a href="https://wpdataaccess.com/2024/01/26/the-new-data-explorer-wp-data-access-5-4-0/"
-								   target="_blank"
-								   class="wpda_tooltip"
-								   title="Click to read more"
-								>
-									<i class="fas fa-circle-info"></i>
-								</a>
-							</span>
 						</span>
 						<?php 
         }
@@ -1260,6 +1296,7 @@ Customize forms using templates"
      * @return void
      */
     protected function toolbar_apps() {
+        $has_apps = WPDA_App_Model::has_any();
         ?>
 			<div id="wpda-dashboard-toolbar" class="wpda-dashboard-toolbar" style="display:none">
 				<div class="wpda-nowrap">
@@ -1271,7 +1308,7 @@ Customize forms using templates"
 							>
 								<i class="fas fa-plus-circle"></i>
 								<div>
-									Create new app
+									Create New App
 								</div>
 							</a>
 						</div><div>
@@ -1291,12 +1328,30 @@ Customize forms using templates"
                                     Rename Database
                                 </div>
                             </a>
-                        </div>
+                        </div><?php 
+        ?>
 					</div>
 				</div>
-				<div class="wpda-promotion" style="font-size: 16px">
-					<span>
-						<a href="https://wpdataaccess.com/docs/app-builder/whats-the-app-builder/"
+				<div class="wpda-promotion" style="display: flex; align-items: center; gap: 5px; font-size: 16px;">
+                    <?php 
+        if ( !$has_apps ) {
+            ?>
+                    <span>
+                        <strong>
+                            New to the App Builder? Watch the Getting Started tutorial! 👉
+                        </strong>
+                    </span><?php 
+        }
+        ?><span>
+						<a href="https://www.youtube.com/watch?v=j0MJvuMG7k8"
+                           target="_blank"
+                           class="wpda_tooltip"
+                           title="App Builder Getting Started tutorial"
+                        >
+							<i class="fas fab fa-square-youtube"></i>
+						</a>
+					</span><span>
+						<a href="https://docs.rad.wpdataaccess.com/"
 						   target="_blank"
 						   class="wpda_tooltip"
 						   title="Online App Builder documentation"
@@ -1639,7 +1694,7 @@ Customize forms using templates"
 							<?php 
         if ( !class_exists( 'Code_Manager\\Code_Manager_Model' ) || !class_exists( 'WPDataAccess\\Premium\\WPDAPRO_Dashboard\\WPDAPRO_Widget_Project' ) ) {
             ?>
-								<a href="https://wpdataaccess.com/docs/dashboards-and-widgets/bi-getting-started/" target="_blank">
+								<a href="https://docs.legacy.wpdataaccess.com/docs/bi-getting-started/" target="_blank">
 									<i class="fas fa-question-circle pointer wpda_tooltip"
 									   style="font-size: 170%; vertical-align: middle"
 									   title="Your installation does not support all available widget types! Click to learn how to install more widget types..."></i>
@@ -2226,60 +2281,8 @@ Customize forms using templates"
             case 'templates':
             case 'charts':
                 $promotions = array(array(
-                    'This tool will transition to the new App Builder. Please migrate on time.' => array(null, 'fa-lightbulb'),
+                    'This tool will be transitioned to the new App Builder. Please migrate on time.' => array(null, 'fa-lightbulb'),
                 ));
-                break;
-            case 'csv':
-                $promotions = array(array(
-                    'Use the connection wizards for automated CSV synchronization.' => array('https://wpdataaccess.com/docs/remote-data-files/csv-files/', 'fa-lightbulb'),
-                ));
-                break;
-            case 'publisher_OLD':
-                $promotions = array(
-                    array(
-                        'Change data table color, spacing, border radius and modal popup behaviour.' => array('https://wpdataaccess.com/data-tables-styling/premium-styling/', 'fa-palette'),
-                    ),
-                    array(
-                        'Reorder data table elements with drag and drop.' => array('https://wpdataaccess.com/docs/data-tables/extension-manager/', 'fa-star'),
-                    ),
-                    array(
-                        'Add buttons to support CSV, Excel, PDF and SQL downloads.' => array('https://wpdataaccess.com/docs/data-tables/extension-manager/', 'fa-cloud-download'),
-                    ),
-                    array(
-                        'Add user friendly Search Panes to simplify searching.' => array('https://wpdataaccess.com/docs/data-tables-interactive-filters/search-panes/', 'fa-magic'),
-                    ),
-                    array(
-                        'Use the Search Builder to add interactive searching.' => array('https://wpdataaccess.com/docs/data-tables-interactive-filters/search-builder/', 'fa-search'),
-                    ),
-                    array(
-                        'Synchronize your Google Sheets from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-data-files/public-url/#google-sheets', 'fa-database'),
-                    )
-                );
-                break;
-            case 'wpda':
-                $promotions = array(
-                    array(
-                        'Access your SQL Server tables from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-database-connections/sql-server/', 'fa-database'),
-                    ),
-                    array(
-                        'Access your PostgreSQL tables from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-database-connections/postgresql/', 'fa-database'),
-                    ),
-                    array(
-                        'Access your Oracle tables from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-database-connections/oracle/', 'fa-database'),
-                    ),
-                    array(
-                        'Access your remote MariaDB | MySQL tables from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-database-connections/mariadb-mysql/', 'fa-database'),
-                    ),
-                    array(
-                        'Access your CSV files directly from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-data-files/csv-files/', 'fa-lightbulb'),
-                    ),
-                    array(
-                        'Access your MS Access tables from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-data-files/ms-access/', 'fa-database'),
-                    ),
-                    array(
-                        'Synchronize your Google Sheets from the Data Explorer.' => array('https://wpdataaccess.com/docs/remote-data-files/public-url/#google-sheets', 'fa-database'),
-                    )
-                );
                 break;
             default:
                 $promotions = array();

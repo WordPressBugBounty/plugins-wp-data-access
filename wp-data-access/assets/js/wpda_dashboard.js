@@ -86,11 +86,9 @@ function showMenu() {
         jQuery("#wpda-dashboard").fadeIn(1000);
         jQuery("#wpda-dashboard-toolbar").fadeIn(2000);
 
-        jQuery(".wpda_tooltip").tooltip({
-            tooltipClass: "wpda_tooltip_css",
-        });
+        jQuery(".wpda_tooltip").tooltip({})
+            .tooltip( "option", "tooltipClass", "wpda_tooltip_css" );
         jQuery(".wpda_tooltip_icons").tooltip({
-            tooltipClass: "wpda_tooltip_icons_css",
             position: {
                 my: "center bottom-24",
                 at: "center top",
@@ -103,7 +101,8 @@ function showMenu() {
                     .appendTo(this);
                 }
             }
-        });
+        })
+            .tooltip( "option", "tooltipClass", "wpda_tooltip_icons_css" );
     }
 }
 

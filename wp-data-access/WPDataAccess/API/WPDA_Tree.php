@@ -183,7 +183,7 @@ class WPDA_Tree extends WPDA_API_Core {
         return $this->get_prc( $dbs );
     }
 
-    public function get_dbs() {
+    public function get_dbs( $include_disabled = false ) {
         // Local databases
         global $wpdb;
         $local = $wpdb->get_results( "\n\t\t\t\t\tSELECT  schema_name AS dbs,\n\t\t\t\t\t\t\t'local' AS dbs_type,\n\t\t\t\t\t\t\t'false' AS pds\n\t\t\t\t\t   FROM information_schema.schemata\n\t\t\t\t\t  ORDER BY schema_name\n\t\t\t  \t", 'ARRAY_A' );
@@ -202,7 +202,7 @@ class WPDA_Tree extends WPDA_API_Core {
         // Remote databases
         $remote = array();
         $pds = array();
-        $rdb = WPDADB::get_remote_databases();
+        $rdb = WPDADB::get_remote_databases( $include_disabled );
         foreach ( $rdb as $key => $val ) {
             $remote[] = array(
                 'dbs'      => $key,

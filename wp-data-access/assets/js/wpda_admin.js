@@ -632,7 +632,11 @@ function wpda_dbinit_admin( schema_name, wpnonce ) {
 		}
 	}).done(
 		function(data) {
-			msg = JSON.parse(data);
+			if (typeof data === "string") {
+				msg = JSON.parse(data);
+			} else {
+				msg = data;
+			}
 			if (msg.status==="OK") {
 				jQuery.notify('Database function wpda_get_wp_user_id() created', 'success');
 			} else {

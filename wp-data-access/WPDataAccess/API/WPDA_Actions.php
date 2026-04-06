@@ -94,6 +94,93 @@ class WPDA_Actions extends WPDA_API_Core {
                 ),
             ),
         ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'action/get_row_count', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'action_get_row_count'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'dbs' => $this->get_param( 'dbs', __( 'Local database name or remote connection string', 'wp-data-access' ) ),
+                'tbl' => $this->get_param( 'tbl', __( 'Table name', 'wp-data-access' ) ),
+            ),
+        ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'action/update_row_count', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'action_update_row_count'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'dbs' => $this->get_param( 'dbs', __( 'Local database name or remote connection string', 'wp-data-access' ) ),
+                'tbl' => $this->get_param( 'tbl', __( 'Table name', 'wp-data-access' ) ),
+                'cnt' => $this->get_param( 'row_count', __( 'Hard row count estimation', 'wp-data-access' ) ),
+            ),
+        ) );
+    }
+
+    public function action_update_row_count( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        $dbs = $request->get_param( 'dbs' );
+        $tbl = $request->get_param( 'tbl' );
+        $cnt = $request->get_param( 'cnt' );
+        // Get table settings.
+        $settings_db = WPDA_Table_Settings_Model::query( $tbl, $dbs );
+        if ( isset( $settings_db[0]['wpda_table_settings'] ) ) {
+            // Convert string to JSON.
+            $settings = json_decode( $settings_db[0]['wpda_table_settings'], true );
+            if ( isset( $settings['table_settings']['row_count_estimate_value_hard'] ) ) {
+                // Store actual row count as hard estimate.
+                $settings['table_settings']['row_count_estimate_value_hard'] = $cnt;
+                // Save new hard row count.
+                WPDA_Table_Settings_Model::update( $tbl, json_encode( $settings ), $dbs );
+            }
+            return $this->WPDA_Rest_Response( "OK" );
+        } else {
+            WPDA::wpda_log_wp_error( "Error saving hard row count. Please try again later." );
+        }
+    }
+
+    public function action_get_row_count( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        $dbs = $request->get_param( 'dbs' );
+        $tbl = $request->get_param( 'tbl' );
+        $count = $this->get_row_count( $dbs, $tbl );
+        return $this->WPDA_Rest_Response( $count );
+    }
+
+    public function action_set_row_count( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        $dbs = $request->get_param( 'dbs' );
+        $tbl = $request->get_param( 'tbl' );
+        $count = $this->get_row_count( $dbs, $tbl );
+        return $this->WPDA_Rest_Response( $count );
+    }
+
+    public static function get_row_count( $dbs, $tbl ) {
+        $wpdadb = WPDADB::get_db_connection( $dbs );
+        if ( null === $wpdadb ) {
+            return sprintf( __( 'Database %s not available', 'wp-data-access' ), esc_attr( $dbs ) );
+        }
+        $suppress_errors = $wpdadb->suppress_errors;
+        $wpdadb->suppress_errors = true;
+        $count = $wpdadb->get_results( $wpdadb->prepare( 'select count(*) from `%1s`', array($tbl) ), 'ARRAY_N' );
+        $wpdadb->suppress_errors = $suppress_errors;
+        if ( $wpdadb->last_error !== '' ) {
+            WPDA::wpda_log_wp_error( $wpdadb->last_error );
+        }
+        return ( isset( $count[0][0] ) ? $count[0][0] : false );
     }
 
     public function action_mail( $request ) {
@@ -456,6 +543,9 @@ class WPDA_Actions extends WPDA_API_Core {
             $wpdadb->query( $wpdadb->prepare( 'drop view `%1s`', array($tbl) ) );
         } else {
             $wpdadb->query( $wpdadb->prepare( 'drop table `%1s`', array($tbl) ) );
+        }
+        if ( '' !== $wpdadb->last_error ) {
+            return $wpdadb->last_error;
         }
         $this->post_drop_table( $dbs, $tbl );
         $wpdadb->suppress_errors = $suppress_errors;

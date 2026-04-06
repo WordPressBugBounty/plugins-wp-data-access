@@ -47,13 +47,13 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
         // phpcs:ignore Standard.Category.SniffName.ErrorCode
     }
 
-    public static function get_container( $cnt_id ) {
+    public static function get_container( $app_id, $cnt_id ) {
         global $wpdb;
         return $wpdb->get_results( 
             $wpdb->prepare( 
-                'SELECT * FROM `%1s` WHERE cnt_id = %d',
+                'SELECT * FROM `%1s` WHERE app_id = %d AND cnt_id = %d',
                 // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( self::get_base_table_name() ), $cnt_id)
+                array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id, $cnt_id)
              ),
             // db call ok; no-cache ok.
             'ARRAY_A'
@@ -210,6 +210,16 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
         return $wpdb->last_error;
     }
 
+    public static function update_dashboard_settings( $cnt_id, $cnt_dashboard_settings ) {
+        global $wpdb;
+        $wpdb->update( static::get_base_table_name(), array(
+            'cnt_dashboard' => $cnt_dashboard_settings,
+        ), array(
+            'cnt_id' => $cnt_id,
+        ) );
+        return $wpdb->last_error;
+    }
+
     public static function update_map_settings( $cnt_id, $cnt_map_settings ) {
         global $wpdb;
         $wpdb->update( static::get_base_table_name(), array(
@@ -220,7 +230,7 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
         return $wpdb->last_error;
     }
 
-    public static function container_move( $cnt_id_from, $cnt_id_to ) {
+    public static function container_move( $app_id, $cnt_id_from, $cnt_id_to ) {
         // This is a premium feature.
         return '';
     }
@@ -246,27 +256,29 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
             $cnt_id_conversion[$cnt_id] = $wpdb->insert_id;
         }
         foreach ( $cnt_id_conversion as $cnt_id_old => $cnt_id_new ) {
-            $container = self::get_container( $cnt_id_new );
-            $relation = $container[0]['cnt_relation'];
-            if ( null !== $relation && '' !== $relation ) {
-                $json = json_decode( $relation, true );
-                if ( isset( $json['cnt_id_master'] ) ) {
-                    $cnt_id_master_old = $json['cnt_id_master'];
-                    if ( isset( $cnt_id_conversion[$cnt_id_master_old] ) ) {
-                        // Update relationship master id
-                        $cnt_id_master_new = $cnt_id_conversion[$cnt_id_master_old];
-                        $json['cnt_id_master'] = strval( $cnt_id_master_new );
-                        $relation = json_encode( $json );
-                    } else {
-                        // Master no longer available
-                        $relation = null;
+            $container = self::get_container( $app_id_new, $cnt_id_new );
+            if ( isset( $container[0]['cnt_relation'] ) ) {
+                $relation = $container[0]['cnt_relation'];
+                if ( null !== $relation && '' !== $relation ) {
+                    $json = json_decode( $relation, true );
+                    if ( isset( $json['cnt_id_master'] ) ) {
+                        $cnt_id_master_old = $json['cnt_id_master'];
+                        if ( isset( $cnt_id_conversion[$cnt_id_master_old] ) ) {
+                            // Update relationship master id
+                            $cnt_id_master_new = $cnt_id_conversion[$cnt_id_master_old];
+                            $json['cnt_id_master'] = strval( $cnt_id_master_new );
+                            $relation = json_encode( $json );
+                        } else {
+                            // Master no longer available
+                            $relation = null;
+                        }
+                        $wpdb->update( static::get_base_table_name(), array(
+                            'cnt_relation' => $relation,
+                        ), array(
+                            'app_id' => $app_id_new,
+                            'cnt_id' => $cnt_id_new,
+                        ) );
                     }
-                    $wpdb->update( static::get_base_table_name(), array(
-                        'cnt_relation' => $relation,
-                    ), array(
-                        'app_id' => $app_id_new,
-                        'cnt_id' => $cnt_id_new,
-                    ) );
                 }
             }
         }

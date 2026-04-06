@@ -571,7 +571,7 @@ class WPDA_Table_Actions {
 											<?php 
         echo __( 'Table Settings', 'wp-data-access' );
         ?>
-											<a href="https://wpdataaccess.com/docs/data-explorer-settings/manage-table-settings/" target="_blank">
+											<a href="https://docs.legacy.wpdataaccess.com/docs/manage-table-settings/" target="_blank">
 												<span class="dashicons dashicons-editor-help wpda_tooltip"
 													  title="<?php 
         echo __( 'Help opens in a new tab or window', 'wp-data-access' );
@@ -855,7 +855,7 @@ Start with high values and work down until the error disappears." style="cursor:
 											<?php 
         echo __( 'Column Settings', 'wp-data-access' );
         ?>
-											<a href="https://wpdataaccess.com/docs/data-explorer-settings/column-settings/" target="_blank">
+											<a href="https://docs.legacy.wpdataaccess.com/docs/column-settings/" target="_blank">
 												<span class="dashicons dashicons-editor-help wpda_tooltip"
 													  title="<?php 
         echo __( 'Help opens in a new tab or window', 'wp-data-access' );
@@ -1205,7 +1205,7 @@ Start with high values and work down until the error disappears." style="cursor:
 						<?php 
         echo __( 'Dashboard Menus', 'wp-data-access' );
         ?>
-						<a href="https://wpdataaccess.com/docs/data-explorer-settings/dashboard-menus/" target="_blank">
+						<a href="https://docs.legacy.wpdataaccess.com/docs/dashboard-menus/" target="_blank">
 							<span class="dashicons dashicons-editor-help wpda_tooltip"
 								  title="<?php 
         echo sprintf( __( 'Help opens in a new tab or window', 'wp-data-access' ), esc_attr( $this->table_name ) );
@@ -1418,7 +1418,7 @@ Start with high values and work down until the error disappears." style="cursor:
 						<?php 
         echo __( 'Dynamic Hyperlinks', 'wp-data-access' );
         ?>
-						<a href="https://wpdataaccess.com/docs/data-explorer-settings/dynamic-hyperlinks/" target="_blank">
+						<a href="https://docs.legacy.wpdataaccess.com/docs/dynamic-hyperlinks/" target="_blank">
 							<span class="dashicons dashicons-editor-help wpda_tooltip"
 								  title="<?php 
         echo sprintf( __( 'Help opens in a new tab or window', 'wp-data-access' ), esc_attr( $this->table_name ) );

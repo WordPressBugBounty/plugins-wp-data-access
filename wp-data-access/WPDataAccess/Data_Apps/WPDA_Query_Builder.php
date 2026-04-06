@@ -17,7 +17,7 @@ class WPDA_Query_Builder extends WPDA_Container {
         } else {
             $this->show_on_frontend();
         }
-        $this->add_client();
+        $this->add_client( 'qb' );
     }
 
     private function show_on_backend() {

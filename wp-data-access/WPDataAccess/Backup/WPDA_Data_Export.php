@@ -10,7 +10,7 @@ namespace WPDataAccess\Backup {
 	use Dropbox\Dropbox;
 	use Dropbox\Dropbox\Auth;
 	use WPDataAccess\Data_Dictionary\WPDA_Dictionary_Lists;
-	use WPDataAccess\Settings\WPDA_Settings_DataBackup;
+	use WPDataAccess\Settings\WPDA_Settings_Legacy_DataBackup;
 	use WPDataAccess\Utilities\WPDA_Export_Sql;
 	use WPDataAccess\Utilities\WPDA_Remote_Call;
 	use WPDataAccess\WPDA;
@@ -686,7 +686,7 @@ namespace WPDataAccess\Backup {
 						'table'
 					);
 
-					$client_access_token = WPDA_Settings_DataBackup::dropbox_get_token();
+					$client_access_token = WPDA_Settings_Legacy_DataBackup::dropbox_get_token();
 					if ( false === $client_access_token ) {
 						// Use old token strategy (for older activations).
 						$client_access_token = get_option( 'wpda_db_dropbox_access_token' );

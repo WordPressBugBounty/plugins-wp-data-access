@@ -2,6 +2,7 @@
 
 namespace WPDataAccess\Data_Apps {
 
+    use WPDataAccess\API\WPDA_API_Core;
     use WPDataAccess\API\WPDA_Apps;
     use WPDataAccess\Plugin_Table_Models\WPDA_App_Apps_Model;
     use WPDataAccess\Plugin_Table_Models\WPDA_App_Model;
@@ -60,7 +61,7 @@ namespace WPDataAccess\Data_Apps {
 					return;
 				}
 
-				$this->show_feedback( __( 'Invalid app id', 'wp-data-access' ) );
+				$this->show_feedback( __( 'Not authorized', 'wp-data-access' ) );
 				return;
 			}
 
@@ -111,6 +112,11 @@ namespace WPDataAccess\Data_Apps {
                 case '6':
                     // Chart
                     $app_type_class = 'pp-container-chart';
+                    break;
+                case '7':
+                    // Chart
+                    $app_type_class = 'pp-container-dashboard';
+                    break;
             }
 			?>
 
@@ -127,12 +133,25 @@ namespace WPDataAccess\Data_Apps {
 						<?php
 					}
 
-					if ( 0 < count( $this->shortcode_args ) ) {
-						?>
-						data-shortcode_field_name="<?php echo implode( ',', array_keys( $this->shortcode_args ) ); ?>"
-						data-shortcode_field_value="<?php echo implode( ',', array_values( $this->shortcode_args ) ); ?>"
-						<?php
-					}
+                    if ( 0 < count( $this->shortcode_args ) ) {
+                        $field_names  = array();
+                        $field_values = array();
+                        foreach ( $this->shortcode_args as $key => $value ) {
+                            // Sanitize field name
+                            $field_names[] = WPDA_API_Core::sanitize_db_identifier( $key );
+                            // Sanitize field value
+                            $sanitized_value = sanitize_text_field( $value );
+                            $sanitized_value = wp_strip_all_tags( $value );
+                            $sanitized_value = str_replace( array( '"', "'", '`' ), '', $sanitized_value );
+                            $sanitized_value = str_replace( array( '<', '>' ), '', $sanitized_value );
+                            $sanitized_value = str_replace( '=', '', $sanitized_value );
+                            $field_values[] = $sanitized_value;
+                        }
+                        ?>
+                        data-shortcode_field_name="<?php echo esc_attr( implode( ',', $field_names) ); ?>"
+                        data-shortcode_field_value="<?php echo esc_attr( implode( ',', $field_values ) ); ?>"
+                        <?php
+                    }
 					?>
 				></div>
 			</div>
@@ -158,7 +177,7 @@ namespace WPDataAccess\Data_Apps {
 
 			<?php
 
-			$this->add_client( $this->app_id );
+			$this->add_client('app', $this->app_id );
 
 		}
 

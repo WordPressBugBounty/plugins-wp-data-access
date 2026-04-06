@@ -1740,7 +1740,7 @@ namespace WPDataAccess\Design_Table {
 				}
 				?>
 				<div style="text-align:right">
-					<a href="https://wpdataaccess.com/docs/data-designer/data-designer-getting-started/"
+					<a href="https://docs.legacy.wpdataaccess.com/docs/data-designer-getting-started/"
 					   target="_blank" style="text-decoration:none">
 						> What is the difference between a table design and a database table?
 					</a>

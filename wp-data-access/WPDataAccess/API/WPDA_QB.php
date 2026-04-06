@@ -2,8 +2,10 @@
 
 namespace WPDataAccess\API;
 
+use WPDataAccess\Data_Dictionary\WPDA_Dictionary_Lists;
 use WPDataAccess\Query_Builder\WPDA_Query_Builder;
 use WPDataAccess\Query_Builder\WPDA_Query_Builder_Scheduler;
+use WPDataAccess\Utilities\WPDA_Mail;
 use WPDataAccess\WPDA;
 class WPDA_QB extends WPDA_API_Core {
     const QUERY_BUILDER_AUTO_COMPLETE = 'wpda_query_builder_auto_complete';
@@ -150,6 +152,44 @@ class WPDA_QB extends WPDA_API_Core {
                 'params' => $this->get_param( 'params' ),
             ),
         ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'qb/vqb/get', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'vqb_get'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'access' => $this->get_param( 'access' ),
+                'name'   => $this->get_param( 'name' ),
+            ),
+        ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'qb/vqb/tbl', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'vqb_tbl'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'dbs' => $this->get_param( 'dbs' ),
+                'tbl' => $this->get_param( 'tbl' ),
+            ),
+        ) );
+    }
+
+    public function vqb_tbl( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        return $this->unauthorized();
+    }
+
+    public function vqb_get( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        return $this->unauthorized();
     }
 
     public function open( $request ) {

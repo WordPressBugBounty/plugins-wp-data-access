@@ -59,7 +59,24 @@ namespace WPDataAccess\Plugin_Table_Models {
 
 		}
 
-		public static function add_to_dashboard_menu() {
+        public static function has_any() {
+
+            global $wpdb;
+            $wpdb->get_results(
+                $wpdb->prepare(
+                    'SELECT 1 FROM `%1s` LIMIT 1', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
+                    array(
+                        WPDA::remove_backticks( self::get_base_table_name() ),
+                    )
+                ), // db call ok; no-cache ok.
+                'ARRAY_A'
+            ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+
+            return 1 === $wpdb->num_rows;
+
+        }
+
+        public static function add_to_dashboard_menu() {
 
 			global $wpdb;
 			return $wpdb->get_results(

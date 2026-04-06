@@ -22,11 +22,12 @@ namespace WPDataAccess\Settings {
                 if ( 'save' === $action ) {
 
                     $mail = array(
+                        'activate'     => isset( $_POST['activate'] ) ? sanitize_text_field( wp_unslash( $_POST['activate'] ) ) : '',
                         'host'         => sanitize_text_field( wp_unslash( $_POST['host'] ) ),
                         'port'         => sanitize_text_field( wp_unslash( $_POST['port'] ) ),
-                        'authenticate' => sanitize_text_field( wp_unslash( $_POST['authenticate'] ) ),
+                        'authenticate' => isset( $_POST['authenticate'] ) ? sanitize_text_field( wp_unslash( $_POST['authenticate'] ) ) : '',
                         'encryption'   => sanitize_text_field( wp_unslash( $_POST['encryption'] ) ),
-                        'skip_verify'  => sanitize_text_field( wp_unslash( $_POST['skip_verify'] ) ),
+                        'skip_verify'  => isset( $_POST['skip_verify'] ) ? sanitize_text_field( wp_unslash( $_POST['skip_verify'] ) ) : '',
                         'username'     => sanitize_text_field( wp_unslash( $_POST['username'] ) ),
                         'password'     => sanitize_text_field( wp_unslash( $_POST['password'] ) ),
                         'debug'        => sanitize_text_field( wp_unslash( $_POST['debug'] ) ),
@@ -49,6 +50,7 @@ namespace WPDataAccess\Settings {
 
             $option = WPDA_Mail::get_option();
 
+            $activate     = $option['activate'] ?? '';
             $host         = $option['host'] ?? '';
             $port         = $option['port'] ?? '';
             $authenticate = $option['authenticate'] ?? '';
@@ -69,9 +71,19 @@ namespace WPDataAccess\Settings {
                     <tr>
                         <th>
                             SMTP Mail Server Settings
+                            <br/><br/>
+                            <label style="font-weight: normal">
+                                <input
+                                    type="checkbox"
+                                    name="activate"
+                                    <?php echo 'on' === $activate ? 'checked' : ''; ?>
+                                /> <?php echo __( 'Activate', 'wp-data-access' ); ?>
+                            </label>
                         </th>
                         <td>
-                            SMTP mail server settings are used to send SQL Query Builder results from scheduler.
+                            SMTP mail server settings are used to send scheduled SQL Query Builder results.
+                            <br/><br/>
+                            Test your mail settings using the SEND TEST MAIL button before activating.
                         </td>
                     </tr>
                     <tr>

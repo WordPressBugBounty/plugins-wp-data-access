@@ -4,7 +4,7 @@
  * Plugin Name:       WP Data Access
  * Plugin URI:        https://wpdataaccess.com/
  * Description:       A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive Chart support in 35 languages
- * Version:           5.5.41
+ * Version:           5.5.70
  * Author:            Passionate Programmers B.V.
  * Author URI:        https://wpdataaccess.com/
  * Text Domain:       wp-data-access
@@ -39,24 +39,25 @@ if ( !function_exists( 'wpda_freemius' ) ) {
             // Create a helper function for easy SDK access.
             require_once dirname( __FILE__ ) . '/vendor/freemius/start.php';
             $wpda_freemius = fs_dynamic_init( array(
-                'id'             => '6189',
-                'slug'           => 'wp-data-access',
-                'type'           => 'plugin',
-                'public_key'     => 'pk_fc2d1714ca61c930152f6e326b575',
-                'is_premium'     => false,
-                'premium_suffix' => 'Premium',
-                'has_addons'     => false,
-                'has_paid_plans' => true,
-                'trial'          => array(
+                'id'               => '6189',
+                'slug'             => 'wp-data-access',
+                'type'             => 'plugin',
+                'public_key'       => 'pk_fc2d1714ca61c930152f6e326b575',
+                'is_premium'       => false,
+                'premium_suffix'   => 'Premium',
+                'has_addons'       => false,
+                'has_paid_plans'   => true,
+                'trial'            => array(
                     'days'               => 14,
                     'is_require_payment' => false,
                 ),
-                'menu'           => array(
+                'menu'             => array(
                     'slug'    => 'wpda_navi',
                     'contact' => false,
                     'network' => true,
                 ),
-                'is_live'        => true,
+                'is_live'          => true,
+                'is_org_compliant' => true,
             ) );
         }
         return $wpda_freemius;
@@ -133,6 +134,7 @@ if ( !function_exists( 'wpda_freemius' ) ) {
      * This functions is called when the plugin is uninstalled. The following actions are performed:
      * + Drop plugin tables (unless settings indicate not to)
      * + Delete plugin options from $wpdb->options (unless settings indicate not to)
+     * + Unscheduled all WP Data Access events
      *
      * Actions are processed on the current blog and are repeated for every blog on a multisite installation. Must be
      * called from the dashboard (WP_UNINSTALL_PLUGIN defined). User must have the proper privileges (activate_plugins).

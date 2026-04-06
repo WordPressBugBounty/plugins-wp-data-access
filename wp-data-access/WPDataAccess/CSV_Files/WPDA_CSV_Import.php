@@ -29,6 +29,8 @@ namespace WPDataAccess\CSV_Files {
 		 */
 		protected $action = null;
 
+        protected $file_pointer;
+
 		/**
 		 * Constructor
 		 */
@@ -135,58 +137,91 @@ namespace WPDataAccess\CSV_Files {
 		 * @return void
 		 */
 		protected function show_body_upload() {
-			$csv_id   =
+			$csv_id        =
 				isset( $_REQUEST['csv_id'] ) ? // phpcs:ignore WordPress.Security.NonceVerification
 					sanitize_text_field( wp_unslash( $_REQUEST['csv_id'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
-			$csv_name =
+			$csv_name      =
 				isset( $_REQUEST['csv_name'] ) ? // phpcs:ignore WordPress.Security.NonceVerification
 					sanitize_text_field( wp_unslash( $_REQUEST['csv_name'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
-			?>
-			<br/>
+            $csv_encoding =
+                isset( $_REQUEST['csv_encoding'] ) ? // phpcs:ignore WordPress.Security.NonceVerification
+                    sanitize_text_field( wp_unslash( $_REQUEST['csv_encoding'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+            ?>
+			<br/><br/>
 			<fieldset class="wpda_fieldset">
 				<legend>
 					<?php echo __( 'Select a file and click upload', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</legend>
+
 				<form id="form_import_table"
 						method="post"
 						action="?page=wpda&page_action=wpda_import_csv"
 						enctype="multipart/form-data">
-					<label for="csv_name">
-						Import name
-						<input id="csv_name"
-								name="csv_name"
-								type="text"
-								value="<?php echo esc_attr( $csv_name ); ?>"
-								<?php
-								if ( '' !== $csv_name ) {
-									echo 'disabled';
-								}
-								?>
-						/>
-						<?php if ( '' !== $csv_name ) { ?>
-							<input id="csv_name"
-									name="csv_name"
-									type="hidden"
-									value="<?php echo esc_attr( $csv_name ); ?>"
-							/>
-						<?php } ?>
-					</label>
-					<br/><br/>
-					<input type="file" name="filename" id="filename" accept=".csv">
-					<button type="submit"
-							class="button button-primary"
-							onclick="if (jQuery('#csv_name').val()===''||jQuery('#filename').val()==='') { alert('Please enter an import name and select a file'); return false; }"
-					>
-						<i class="fas fa-check wpda_icon_on_button"></i>
-						<?php echo __( 'Upload', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					</button>
-					<button type="button"
-							onclick="window.location.href='?page=wpda&page_action=wpda_import_csv'"
-							class="button button-secondary"
-					>
-						<i class="fas fa-times-circle wpda_icon_on_button"></i>
-						<?php echo __( 'Cancel', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					</button>
+                    <table class="wpda_table_csv_upload">
+                        <tr>
+                            <td>
+                                <label for="csv_name" class="wpda-label">
+                                    Import name
+                                </label>
+                            </td>
+                            <td>
+                                <input id="csv_name"
+                                       name="csv_name"
+                                       type="text"
+                                       value="<?php echo esc_attr( $csv_name ); ?>"
+                                    <?php
+                                    if ( '' !== $csv_name ) {
+                                        echo 'disabled';
+                                    }
+                                    ?>
+                                />
+                                <?php if ( '' !== $csv_name ) { ?>
+                                    <input id="csv_name"
+                                           name="csv_name"
+                                           type="hidden"
+                                           value="<?php echo esc_attr( $csv_name ); ?>"
+                                    />
+                                <?php } ?>
+                                <label>
+                                    <input id="csv_encoding"
+                                           name="csv_encoding"
+                                           type="checkbox"
+                                           <?php
+                                           if ( 'UTF-8' === $csv_encoding ) {
+                                               echo 'checked="checked"';
+                                           }
+                                           ?>
+                                    />
+                                    UTF-8
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type="file" name="filename" id="filename" accept=".csv">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button type="submit"
+                                        class="button button-primary"
+                                        onclick="if (jQuery('#csv_name').val()===''||jQuery('#filename').val()==='') { alert('Please enter an import name and select a file'); return false; }"
+                                >
+                                    <i class="fas fa-check wpda_icon_on_button"></i>
+                                    <?php echo __( 'Upload', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                </button>
+                                <button type="button"
+                                        onclick="window.location.href='?page=wpda&page_action=wpda_import_csv'"
+                                        class="button button-secondary"
+                                >
+                                    <i class="fas fa-times-circle wpda_icon_on_button"></i>
+                                    <?php echo __( 'Cancel', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
 					<input type="hidden"
 							name="action"
 							value="upload"
@@ -202,6 +237,16 @@ namespace WPDataAccess\CSV_Files {
 					<?php wp_nonce_field( "wpda-import-csv-{$this->schema_name}", '_wpnonce', false ); ?>
 				</form>
 			</fieldset>
+            <style>
+                .wpda-label {
+                    font-weight: bold;
+                    display: inline-block;
+                    width: 110px;
+                }
+                table.wpda_table_csv_upload tr {
+                    height: 30px;
+                }
+            </style>
 			<?php
 		}
 
@@ -216,7 +261,7 @@ namespace WPDataAccess\CSV_Files {
 			$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 			$page     = isset( $_REQUEST['page'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 			?>
-			<style type="text/css">
+			<style>
 				.wpda-label {
 					font-weight: bold;
 					display: inline-block;
@@ -538,17 +583,29 @@ namespace WPDataAccess\CSV_Files {
 					$upload_dir     = WPDA::get_plugin_upload_dir();
 					$real_file_name = 'wpda_csv_upload_' . gmdate( 'YmdHis' ) . '.csv';
 
-					// Process file and save a local copy.
+                    $csv_id       = isset( $_REQUEST['csv_id'] ) ?
+                        sanitize_text_field( wp_unslash( $_REQUEST['csv_id'] ) ) : ''; // input var okay.
+                    $csv_name     = sanitize_text_field( wp_unslash( $_REQUEST['csv_name'] ) ); // input var okay.
+                    $csv_encoding = isset( $_REQUEST['csv_encoding'] ) ? 'UTF-8' : '';
+
+                    // Process file and save a local copy.
 					$fp = $this->file_pointer = fopen( $temp_file_name, 'rb' ); // phpcs:ignore
 					if ( false !== $this->file_pointer ) {
 						if ( ! is_dir( $upload_dir ) ) {
-							mkdir( $upload_dir, 0755, true );
+                            WPDA::wpda_create_content_folder();
 						}
 
 						$fw = fopen( $upload_dir . "{$real_file_name}", 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
 						while ( ! feof( $this->file_pointer ) ) {
 							$file_content = fread( $this->file_pointer, 1024 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fread
-							fwrite( $fw, $file_content ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite
+
+                            if ( 'UTF-8' === $csv_encoding ) {
+                                // UTF-8 encoding
+                                fwrite( $fw, mb_convert_encoding( $file_content, 'UTF-8', 'ISO-8859-1' ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite
+                            } else {
+                                // No encoding
+                                fwrite( $fw, $file_content ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite
+                            }
 						}
 					}
 					fclose( $fp ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
@@ -557,18 +614,13 @@ namespace WPDataAccess\CSV_Files {
 					echo __( 'Saving file info...', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput
 					echo '<br/><br/>';
 
-					$csv_id   =
-						isset( $_REQUEST['csv_id'] ) ?
-							sanitize_text_field( wp_unslash( $_REQUEST['csv_id'] ) ) : ''; // input var okay.
-					$csv_name = sanitize_text_field( wp_unslash( $_REQUEST['csv_name'] ) ); // input var okay.
-
 					if ( '' === $csv_id ) {
 						// New CSV import.
-						$result = WPDA_CSV_Uploads_Model::insert( $csv_name, $real_file_name, $orig_file_name );
+						$result = WPDA_CSV_Uploads_Model::insert( $csv_name, $real_file_name, $orig_file_name, $csv_encoding );
 					} else {
 						// Reload CSV.
 						$oldrow = WPDA_CSV_Uploads_Model::query( $csv_id );
-						$result = WPDA_CSV_Uploads_Model::update( $csv_id, $real_file_name, $orig_file_name );
+						$result = WPDA_CSV_Uploads_Model::update( $csv_id, $real_file_name, $orig_file_name, $csv_encoding );
 						if ( $result ) {
 							// Remove old file.
 							if ( isset( $oldrow[0]->csv_real_file_name ) ) {

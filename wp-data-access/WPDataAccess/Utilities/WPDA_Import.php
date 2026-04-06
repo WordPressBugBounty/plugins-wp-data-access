@@ -245,7 +245,7 @@ namespace WPDataAccess\Utilities {
 							echo __( 'to', 'wp-data-access' );
 							echo ' <strong>';
 							echo __( 'On', 'wp-data-access' );
-							echo '</strong> (<a href="https://wpdataaccess.com/docs/getting-started/known-limitations/">';
+							echo '</strong> (<a href="https://docs.wpdataaccess.com/limitations.html">';
 							echo __( 'see documentation', 'wp-data-access' );
 							echo '</a>).';
 							?>

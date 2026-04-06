@@ -753,6 +753,7 @@ namespace WPDataAccess\List_Table {
 							$hidden = array(
 								'csv_real_file_name',
 								'csv_mapping',
+                                'csv_encoding',
 							);
 
 							update_user_meta(

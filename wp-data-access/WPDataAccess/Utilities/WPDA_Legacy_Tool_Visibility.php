@@ -18,10 +18,10 @@ class WPDA_Legacy_Tool_Visibility {
         $templates = WPDA_Table_Settings_Model::count();
         $designer = WPDA_Design_Table_Model::count();
         // Update legacy tool active items
-        $option_legacy_tools['tables'][1] = $tables;
-        $option_legacy_tools['forms'][1] = $forms;
-        $option_legacy_tools['templates'][1] = $templates;
-        $option_legacy_tools['designer'][1] = $designer;
+        $option_legacy_tools['tables'][1] = (int) $tables;
+        $option_legacy_tools['forms'][1] = (int) $forms;
+        $option_legacy_tools['templates'][1] = (int) $templates;
+        $option_legacy_tools['designer'][1] = (int) $designer;
         $option_legacy_tools['dashboards'][1] = 0;
         $option_legacy_tools['charts'][1] = 0;
         return $option_legacy_tools;

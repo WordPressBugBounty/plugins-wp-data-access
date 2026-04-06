@@ -22,7 +22,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 			);
 		}
 
-		public static function insert( $csv_name, $real_file_name, $orig_file_name ) {
+		public static function insert( $csv_name, $real_file_name, $orig_file_name, $csv_encoding = null ) {
 			global $wpdb;
 			if ( 1 === $wpdb->insert(
 				static::get_base_table_name(),
@@ -31,6 +31,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 					'csv_real_file_name' => $real_file_name,
 					'csv_orig_file_name' => $orig_file_name,
 					'csv_timestamp'      => date( 'Y-m-d H:i:s' ),
+                    'csv_encoding'       => $csv_encoding,
 				)
 			)
 			) {
@@ -40,7 +41,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 			}
 		}
 
-		public static function update( $csv_id, $real_file_name, $orig_file_name ) {
+		public static function update( $csv_id, $real_file_name, $orig_file_name, $csv_encoding = null ) {
 			global $wpdb;
 			return ( 1 === $wpdb->update(
 				static::get_base_table_name(),
@@ -48,6 +49,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 					'csv_real_file_name' => $real_file_name,
 					'csv_orig_file_name' => $orig_file_name,
 					'csv_timestamp'      => date( 'Y-m-d H:i:s' ),
+                    'csv_encoding'       => $csv_encoding,
 				),
 				array(
 					'csv_id' => $csv_id,

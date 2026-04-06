@@ -104,9 +104,9 @@ namespace WPDataAccess\WPDA_Navi {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>LEGACY TOOL USAGE</th>
+                                    <th class="label">LEGACY TOOL</th>
                                     <th class="items">ACTIVE ITEMS</th>
-                                    <th>STATUS</th>
+                                    <th class="status">STATUS</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -183,7 +183,7 @@ namespace WPDataAccess\WPDA_Navi {
 							<h3>App Builder</h3>
 							<div class="wpda-navi-container-content-item-title-help">
 								<a
-										href="https://wpdataaccess.com/docs/app-builder/whats-the-app-builder/"
+										href="https://docs.rad.wpdataaccess.com/"
 										target="_blank"
 										class="wpda_tooltip"
 										title="View online documentation"
@@ -195,10 +195,10 @@ namespace WPDataAccess\WPDA_Navi {
 
 						<div class="wpda-navi-container-content-item-slogan" style="display: flex; justify-content: space-between; align-items: center;">
                             <span>
-                                A data-driven Rapid Application Development tool
+                                A data-driven Rapid Application Development tool.
                             </span>
 
-                            <a href="https://wpdataaccess.com/docs/app-builder/road-map/" target="_blank" class="roadmap">ROAD MAP</a>
+                            <span></span>
 						</div>
 
 						<div class="wpda-navi-container-content-item-content">
@@ -212,15 +212,16 @@ namespace WPDataAccess\WPDA_Navi {
 							</ul>
 						</div>
 
-						<div class="wpda-navi-container-content-item-facts">
-							<ul>
-								<li>Intuitive Table Builder for creating data tables with ease</li>
-								<li>Highly customizable Form Builder for designing data entry forms</li>
-								<li>Integrated Theme Builder to personalize app styling</li>
-								<li>Interactive Chart Builder for real-time data analysis <span class="wpda-new"><i>NEW</i></span></li>
-                                <li>Visualize location data from SQL queries with the Map Builder <span class="wpda-new"><i>NEW</i></span></li>
-							</ul>
-						</div>
+                        <div class="wpda-navi-container-content-item-facts">
+                            <ul>
+                                <li><strong>Table Builder</strong> – Create powerful data tables.</li>
+                                <li><strong>Form Builder</strong> – Design data entry forms.</li>
+                                <li><strong>Chart Builder</strong> – Visualize data.</li>
+                                <li><strong>Map Builder</strong> – Plot location data.</li>
+                                <li><strong>Dashboard Builder</strong> – Centralize and monitor insights. <span class="wpda-new"><i>NEW</i></span></li>
+                                <li><strong>Theme Builder</strong> – Personalize app appearance.</li>
+                            </ul>
+                        </div>
 					</div>
 
 					<div class="wpda-navi-container-content-item">
@@ -229,7 +230,7 @@ namespace WPDataAccess\WPDA_Navi {
 							<h3>Explorer</h3>
 							<div class="wpda-navi-container-content-item-title-help">
 								<a
-										href="https://wpdataaccess.com/docs/data-explorer/data-explorer-getting-started/"
+										href="https://docs.legacy.wpdataaccess.com/docs/data-explorer-getting-started/"
 										target="_blank"
 										class="wpda_tooltip"
 										title="View online documentation"
@@ -240,7 +241,7 @@ namespace WPDataAccess\WPDA_Navi {
 						</div>
 
 						<div class="wpda-navi-container-content-item-slogan">
-							Perform data and database related tasks
+							Perform data and database related tasks.
 						</div>
 
 						<div class="wpda-navi-container-content-item-content">
@@ -262,8 +263,9 @@ namespace WPDataAccess\WPDA_Navi {
 
 						<div class="wpda-navi-container-content-item-facts">
 							<ul>
-                                <li>Manage database connections, databases and table data</li>
-								<li>Explore local and remote databases</li>
+                                <li>Schedule unattended exports (new Data Explorer only).</li>
+                                <li>Manage database connections, databases and table data.</li>
+								<li>Explore local and remote databases.</li>
 							</ul>
 						</div>
 					</div>
@@ -274,7 +276,7 @@ namespace WPDataAccess\WPDA_Navi {
 							<h3>SQL</h3>
 							<div class="wpda-navi-container-content-item-title-help">
 								<a
-										href="https://wpdataaccess.com/docs/sql-query-builder/query-builder-getting-started/"
+										href="https://docs.sql.wpdataaccess.com/"
 										target="_blank"
 										class="wpda_tooltip"
 										title="View online documentation"
@@ -285,7 +287,7 @@ namespace WPDataAccess\WPDA_Navi {
 						</div>
 
 						<div class="wpda-navi-container-content-item-slogan">
-							Execute any SQL command from your WordPress dashboard
+							Execute any SQL command from your WordPress dashboard.
 						</div>
 
 						<div class="wpda-navi-container-content-item-content">
@@ -298,10 +300,10 @@ namespace WPDataAccess\WPDA_Navi {
 
 						<div class="wpda-navi-container-content-item-facts">
 							<ul>
-								<li>Write, store, execute and reuse any SQL command</li>
-                                <li>Schedule SQL commands to run at specific intervals <span class="wpda-new"><i>NEW</i></span></li>
-								<li>Ask AI Assistant to help writing queries and solve errors <span class="wpda-new"><i>NEW</i></span></li>
-                                <li>Store queries privately or globally <span class="wpda-new"><i>NEW</i></span></li>
+								<li>Write, store, execute and reuse any SQL command.</li>
+                                <li>Schedule SQL commands to run at specific intervals.</li>
+								<li>Ask AI Assistant to help writing queries and solve errors.</li>
+                                <li>Store queries privately or globally.</li>
 							</ul>
 						</div>
 					</div>
@@ -327,36 +329,43 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
-                                    <a href="https://wpdataaccess.com/docs/sql-query-builder/query-builder-getting-started/" target="_blank" class="whatsnew">
-                                    New SQL Query Builder with AI Assistant and scheduled queries
+                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/column-filters.html" target="_blank" class="whatsnew">
+                                        🌟 Several great new column filter features!
                                     </a>
                                 </li>
                                 <li>
-                                    Edit date and time fields in MySQL date format <i class="fas fa-chevron-right"></i> <span class="wpda-new">Form Builder</span>
-                                </li>
-                                <li>
-                                    Visualize location data on
-                                    <a href="https://wpdataaccess.com/docs/map-builder/map-builder-getting-started/" target="_blank" class="whatsnew">
-                                        Maps
-                                    </a>
-                                    using SQL queries
-                                </li>
-                                <li>
-                                    <a href="https://wpdataaccess.com/docs/hooks/getting-started-with-hooks/" target="_blank" class="whatsnew">
-                                        Hooks for Tables and Forms
+                                    <a href="https://docs.rad.wpdataaccess.com/app-manager/menu/app-info.html#settings" target="_blank" class="whatsnew">
+                                        🏷️ Change app title tag in App Manager.
                                     </a>
                                 </li>
                                 <li>
-                                    New built-ins
-                                    <a href="https://wpdataaccess.com/docs/built-ins/built-ins-overview/" target="_blank" class="whatsnew">
-                                        log, alert, confirm and snackbar
+                                    <a href="https://docs.rad.wpdataaccess.com/dashboard-builder/" target="_blank" class="whatsnew">
+                                        📶 Dashboards now available as app type.
                                     </a>
-                                    available in all hooks
                                 </li>
                                 <li>
-                                    Lightning-Fast Filtering with
-                                    <a href="https://wpdataaccess.com/docs/table-builder-performance/server-client-side-processing/" target="_blank" class="whatsnew">
-                                        Client-Side Processing
+                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/detail-panel.html#%E2%9A%99%EF%B8%8F-enable-table-display-mode" target="_blank" class="whatsnew">
+                                        💎 Switch between Table View and Card View.
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/detail-panel.html" target="_blank" class="whatsnew">
+                                        😎 Even cooler interactive detail panel creation.
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://docs.rad.wpdataaccess.com/hooks/built-ins/wpda/wpda-callservice.html" target="_blank" class="whatsnew">
+                                        🚀 Execute server-side PHP code directly from JavaScript hooks.
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/columns/computed-fields.html" target="_blank" class="whatsnew">
+                                        🎁 Computed Text Fields for FREE USERS.
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://docs.rad.wpdataaccess.com/app-manager/running-apps/shortcodes/shortcode-usage.html#%E2%9C%A8-start-in-full-screen-mode" target="_blank" class="whatsnew">
+                                        ⛶ Start all app types in full-screen mode.
                                     </a>
                                 </li>
 							</ul>
@@ -377,7 +386,7 @@ namespace WPDataAccess\WPDA_Navi {
 
 					<div class="wpda-navi-container-content-item-facts">
 						<button
-							onClick="window.open('https://wpdataaccess.com/docs/app-builder/whats-the-app-builder/', '_blank')"
+							onClick="window.open('https://docs.rad.wpdataaccess.com/', '_blank')"
 						>
 							<span class="wpda-hot-title">
 								App Builder
@@ -388,7 +397,7 @@ namespace WPDataAccess\WPDA_Navi {
 						</button>
 
 						<button
-							onClick="window.open('https://wpdataaccess.com/docs/app-builder/app-builder-relationships/', '_blank')"
+							onClick="window.open('https://docs.rad.wpdataaccess.com/table-builder/menu/table/relationships.html', '_blank')"
 						>
 							<span class="wpda-hot-title">
 								Master-Detail Relationships
@@ -399,7 +408,7 @@ namespace WPDataAccess\WPDA_Navi {
 						</button>
 
 						<button
-							onClick="window.open('https://wpdataaccess.com/docs/app-builder/computed-fields/', '_blank')"
+							onClick="window.open('https://docs.rad.wpdataaccess.com/table-builder/menu/columns/computed-fields.html', '_blank')"
 						>
 							<span class="wpda-hot-title">
 								Computed Fields
@@ -410,7 +419,7 @@ namespace WPDataAccess\WPDA_Navi {
 						</button>
 
 						<button
-							onClick="window.open('https://wpdataaccess.com/docs/app-builder/app-lookups/', '_blank')"
+							onClick="window.open('https://docs.rad.wpdataaccess.com/table-builder/menu/columns/column-lookups.html', '_blank')"
 						>
 							<span class="wpda-hot-title">
 								Lookups
@@ -421,7 +430,7 @@ namespace WPDataAccess\WPDA_Navi {
 						</button>
 
 						<button
-							onClick="window.open('https://wpdataaccess.com/docs/table-builder-filters/column-filters/', '_blank')"
+							onClick="window.open('https://docs.rad.wpdataaccess.com/table-builder/menu/columns/column-actions.html', '_blank')"
 						>
 							<span class="wpda-hot-title">
 								Column Filters
@@ -431,35 +440,19 @@ namespace WPDataAccess\WPDA_Navi {
 							</span>
 						</button>
 
-						<button
-							onClick="window.open('https://wpdataaccess.com/documentation/', '_blank')"
-						>
+                        <button
+                                onClick="window.open('https://docs.rad.wpdataaccess.com/hooks/', '_blank')"
+                        >
 							<span class="wpda-hot-title">
-								Documentation
+								App Builder Hooks
 							</span>
-							<span class="wpda-hot-topic">
-								Where can I find the online documentation?
+                            <span class="wpda-hot-topic">
+                                Write hook to customize app behavior.
 							</span>
-						</button>
-
-						<button>
-							<span class="wpda-hot-title">
-								Downloadable Demo Apps
-							</span>
-							<span class="wpda-hot-topic" style="display: inline-grid; grid-template-columns: auto auto; gap: 20px;">
-                                <a href="https://wpdataaccess.com/docs/app-demos/app-student-administration-system/" target="_blank">
-                                    <i class="fa-solid fa-up-right-from-square"></i>
-                                    Student Administration System
-                                </a>
-                                <a href="https://wpdataaccess.com/docs/app-demos/app-classic-models/" target="_blank">
-                                    <i class="fa-solid fa-up-right-from-square"></i>
-                                    Classic Models
-                                </a>
-							</span>
-						</button>
+                        </button>
 
 						<button
-							onClick="window.open('https://wpdataaccess.com/docs/remote-databases/mysql-mariadb/', '_blank')"
+							onClick="window.open('https://docs.remote.wpdataaccess.com/mysql.html', '_blank')"
 						>
 							<span class="wpda-hot-title">
 								Remote connections
@@ -470,7 +463,7 @@ namespace WPDataAccess\WPDA_Navi {
 						</button>
 
 						<button
-							onClick="window.open('https://wpdataaccess.com/docs/remote-connection-wizard/start-here/', '_blank')"
+							onClick="window.open('https://docs.remote.wpdataaccess.com/pds/start-here.html', '_blank')"
 						>
 							<span class="wpda-hot-title">
 								Premium Data Services
@@ -479,6 +472,17 @@ namespace WPDataAccess\WPDA_Navi {
 								How can I use Premium Data Services for remote connections?
 							</span>
 						</button>
+
+                        <button
+                                onClick="window.open('https://docs.rad.wpdataaccess.com/', '_blank')"
+                        >
+							<span class="wpda-hot-title">
+								Documentation
+							</span>
+                            <span class="wpda-hot-topic">
+								Where can I find the online documentation?
+							</span>
+                        </button>
 					</div>
 				</div>
 			</div>

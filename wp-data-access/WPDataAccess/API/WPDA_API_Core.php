@@ -163,8 +163,10 @@ abstract class WPDA_API_Core {
                 'required'          => false,
                 'type'              => 'string',
                 'description'       => __( 'Custom query', 'wp-data-access' ),
-                'sanitize_callback' => 'sanitize_textarea_field',
-                'validate_callback' => 'rest_validate_request_arg',
+                'sanitize_callback' => function ( $param ) {
+                    return html_entity_decode( wp_unslash( $param ), ENT_QUOTES );
+                    // Preserve SQL operators
+                },
             ),
             'col'                => array(
                 'required'          => true,
@@ -196,7 +198,7 @@ abstract class WPDA_API_Core {
                 'required'          => false,
                 'type'              => 'integer',
                 'description'       => __( 'Page number', 'wp-data-access' ),
-                'default'           => 1,
+                'default'           => 0,
                 'minimum'           => 0,
                 'sanitize_callback' => 'absint',
                 'validate_callback' => 'rest_validate_request_arg',
@@ -421,7 +423,8 @@ abstract class WPDA_API_Core {
                 'type'              => 'string',
                 'description'       => __( 'SQL query', 'wp-data-access' ),
                 'sanitize_callback' => function ( $param ) {
-                    return wp_kses_post( $param );
+                    return html_entity_decode( wp_unslash( $param ), ENT_QUOTES );
+                    // Preserve SQL operators
                 },
             ),
             'name'               => array(
@@ -532,7 +535,7 @@ abstract class WPDA_API_Core {
     }
 
     public static function sanitize_db_identifier( $param ) {
-        if ( null === $param ) {
+        if ( !is_string( $param ) ) {
             return null;
         }
         // Preserve starting and trailing spaces
@@ -608,7 +611,7 @@ abstract class WPDA_API_Core {
                 'count'  => null,
             );
         }
-        $query = $wpdadb->prepare( "\n\t\t\t\t\tselect table_type,\n\t\t\t\t\t       engine,\n\t\t\t\t\t       table_rows\n\t\t\t\t\t  from information_schema.tables\n\t\t\t\t\t where table_schema = %s\n\t\t\t\t\t   and table_name   = %s\n\t\t\t\t\t order by table_name\n\t\t\t\t", array($wpdadb->dbname, $tbl) );
+        $query = $wpdadb->prepare( "\n\t\t\t\t\tselect table_type,\n\t\t\t\t\t       engine,\n\t\t\t\t\t       table_rows\n\t\t\t\t\t  from information_schema.tables\n\t\t\t\t\t where table_schema = %s\n\t\t\t\t\t   and table_name   = %s\n\t\t\t\t", array($wpdadb->dbname, $tbl) );
         $resultset = $wpdadb->get_results( $query, 'ARRAY_N' );
         // phpcs:ignore Standard.Category.SniffName.ErrorCode
         if ( count( $resultset ) === 1 ) {

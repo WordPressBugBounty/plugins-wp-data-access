@@ -18,7 +18,7 @@ use WPDataAccess\Plugin_Table_Models\WPDA_Table_Settings_Model;
 use WPDataAccess\List_Table\WPDA_List_Table;
 use WPDataAccess\Premium\WPDAPRO_Data_Publisher\WPDAPRO_Data_Publisher_Manage_Styles;
 use WPDataAccess\Premium\WPDAPRO_Geo_Location\WPDAPRO_Geo_Location_WS;
-use WPDataAccess\Settings\WPDA_Settings_DataTables;
+use WPDataAccess\Settings\WPDA_Settings_Legacy_DataTables;
 use WPDataAccess\Templates\WPDAPRO_Template_Data_Publisher_Color;
 use WPDataAccess\Templates\WPDAPRO_Template_Data_Publisher_Space;
 use WPDataAccess\Templates\WPDA_Template_Data_Publisher_Corner;
@@ -462,12 +462,12 @@ class WPDA_Data_Tables {
 
     protected function get_language() {
         // Check data table specific language
-        if ( isset( $this->json->wpda_language, WPDA_Settings_DataTables::FRONTEND_LANG[$this->json->wpda_language] ) ) {
-            return WPDA_Settings_DataTables::FRONTEND_LANG[$this->json->wpda_language];
+        if ( isset( $this->json->wpda_language, WPDA_Settings_Legacy_DataTables::FRONTEND_LANG[$this->json->wpda_language] ) ) {
+            return WPDA_Settings_Legacy_DataTables::FRONTEND_LANG[$this->json->wpda_language];
         }
         // Get data table global language
         $language = WPDA::get_option( WPDA::OPTION_DP_LANGUAGE );
-        $language_code = ( isset( WPDA_Settings_DataTables::FRONTEND_LANG[$language] ) ? WPDA_Settings_DataTables::FRONTEND_LANG[$language] : 'en-GB' );
+        $language_code = ( isset( WPDA_Settings_Legacy_DataTables::FRONTEND_LANG[$language] ) ? WPDA_Settings_Legacy_DataTables::FRONTEND_LANG[$language] : 'en-GB' );
         return $language_code;
     }
 

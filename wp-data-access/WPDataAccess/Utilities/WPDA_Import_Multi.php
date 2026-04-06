@@ -23,7 +23,7 @@ namespace WPDataAccess\Utilities {
 	 */
 	class WPDA_Import_Multi {
 
-		const SOLUTIONS = '(<a href="https://wpdataaccess.com/docs/tool-guide/known-limitations/" target="_blank">see solutions</a>)';
+		const SOLUTIONS = '(<a href="https://docs.wpdataaccess.com/limitations.html" target="_blank">see solutions</a>)';
 
 		/**
 		 * URL where to post data
@@ -377,7 +377,7 @@ namespace WPDataAccess\Utilities {
 							echo __( 'to', 'wp-data-access' );
 							echo ' <strong>';
 							echo __( 'On', 'wp-data-access' );
-							echo '</strong> (<a href="https://wpdataaccess.com/docs/tool-guide/known-limitations/">';
+							echo '</strong> (<a href="https://docs.wpdataaccess.com/limitations.html">';
 							echo __( 'see documentation', 'wp-data-access' );
 							echo '</a>).';
 							?>

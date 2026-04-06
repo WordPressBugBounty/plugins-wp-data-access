@@ -644,7 +644,7 @@ class WP_Data_Access_Admin {
                 if ( 'new' === $_REQUEST['de'] ) {
                     update_user_meta( WPDA::get_current_user_id(), 'wpda_data_explorer', 'new' );
                 } elseif ( 'old' === $_REQUEST['de'] ) {
-                    delete_user_meta( WPDA::get_current_user_id(), 'wpda_data_explorer' );
+                    update_user_meta( WPDA::get_current_user_id(), 'wpda_data_explorer', 'old' );
                 }
             }
             if ( self::PAGE_QUERY_BUILDER === $this->page && isset( $_REQUEST['qb'] ) ) {
@@ -695,10 +695,10 @@ class WP_Data_Access_Admin {
                 'Data Explorer',
                 'manage_options',
                 self::PAGE_MAIN,
-                array($this, ( 'new' !== $current_data_explorer_version ? 'data_explorer_page' : 'data_explorer_page_new' ))
+                array($this, ( 'new' !== $current_data_explorer_version && '' !== $current_data_explorer_version ? 'data_explorer_page' : 'data_explorer_page_new' ))
             );
             if ( self::PAGE_MAIN === $this->page ) {
-                if ( 'new' !== $current_data_explorer_version ) {
+                if ( 'new' !== $current_data_explorer_version && '' !== $current_data_explorer_version ) {
                     $args = array(
                         'page_hook_suffix' => $this->wpda_data_explorer_menu,
                     );
@@ -825,7 +825,7 @@ class WP_Data_Access_Admin {
             return;
         }
         // Check dashboard role access.
-        $dashboard_roles = get_option( \WPDataAccess\Settings\WPDA_Settings_Dashboard::DASHBOARD_ROLES );
+        $dashboard_roles = get_option( \WPDataAccess\Settings\WPDA_Settings_Legacy_Dashboard::DASHBOARD_ROLES );
         $user_has_role = false;
         foreach ( $user_roles as $user_role ) {
             if ( false !== strpos( $dashboard_roles, $user_role ) ) {
@@ -834,7 +834,7 @@ class WP_Data_Access_Admin {
             }
         }
         // Check dashboard user access.
-        $dashboard_users = get_option( \WPDataAccess\Settings\WPDA_Settings_Dashboard::DASHBOARD_USERS );
+        $dashboard_users = get_option( \WPDataAccess\Settings\WPDA_Settings_Legacy_Dashboard::DASHBOARD_USERS );
         $user_has_access = false !== strpos( $dashboard_users, WPDA::get_current_user_login() );
         if ( !$user_has_role && !$user_has_access ) {
             return;
@@ -1055,7 +1055,7 @@ class WP_Data_Access_Admin {
 		<div class="wrap">
 			<h1 class="wp-heading-inline">
 				<span>Data Designer</span>
-				<a href="https://wpdataaccess.com/docs/data-designer/data-designer-getting-started/" target="_blank" class="wpda_tooltip" title="Plugin Help - opens in a new tab or window">
+				<a href="https://docs.legacy.wpdataaccess.com/docs/data-designer-getting-started/" target="_blank" class="wpda_tooltip" title="Plugin Help - opens in a new tab or window">
 					<span class="dashicons dashicons-editor-help" style="text-decoration:none;vertical-align:top;font-size:30px;">
 					</span>
 				</a>
@@ -1111,7 +1111,7 @@ class WP_Data_Access_Admin {
 		<div class="wrap">
 			<h1 class="wp-heading-inline">
 				<span>Data Tables</span>
-				<a href="https://wpdataaccess.com/docs/data-tables/data-tables-getting-started/" target="_blank" class="wpda_tooltip" title="Plugin Help - opens in a new tab or window">
+				<a href="https://docs.legacy.wpdataaccess.com/docs/data-tables-getting-started/" target="_blank" class="wpda_tooltip" title="Plugin Help - opens in a new tab or window">
 					<span class="dashicons dashicons-editor-help" style="text-decoration:none;vertical-align:top;font-size:30px;">
 					</span>
 				</a>

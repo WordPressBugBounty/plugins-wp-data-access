@@ -338,30 +338,36 @@
     padding: 30px;
 }
 
+#wpda-legacy-tool-settings-panel table {
+    width: 100%;
+}
+
 #wpda-legacy-tool-settings-panel table th,
 #wpda-legacy-tool-settings-panel table td {
     white-space: nowrap;
-    padding-right: 20px;
 }
 
-#wpda-legacy-tool-settings-panel table th:last-of-type,
-#wpda-legacy-tool-settings-panel table td:last-of-type {
-    padding-right: 0;
+#wpda-legacy-tool-settings-panel table th.label,
+#wpda-legacy-tool-settings-panel table td.label{
+    text-align: left;
 }
 
 #wpda-legacy-tool-settings-panel table th.items,
 #wpda-legacy-tool-settings-panel table td.items {
     text-align: right;
+    display: none;
+    padding-right: 0;
 }
 
 #wpda-legacy-tool-settings-panel table th.status,
 #wpda-legacy-tool-settings-panel table td.status {
-    text-align: center;
+    text-align: right;
 }
 
 #wpda-legacy-tool-settings-submit {
     margin-top: 15px;
     text-align: right;
+    white-space: nowrap;
 }
 
 #wpda-legacy-tool-settings-submit button {

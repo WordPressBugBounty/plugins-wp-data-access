@@ -9,6 +9,7 @@ use WPDataAccess\Connection\WPDADB;
 use WPDataAccess\Cookies\WPDA_Cookies;
 use WPDataAccess\Data_Dictionary\WPDA_Dictionary_Lists;
 use WPDataAccess\Data_Tables\WPDA_Data_Tables;
+use WPDataAccess\Plugin_Table_Models\WPDA_Table_Settings_Model;
 use WPDataAccess\Utilities\WPDA_Table_Actions;
 use WPDataAccess\Utilities\WPDA_Export;
 use WPDataAccess\Utilities\WPDA_Favourites;
@@ -175,7 +176,9 @@ class WP_Data_Access {
         $this->loader->add_action( 'admin_action_wpda_query_builder_delete_sql', $query_builder, 'delete' );
         $this->loader->add_action( 'admin_action_wpda_query_builder_get_db_hints', $query_builder, 'get_db_hints' );
         $this->loader->add_action( 'admin_action_wpda_query_builder_set_db_hints', $query_builder, 'set_db_hints' );
-        $this->loader->add_action( 'admin_action_wpda_query_builder_get_vqb', $query_builder, 'get_visual_query' );
+        $this->loader->add_action( 'admin_action_wpda_query_builder_get_vqb', $query_builder, 'get_visual_query_ajax' );
+        // Run unattended scheduled export
+        $this->loader->add_action( \WPDataAccess\Utilities\WPDA_Export_Scheduler::SCHEDULER_HOOK_NAME, \WPDataAccess\Utilities\WPDA_Export_Scheduler::class, 'run_scheduled_export' );
         // Mail service.
         $wpda_mail_server = \WPDataAccess\Utilities\WPDA_Mail::get_option();
         if ( isset( 
@@ -190,6 +193,11 @@ class WP_Data_Access {
             add_action(
                 'phpmailer_init',
                 function ( $phpmailer ) use($wpda_mail_server) {
+                    // Only run if mail WPDA requests.
+                    if ( !did_action( 'wpda_sending_mail' ) ) {
+                        return;
+                        // Allow other plugins/themes to overwrite.
+                    }
                     $phpmailer->isSMTP();
                     $phpmailer->isHTML( false );
                     $phpmailer->SMTPDebug = $wpda_mail_server['debug'] ?? 0;
@@ -243,7 +251,7 @@ class WP_Data_Access {
         // Get row count for a specific table.
         $this->loader->add_action( 'admin_action_wpda_get_table_row_count', $plugin_dictionary_list, 'get_table_row_count_ajax' );
         // Get table widget info.
-        $this->loader->add_action( 'admin_action_wpda_get_table_widget_info', $plugin_dictionary_list, 'get_table_widget_info' );
+        $this->loader->add_action( 'admin_action_wpda_get_table_widget_info', $plugin_dictionary_list, 'get_table_widget_info_ajax' );
         // Global database search and replace.
         $this->loader->add_action( 'wp_ajax_wpda_global_search', \WPDataAccess\Global_Search\WPDA_Global_Search::class, 'search' );
         $this->loader->add_action( 'wp_ajax_wpda_global_replace', \WPDataAccess\Global_Search\WPDA_Global_Search::class, 'replace' );
@@ -362,6 +370,30 @@ class WP_Data_Access {
             10,
             1
         );
+        add_action(
+            'wpda_set_hard_row_count',
+            function ( $dbs, $tbl ) {
+                // Only admins and super admins.
+                if ( WPDA::current_user_is_admin() ) {
+                    // Get actual row count.
+                    $count = \WPDataAccess\API\WPDA_Actions::get_row_count( $dbs, $tbl );
+                    // Get table settings.
+                    $settings_db = WPDA_Table_Settings_Model::query( $tbl, $dbs );
+                    if ( isset( $settings_db[0]['wpda_table_settings'] ) ) {
+                        // Convert string to JSON.
+                        $settings = json_decode( $settings_db[0]['wpda_table_settings'], true );
+                        if ( isset( $settings['table_settings']['row_count_estimate_value_hard'] ) ) {
+                            // Store actual row count as hard estimate.
+                            $settings['table_settings']['row_count_estimate_value_hard'] = $count;
+                            // Save new hard row count.
+                            WPDA_Table_Settings_Model::update( $tbl, json_encode( $settings ), $dbs );
+                        }
+                    }
+                }
+            },
+            10,
+            2
+        );
     }
 
     /**
@@ -472,32 +504,23 @@ class WP_Data_Access {
             case 'pds':
                 $wpda_settings_class_name = 'WPDA_Settings_PDS';
                 break;
-            case 'dashboard':
-                $wpda_settings_class_name = 'WPDA_Settings_Dashboard';
-                break;
-            case 'datatables':
-                $wpda_settings_class_name = 'WPDA_Settings_DataTables';
-                break;
-            case 'dataforms':
-                $wpda_settings_class_name = 'WPDA_Settings_DataForms';
-                break;
-            case 'databackup':
-                $wpda_settings_class_name = 'WPDA_Settings_DataBackup';
-                break;
             case 'uninstall':
                 $wpda_settings_class_name = 'WPDA_Settings_Uninstall';
                 break;
             case 'repository':
                 $wpda_settings_class_name = 'WPDA_Settings_ManageRepository';
                 break;
-            case 'roles':
-                $wpda_settings_class_name = 'WPDA_Settings_ManageRoles';
-                break;
             case 'system':
                 $wpda_settings_class_name = 'WPDA_Settings_SystemInfo';
                 break;
             case 'mail':
                 $wpda_settings_class_name = 'WPDA_Settings_Mail';
+                break;
+            case 'drives':
+                $wpda_settings_class_name = 'WPDA_Settings_Drives';
+                break;
+            case 'legacy':
+                $wpda_settings_class_name = 'WPDA_Settings_Legacy';
                 break;
             default:
                 $wpda_settings_class_name = 'WPDA_Settings_Plugin';

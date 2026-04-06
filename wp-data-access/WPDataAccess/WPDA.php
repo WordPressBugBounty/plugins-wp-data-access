@@ -51,8 +51,8 @@ namespace WPDataAccess {
 		/**
 		 * Option wpda_version and it's default value
 		 */
-		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.41' );
-		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.41' );
+		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.70' );
+		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.68' );
 		const OPTION_WPDA_UPGRADED        = array( 'wpda_upgraded', false );
 		/**
 		 * Option wpda_setup_error and it's default value
@@ -818,11 +818,7 @@ namespace WPDataAccess {
 			}
 		}
 
-		public static function get_current_user_id( $is_anonymous = false ) {
-			if ( $is_anonymous ) {
-				return -1;
-			}
-
+		public static function get_current_user_id() {
 			global $current_user;
 			if ( isset( $current_user->ID ) ) {
 				return $current_user->ID;
@@ -832,10 +828,10 @@ namespace WPDataAccess {
 					if ( isset( $wp_user->ID ) ) {
 						return $wp_user->ID;
 					} else {
-						return - 1;
+						return -1;
 					}
 				} else {
-					return - 1;
+					return -1;
 				}
 			}
 		}
@@ -1391,7 +1387,7 @@ namespace WPDataAccess {
 		public static function validate_name_failed() {
 			$title   = __( 'Schema, table or column name(s) restricting plugin features (click to read more and fix)', 'wp-data-access' );
 			$warning = "
-				<a href='https://wpdataaccess.com/docs/data-explorer/naming-conventions/' target='_blank' style='text-decoration:none'>
+				<a href='https://docs.legacy.wpdataaccess.com/docs/naming-conventions/' target='_blank' style='text-decoration:none'>
 					<span class='dashicons dashicons-flag wpda_tooltip' style='color:red;padding-left:5px' title='$title'></span>
 				</a>";
 			return $warning;
@@ -1400,7 +1396,7 @@ namespace WPDataAccess {
 		public static function validate_name_np() {
 			$title   = __( 'Schema, table or column name validation not possible (click to read more and fix)', 'wp-data-access' );
 			$warning = "
-				<a href='https://wpdataaccess.com/docs/data-explorer/naming-conventions/' target='_blank'>
+				<a href='https://docs.legacy.wpdataaccess.com/docs/naming-conventions/' target='_blank'>
 					<span class='dashicons dashicons-warning wpda_tooltip' style='padding-left:5px' title='$title'></span>
 				</a>";
 			return $warning;
@@ -1491,7 +1487,6 @@ namespace WPDataAccess {
 			$upload_dir = WPDA::get_plugin_upload_dir();
 			if ( ! file_exists( $upload_dir ) ) {
 				mkdir( $upload_dir, 0755, true );
-
 				$fw = fopen( $upload_dir . ".htaccess", 'w' );
 				if ( false !== $fw ) {
 					fwrite( $fw, "IndexIgnore *" );
@@ -1689,7 +1684,7 @@ namespace WPDataAccess {
 		}
 
         public static function current_user_is_admin() {
-            return current_user_can( 'manage_options' );
+            return current_user_can( 'manage_options' ) || is_super_admin();
         }
 
 	}

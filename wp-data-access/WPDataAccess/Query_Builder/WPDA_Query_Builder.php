@@ -677,7 +677,7 @@ class WPDA_Query_Builder {
         );
         $this->update_query_list_global( $wpda_query_builder_data );
         //            if ( wpda_freemius()->can_use_premium_code__premium_only() ) {
-        //                $this->upd_visual_query( $query_name, $wpda_vqb );
+        //                $this->upd_visual_query_global( $query_name, $wpda_vqb );
         //            }
     }
 
@@ -687,16 +687,22 @@ class WPDA_Query_Builder {
         $this->update_query_list( $wpda_query_builder_data );
     }
 
+    public function get_visual_query( $query_name ) {
+    }
+
+    public function get_visual_query_global( $query_name ) {
+    }
+
     public function delete_query_global( $query_name ) {
         $wpda_query_builder_data = $this->get_query_list_global();
         unset($wpda_query_builder_data[$query_name]);
         $this->update_query_list_global( $wpda_query_builder_data );
         //            if ( wpda_freemius()->can_use_premium_code__premium_only() ) {
-        //                $this->del_visual_query( $query_name );
+        //                $this->del_visual_query_global( $query_name );
         //            }
     }
 
-    public function get_visual_query( $query_name ) {
+    public function get_visual_query_ajax() {
     }
 
     protected function upd_visual_query( $query_name, $wpda_vqb ) {

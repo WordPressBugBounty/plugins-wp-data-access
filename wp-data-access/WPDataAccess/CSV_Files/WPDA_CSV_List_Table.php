@@ -120,7 +120,7 @@ Needs to be performed only once" onclick="jQuery(\'#mapping_form%s\').submit()">
 			// Add reload form to actions.
 			$wp_nonce_action = "wpda-reload-csv-{$item['csv_id']}";
 			$wp_nonce        = esc_attr( wp_create_nonce( $wp_nonce_action ) );
-			$reload_form     = $this->create_post_form( 'reload', "reload_form{$form_id}", $item['csv_id'], $wp_nonce, $item['csv_name'] );
+			$reload_form     = $this->create_post_form( 'reload', "reload_form{$form_id}", $item['csv_id'], $wp_nonce, $item['csv_name'], $item['csv_encoding'] );
 			?>
 			<script type='text/javascript'>
 				jQuery("#wpda_invisible_container").append("<?php echo $reload_form; // phpcs:ignore WordPress.Security.EscapeOutput ?>");
@@ -159,8 +159,14 @@ Needs to be performed only once" onclick="jQuery(\'#mapping_form%s\').submit()">
 		 * @param string $csv_name CSV internal name.
 		 * @return array|string|string[]
 		 */
-		private function create_post_form( $action, $form_id, $csv_id, $wpnonce, $csv_name = '' ) {
+		private function create_post_form( $action, $form_id, $csv_id, $wpnonce, $csv_name = '', $csv_encoding = '' ) {
 			$esc_attr = 'esc_attr';
+
+            $csv_encoding_field = '';
+            if ( ! empty( $csv_encoding ) ) {
+                $csv_encoding_field = "<input type='hidden' name='csv_encoding' value='{$esc_attr( $csv_encoding )}' />";
+            }
+
 			$form     = <<< EOT
 				<form id='{$esc_attr( $form_id )}' method='post'
 					  action='?page={$esc_attr( $this->page )}&page_action=wpda_import_csv'
@@ -168,6 +174,7 @@ Needs to be performed only once" onclick="jQuery(\'#mapping_form%s\').submit()">
 					<input type='hidden' name='action' value='{$esc_attr( $action )}' />
 					<input type='hidden' name='csv_id' value='{$esc_attr( $csv_id )}' />
 					<input type='hidden' name='csv_name' value='{$esc_attr( $csv_name )}' />
+					{$csv_encoding_field}
 					<input type='hidden' name='_wpnonce' value='{$esc_attr( $wpnonce )}'>
 				</form>
 EOT;
@@ -254,7 +261,7 @@ EOT;
 				}
 
 				// Check if delete is allowed.
-				$wp_nonce_action = 'wpda-delete-{$this->table_name}';
+				$wp_nonce_action = "wpda-delete-{$this->table_name}";
 				$wp_nonce        = isset( $_REQUEST['_wpnonce2'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce2'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, $wp_nonce_action ) ) {
 					die( __( 'ERROR: Not authorized', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
@@ -288,7 +295,7 @@ EOT;
 					if ( is_array( $row ) && 1 === count( $row ) ) {//phpcs:ignore - 8.1 proof
 						// Silently delete file.
 						if ( isset( $row[0]->csv_real_file_name ) ) {
-							unlink( WPDA_CSV_Import::get_plugin_upload_dir() . $row[0]->csv_real_file_name );
+							unlink( WPDA::get_plugin_upload_dir() . $row[0]->csv_real_file_name );
 						}
 
 						// Delete record.
@@ -353,6 +360,7 @@ EOT;
 				'csv_orig_file_name' => __( 'File Name', 'wp-data-access' ),
 				'csv_timestamp'      => __( 'Timestamp', 'wp-data-access' ),
 				'csv_mapping'        => __( 'Mapping', 'wp-data-access' ),
+                'csv_encoding'       => __( 'Encoding', 'wp-data-access' ),
 			);
 		}
 

@@ -27,8 +27,7 @@ namespace WPDataAccess\API {
 
 					if (
                         '/' . self::WPDA_NAMESPACE === $rest_route &&
-                        ! current_user_can( 'manage_options' ) &&
-                        ! current_user_can( 'manage_sites' )
+                        ! WPDA::current_user_is_admin()
                     ) {
 						return new \WP_Error(
 							'rest_cannot_access',
@@ -83,6 +82,10 @@ namespace WPDataAccess\API {
             // AI Assistant
             $ai = new WPDA_AI();
             $ai->register_rest_routes();
+
+            // Scheduled Exports
+            $export = new WPDA_Export();
+            $export->register_rest_routes();
 
 		}
 

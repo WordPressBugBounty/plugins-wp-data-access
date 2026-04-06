@@ -418,11 +418,26 @@ class WPDA_Table extends WPDA_API_Core {
                 }
                 $where .= (( '' === $where ? ' where ' : ' and ' )) . ' (' . implode( ' and ', $dynamic_where ) . ') ';
             }
+            $column_count = ( '' === $subquery ? '' : ", stats.total_rows as 'count'" );
             if ( strpos( $column_value, ',' ) !== false ) {
                 $columns = explode( ',', $column_value );
-                $sql = $wpdadb->prepare( "\n\t\t\t\t\t\t\tselect distinct `%1s` as 'key'\n\t\t\t\t\t\t\t, `%1s`\n\t\t\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t\t", array($column_key, implode( '`,`', $columns ), $tbl) );
+                $columns = array_map( function ( $column ) use($wpdadb, $tbl) {
+                    return $wpdadb->prepare( "`%1s`.`%1s`", [$tbl, $column] );
+                }, $columns );
+                $sql = $wpdadb->prepare( "\n\t\t\t\t\t\t\tselect distinct `%1s`.`%1s` as 'key'\n\t\t\t\t\t\t\t, %1s\n\t\t\t\t\t\t\t{$column_count}\n\t\t\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t\t", array(
+                    $tbl,
+                    $column_key,
+                    implode( ',', $columns ),
+                    $tbl
+                ) );
             } else {
-                $sql = $wpdadb->prepare( "\n\t\t\t\t\t\t\tselect distinct `%1s` as 'key'\n\t\t\t\t\t\t\t, `%1s` as 'value' \n\t\t\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t\t", array($column_key, $column_value, $tbl) );
+                $sql = $wpdadb->prepare( "\n\t\t\t\t\t\t\tselect distinct `%1s`.`%1s` as 'key'\n\t\t\t\t\t\t\t, `%1s`.`%1s` as 'value'\n\t\t\t\t\t\t\t{$column_count}\n\t\t\t\t\t\t\tfrom `%1s`\n\t\t\t\t\t\t", array(
+                    $tbl,
+                    $column_key,
+                    $tbl,
+                    $column_value,
+                    $tbl
+                ) );
             }
             $sql .= " {$where} order by 2 ";
             // $where already sanitized
@@ -541,16 +556,12 @@ class WPDA_Table extends WPDA_API_Core {
                 $context['debug'] = $debug['debug'];
             }
             if ( 0 === count( $dataset ) ) {
-                return $this->WPDA_Rest_Response( 'No data found', $dataset, array(
-                    'debug' => $debug['debug'],
-                ) );
+                return $this->WPDA_Rest_Response( 'No data found', $dataset, $context );
             } else {
                 if ( 1 === count( $dataset ) ) {
                     return $this->WPDA_Rest_Response( '', $dataset, $context );
                 } else {
-                    return $this->WPDA_Rest_Response( 'Query returned more than one row', $dataset, array(
-                        'debug' => $debug['debug'],
-                    ) );
+                    return $this->WPDA_Rest_Response( 'Query returned more than one row', $dataset, $context );
                 }
             }
         }
@@ -818,7 +829,8 @@ class WPDA_Table extends WPDA_API_Core {
         $search_columns,
         $search_column_fns,
         $search_data_types,
-        $geo_radius = array()
+        $geo_radius = array(),
+        $operator = 'and'
     ) {
         // Default where.
         if ( '' !== trim( $default_where ) && 'where' !== strtolower( substr( trim( $default_where ), 0, 5 ) ) ) {
@@ -1184,24 +1196,32 @@ class WPDA_Table extends WPDA_API_Core {
                     wp_create_nonce( 'wpda-rename-' . $tbl ),
                 ) );
             }
-            $media = $this->get_media( $dbs, $tbl, $columns->get_table_columns() );
+            $table_columns = $columns->get_table_columns();
+            $media = $this->get_media( $dbs, $tbl, $table_columns );
+            $columns_sorted = array();
+            foreach ( $table_columns as $column ) {
+                if ( isset( $column['column_name'] ) ) {
+                    $columns_sorted[$column['column_name']] = $column;
+                }
+            }
         }
         return array(
-            'columns'      => $columns->get_table_columns(),
-            'table_labels' => $columns->get_table_header_labels(),
-            'form_labels'  => $columns->get_table_column_headers(),
-            'primary_key'  => $columns->get_table_primary_key(),
-            'access'       => $access,
-            'settings'     => $settings,
-            'media'        => $media['media'],
-            'wp_media'     => $media['wp_media'],
-            'table_info'   => $this->get_table_info( $dbs, $tbl ),
-            'create'       => $sql_create_table,
+            'columns'        => $table_columns,
+            'columns_sorted' => $columns_sorted,
+            'table_labels'   => $columns->get_table_header_labels(),
+            'form_labels'    => $columns->get_table_column_headers(),
+            'primary_key'    => $columns->get_table_primary_key(),
+            'access'         => $access,
+            'settings'       => $settings,
+            'media'          => $media['media'],
+            'wp_media'       => $media['wp_media'],
+            'table_info'     => $this->get_table_info( $dbs, $tbl ),
+            'create'         => $sql_create_table,
         );
     }
 
     private function get_table_access( $dbs, $tbl ) {
-        if ( current_user_can( 'manage_options' ) ) {
+        if ( WPDA::current_user_is_admin() ) {
             // Check administrator rights
             if ( is_admin() ) {
                 $access = WPDA_Dictionary_Access::check_table_access_backend( $dbs, $tbl, $done );

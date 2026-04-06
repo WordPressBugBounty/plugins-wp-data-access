@@ -39,10 +39,10 @@ abstract class WPDA_Container {
         wp_enqueue_media();
     }
 
-    protected function add_client( $app_id = null ) {
-        $mainjs = 'main-' . WPDA::get_option( WPDA::OPTION_WPDA_CLIENT_VERSION ) . '.js';
+    protected function add_client( $entry_point, $app_id = null ) {
+        $mainjs = "{$entry_point}-" . WPDA::get_option( WPDA::OPTION_WPDA_CLIENT_VERSION ) . '.js';
         $script_path = plugin_dir_url( __DIR__ ) . "../assets/dist/";
-        $script_url = "{$script_path}/{$mainjs}";
+        $script_url = "{$script_path}{$mainjs}";
         $app_site = wpda_freemius()->get_site();
         unset($app_site->public_key);
         unset($app_site->secret_key);

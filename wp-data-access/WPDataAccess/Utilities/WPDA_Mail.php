@@ -2,6 +2,8 @@
 
 namespace WPDataAccess\Utilities {
 
+    use WPDataAccess\WPDA;
+
     class WPDA_Mail {
 
         const WPDA_MAIL_SERVER_OPTION = 'wpda_mail_server';
@@ -16,6 +18,8 @@ namespace WPDataAccess\Utilities {
         ) {
 
             ob_start();
+
+            do_action( 'wpda_sending_mail' );
             $result = wp_mail(
                 $to,
                 $subject,
@@ -25,6 +29,7 @@ namespace WPDataAccess\Utilities {
                 ),
                 $attachments
             );
+
             $output = ob_get_clean();
 
             if ( $result ) {
@@ -40,6 +45,23 @@ namespace WPDataAccess\Utilities {
                     'message' => 'Failed to process request',
                 );
             }
+
+        }
+
+        public static function mail_activated() {
+
+            $mail = self::get_option();
+            if (
+                false !== $mail &&
+                (
+                    ! isset( $mail['activate'] ) ||
+                    'on' === $mail['activate']
+                )
+            ) {
+                return true;
+            }
+
+            return false;
 
         }
 
