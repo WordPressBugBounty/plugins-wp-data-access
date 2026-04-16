@@ -73,6 +73,7 @@ abstract class WPDA_Settings {
         // Tabs array is filled in constructor to add i18n.
         $this->tabs = array(
             'plugin'     => 'Plugin',
+            'apps'       => 'Apps',
             'backend'    => 'Back-end',
             'frontend'   => 'Front-end',
             'uninstall'  => 'Uninstall',

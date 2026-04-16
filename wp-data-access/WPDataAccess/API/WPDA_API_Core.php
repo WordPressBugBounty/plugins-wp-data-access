@@ -407,6 +407,13 @@ abstract class WPDA_API_Core {
                     return is_array( $param );
                 },
             ),
+            'copy_key'           => array(
+                'required'          => true,
+                'type'              => 'string',
+                'description'       => __( 'Internal copy action identifier', 'wp-data-access' ),
+                'sanitize_callback' => 'sanitize_text_field',
+                'validate_callback' => 'rest_validate_request_arg',
+            ),
             'access'             => array(
                 'required'          => true,
                 'type'              => 'string',

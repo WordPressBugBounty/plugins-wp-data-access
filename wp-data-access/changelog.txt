@@ -1,3 +1,335 @@
+= 5.5.65 =
+* Released 2026-01-22
+* Added: Dashboard Builder
+* Improved: Reduced app load time and bundle size on public pages
+* Fixed: Image hyperlink object not processed correctly if empty
+* Fixed: PHP Deprecated strtolower(): Passing null to parameter #1
+* Fixed: Undocked maps feature not working for premium users
+* Fixed: Table footer label font size
+* Fixed: Disabling onAppOpen and onAppClose has no effect
+* Fixed: Responsive column hiding after toggling column filter
+* Fixed: Remove trailing spaces from highlight
+
+= 5.5.64 =
+* Released 2026-01-05
+* Added: Image and hyperlink support to PDF detail export
+* Added: Image and hyperlink support to table export
+* Added: Media type to column metadata
+* Added: Media type configuration to Table and Form Builder
+* Added: Context-related icons to apps on WordPress dashboard
+* Added: Start all app types (except maps) in full-screen mode
+* Improved: Load time App Manager
+* Improved: Show RESET buttons context-sensitive
+* Improved: App shortcode parameter handling
+* Fixed: Super admins not seeing builder icon
+* Fixed: Number of columns visible on detail panel
+* Fixed: Horizontal alignment of column filter containers
+* Fixed: Column reordering UI in Table and Form Builder
+* Fixed: Default order by not used when adding new row on join table
+* Fixed: Export to PDF not supporting Turkish character set
+
+= 5.5.63 =
+* Released 2025-12-03
+* Added: Enable | disable remote database connection from the Data Explorer
+* Added: Option to disable spinner and progress bar then calling built-in function requery
+* Added: Option to disable ENTER key submission
+* Updated: Allow disabling global search for columns containing a column filter
+* Updated: Documentation URLs
+* Fixed: onChange hook for drop-down list not working
+* Fixed: onChange hook for lookups not working
+* Fixed: Open global search on startup forces a page scroll
+* Fixed: Top pagination context text overlap on mobile devices
+* Fixed: Search fields on mobiles devices not working
+* Fixed: Checkbox beside row actions disappear when all actions are disabled
+* Fixed: Handle current_timestamp as default value
+* Fixed: Data Explorer crashes on full-screen toggle
+* Fixed: PDF detail print out.
+* Removed: Default value current_timestamp() from old forms
+
+= 5.5.62 =
+* Released 2025-11-12
+* Added: Table display mode supporting switching between Table View and Card View
+* Added: Hide expand icons option (when all detail panels are expanding by default)
+* Added: Open global search box on page load
+* Added: Parameter recalcRowCount to requery builtin to force row count recalculation
+* Added: Disable navigation buttons during navigation
+* Added: Disable APPLY, OK and CANCEL buttons while transaction is in progress
+* Added: Server call authorization
+* Added: Hard row count estimation for improved performance
+* Added: Action wpda_set_hard_row_count to support automated hard row count updates
+* Added: Select expand column position (LEFT | RIGHT)
+* Improved: Handling media consistently on different devices
+* Improved: Large table support in App Builder
+* Updated: Documentation URLs
+* Updated: Freemius SDK
+* Fixed: In view form/mode show media instead of non-editable data entry fields
+* Fixed: Background color actions column
+* Fixed: Actions column width
+* Fixed: Detail panel layout
+* Fixed: Master-detail navigation does not update row count
+* Fixed: Dynamic lookups not updated
+* Fixed: Drop-down list text color
+* Fixed: Height and color inline editing fields
+
+= 5.5.61 =
+* Released 2025-10-22
+* Added: UTF encoding selection to CSV file import
+* Fixed: CSV bulk delete not working
+
+= 5.5.60 =
+* Released 2025-10-16
+* Added: Interactive detail render column selection
+* Added: Built-in styled app button
+* Added: Built-in dynamic server call
+* Added: Edit code directly from hook overview
+* Added: Open all detail panels by default
+* Added: Computed Text Fields to free version
+* Added: Pagination to free version
+* Added: Style ID to loadStyle function.
+* Added: Current date to PDF footer (removed powered by message)
+* Fixed: Moved builtins to parallel container to prevent unnecessary rendering
+* Fixed: No space between bulk actions row selection elements
+* Fixed: Invalid encoding with CSV file import
+* Fixed: Height empty footer App Manager action panel
+* Fixed: Console errors not logged with debug mode disabled
+* Fixed: Deleting a lookup value does not delete the state of a depending lookup
+* Fixed: Manually added line breaks in hooks break hook import
+* Fixed: Color settings defined in hooks overwritten on refresh
+* Fixed: Cannot insert @wpda_wp_user_id into text field
+
+= 5.5.57 =
+* Released 2025-09-26
+* Optimized: Responsive column hiding
+* Added: Context sensitive help to Builders
+* Added: Interactive documentation search
+* Added: Parameters app and data to renderDetailPanel hook
+* Fixed: Form column hooks not available in old forms
+* Fixed: Full-screen mode on iOS
+* Fixed: Full-screen mode on Android
+* Fixed: Action column width too small
+* Fixed: SQL Query Builder overwrites global mail settings
+
+= 5.5.56 =
+* Released 2025-09-18
+* Added: Free trial activation from toolbar
+* Fixed: App details not shown correctly in App Builder on iOS
+* Fixed: App details not shown correctly in App Builder on Android
+* Fixed: Removed double slashes from path
+* Updated freemius SDK
+
+= 5.5.55 =
+* Released 2025-09-17
+* Added: CCS classes now also available for free users
+* Changed: Dynamic permission changes stored independently
+* Fixed: Pagination BOTTOM and TOP not equally aligned
+* Fixed: Built-in httpRequest not working in DEFAULT where
+* Fixed: Chart source field does not preserve all SQL operators
+* Fixed: Computed field displaying wrong extension
+* Fixed: App Manager allows app type update for maps
+* Fixed: Wrong labels for width and height in chart setup panel
+* Fixed: Debug info missing in GET response
+
+= 5.5.54 =
+* Released 2025-09-03
+* Fixed: UK date format not recognized
+* Fixed: Skip PDS SSL verification
+
+= 5.5.53 =
+* Released 2025-08-28
+* Added: loadScript and loadStyle to anAppOpen hook
+* Changed: Parameter column name optional in form column hooks
+* Client update
+
+= 5.5.52 =
+* Released 2025-08-23
+* Changed: Updated computed field label
+* Fixed: Multi-level relationship misses key
+* Fixed: Detail key lost on row navigation
+
+= 5.5.51 =
+* Released 2025-08-22
+* Added: Ability to disable insert into relation table
+* Added: Alter column settings via app instance in hooks
+* Fixed: Master-detail synchronization
+* Fixed: Memory not freed after closing M2M row selection component
+* Fixed: Close button not visible on modal form to anonymous users
+* Fixed: Table not rendering correctly with column filters enabled on startup
+* Fixed: Minimum columns shown in responsive mode
+* Fixed: Action column too wide
+* Fixed: Empty time fields breaks form validation
+* Fixed: Unchecked columns in App Manager remain shown in app
+* Fixed: Master detail relationship not working with divergent keys
+
+= 5.5.49 =
+* Released 2025-08-16
+* Updated: Tooltips icon buttons toolbar
+* Fixed: Hyperlinks in data tables not working
+* Fixed: Multi level relationships missing builder buttons
+* Fixed: Hook postFormSubmit does not fire after insert
+
+= 5.5.48 =
+* Released 2025-08-06
+* Fixed: Export all rows with client-side processing exports only rows on current page
+* Fixed: Show column filters on startup not working
+* Fixed: Cursor exits inline editing field on user input
+* Fixed: Detail table refreshed on every key press
+
+= 5.5.47 =
+* Released 2025-07-28
+* Fixed: Column settings added via hooks lost on navigation
+* Fixed: Column code variable returns undefined
+* Fixed: Conditional lookup does not use arguments
+* Fixed: Lookups loaded after (re)configuration
+* Fixed: Removed HTML from PDF output
+
+= 5.5.46 =
+* Released 2025-07-26
+* Fixed: Column filters not loading correctly
+
+= 5.5.45 =
+* Released 2025-07-20
+* Added: Support for translation enables the modification of localized labels and hints
+* Added: New hooks preInsert, postInsert, preUpdate, postUpdate, preDelete, postDelete, onFormOpen and onFormClose
+* Added: Custom options and events to Chart Builder
+* Added: Support for remote auto increment columns
+* Added: Translation for column filters label
+* Added: Disable APPLY button in Form Builder
+* Added: Parent and row column value usage in dynamic lookup conditions
+* Added: Automatically remove dropped columns from apps
+* Improved: Loading language files dynamically
+* Improved: Chart settings UI and performance
+* Improved: Force plugin themes to overwrite generally styled elements by other plugins and themes
+* Improved: Behavior of date and time data entry fields
+* Improved: Dynamic CSS handling
+* Changed: Row selection available through checkbox only
+* Fixed: Table query performed twice with server-side processing
+* Fixed: Data app hangs if no detail apps are defined
+* Fixed: Update succeeds but DBMS reports 0 rows affected (CONNECT engine only)
+* Fixed: Delete succeeds but DBMS reports 0 rows affected (CONNECT engine only)
+* Fixed: Cannot update row directly after insert
+* Fixed: "Add trailing zeros to days and month" should be "Add leading zeros to days and month"
+* Fixed: Navigation buttons in form view doesn't show up for views or tables without primary key
+* Fixed: Next row navigation button showing first row on previous page
+* Fixed: The responseCode in the postFormSubmit hook is returned in lower case
+* Fixed: Background color odd-even App Builder
+* Fixed: App Builder not exporting map and chart settings
+* Fixed: Theme twenty twenty-one styling issues
+* Fixed: Data Explorer does not remove dropped columns
+* Fixed: App Builder detail hover
+* Updated: Freemius SDK
+
+= 5.5.43 =
+* Released 2025-06-19
+* Added: Unattended scheduled exports to dashboard (+email notification +local files + ftp(s))
+* Added: Show validation error message in popup
+* Fixed: Refresh button returns partial dataset with client-side processing and search values
+* Fixed: App function setInlineEditing has no effect
+* Fixed: Some hooks still use numeric mode key instead of mode name
+* Fixed: SQL Query Builder missing header with non query commands like "desc table" and "show tables"
+* Fixed: Form setting preserveSpacesOnUpdate not working
+* Fixed: Cannot delete hook on column with index 0
+* Fixed: Cannot update hyperlink from hooks
+* Fixed: Loosing tabs on small devices
+* Fixed: Tables filtered using row selection export whole table instead of filtered rows only
+* Fixed: Elevation not working for charts
+
+= 5.5.42 =
+* Released 2025-06-05
+* Added: Plugin drives for local file system and ftp(s)
+* Added: Run unattended exports to local file system and ftp(s)
+* Added: New hook functions:
+         app.getUsername(), app.userHasRole(),
+         app.setGlobalSearch(), app.setColumnFilters(),
+		 app.setInsert(), app.setUpdate(), app.setDelete(),
+		 app.setInlineEditing(), app.setBulkActions()
+* Added: Server filter to manage app access control
+* Added: Delete scheduled plugin events on plugin deactivation
+* Improved: Moved all plugin legacy settings to its own submenu
+* Improved: SQL query scheduling
+* Improved: Use empty label for null values and empty strings
+* Fixed: SQL query parameters lost on control save
+* Fixed: Left aligned column header too wide
+* Fixed: First and last column headers missing border bottom
+* Fixed: Column filter icon not immediately removed when column filtering is disabled
+* Fixed: Media library not available on insert
+* Fixed: SQL operators malformed after sanitization
+* Fixed: Column filter mode update does not execute query immediately
+* Fixed: Null value not correctly handle with localization
+* Fixed: Hook onRowInit not executed on navigation actions in form
+* Fixed: Data Explorer search field CSS
+
+= 5.5.41 =
+* Released 2025-05-22
+* Added: New SQL Query Builder
+* Added: MySQL date format editing
+* Changed: Default table layout to fixed
+* Merged: Row actions and row selection columns
+* Fixed: Column too wide with inline HTML
+* Fixed: Media not displayed for relation table columns
+* Fixed: Norwegian date format incorrect
+* Fixed: Decreasing screen width does not resize chart width in full screen mode
+* Fixed: User denied Geolocation error not handled correctly
+* Fixed: Cannot update record after navigating to different row in form
+* Fixed: Enum column loses "Show values in setting when moved
+* Fixed: Handle basic HTML markup in table cells
+* Fixed: Search panes not sorted
+* Fixed: Column filter icon shows for detail tables when no filterable columns are visible
+* Fixed: Clickable area on column filter does not include caret
+* Fixed: Form does not scroll correctly in full-screen mode
+* Fixed: Modal form not handling column filters correctly
+* Fixed: Code editor height incorrect in full-screen mode
+* Fixed: Rename app database not working
+* Fixed: Link to show examples in Default Where shows table SQL instead
+* Fixed: REST API - Critical Error on wpda/table/select
+* Removed: PREVIOUS | NEXT row buttons from form if table has no primary key
+* Removed: WP Data Access from detail page footer
+* Updated: Freemius SDK
+
+= 5.5.40 =
+* Released 2025-04-18
+* Added: Previous and next row buttons to data entry form
+* Added: Map integration to Table Builder
+* Added: View maps and charts besides each other in header or footer dock
+* Added: Spy popup to default where clause
+* Added: Slovenian language support
+* Added: Parameter support to chart apps
+* Added: Parameter support to map apps
+* Changed: Media parameters to optional
+* Changed: Powered by hidden by default (added tooltip to UI)
+* Fixed: Map height incorrect when run from shortcode
+* Fixed: Column filter default not working with server-side processing
+* Fixed: Chart data columns expecting length
+* Fixed: Images not shown correctly on Safari (macOS and iOS)
+* Fixed: Incorrect table height on Safari (macOS and iOS)
+* Fixed: Numeric and null values not handle correctly in CSV + JSON export
+
+= 5.5.37 =
+* Released 2025-04-02
+* Added: New app type MAP
+* Added: Root property control to setColumnStyle
+* Added: Type-checking to reducers and actions
+* Added: Support for spatial columns in tables and forms
+* Added: Support for multiple custom shortcode parameters
+* Improved: Replaced textarea with CodeMirror for SQL editing
+* Fixed: Vulnerability shortcode parameter filter field
+* Fixed: Chart Builder menu uses old format
+* Fixed: Add column data type to all requests
+* Fixed: Added null values to Query Builder CSV export
+* Fixed: Shortcode arguments not processed
+* Fixed: Missing table header border
+
+= 5.5.36 =
+* Released 2025-03-17
+* Added: Form hooks
+* Added: Builtins to table and form hooks
+* Added: OK and CANCEL buttons to full-screen code editor
+* Added: Allow hiding title bar on web page via shortcode parameter
+* Added: Table hook postQuery
+* Added: Allow empty value selection from drop-down list (client-side processing only)
+* Fixed: Table hook onAppOpen not working
+* Fixed: Slovak app language falls back to English
+* Fixed: Removed unused buttons from actions menu
+
 = 5.5.35 =
 * Released 2025-02-24
 * Added: Key icon to primary key fields

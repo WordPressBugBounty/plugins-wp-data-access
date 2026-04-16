@@ -2,6 +2,7 @@
 
 namespace WPDataAccess\API;
 
+use PDOException;
 use WPDataAccess\Connection\WPDADB;
 use WPDataAccess\Plugin_Table_Models\WPDA_Media_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_Table_Settings_Model;
@@ -9,6 +10,8 @@ use WPDataAccess\Plugin_Table_Models\WPDA_User_Menus_Model;
 use WPDataAccess\Utilities\WPDA_Mail;
 use WPDataAccess\WPDA;
 class WPDA_Actions extends WPDA_API_Core {
+    const WPDA_COPY_TABLE = 'wpda_copy_table';
+
     protected $file_pointer;
 
     protected $file_content;
@@ -40,6 +43,23 @@ class WPDA_Actions extends WPDA_API_Core {
                     'sanitize_callback' => 'sanitize_text_field',
                     'validate_callback' => 'rest_validate_request_arg',
                 ),
+                'copy_key'  => $this->get_param( 'copy_key' ),
+            ),
+        ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'action/copy/start', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'action_copy_start'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'copy_key' => $this->get_param( 'copy_key' ),
+            ),
+        ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'action/copy/cancel', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'action_copy_cancel'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'copy_key' => $this->get_param( 'copy_key' ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'action/truncate', array(
@@ -354,6 +374,7 @@ class WPDA_Actions extends WPDA_API_Core {
         $from_tbl = $request->get_param( 'from_tbl' );
         $to_tbl = $request->get_param( 'to_tbl' );
         $copy_data = $request->get_param( 'copy_data' );
+        $copy_key = $request->get_param( 'copy_key' );
         if ( '' === $from_dbs || '' === $to_dbs || '' === $from_tbl || '' === $to_tbl ) {
             return $this->bad_request();
         }
@@ -362,7 +383,8 @@ class WPDA_Actions extends WPDA_API_Core {
             $to_dbs,
             $from_tbl,
             $to_tbl,
-            $copy_data
+            $copy_data,
+            $copy_key
         );
         if ( '' === $msg ) {
             return $this->WPDA_Rest_Response( __( 'Table successfully copied', 'wp-data-access' ) );
@@ -371,6 +393,42 @@ class WPDA_Actions extends WPDA_API_Core {
                 'status' => 403,
             ));
         }
+    }
+
+    public function action_copy_start( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        if ( !WPDA::current_user_is_admin() ) {
+            return $this->unauthorized();
+        }
+        $copy_key = $request->get_param( 'copy_key' );
+        if ( '' === $copy_key ) {
+            return $this->bad_request();
+        }
+        $this->copy_start( $copy_key );
+        return $this->WPDA_Rest_Response( 'ok', self::copy_in_progress() );
+    }
+
+    public function action_copy_cancel( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        if ( !WPDA::current_user_is_admin() ) {
+            return $this->unauthorized();
+        }
+        $copy_key = $request->get_param( 'copy_key' );
+        if ( '' === $copy_key ) {
+            return $this->bad_request();
+        }
+        $this->copy_stop( $copy_key );
+        return $this->WPDA_Rest_Response( 'ok', self::copy_in_progress() );
     }
 
     public function action_rename( $request ) {
@@ -429,7 +487,8 @@ class WPDA_Actions extends WPDA_API_Core {
         $to_dbs,
         $from_tbl,
         $to_tbl,
-        $copy_data
+        $copy_data,
+        $copy_key
     ) {
         // All values have already been validated and sanitized in the rest route registration.
         if ( !WPDA::current_user_is_admin() ) {
@@ -488,28 +547,88 @@ class WPDA_Actions extends WPDA_API_Core {
             // Copy data from source to destination table.
             set_time_limit( 0 );
             // Prevent time out.
-            // Use a cursor to process all rows and prevent exhausting memory.
-            // Process 100 rows per batch to prevent exhausting memory.
-            $buffer_size = 100;
+            // Buffer rows to prevent exhausting memory.
+            $buffer_size = 1000;
+            // Default buffer
+            $settings_db = WPDA_Table_Settings_Model::query( $from_tbl, $from_dbs );
+            if ( isset( $settings_db[0]['wpda_table_settings'] ) ) {
+                // Convert string to JSON.
+                $settings = json_decode( $settings_db[0]['wpda_table_settings'], true );
+                if ( isset( $settings['table_settings']['query_buffer_size'] ) && is_numeric( $settings['table_settings']['query_buffer_size'] ) ) {
+                    $buffer_size = intval( $settings['table_settings']['query_buffer_size'] );
+                }
+            }
             $index = 0;
             $loop_done = false;
+            $wpdadb_from->save_queries = false;
+            $wpdadb_to->save_queries = false;
             while ( !$loop_done ) {
                 // Get rows.
-                $rows = $wpdadb_from->get_results( $wpdadb_from->prepare( 'select * from `%1s` limit %1s offset %1s', array($from_tbl, $buffer_size, $index * $buffer_size) ), 'ARRAY_A' );
+                $rows = $wpdadb_from->get_results( $wpdadb_from->prepare( 'select * from `%1s` limit %d offset %d', array($from_tbl, $buffer_size, $index * $buffer_size) ), 'ARRAY_A' );
                 // Process rows.
                 foreach ( $rows as $row ) {
                     $wpdadb_to->insert( $to_tbl, $row );
+                }
+                // Cleanup = IMPORTANT!
+                $wpdadb_from->flush();
+                $wpdadb_to->flush();
+                $wpdadb_to->queries = array();
+                $wpdadb_to->last_query = '';
+                $wpdadb_to->last_error = '';
+                $wpdadb_to->result = null;
+                $wpdadb_to->num_rows = 0;
+                $wpdadb_to->rows_affected = 0;
+                wp_cache_flush();
+                if ( function_exists( 'gc_collect_cycles' ) ) {
+                    gc_collect_cycles();
                 }
                 if ( 100 > count( $rows ) ) {
                     // No more rows to process.
                     $loop_done = true;
                 }
+                unset($rows);
                 $index++;
+                // Check if job was cancelled
+                $in_progress = self::copy_in_progress();
+                if ( !in_array( $copy_key, $in_progress ) ) {
+                    $loop_done = true;
+                }
             }
         }
         $wpdadb_from->suppress_errors = $suppress_errors_from;
         $wpdadb_to->suppress_errors = $suppress_errors_to;
+        $this->copy_stop( $copy_key );
+        if ( '' !== $wpdadb_from->last_error ) {
+            return $wpdadb_from->last_error;
+        }
+        if ( '' !== $wpdadb_to->last_error ) {
+            return $wpdadb_to->last_error;
+        }
         return '';
+    }
+
+    private function copy_start( $copy_key ) {
+        $in_progress = self::copy_in_progress();
+        $in_progress[] = $copy_key;
+        update_user_meta( WPDA::get_current_user_id(), self::WPDA_COPY_TABLE, $in_progress );
+    }
+
+    private function copy_stop( $copy_key ) {
+        $in_progress = self::copy_in_progress();
+        if ( ($array_key = array_search( $copy_key, $in_progress )) !== false ) {
+            unset($in_progress[$array_key]);
+            $in_progress = array_values( $in_progress );
+            // Reset indexes to start at 0
+        }
+        update_user_meta( WPDA::get_current_user_id(), self::WPDA_COPY_TABLE, $in_progress );
+    }
+
+    public static function copy_in_progress() {
+        $in_progress = get_user_meta( WPDA::get_current_user_id(), self::WPDA_COPY_TABLE, true );
+        if ( $in_progress === false || $in_progress === '' ) {
+            return array();
+        }
+        return maybe_unserialize( $in_progress );
     }
 
     private function truncate( $dbs, $tbl ) {

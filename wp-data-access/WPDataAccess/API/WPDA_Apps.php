@@ -1991,12 +1991,13 @@ class WPDA_Apps extends WPDA_API_Core {
         $settings->env = $this->get_env();
         global $wpdb;
         $settings->wp = [
-            'roles'       => $this->get_wp_roles(),
-            'users'       => $this->get_wp_users(),
-            'home'        => admin_url( 'admin.php' ),
-            'tables'      => array_values( $wpdb->tables() ),
-            'date_format' => get_option( 'date_format' ),
-            'time_format' => get_option( 'time_format' ),
+            'roles'         => $this->get_wp_roles(),
+            'users'         => $this->get_wp_users(),
+            'home'          => admin_url( 'admin.php' ),
+            'tables'        => array_values( $wpdb->tables() ),
+            'date_format'   => get_option( 'date_format' ),
+            'time_format'   => get_option( 'time_format' ),
+            'scroll_offset' => WPDA::get_option( WPDA::OPTION_APPS_SCROLL_OFFSET ),
         ];
         return $settings;
     }

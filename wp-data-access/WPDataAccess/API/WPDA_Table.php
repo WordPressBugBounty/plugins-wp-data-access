@@ -1178,16 +1178,18 @@ class WPDA_Table extends WPDA_API_Core {
             $connect = null;
             global $wpdb;
             $settings->wp = [
-                'roles'       => $this->get_wp_roles(),
-                'users'       => $this->get_wp_users(),
-                'home'        => admin_url( 'admin.php' ),
-                'homea'       => admin_url( 'admin-ajax.php' ),
-                'tables'      => array_values( $wpdb->tables() ),
-                'date_format' => get_option( 'date_format' ),
-                'time_format' => get_option( 'time_format' ),
-                'alter'       => $wp_nonce_alter,
-                'refresh'     => $wp_nonce_refresh,
-                'connect'     => $connect,
+                'roles'          => $this->get_wp_roles(),
+                'users'          => $this->get_wp_users(),
+                'home'           => admin_url( 'admin.php' ),
+                'homea'          => admin_url( 'admin-ajax.php' ),
+                'tables'         => array_values( $wpdb->tables() ),
+                'date_format'    => get_option( 'date_format' ),
+                'time_format'    => get_option( 'time_format' ),
+                'alter'          => $wp_nonce_alter,
+                'refresh'        => $wp_nonce_refresh,
+                'connect'        => $connect,
+                'copyinprogress' => WPDA_Actions::copy_in_progress(),
+                'scroll_offset'  => WPDA::get_option( WPDA::OPTION_APPS_SCROLL_OFFSET ),
             ];
             if ( true === $waa ) {
                 $settings->wp['aonce'] = implode( '-', array(

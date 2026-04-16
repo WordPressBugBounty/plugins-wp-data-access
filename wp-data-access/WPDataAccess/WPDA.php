@@ -51,8 +51,8 @@ namespace WPDataAccess {
 		/**
 		 * Option wpda_version and it's default value
 		 */
-		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.70' );
-		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.68' );
+		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.71' );
+		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.69' );
 		const OPTION_WPDA_UPGRADED        = array( 'wpda_upgraded', false );
 		/**
 		 * Option wpda_setup_error and it's default value
@@ -126,6 +126,9 @@ namespace WPDataAccess {
 		const OPTION_PLUGIN_TIME_FORMAT      = array( 'wpda_plugin_time_format', 'H:i');
 		const OPTION_PLUGIN_TIME_PLACEHOLDER = array( 'wpda_plugin_time_placeholder', 'hh:mi');
 		const OPTION_PLUGIN_SET_FORMAT       = array( 'wpda_plugin_set_format', 'csv');
+
+        // App options
+        const OPTION_APPS_SCROLL_OFFSET = array( 'wpda_apps_scroll_offset', '120');
 
 		// Plugin debug mode
 		const OPTION_PLUGIN_DEBUG = array( 'wpda_plugin_debug', 'off');

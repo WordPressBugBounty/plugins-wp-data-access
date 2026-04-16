@@ -272,6 +272,11 @@ div[role=presentation].MuiDialog-root.MuiModal-root input[type=checkbox]:disable
     line-height: 2;
 }
 
+#wpwrap .wrap.wpda-explorer-backend input[type=checkbox] {
+    min-height: unset;
+    line-height: unset;
+}
+
 #wpwrap .pp-container-query-builder input[type=text] {
     min-height: unset;
 }

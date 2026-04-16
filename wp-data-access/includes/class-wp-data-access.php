@@ -495,6 +495,9 @@ class WP_Data_Access {
         $current_tab = ( isset( $_REQUEST['tab'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['tab'] ) ) : 'plugin' );
         // phpcs:ignore WordPress.Security.NonceVerification
         switch ( $current_tab ) {
+            case 'apps':
+                $wpda_settings_class_name = 'WPDA_Settings_Apps';
+                break;
             case 'backend':
                 $wpda_settings_class_name = 'WPDA_Settings_BackEnd';
                 break;

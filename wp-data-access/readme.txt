@@ -2,9 +2,9 @@
 Plugin URI: https://wpdataaccess.com/
 Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, app builder, form builder, dashboards
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 5.5.70
+Stable tag: 5.5.71
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,7 +18,7 @@ With the **intuitive App Builder**, you can create:
 * **Interactive Data Tables** – manage and display data with ease
 * **Custom Data Forms** – collect and process input seamlessly
 * **Charts, Maps & Dashboards** – visualize data beautifully
-* **Role-Based Access** – control who can view or manage apps
+* **Role-Based Access** – control who can view or manage your data
 * **Multilingual Support** – 35+ languages ready to use
 
 WP Data Access is designed as a **true no-code builder**: everything works out of the box, intuitive and effortless. For those who want more, a full set of **developer hooks** makes it possible to fine-tune behavior, extend functionality, or integrate with custom workflows. Hooks are completely optional and invisible to no-code users, but a powerful bonus for developers.
@@ -108,7 +108,7 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
   * Data Forms ✅ - Can be replaced with Data Management app or Registration Form.
   * Maps 🌎 - Can be replaced with Map app.
   * Charts 📊 - Can be replaced with Chart app.
-  * Dashboards 🎛️
+  * Dashboards 🎛️ - Can be replaced with Dashboard app.
 * Use to maintain old solutions 🙏
 * Use App Builder for new projects 🚀
 
@@ -129,6 +129,31 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.71 =
+* Released 2026-04-16
+* Added: Actions clear column filter and hide column to column menu
+* Added: Gap between containers setting to Form Builder
+* Added: Allow manual update hard row count estimate in popup
+* Added: Changelog to bundle
+* Added: Table name to admin modal titles
+* Added: Query buffer size to Data Explorer UI
+* Added: Start multiple table copies in Data Explorer
+* Added: Cancel copy table in Data Explorer
+* Added: Customizable scroll offset
+* Changed: Data Explorer toolbar always visible
+* Fixed: Column actions menu empty
+* Fixed: Prevent loading lookups unnecessarily on startup
+* Fixed: Combining filters in App Builder does not work
+* Fixed: Data apps not correctly maintaining fullscreen mode
+* Inline editing now adds a save button to header by default
+* Fixed: Localization not working correctly for spanish language pack
+* Fixed: Media fields no longer render images in single‑record edit forms
+* Fixed: PDF button not working on detail panel
+* Fixed: Cannot configure detail form styles
+* Fixed: Memory exhausted error when copying large tables
+* Fixed: Scroll form into view
+* Fixed: Switching apps through data apps menu very slow
 
 = 5.5.70 =
 * Released 2026-04-02
