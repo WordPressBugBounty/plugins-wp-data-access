@@ -38,7 +38,7 @@ class WPDA_Add_App_To_Menu {
 			}
 
 			$title = $settings['settings']['app_menu_title'];
-            $icon = 'dashicons-database-view';
+            $icon  = 'dashicons-database-view';
             switch ($app['app_type']) {
                 case 1:
                 case 3:
@@ -72,12 +72,14 @@ class WPDA_Add_App_To_Menu {
 					$title,
 					WPDA::get_current_user_capability(),
 					$title,
-					function() use ( $app, $title ) {
+					function() use ( $app, $title, $settings ) {
 						// Style not enqueued from container class.
 						// Adding container style manually.
-						$args = array(
+                        $fullscreen    = isset( $settings['settings']['app_start_full_screen'] ) ? $settings['settings']['app_start_full_screen'] : false;
+                        $args          = array(
 							'app_id'   => $app['app_id'],
 							'feedback' => true,
+                            'fullscreen' => $fullscreen,
 						);
 						$app_container = new WPDA_App_Container( $args );
 						?>

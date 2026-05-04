@@ -329,8 +329,13 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
+                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/charts.html" target="_blank" class="whatsnew">
+                                        📊 Apply arithmetic functions to chart columns.
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/column-filters.html" target="_blank" class="whatsnew">
-                                        🌟 Several great new column filter features!
+                                        🌟 Several great new column filter features.
                                     </a>
                                 </li>
                                 <li>
@@ -361,11 +366,6 @@ namespace WPDataAccess\WPDA_Navi {
                                 <li>
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/columns/computed-fields.html" target="_blank" class="whatsnew">
                                         🎁 Computed Text Fields for FREE USERS.
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://docs.rad.wpdataaccess.com/app-manager/running-apps/shortcodes/shortcode-usage.html#%E2%9C%A8-start-in-full-screen-mode" target="_blank" class="whatsnew">
-                                        ⛶ Start all app types in full-screen mode.
                                     </a>
                                 </li>
 							</ul>

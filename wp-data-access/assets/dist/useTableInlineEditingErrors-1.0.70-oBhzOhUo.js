@@ -1,0 +1,1 @@
+import{u as o}from"./hooks-1.0.70-DfzDKYk5.js";import{l as s}from"./lib-1.0.70-CHUSYl8e.js";const a=e=>{const r=o(t=>{var i,n;return(n=(i=t.tables[e])==null?void 0:i.state)==null?void 0:n.inlineEditingErrors});return s.debug("inlineEditingErrors",r),r};export{a as u};

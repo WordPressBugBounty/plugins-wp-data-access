@@ -439,8 +439,9 @@ class WPDA_Table extends WPDA_API_Core {
                     $tbl
                 ) );
             }
-            $sql .= " {$where} order by 2 ";
-            // $where already sanitized
+            $orderby = ' order by 2 ';
+            $sql .= " {$where} {$orderby} ";
+            // $where and $orderby already sanitized and prepared
             $dataset = $wpdadb->get_results( $sql, 'OBJECT' );
             $wpdadb->suppress_errors( $suppress );
             // Send response.
@@ -967,7 +968,29 @@ class WPDA_Table extends WPDA_API_Core {
                     } else {
                         $sqlorder .= ',';
                     }
-                    $sqlorder .= '`' . $this->convert_column_name( $m2m_relationship, $sort['id'] ) . '` ' . (( $sort['desc'] ? 'desc' : 'asc' ));
+                    if ( !$client_side && isset( $lookups[$sort['id']] ) ) {
+                        // Use lookup table to sort
+                        $lookup = $lookups[$sort['id']];
+                        $lookup_dbs = $lookup['dbs'];
+                        $lookup_wpdadb = ( $dbs === $lookup_dbs ? $wpdadb : WPDADB::get_db_connection( $lookup_dbs ) );
+                        if ( $lookup_wpdadb !== null ) {
+                            $lookup_tbl = $lookup['tbl'];
+                            $lookup_key = $lookup['key'];
+                            $lookup_value = $lookup['value'];
+                            $lookup_dataset = $lookup_wpdadb->get_results( $lookup_wpdadb->prepare( "select `%1s`, `%1s` from `%1s` order by 2", array($lookup_key, $lookup_value, $lookup_tbl) ), 'ARRAY_N' );
+                            $lookup_orderby = 'case `' . $this->convert_column_name( $m2m_relationship, $sort['id'] ) . '` ';
+                            foreach ( $lookup_dataset as $index => $value ) {
+                                $lookup_orderby .= $lookup_wpdadb->prepare( 'when %s then %d ', array($value[0], $index) );
+                            }
+                            $lookup_orderby .= 'else `' . $this->convert_column_name( $m2m_relationship, $sort['id'] ) . '` end ' . (( $sort['desc'] ? 'desc' : 'asc' ));
+                            $sqlorder .= $lookup_orderby;
+                        } else {
+                            $sqlorder .= '`' . $this->convert_column_name( $m2m_relationship, $sort['id'] ) . '` ' . (( $sort['desc'] ? 'desc' : 'asc' ));
+                        }
+                    } else {
+                        // Normal sort
+                        $sqlorder .= '`' . $this->convert_column_name( $m2m_relationship, $sort['id'] ) . '` ' . (( $sort['desc'] ? 'desc' : 'asc' ));
+                    }
                 }
             }
             if ( '' === $sqlorder && '' !== trim( $default_orderby ) ) {

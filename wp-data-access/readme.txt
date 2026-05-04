@@ -1,10 +1,10 @@
 === WP Data Access – App Builder for Tables, Forms, Charts, Maps & Dashboards ===
 Plugin URI: https://wpdataaccess.com/
 Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
-Tags: table builder, data table, app builder, form builder, dashboards
+Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 5.5.71
+Stable tag: 5.5.72
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,27 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.72 =
+* Released 2026-05-04
+* Added: Clear all column filters button to compact vertically placed column filters container
+* Added: Automatically open column filter list when user opens a column filter in compact mode
+* Added: Multiple calculation types to table chart
+* Added: Start app on back-end in fullscreen mode
+* Added: Default column filter via URL parameter
+* Added: Plus and minus buttons to numeric input fields
+* Added: Subtitles to row actions
+* Added: Rename translation
+* Fixed: Column filters interfering on tabs
+* Fixed: Actions column too wide when bulk actions enabled and row actions disabled
+* Fixed: Removed disabled fields from chart popup (free version only)
+* Fixed: Resize chart when popup is resized (free version only)
+* Fixed: Match map and chart popup UIs (free version only)
+* Fixed: Chart returns an error when no data found
+* Fixed: Rows not exporting the correct rows when selected with Bulk Select after filtering
+* Fixed: Table not sorted correctly on lookup column when server-side processing is enabled
+* Fixed: Removed "number of decimals displayed" if field has no decimals
+* Fixed: Scheduled queries don't send out attachments if queries are written in uppercase
 
 = 5.5.71 =
 * Released 2026-04-16

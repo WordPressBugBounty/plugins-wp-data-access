@@ -141,7 +141,7 @@ namespace WPDataAccess\Data_Apps {
                             $field_names[] = WPDA_API_Core::sanitize_db_identifier( $key );
                             // Sanitize field value
                             $sanitized_value = sanitize_text_field( $value );
-                            $sanitized_value = wp_strip_all_tags( $value );
+                            $sanitized_value = wp_strip_all_tags( $sanitized_value );
                             $sanitized_value = str_replace( array( '"', "'", '`' ), '', $sanitized_value );
                             $sanitized_value = str_replace( array( '<', '>' ), '', $sanitized_value );
                             $sanitized_value = str_replace( '=', '', $sanitized_value );
