@@ -329,18 +329,23 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
-                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/charts.html" target="_blank" class="whatsnew">
-                                        📊 Apply arithmetic functions to chart columns.
+                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/column-filters.html" target="_blank" class="whatsnew">
+                                        ⭐ Show column filters in popup (on mobile devices).
                                     </a>
                                 </li>
                                 <li>
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/column-filters.html" target="_blank" class="whatsnew">
-                                        🌟 Several great new column filter features.
+                                        😎 Completely restyled UI for compact column filters.
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="https://docs.rad.wpdataaccess.com/app-manager/menu/app-info.html#settings" target="_blank" class="whatsnew">
-                                        🏷️ Change app title tag in App Manager.
+                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/columns/column-actions.html" target="_blank" class="whatsnew">
+                                        🔎︎ Added single-select search panes.
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/charts.html" target="_blank" class="whatsnew">
+                                        📊 Apply arithmetic functions to chart columns.
                                     </a>
                                 </li>
                                 <li>
@@ -356,11 +361,6 @@ namespace WPDataAccess\WPDA_Navi {
                                 <li>
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/detail-panel.html" target="_blank" class="whatsnew">
                                         😎 Even cooler interactive detail panel creation.
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://docs.rad.wpdataaccess.com/hooks/built-ins/wpda/wpda-callservice.html" target="_blank" class="whatsnew">
-                                        🚀 Execute server-side PHP code directly from JavaScript hooks.
                                     </a>
                                 </li>
                                 <li>

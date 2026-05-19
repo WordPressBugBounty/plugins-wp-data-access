@@ -307,6 +307,7 @@ class WP_Data_Access_Public {
             'builders'           => true,
             'hidetitlebar'       => false,
             'fullscreen'         => false,
+            'pwa'                => false,
             'filter_field_name'  => null,
             'filter_field_value' => null,
         ), $atts );

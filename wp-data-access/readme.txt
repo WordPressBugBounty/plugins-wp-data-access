@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 5.5.72
+Stable tag: 5.5.73
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,25 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.73 =
+* Released 2026-05-19
+* Added: Feedback to compact column filter buttons
+* Added: Show column filters in popup
+* Added: Single-select search panes
+* Added: Selectable plus|min icons for numeric fields
+* Added: Disable plus|min icons for numeric fields
+* Improved column filters UI
+* Improved bulk actions UI
+* Optimized column filter handling
+* Fixed: Cannot start table with docked chart in fullscreen mode
+* Fixed: Search fields containing two clear icon buttons
+* Fixed: Highlighting fails for wildcards
+* Fixed: Dynamic conditions not available after lookup update
+* Fixed: Default column search fails if URL parameter does not exist
+* Fixed: Dynamic lookup fails with unequal column names
+* Fixed: Column filters not consistently working with async lookups
+* Fixed: Cascading search for search boxes
 
 = 5.5.72 =
 * Released 2026-05-04

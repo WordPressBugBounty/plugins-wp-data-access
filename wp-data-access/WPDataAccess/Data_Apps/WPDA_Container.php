@@ -9,6 +9,8 @@ abstract class WPDA_Container {
 
     private $fullscreen = false;
 
+    private $pwa = false;
+
     private $hideTitleBar = false;
 
     protected $builders = true;
@@ -25,6 +27,9 @@ abstract class WPDA_Container {
         }
         if ( isset( $args['fullscreen'] ) ) {
             $this->fullscreen = true === $args['fullscreen'] || 'true' === $args['fullscreen'];
+        }
+        if ( isset( $args['pwa'] ) ) {
+            $this->pwa = true === $args['pwa'] || 'true' === $args['pwa'];
         }
         if ( isset( $args['hidetitlebar'] ) ) {
             $this->hideTitleBar = true === $args['hidetitlebar'] || 'true' === $args['hidetitlebar'];
@@ -104,6 +109,9 @@ abstract class WPDA_Container {
             ?>,
                             appFullscreen: <?php 
             echo ( $this->fullscreen ? 'true' : 'false' );
+            ?>,
+                            appPwa: <?php 
+            echo ( $this->pwa ? 'true' : 'false' );
             ?>,
                             hideTitleBar: <?php 
             echo ( $this->hideTitleBar ? 'true' : 'false' );

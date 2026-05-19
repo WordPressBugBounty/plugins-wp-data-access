@@ -1,0 +1,1 @@
+import{j as r}from"./tanstack-1.0.71-VNh6-cJj.js";import{r as s}from"./redux-1.0.71-BB2LXGOV.js";import{J as o}from"./jsonview-1.0.71-qkt_6tY2.js";import"./vendor-1.0.71-CN03Eozo.js";const l=s.memo(({queryResults:e})=>r.jsx(o,{src:e,collapsed:1,displaySize:!0,displayArrayIndex:!0,editable:!1,enableClipboard:!1}));export{l as default};
