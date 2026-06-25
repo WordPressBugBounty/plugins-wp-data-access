@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 5.5.73
+Stable tag: 5.5.75
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,16 +104,18 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 
 * Available until at least december 2026 🕝
 * Featuring
-  * Data Tables 🔍 - Can be replaced with Data Table app.
-  * Data Forms ✅ - Can be replaced with Data Management app or Registration Form.
-  * Maps 🌎 - Can be replaced with Map app.
-  * Charts 📊 - Can be replaced with Chart app.
-  * Dashboards 🎛️ - Can be replaced with Dashboard app.
+  * Data Tables 🔍 - Replace with Data Table app.
+  * Data Forms ✅ - Replace with Data Management app or Registration Form.
+  * Maps 🌎 - Replace with Map app.
+  * Charts 📊 - Replace with Chart app.
+  * Dashboards 🎛️ - Replace with Dashboard app.
 * Use to maintain old solutions 🙏
 * Use App Builder for new projects 🚀
 
 == Useful Links ==
 - [Plugin Website](https://wpdataaccess.com/)
+- [Demos](https://wpdataaccess.com/demos/)
+- [Tutorials](https://wpdataaccess.com/tutorials/)
 - [App Builder Documentation](https://docs.rad.wpdataaccess.com/)
 - [Video Tutorials](https://www.youtube.com/@wpdataaccess)
 - [SQL Query Builder Documentation](https://docs.sql.wpdataaccess.com/)
@@ -129,6 +131,19 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.75 =
+* Released 2026-06-25
+* Added: New Visual Query Builder
+* Added: Column filters popup positioning
+* Added: Class names to action buttons
+* Updated freemius SDK
+
+= 5.5.74 =
+* Released 2026-05-21
+* Fixed: Expand column filters on startup not available for POPUPs
+* Fixed: Must manually enable "show column filters in compact mode" for POPUPs
+* Fixed: Border between column filters on left to fat
 
 = 5.5.73 =
 * Released 2026-05-19
@@ -170,98 +185,5 @@ And you're all set! 🚀
 * Fixed: Removed "number of decimals displayed" if field has no decimals
 * Fixed: Scheduled queries don't send out attachments if queries are written in uppercase
 
-= 5.5.71 =
-* Released 2026-04-16
-* Added: Actions clear column filter and hide column to column menu
-* Added: Gap between containers setting to Form Builder
-* Added: Allow manual update hard row count estimate in popup
-* Added: Changelog to bundle
-* Added: Table name to admin modal titles
-* Added: Query buffer size to Data Explorer UI
-* Added: Start multiple table copies in Data Explorer
-* Added: Cancel copy table in Data Explorer
-* Added: Customizable scroll offset
-* Changed: Data Explorer toolbar always visible
-* Fixed: Column actions menu empty
-* Fixed: Prevent loading lookups unnecessarily on startup
-* Fixed: Combining filters in App Builder does not work
-* Fixed: Data apps not correctly maintaining fullscreen mode
-* Inline editing now adds a save button to header by default
-* Fixed: Localization not working correctly for spanish language pack
-* Fixed: Media fields no longer render images in single‑record edit forms
-* Fixed: PDF button not working on detail panel
-* Fixed: Cannot configure detail form styles
-* Fixed: Memory exhausted error when copying large tables
-* Fixed: Scroll form into view
-* Fixed: Switching apps through data apps menu very slow
-
-= 5.5.70 =
-* Released 2026-04-02
-* Added: Update hard row count in Data Explorer and App Builder
-* Fixed: Textarea inline editing field height
-* Fixed: Column Filters title not correctly aligned in compact mode
-* Fixed: Filter state return null for column filter
-* Fixed: Cannot unset media column type
-* Fixed: Dynamic lookup not working for column values used in default where clause
-* Fixed: Lookup fails with client-side processing and cascade drop-down lists
-* Fixed: Remove column from form if deselected in App Manager
-* Fixed: Prevent class pp-fullscreen being removed from body on app load for Data Apps
-* Fixed: Class pp-fullscreen not added to body for dashboards
-* Fixed: Adjust Divi and Elementor fullscreen CSS automatically
-* Fixed: Remove gap from dashboard in fullscreen mode
-* Updated freemius SDK
-
-= 5.5.69 =
-* Released 2026-03-09
-* Added: Change highlight color (new Table Builder feature)
-* Added: Change app title tag on toolbar (new App Manager feature)
-* Added: Hide column filters title
-* Added: Alternative column filter icon
-* Added: Show column filters in compact mode
-* Added: Save filter states
-* Fixed: Highlighting corrupts HTML
-* Fixed: Global hook not executed
-* Fixed: Show correct error message if table drop attempt fails
-* Fixed: Missing computed field label in table footer
-* Fixed: Inline editing fields different width and height
-* Fixed: SQL Query Builder navigates to other page without warning for unsaved changes
-* Fixed: Table layout breaks when column filters are disabled (position left|right)
-* Fixed: Cascading column filter behavior
-* Fixed: Grid gap in full screen mode
-* Fixed: Grid borders in full screen mode
-* Fixed: CSS Table Editor document link
-* Fixed: Form lookups updated on each field update
-* Fixed: Responsive column hiding not working correctly with tabs
-
-= 5.5.68 =
-* Released 2026-02-12
-* Fixed: Connect icon missing
-
-= 5.5.67 =
-* Released 2026-02-10
-* Fixed: PDS authorization failure
-
-= 5.5.66 =
-* Released 2026-02-10
-* Removed space between action column and first table column
-* Spread app access over multiple access points to reduce load bundle and time
-* Removed legacy icons from toolbar on fresh install
-* Cleanup dynamically created app assets
-* Use new Data Explorer by default
-* Updated AI models
-* Added: Table CSS editor
-* Added: Always keep global search box visible option
-* Added: More descriptive message if token has expired
-* Added: Disable token verification for cached pages
-* Added: Link to App Builder Getting Started video tutorial
-* Fixed: Columns not properly displayed on tabs
-* Fixed: Initial map and chart settings not affective
-* Fixed: Limit number of rows to max table rows (instead of possible rows)
-* Fixed: Media library not searchable with modal forms
-* Fixed: Hide spinner on token expired message
-* Fixed: Allow bulk delete without row delete
-* Fixed: Disable navigation settings in Form Builder when not available
-* Fixed: Delete row via bulk actions returns unauthorized error when delete is disabled in row actions
-
-= < 5.5.66 =
+= < 5.5.72 =
 * See changelog.txt

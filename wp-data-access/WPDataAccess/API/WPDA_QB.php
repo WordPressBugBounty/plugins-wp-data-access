@@ -48,26 +48,33 @@ class WPDA_QB extends WPDA_API_Core {
             'callback'            => array($this, 'save'),
             'permission_callback' => '__return_true',
             'args'                => array(
-                'access'   => $this->get_param( 'access' ),
-                'dbs'      => $this->get_param( 'dbs' ),
-                'name'     => $this->get_param( 'name' ),
-                'query'    => $this->get_param( 'query' ),
-                'vqb'      => $this->get_param( 'vqb' ),
-                'old_name' => array(
+                'access'    => $this->get_param( 'access' ),
+                'dbs'       => $this->get_param( 'dbs' ),
+                'name'      => $this->get_param( 'name' ),
+                'query'     => $this->get_param( 'query' ),
+                'is_visual' => array(
+                    'required'          => false,
+                    'type'              => 'boolean',
+                    'description'       => __( 'Is Visual Query?', 'wp-data-access' ),
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'validate_callback' => 'rest_validate_request_arg',
+                ),
+                'vqb'       => $this->get_param( 'vqb' ),
+                'old_name'  => array(
                     'required'          => false,
                     'type'              => 'string',
                     'description'       => __( 'Old query name', 'wp-data-access' ),
                     'sanitize_callback' => 'sanitize_text_field',
                     'validate_callback' => 'rest_validate_request_arg',
                 ),
-                'insert'   => array(
+                'insert'    => array(
                     'required'          => false,
                     'type'              => 'boolean',
                     'description'       => __( 'Perform insert', 'wp-data-access' ),
                     'sanitize_callback' => 'sanitize_text_field',
                     'validate_callback' => 'rest_validate_request_arg',
                 ),
-                'params'   => $this->get_param( 'params' ),
+                'params'    => $this->get_param( 'params' ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'qb/delete', array(
@@ -179,7 +186,10 @@ class WPDA_QB extends WPDA_API_Core {
         if ( !$this->current_user_token_valid( $request ) ) {
             return $this->invalid_nonce();
         }
-        return $this->unauthorized();
+        $dbs = $request->get_param( 'dbs' );
+        $tbl = $request->get_param( 'tbl' );
+        $cols = WPDA_Dictionary_Lists::get_table_widget_info( $dbs, $tbl );
+        return $this->WPDA_Rest_Response( '', $cols );
     }
 
     public function vqb_get( $request ) {
@@ -189,7 +199,15 @@ class WPDA_QB extends WPDA_API_Core {
         if ( !$this->current_user_token_valid( $request ) ) {
             return $this->invalid_nonce();
         }
-        return $this->unauthorized();
+        $access = $request->get_param( 'access' );
+        $name = $request->get_param( 'name' );
+        $qb = new WPDA_Query_Builder();
+        if ( 'user' === $access ) {
+            $query = $qb->get_visual_query( $name );
+        } else {
+            $query = maybe_unserialize( $qb->get_visual_query_global( $name ) );
+        }
+        return $this->WPDA_Rest_Response( '', $query );
     }
 
     public function open( $request ) {
@@ -245,7 +263,9 @@ class WPDA_QB extends WPDA_API_Core {
         $dbs = $request->get_param( 'dbs' );
         $name = $request->get_param( 'name' );
         $query = $request->get_param( 'query' );
+        $is_visual = '1' === $request->get_param( 'is_visual' );
         $vqb = $request->get_param( 'vqb' );
+        WPDA::wpda_log_wp_error( $vqb );
         $old_name = $request->get_param( 'old_name' ) ?? '';
         $insert = '1' === $request->get_param( 'insert' );
         $params = $request->get_param( 'params' );
@@ -262,6 +282,7 @@ class WPDA_QB extends WPDA_API_Core {
                     $name,
                     $query,
                     $old_name,
+                    $is_visual,
                     $vqb,
                     $params
                 );
@@ -277,6 +298,7 @@ class WPDA_QB extends WPDA_API_Core {
                     $name,
                     $query,
                     $old_name,
+                    $is_visual,
                     $vqb,
                     $params
                 );
@@ -322,6 +344,7 @@ class WPDA_QB extends WPDA_API_Core {
         $to_name = $request->get_param( 'to' );
         $qb = new WPDA_Query_Builder();
         $source = ( 'user' === $access_from ? $qb->get_query( $from_name ) : $qb->get_query_global( $from_name ) );
+        $visual = ( 'user' === $access_from ? $qb->get_visual_query( $from_name ) : maybe_unserialize( $qb->get_visual_query_global( $from_name ) ) );
         if ( 0 === count( $source ) ) {
             return new \WP_Error('error', 'Source query not found', array(
                 'status' => 403,
@@ -331,11 +354,17 @@ class WPDA_QB extends WPDA_API_Core {
             $saved = $qb->get_query( $to_name );
             if ( 0 === count( $saved ) ) {
                 $qb->add_query( $to_name, $source );
+                if ( !empty( $visual ) ) {
+                    $qb->upd_visual_query( $to_name, $visual );
+                }
             }
         } else {
             $saved = $qb->get_query_global( $to_name );
             if ( 0 === count( $saved ) ) {
                 $qb->add_query_global( $to_name, $source );
+                if ( !empty( $visual ) ) {
+                    $qb->upd_visual_query_global( $to_name, $visual );
+                }
             }
         }
         if ( 0 === count( $saved ) ) {

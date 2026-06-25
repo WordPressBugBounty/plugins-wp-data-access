@@ -496,7 +496,7 @@ class WPDA_Query_Builder {
             $wpda_vqb = null;
             if ( wp_verify_nonce( $wpda_wpnonce, 'wpda-query-builder-' . WPDA::get_current_user_id() ) ) {
                 // Save query
-                if ( false === $this->update_query(
+                if ( false === $this->update_query_old(
                     $wpda_schemaname,
                     $wpda_sqlqueryname,
                     $wpda_sqlquery,
@@ -636,7 +636,7 @@ class WPDA_Query_Builder {
         }
     }
 
-    public function update_query(
+    public function update_query_old(
         $schema_name,
         $query_name,
         $query_sql,
@@ -654,6 +654,31 @@ class WPDA_Query_Builder {
             'is_visual'   => null !== $wpda_vqb,
             'params'      => $params,
         );
+        $this->update_query_list( $wpda_query_builder_data );
+    }
+
+    public function update_query(
+        $schema_name,
+        $query_name,
+        $query_sql,
+        $query_name_old,
+        $is_visual,
+        $vqb,
+        $params
+    ) {
+        $wpda_query_builder_data = $this->get_query_list();
+        if ( '' !== $query_name_old && $query_name !== $query_name_old ) {
+            unset($wpda_query_builder_data[$query_name_old]);
+        }
+        $wpda_query_builder_data[$query_name] = array(
+            'schema_name' => $schema_name,
+            'query'       => $query_sql,
+            'is_visual'   => $is_visual,
+            'params'      => $params,
+        );
+        if ( $vqb !== "" ) {
+            $wpda_query_builder_data[$query_name]['vqb'] = $vqb;
+        }
         $this->update_query_list( $wpda_query_builder_data );
     }
 
@@ -662,8 +687,9 @@ class WPDA_Query_Builder {
         $query_name,
         $query_sql,
         $query_name_old,
-        $wpda_vqb = null,
-        $params = null
+        $is_visual,
+        $vqb,
+        $params
     ) {
         $wpda_query_builder_data = $this->get_query_list_global();
         if ( '' !== $query_name_old && $query_name !== $query_name_old ) {
@@ -672,43 +698,54 @@ class WPDA_Query_Builder {
         $wpda_query_builder_data[$query_name] = array(
             'schema_name' => $schema_name,
             'query'       => $query_sql,
-            'is_visual'   => null !== $wpda_vqb,
+            'is_visual'   => $is_visual,
             'params'      => $params,
         );
+        if ( $vqb !== "" ) {
+            $wpda_query_builder_data[$query_name]['vqb'] = $vqb;
+        }
         $this->update_query_list_global( $wpda_query_builder_data );
-        //            if ( wpda_freemius()->can_use_premium_code__premium_only() ) {
-        //                $this->upd_visual_query_global( $query_name, $wpda_vqb );
-        //            }
     }
 
     public function delete_query( $query_name ) {
         $wpda_query_builder_data = $this->get_query_list();
         unset($wpda_query_builder_data[$query_name]);
         $this->update_query_list( $wpda_query_builder_data );
-    }
-
-    public function get_visual_query( $query_name ) {
-    }
-
-    public function get_visual_query_global( $query_name ) {
+        $this->del_visual_query( $query_name );
     }
 
     public function delete_query_global( $query_name ) {
         $wpda_query_builder_data = $this->get_query_list_global();
         unset($wpda_query_builder_data[$query_name]);
         $this->update_query_list_global( $wpda_query_builder_data );
-        //            if ( wpda_freemius()->can_use_premium_code__premium_only() ) {
-        //                $this->del_visual_query_global( $query_name );
-        //            }
+        $this->del_visual_query_global( $query_name );
     }
 
     public function get_visual_query_ajax() {
     }
 
-    protected function upd_visual_query( $query_name, $wpda_vqb ) {
+    public function get_visual_query( $query_name ) {
+        return get_user_meta( WPDA::get_current_user_id(), 'wpda_query_builder_' . $this->rewrite_query_name( $query_name ), true );
+    }
+
+    public function get_visual_query_global( $query_name ) {
+        return get_option( 'wpda_query_builder_' . $this->rewrite_query_name( $query_name ), true );
+    }
+
+    public function upd_visual_query( $query_name, $wpda_vqb ) {
+        update_user_meta( WPDA::get_current_user_id(), 'wpda_query_builder_' . $this->rewrite_query_name( $query_name ), $wpda_vqb );
+    }
+
+    public function upd_visual_query_global( $query_name, $wpda_vqb ) {
+        update_option( 'wpda_query_builder_' . $this->rewrite_query_name( $query_name ), $wpda_vqb );
     }
 
     protected function del_visual_query( $query_name ) {
+        delete_user_meta( WPDA::get_current_user_id(), 'wpda_query_builder_' . $this->rewrite_query_name( $query_name ) );
+    }
+
+    protected function del_visual_query_global( $query_name ) {
+        delete_option( 'wpda_query_builder_' . $this->rewrite_query_name( $query_name ) );
     }
 
     protected function rewrite_query_name( $query_name ) {
@@ -903,18 +940,12 @@ class WPDA_Query_Builder {
         $wpda_query_builder_data = $this->get_query_list();
         $wpda_query_builder_data[$query_name] = $query;
         $this->update_query_list( $wpda_query_builder_data );
-        //            if ( wpda_freemius()->can_use_premium_code__premium_only() ) {
-        //                $this->del_visual_query( $query_name );
-        //            }
     }
 
     public function add_query_global( $query_name, $query ) {
         $wpda_query_builder_data = $this->get_query_list_global();
         $wpda_query_builder_data[$query_name] = $query;
         $this->update_query_list_global( $wpda_query_builder_data );
-        //            if ( wpda_freemius()->can_use_premium_code__premium_only() ) {
-        //                $this->del_visual_query( $query_name );
-        //            }
     }
 
     public function get_hints( $dbs ) {

@@ -443,9 +443,11 @@ abstract class WPDA_API_Core {
             ),
             'vqb'                => array(
                 'required'          => false,
-                'type'              => 'boolean',
-                'description'       => __( 'Query uses Visual Query Builder', 'wp-data-access' ),
-                'sanitize_callback' => 'sanitize_text_field',
+                'type'              => 'mixed',
+                'description'       => __( 'Visual Query Builder', 'wp-data-access' ),
+                'sanitize_callback' => function ( $param ) {
+                    return rest_sanitize_object( $param );
+                },
                 'validate_callback' => 'rest_validate_request_arg',
             ),
             'params'             => array(

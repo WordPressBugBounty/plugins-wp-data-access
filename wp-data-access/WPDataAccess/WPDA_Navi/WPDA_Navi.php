@@ -218,7 +218,7 @@ namespace WPDataAccess\WPDA_Navi {
                                 <li><strong>Form Builder</strong> – Design data entry forms.</li>
                                 <li><strong>Chart Builder</strong> – Visualize data.</li>
                                 <li><strong>Map Builder</strong> – Plot location data.</li>
-                                <li><strong>Dashboard Builder</strong> – Centralize and monitor insights. <span class="wpda-new"><i>NEW</i></span></li>
+                                <li><strong>Dashboard Builder</strong> – Centralize and monitor insights.</li>
                                 <li><strong>Theme Builder</strong> – Personalize app appearance.</li>
                             </ul>
                         </div>
@@ -301,9 +301,11 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts">
 							<ul>
 								<li>Write, store, execute and reuse any SQL command.</li>
+                                <li>Store queries privately or globally.</li>
                                 <li>Schedule SQL commands to run at specific intervals.</li>
 								<li>Ask AI Assistant to help writing queries and solve errors.</li>
-                                <li>Store queries privately or globally.</li>
+                                <li>Build SQL queries visually with our Visual Query Builder.</li>
+                            </ul>
 							</ul>
 						</div>
 					</div>
@@ -367,6 +369,9 @@ namespace WPDataAccess\WPDA_Navi {
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/columns/computed-fields.html" target="_blank" class="whatsnew">
                                         🎁 Computed Text Fields for FREE USERS.
                                     </a>
+                                </li>
+                                <li>
+                                    👁️ Visual Query Builder for FREE USERS (use new Query Builder).
                                 </li>
 							</ul>
 						</div>
