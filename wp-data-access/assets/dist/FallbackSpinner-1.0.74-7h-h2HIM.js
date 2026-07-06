@@ -1,0 +1,1 @@
+import{j as r}from"./tanstack-1.0.74-aU0azVkW.js";import{S as s}from"./Spinner-1.0.74-B63QTBL9.js";import{B as t}from"./Box-1.0.74-DEbuVvGV.js";const x=({title:o})=>r.jsx(t,{sx:{padding:"50px"},children:r.jsx(s,{title:o??""})});export{x as F};

@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 5.5.75
+Stable tag: 5.5.76
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -131,6 +131,19 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.76 =
+* Released 2026-07-07
+* Added: Extended pagination button support for all data tables
+* Fixed: Column filter popup should only count rows with client-side processing enabled
+* Fixed: Update fails after navigating to other row for 1:1 relationships
+* Fixed: Last pagination button missing
+* Fixed: Search list not updated
+* Fixed: Cross-Site Scripting (XSS) vulnerability - patchstack
+* Fixed: Function setColumnStyle has no effect on first column
+* Fixed: Cascade drop-down lists not taking global filter into account with client-side processing enabled
+* Fixed: Cannot position column filters above
+* Updated freemius SDK
 
 = 5.5.75 =
 * Released 2026-06-25

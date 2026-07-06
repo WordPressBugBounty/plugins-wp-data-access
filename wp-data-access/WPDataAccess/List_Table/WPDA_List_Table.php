@@ -554,18 +554,20 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
             }
         }
         $this->page_number_link .= '&paged=' . $this->get_pagenum();
-        $this->page_number_item .= "<input type='hidden' name='" . $this->page_number_item_name . "' value='" . $this->get_pagenum() . "' />";
+        $this->page_number_item .= "<input type='hidden' name='" . esc_attr( $this->page_number_item_name ) . "' value='" . $this->get_pagenum() . "' />";
         // Add search arguments to link to return to same page.
         foreach ( $_REQUEST as $key => $value ) {
-            if ( substr( $key, 0, 19 ) === 'wpda_search_column_' ) {
+            if ( substr( $key, 0, 19 ) === 'wpda_search_column_' && count( array_filter( $this->wpda_list_columns->get_table_columns(), function ( $column ) use($key) {
+                return $column['column_name'] === substr( $key, 19 );
+            } ) ) > 0 ) {
                 if ( is_array( $value ) ) {
                     foreach ( $value as $elem_key => $elem_value ) {
-                        $this->page_number_link .= "&{$elem_key}={$elem_value}";
-                        $this->page_number_item .= "<input type='hidden' name='{$key}[]' value='{$elem_value}' />";
+                        $this->page_number_link .= '&' . esc_attr( $elem_key ) . '=' . esc_attr( $elem_value );
+                        $this->page_number_item .= "<input type='hidden' name='{" . esc_attr( $elem_key ) . "[]' value='" . esc_attr( $elem_value ) . "' />";
                     }
                 } else {
-                    $this->page_number_link .= "&{$key}={$value}";
-                    $this->page_number_item .= "<input type='hidden' name='{$key}' value='{$value}' />";
+                    $this->page_number_link .= '&' . esc_attr( $key ) . '=' . esc_attr( $value );
+                    $this->page_number_item .= "<input type='hidden' name='{" . esc_attr( $key ) . "' value='" . esc_attr( $value ) . "' />";
                 }
             }
         }
