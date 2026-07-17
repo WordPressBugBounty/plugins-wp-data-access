@@ -54,7 +54,8 @@ namespace WPDataAccess\Utilities {
 
 			$this->wpdadb = WPDADB::get_db_connection( $this->schema_name );
 			if ( null === $this->wpdadb ) {
-				wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+				/* translators: %s = database name */
+				wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 			}
 		}
 
@@ -199,7 +200,7 @@ namespace WPDataAccess\Utilities {
 				)
 			);
 
-			return $this->wpdadb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			return $this->wpdadb->get_results( $query, 'ARRAY_A' ); 
 		}
 
 		/**
@@ -233,7 +234,7 @@ namespace WPDataAccess\Utilities {
 				)
 			);
 
-			return $this->wpdadb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			return $this->wpdadb->get_results( $query, 'ARRAY_A' ); 
 		}
 
 		/**
@@ -262,7 +263,7 @@ namespace WPDataAccess\Utilities {
 				)
 			);
 
-			return $this->wpdadb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			return $this->wpdadb->get_results( $query, 'ARRAY_A' ); 
 		}
 
 	}

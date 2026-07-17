@@ -5,6 +5,7 @@
  *
  * @package WPDataAccess\Simple_Form
  */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\Simple_Form;
 
 use WPDataAccess\Data_Dictionary\WPDA_List_Columns;
@@ -347,7 +348,7 @@ class WPDA_Simple_Form {
             $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) );
             // input var okay.
         } else {
-            wp_die( __( 'ERROR: Wrong arguments [missing page argument]', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Wrong arguments [missing page argument]', 'wp-data-access' ) );
         }
         if ( isset( $_REQUEST['action'] ) ) {
             // Possible values: "new", "edit" and "view".
@@ -357,7 +358,7 @@ class WPDA_Simple_Form {
             if ( isset( $args['action'] ) ) {
                 $this->action = $args['action'];
             } else {
-                wp_die( __( 'ERROR: Wrong arguments [missing action argument]', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Wrong arguments [missing action argument]', 'wp-data-access' ) );
             }
         }
         if ( isset( $_REQUEST['action2'] ) ) {
@@ -368,21 +369,21 @@ class WPDA_Simple_Form {
         $this->table_name = $table_name;
         if ( '' === $this->table_name ) {
             // Without a table name it makes no sense to continue.
-            wp_die( __( 'ERROR: Wrong arguments [missing table_name argument]' ) );
+            wp_die( esc_attr__( 'ERROR: Wrong arguments [missing table_name argument]', 'wp-data-access' ) );
         }
         if ( !WPDA::is_wpda_table( $this->table_name ) ) {
             // Check access rights for tables that do not belong to the plugin.
             if ( 'on' !== WPDA::get_option( WPDA::OPTION_BE_ALLOW_INSERT ) && 'new' === $this->action ) {
                 // Insert not allowed.
-                wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
             }
             if ( 'on' !== WPDA::get_option( WPDA::OPTION_BE_VIEW_LINK ) && 'view' === $this->action ) {
                 // Viewing not allowed.
-                wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
             }
             if ( 'on' !== WPDA::get_option( WPDA::OPTION_BE_ALLOW_UPDATE ) && 'edit' === $this->action ) {
                 // Update not allowed.
-                wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
             }
         }
         // Get columns information.
@@ -498,16 +499,15 @@ class WPDA_Simple_Form {
      */
     protected function get_url_arguments() {
         // Get OLD and NEW values for all items.
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
         foreach ( $this->wpda_list_columns->get_table_columns() as $column ) {
             if ( isset( $_REQUEST[$column['column_name'] . '_old'] ) ) {
                 $this->form_items_old_values[$column['column_name']] = wp_unslash( $_REQUEST[$column['column_name'] . '_old'] );
-                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
             }
             if ( isset( $_REQUEST[$column['column_name']] ) ) {
                 if ( is_array( $_REQUEST[$column['column_name']] ) ) {
                     $column_array = '';
                     foreach ( $_REQUEST[$column['column_name']] as $column_value ) {
-                        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
                         $column_array .= wp_unslash( $column_value ) . ',';
                     }
                     if ( '' !== $column_array ) {
@@ -515,10 +515,10 @@ class WPDA_Simple_Form {
                     }
                 } else {
                     $this->form_items_new_values[$column['column_name']] = wp_unslash( $_REQUEST[$column['column_name']] );
-                    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
                 }
             }
         }
+        // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
     }
 
     /**
@@ -538,7 +538,7 @@ class WPDA_Simple_Form {
             $wp_nonce = ( isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '' );
             // input var okay.
             if ( !wp_verify_nonce( $wp_nonce, $this->get_nonce_action() ) ) {
-                wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
             }
             if ( 'new' === $this->action ) {
                 // Prepare row and items for validation
@@ -695,7 +695,6 @@ class WPDA_Simple_Form {
             if ( substr( $this->page, 0, 13 ) === \WP_Data_Access_Admin::PAGE_EXPLORER || !is_admin() ) {
                 // Button is available on web pages only
                 if ( 'view' !== $this->action && !$this->hide_add_new ) {
-                    //phpcs:ignore - 8.1 proof
                     if ( WPDA::is_wpda_table( $this->table_name ) || ('on' === WPDA::get_option( WPDA::OPTION_BE_ALLOW_INSERT ) && count( $this->wpda_list_columns->get_table_primary_key() )) > 0 ) {
                         $title = __( 'Add new row to table', 'wp-data-access' );
                         ?>
@@ -728,7 +727,7 @@ class WPDA_Simple_Form {
 											>
 												<i class="fas fa-plus-circle wpda_icon_on_button"></i>
 												<?php 
-                        echo __( 'Add New', 'wp-data-access' );
+                        esc_html_e( 'Add New', 'wp-data-access' );
                         ?>
 											</button>
 										</div>
@@ -773,7 +772,9 @@ class WPDA_Simple_Form {
                 $id = '';
             }
             $expandable = ( isset( $fieldset['expandable'] ) && true === $fieldset['expandable'] ? true : false );
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
             $expandable_state = ( isset( $_REQUEST["wpda_fieldset_expand_{$id}"] ) ? sanitize_text_field( $_REQUEST["wpda_fieldset_expand_{$id}"] ) : 'off' );
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
             $expandable_icons = ( 'on' === $expandable_state ? 'minus-circle' : 'plus-circle' );
             ?>
 							<fieldset class="wpda_fieldset">
@@ -808,7 +809,6 @@ class WPDA_Simple_Form {
 								>
 									<?php 
             $fieldset_columns = array_flip( $fieldset['fields'] );
-            //phpcs:ignore - 8.1 proof
             foreach ( $this->form_items as $item ) {
                 if ( isset( $fieldset_columns[$item->get_item_name()] ) ) {
                     $item->show( $this->action, $this->update_keys_allowed );
@@ -858,9 +858,10 @@ class WPDA_Simple_Form {
         ?>
 					<?php 
         $this->add_parent_args();
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $this->page_number_item;
-        // phpcs:ignore WordPress.Security.EscapeOutput
         echo $this->add_case_sensitive_search();
+        // phpcs:enable WordPress.Security.EscapeOutput
         wp_nonce_field( $this->get_nonce_action( false ), '_wpnonce', false );
         ?>
 					<?php 
@@ -872,7 +873,7 @@ class WPDA_Simple_Form {
 								   onclick="return submit_form(event)">
 							<i class="fas fa-check wpda_icon_on_button"></i>
 							<?php 
-            echo __( 'Submit', 'wp-data-access' );
+            esc_html_e( 'Submit', 'wp-data-access' );
             ?>
 						</button>
 						<?php 
@@ -884,7 +885,7 @@ class WPDA_Simple_Form {
 									onclick="return submit_form(event)">
 								<i class="fas fa-check wpda_icon_on_button"></i>
 								<?php 
-                echo __( 'Submit', 'wp-data-access' );
+                esc_html_e( 'Submit', 'wp-data-access' );
                 ?>
 								<i class="fas fa-angle-right wpda_icon_on_button"></i>
 								<?php 
@@ -940,9 +941,10 @@ class WPDA_Simple_Form {
         ?>">
 					<?php 
         $this->add_parent_args();
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $this->page_number_item;
-        // phpcs:ignore WordPress.Security.EscapeOutput
         echo $this->add_case_sensitive_search();
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>
 					<?php 
         if ( is_admin() ) {
@@ -997,18 +999,18 @@ class WPDA_Simple_Form {
 								objData = jQuery(obj).data();
 								if (objData.dbIsNull===undefined || objData.dbIsNull!==false) {
 									alert(<?php 
-            echo __( '\'Item\'', 'wp-data-access' );
-            ?> +' ' + jQuery(obj).attr('name') + ' ' + <?php 
-            echo __( '\'must be entered\'', 'wp-data-access' );
+            echo "'" . esc_attr__( 'Item', 'wp-data-access' ) . "'";
+            ?> + ' ' + jQuery(obj).attr('name') + ' ' + <?php 
+            echo "'" . esc_attr__( 'must be entered', 'wp-data-access' ) . "'";
             ?>);
 									failed = true;
 								} else {
 									element_old = jQuery("input[name=" + jQuery(obj).attr("name") + "_old" + "]");
 									if (element_old && element_old.val()!=='') {
 										alert(<?php 
-            echo __( '\'Item\'', 'wp-data-access' );
+            echo "'" . esc_attr__( 'Item', 'wp-data-access' ) . "'";
             ?> +' ' + jQuery(obj).attr('name') + ' ' + <?php 
-            echo __( '\'must be entered\'', 'wp-data-access' );
+            echo "'" . esc_attr__( 'must be entered', 'wp-data-access' ) . "'";
             ?>);
 										failed = true;
 									}
@@ -1017,9 +1019,9 @@ class WPDA_Simple_Form {
 						});
 						jQuery('.wpda_input_error').each(function(i, obj) {
 							alert(<?php 
-            echo __( '\'Column\'', 'wp-data-access' );
-            ?> +' ' + jQuery(obj).attr('name') + <?php 
-            echo __( '\': max size exceeded\'', 'wp-data-access' );
+            echo "'" . esc_attr__( 'Column', 'wp-data-access' ) . "'";
+            ?> + ' ' + jQuery(obj).attr('name') + <?php 
+            echo "'" . esc_attr__( ': max size exceeded', 'wp-data-access' ) . "'";
             ?>);
 							failed = true;
 						});
@@ -1087,7 +1089,7 @@ class WPDA_Simple_Form {
 							jQuery(this).addClass('wpda_input_error');
 							if (this.value.length>numberFormat[0]) {
 								jQuery.notify('<?php 
-        echo __( 'Max size exceeded' );
+        esc_html_e( 'Max size exceeded', 'wp-data-access' );
         ?>','error');
 							}
 						} else {
@@ -1102,7 +1104,7 @@ class WPDA_Simple_Form {
 							jQuery(this).addClass('wpda_input_error');
 							if (this.value>=maxNumber) {
 								jQuery.notify('<?php 
-        echo __( 'Max size exceeded' );
+        esc_html_e( 'Max size exceeded', 'wp-data-access' );
         ?>','error');
 							}
 						} else {
@@ -1115,7 +1117,7 @@ class WPDA_Simple_Form {
 						if (currentNumber.length===2 && currentNumber[1].length>numberFormat[1]) {
 							jQuery(this).addClass('wpda_input_error');
 							jQuery.notify('<?php 
-        echo __( 'Max size exceeded' );
+        esc_html_e( 'Max size exceeded', 'wp-data-access' );
         ?>','error');
 						}
 					});
@@ -1129,8 +1131,9 @@ class WPDA_Simple_Form {
 					});
 				});
 				<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $js_code;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>
 			</script>
 			<?php 
@@ -1264,7 +1267,6 @@ class WPDA_Simple_Form {
      */
     protected function prepare_items( $set_back_form_values = false ) {
         $count_cols = count( $this->table_columns );
-        //phpcs:ignore - 8.1 proof
         for ($i = 0; $i < $count_cols; $i++) {
             $column_name = $this->table_columns[$i]['column_name'];
             $item_enum = '';
@@ -1515,7 +1517,6 @@ class WPDA_Simple_Form {
             return -1;
         }
         $count_cols = count( $column_array );
-        //phpcs:ignore - 8.1 proof
         for ($i = 0; $i < $count_cols; $i++) {
             if ( $column_array[$i]['column_name'] === $column_name ) {
                 return $i;
@@ -1634,3 +1635,5 @@ class WPDA_Simple_Form {
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

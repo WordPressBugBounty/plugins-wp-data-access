@@ -21,7 +21,7 @@ class WP_Data_Access_I18n {
 	 * @since   1.0.0
 	 */
 	public function load_plugin_textdomain() {
-		load_plugin_textdomain(
+		load_plugin_textdomain( // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound
 			'wp-data-access',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'

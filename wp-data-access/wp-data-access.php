@@ -4,7 +4,7 @@
  * Plugin Name:       WP Data Access
  * Plugin URI:        https://wpdataaccess.com/
  * Description:       A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive Chart support in 35 languages
- * Version:           5.5.76
+ * Version:           5.5.77
  * Author:            Passionate Programmers B.V.
  * Author URI:        https://wpdataaccess.com/
  * Text Domain:       wp-data-access
@@ -80,7 +80,7 @@ if ( !function_exists( 'wpda_freemius' ) ) {
             $settings_url = admin_url( 'options-general.php' ) . '?page=wpdataaccess';
             $settings_link = "<a href='{$settings_url}'>Settings</a>";
             array_push( $links, $settings_link );
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
         }
         return $links;
     }
@@ -97,24 +97,26 @@ if ( !function_exists( 'wpda_freemius' ) ) {
      * @author  Peter Schulz
      * @since   1.0.0
      */
-    function activate_wp_data_access() {
+    function wpda_activate() {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
         require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-data-access-switch.php';
         WP_Data_Access_Switch::activate();
     }
 
-    register_activation_hook( __FILE__, 'activate_wp_data_access' );
+    register_activation_hook( __FILE__, 'activate_wp_wpda_activatedata_access' );
     /**
      * Deactivate plugin
      *
      * @author  Peter Schulz
      * @since   1.0.0
      */
-    function deactivate_wp_data_access() {
+    function wpda_deactivate() {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
         require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-data-access-switch.php';
         WP_Data_Access_Switch::deactivate();
     }
 
-    register_deactivation_hook( __FILE__, 'deactivate_wp_data_access' );
+    register_deactivation_hook( __FILE__, 'wpda_deactivate' );
     /**
      * Check if database needs to be updated
      *
@@ -145,17 +147,14 @@ if ( !function_exists( 'wpda_freemius' ) ) {
     function wpda_uninstall_blog() {
         global $wpdb;
         $drop_tables = get_option( 'wpda_uninstall_tables' );
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
         if ( 'on' === $drop_tables ) {
             // Get all plugin table names (without WP prefix).
             $plugin_tables = WPDataAccess\WPDA::get_wpda_tables();
             foreach ( $plugin_tables as $plugin_table ) {
                 // Loop through plugin tables.
                 // Drop plugin table.
-                $wpdb->query( $wpdb->prepare( 
-                    'DROP TABLE IF EXISTS `%1s`',
-                    // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
-                    WPDataAccess\WPDA::remove_backticks( $plugin_table )
-                 ) );
+                $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS `%1s`', WPDataAccess\WPDA::remove_backticks( $plugin_table ) ) );
                 // db call ok; no-cache ok.
                 // Get plugin backup tables (if applicable).
                 $backup_tables = $wpdb->get_results( $wpdb->prepare( '
@@ -166,11 +165,7 @@ if ( !function_exists( 'wpda_freemius' ) ) {
                 // db call ok; no-cache ok.
                 foreach ( $backup_tables as $backup_table ) {
                     // Drop plugin backup table.
-                    $wpdb->query( $wpdb->prepare( 
-                        'DROP TABLE IF EXISTS `%1s`',
-                        // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
-                        WPDataAccess\WPDA::remove_backticks( $backup_table['table_name'] )
-                     ) );
+                    $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS `%1s`', WPDataAccess\WPDA::remove_backticks( $backup_table['table_name'] ) ) );
                     // db call ok; no-cache ok.
                 }
             }
@@ -183,6 +178,7 @@ if ( !function_exists( 'wpda_freemius' ) ) {
             $wpdb->query( "\n\t\t\t\t\tDELETE FROM {$wpdb->usermeta}\n\t\t\t\t\tWHERE meta_key LIKE 'wpda%'\n\t\t\t\t\t   OR meta_key LIKE '%wp-data-access%'\n\t\t\t\t" );
             // db call ok; no-cache ok.
         }
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
     }
 
     /**
@@ -194,8 +190,9 @@ if ( !function_exists( 'wpda_freemius' ) ) {
         if ( is_multisite() ) {
             global $wpdb;
             // Uninstall plugin for all blogs one by one (will fail silently for blogs having no plugin tables/options).
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
             $blogids = $wpdb->get_col( "select blog_id from {$wpdb->blogs}" );
-            // db call ok; no-cache ok.
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
             foreach ( $blogids as $blog_id ) {
                 // Uninstall blog.
                 switch_to_blog( $blog_id );
@@ -226,11 +223,12 @@ if ( !function_exists( 'wpda_freemius' ) ) {
      * @author  Peter Schulz
      * @since   1.0.0
      */
-    function run_wp_data_access() {
+    function wpda_run() {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
         require_once plugin_dir_path( __FILE__ ) . 'includes/class-wp-data-access.php';
         $wpdataaccess = new WP_Data_Access();
         $wpdataaccess->run();
     }
 
-    run_wp_data_access();
+    wpda_run();
 }

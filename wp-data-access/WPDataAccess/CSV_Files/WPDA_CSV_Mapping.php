@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Standard.Category.SniffName.ErrorCode
+<?php 
 
 namespace WPDataAccess\CSV_Files {
 
@@ -102,12 +102,12 @@ namespace WPDataAccess\CSV_Files {
 					sanitize_text_field( wp_unslash( $_REQUEST['csv_id'] ) ) : ''; // input var okay.
 
 			if ( null === $this->csv_id ) {
-				wp_die( __( 'ERROR: Missing argument', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+				wp_die( esc_html__( 'ERROR: Missing argument', 'wp-data-access' ) );
 			}
 
 			$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 			if ( ! wp_verify_nonce( $wp_nonce, "wpda-mapping-{$this->csv_id}" ) ) {
-				wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+				wp_die( esc_html__( 'ERROR: Not authorized', 'wp-data-access' ) );
 			}
 
 			$this->csv_upload = WPDA_CSV_Uploads_Model::query( $this->csv_id );
@@ -153,7 +153,7 @@ namespace WPDataAccess\CSV_Files {
 		public function show() {
 			$upload_dir = WPDA::get_plugin_upload_dir();
 			if ( ! isset( $this->csv_upload[0]->csv_real_file_name ) ) {
-				wp_die( __( 'ERROR: CSV file not found', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+				wp_die( esc_html__( 'ERROR: CSV file not found', 'wp-data-access' ) );
 			}
 			$file_name = $upload_dir . $this->csv_upload[0]->csv_real_file_name;
 
@@ -254,7 +254,7 @@ namespace WPDataAccess\CSV_Files {
 							jQuery('#csv_table_columns').empty();
 							if (!init) {
 								jQuery('.csv_column').empty().append(
-									'<li class="wpda_csv_column_init"><?php echo __( 'Drag column here...', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></li>'
+									'<li class="wpda_csv_column_init"><?php esc_html_e( 'Drag column here...', 'wp-data-access' ); ?></li>'
 								);
 							}
 							for (i = 0; i < jsonData.length; i++) {
@@ -303,7 +303,7 @@ namespace WPDataAccess\CSV_Files {
 						if (csv_column_name!==undefined) {
 							dbs_column_name = jQuery(this).find('li').first().text().trim();
 							if (dbs_column_name!=='' &&
-								dbs_column_name!=='<?php echo __( 'Drag column here...', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>'
+								dbs_column_name!=='<?php esc_html_e( 'Drag column here...', 'wp-data-access' ); ?>'
 							) {
 								columns[i] = dbs_column_name;
 							}
@@ -398,7 +398,7 @@ namespace WPDataAccess\CSV_Files {
 						receive: function( event, ui ) {
 							if (wpda_moving_item.childElementCount===0) {
 								jQuery(wpda_moving_item).empty().append(
-									'<li class="wpda_csv_column_init"><?php echo __( 'Drag column here...', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></li>'
+									'<li class="wpda_csv_column_init"><?php esc_html_e( 'Drag column here...', 'wp-data-access' ); ?></li>'
 								);
 							}
 						}
@@ -433,7 +433,7 @@ namespace WPDataAccess\CSV_Files {
 							}
 							if (wpda_moving_item.childElementCount===0) {
 								jQuery(wpda_moving_item).append(
-									'<li class="wpda_csv_column_init"><?php echo __( 'Drag column here...', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></li>'
+									'<li class="wpda_csv_column_init"><?php esc_html_e( 'Drag column here...', 'wp-data-access' ); ?></li>'
 								);
 							}
 						}
@@ -446,7 +446,7 @@ namespace WPDataAccess\CSV_Files {
 				<br/>
 				<fieldset class="wpda_fieldset">
 					<legend>
-						<?php echo __( 'Settings', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php esc_html_e( 'Settings', 'wp-data-access' ); ?>
 					</legend>
 					<div id="wpda_csv_settings">
 						<label for="csv_delimiter" style="line-height: 2; vertical-align: text-top;">
@@ -484,14 +484,14 @@ namespace WPDataAccess\CSV_Files {
 
 						<button type="button" class="button" onclick="change_delimiter()">
 							<i class="fas fa-check wpda_icon_on_button"></i>
-							<?php echo __( 'Apply settings' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+							<?php esc_html_e( 'Apply settings', 'wp-data-access' ); ?>
 						</button>
 					</div>
 				</fieldset>
 				<br/>
 				<fieldset class="wpda_fieldset">
 					<legend>
-						<?php echo __( 'Destination database and table', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php esc_html_e( 'Destination database and table', 'wp-data-access' ); ?>
 					</legend>
 				<div>
 					<select id="csv_schema_name" name="csv_schema_name" style="margin-left: 0; vertical-align: top;" onchange="wpda_get_tables()">
@@ -526,23 +526,23 @@ namespace WPDataAccess\CSV_Files {
 				if ( false !== ( $fp = fopen( $file_name, 'r' ) ) ) { // phpcs:ignore
 					$index = 0;
 					while ( false !== ( $data = fgetcsv( $fp, 0, $this->delimiter ) ) ) { // phpcs:ignore
-						for ( $column = 0; $column < count( $data ); $column ++ ) { // phpcs:ignore - 8.1 proof
+						for ( $column = 0; $column < count( $data ); $column ++ ) { // phpcs:ignore
 							if ( $this->has_header_columns ) {
-								array_push( $csv_columns, $data[ $column ] );//phpcs:ignore - 8.1 proof
+								array_push( $csv_columns, $data[ $column ] ); // phpcs:ignore -- 8.1 proof
 							} else {
-								array_push( $csv_columns, "column_{$index}" );//phpcs:ignore - 8.1 proof
+								array_push( $csv_columns, "column_{$index}" ); // phpcs:ignore -- 8.1 proof
 								$index++;
 							}
 						}
 						break;
 					}
-					fclose( $fp ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+					fclose( $fp ); // phpcs:ignore
 				}
 				?>
 				<br/>
 				<fieldset class="wpda_fieldset">
 					<legend>
-						<?php echo __( 'Column mapping', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php esc_html_e( 'Column mapping', 'wp-data-access' ); ?>
 						<a href="javascript:void(0)">
 							<span class="dashicons dashicons-editor-help wpda_tooltip" title="Drag columns from Table to Mapped" style="cursor:pointer;vertical-align:bottom;text-decoration:none;"></span>
 						</a>
@@ -580,7 +580,7 @@ namespace WPDataAccess\CSV_Files {
 										} else {
 											?>
 												<li class="wpda_csv_column_init">
-												<?php echo __( 'Drag column here...', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+												<?php esc_html_e( 'Drag column here...', 'wp-data-access' ); ?>
 												</li>
 												<?php
 										}
@@ -591,7 +591,7 @@ namespace WPDataAccess\CSV_Files {
 									<?php
 									if ( $first_row ) {
 										?>
-										<td rowspan="<?php echo esc_attr( count( $csv_columns ) + 1 ); //phpcs:ignore - 8.1 proof ?>" style="vertical-align: top;">
+										<td rowspan="<?php echo esc_attr( count( $csv_columns ) + 1 );  // phpcs:ignore -- 8.1 proof ?>" style="vertical-align: top;">
 											<ul id="csv_table_columns">
 											</ul>
 										</td>
@@ -628,18 +628,18 @@ namespace WPDataAccess\CSV_Files {
 			</form>
 			<br/>
 			<a href="javascript:void(0)" onclick="save_mapping()" class="button">
-				<span class="dashicons dashicons-yes-alt" style="padding-top: 4px; padding-right: 4px;"></span>
+				<span class="dashicons dashicons-yes-alt" style="padding-top: 4px; padding-right: 4px; min-height: 30px;"></span>
 				Save mapping
 			</a>
 			<a href="javascript:void(0)" onclick="jQuery('#import_form').submit()" class="button">
-				<span class="dashicons dashicons-upload" style="padding-top: 4px; padding-right: 4px;"></span>
+				<span class="dashicons dashicons-upload" style="padding-top: 4px; padding-right: 4px; min-height: 30px;"></span>
 				Import CSV file
 			</a>
 			<a id="wpda_preview_visible" href="javascript:void(0)" onclick="toggle_preview()" class="button">
-				<span class="dashicons dashicons-visibility" style="padding-top: 4px; padding-right: 4px;"></span>
+				<span class="dashicons dashicons-visibility" style="padding-top: 4px; padding-right: 4px; min-height: 30px;"></span>
 				Preview CSV file
 			</a>
-			<a id="wpda_preview_hidden" href="javascript:void(0)" onclick="toggle_preview()" class="button" style="display: none;">
+			<a id="wpda_preview_hidden" href="javascript:void(0)" onclick="toggle_preview()" class="button" style="display: none; min-height: 30px;">
 				<span class="dashicons dashicons-hidden" style="padding-top: 4px; padding-right: 4px;"></span>
 				Hide CSV file
 			</a>

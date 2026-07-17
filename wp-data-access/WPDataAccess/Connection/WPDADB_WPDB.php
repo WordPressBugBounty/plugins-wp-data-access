@@ -1,6 +1,5 @@
 <?php
 
-// phpcs:ignore Standard.Category.SniffName.ErrorCode
 namespace WPDataAccess\Connection;
 
 /**
@@ -117,6 +116,7 @@ class WPDADB_WPDB extends \wpdb {
      * @return bool
      */
     public function db_connect( $allow_bail = false ) {
+        // phpcs:disable -- skip all mysqli messages
         $this->is_mysql = true;
         $client_flags = ( defined( 'MYSQL_CLIENT_FLAGS' ) ? MYSQL_CLIENT_FLAGS : 0 );
         /*
@@ -133,7 +133,6 @@ class WPDADB_WPDB extends \wpdb {
         $host_data = $this->parse_db_host( $this->dbhost );
         if ( $host_data ) {
             list( $host, $port, $socket, $is_ipv6 ) = $host_data;
-            // phpcs:ignore - 8.1 proof
         }
         /*
          * If using the `mysqlnd` library, the IPv6 address needs to be enclosed
@@ -145,7 +144,6 @@ class WPDADB_WPDB extends \wpdb {
         }
         if ( 'on' === $this->ssl ) {
             mysqli_ssl_set(
-                // phpcs:ignore
                 $this->dbh,
                 $this->ssl_key,
                 $this->ssl_cert,
@@ -155,7 +153,6 @@ class WPDADB_WPDB extends \wpdb {
             );
         }
         mysqli_report( MYSQLI_REPORT_STRICT );
-        // phpcs:ignore
         try {
             if ( WP_DEBUG ) {
                 if ( !mysqli_real_connect(
@@ -168,13 +165,10 @@ class WPDADB_WPDB extends \wpdb {
                     $socket,
                     $client_flags
                 ) ) {
-                    // phpcs:ignore
                     mysqli_report( MYSQLI_REPORT_OFF );
-                    // phpcs:ignore
                     return false;
                 }
             } else {
-                // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
                 if ( !@mysqli_real_connect(
                     $this->dbh,
                     $host,
@@ -185,19 +179,15 @@ class WPDADB_WPDB extends \wpdb {
                     $socket,
                     $client_flags
                 ) ) {
-                    // phpcs:ignore
                     mysqli_report( MYSQLI_REPORT_OFF );
-                    // phpcs:ignore
                     return false;
                 }
             }
         } catch ( \mysqli_sql_exception $e ) {
             mysqli_report( MYSQLI_REPORT_OFF );
-            // phpcs:ignore
             return false;
         }
         mysqli_report( MYSQLI_REPORT_OFF );
-        // phpcs:ignore
         if ( $this->dbh->connect_errno ) {
             $this->dbh = null;
             /*
@@ -226,24 +216,25 @@ class WPDADB_WPDB extends \wpdb {
                 require_once WP_CONTENT_DIR . '/db-error.php';
                 die;
             }
-            $message = '<h1>' . __( 'Error establishing a database connection' ) . "</h1>\n";
+            $message = '<h1>' . __( 'Error establishing a database connection', 'wp-data-access' ) . "</h1>\n";
             $message .= '<p>' . sprintf( 
                 /* translators: 1: wp-config.php, 2: Database host. */
-                __( 'This either means that the username and password information in your %1$s file is incorrect or we can&#8217;t contact the database server at %2$s. This could mean your host&#8217;s database server is down.' ),
+                __( 'This either means that the username and password information in your %1$s file is incorrect or we can&#8217;t contact the database server at %2$s. This could mean your host&#8217;s database server is down.', 'wp-data-access' ),
                 '<code>wp-config.php</code>',
                 '<code>' . htmlspecialchars( $this->dbhost, ENT_QUOTES ) . '</code>'
              ) . "</p>\n";
             $message .= "<ul>\n";
-            $message .= '<li>' . __( 'Are you sure you have the correct username and password?' ) . "</li>\n";
-            $message .= '<li>' . __( 'Are you sure you have typed the correct hostname?' ) . "</li>\n";
-            $message .= '<li>' . __( 'Are you sure the database server is running?' ) . "</li>\n";
+            $message .= '<li>' . __( 'Are you sure you have the correct username and password?', 'wp-data-access' ) . "</li>\n";
+            $message .= '<li>' . __( 'Are you sure you have typed the correct hostname?', 'wp-data-access' ) . "</li>\n";
+            $message .= '<li>' . __( 'Are you sure the database server is running?', 'wp-data-access' ) . "</li>\n";
             $message .= "</ul>\n";
             $message .= '<p>' . sprintf( 
                 /* translators: %s: Support forums URL. */
-                __( 'If you&#8217;re unsure what these terms mean you should probably contact your host. If you still need help you can always visit the <a href="%s">WordPress Support Forums</a>.' ),
-                __( 'https://wordpress.org/support/forums/' )
+                __( 'If you&#8217;re unsure what these terms mean you should probably contact your host. If you still need help you can always visit the <a href="%s">WordPress Support Forums</a>.', 'wp-data-access' ),
+                __( 'https://wordpress.org/support/forums/', 'wp-data-access' )
              ) . "</p>\n";
             $this->bail( $message, 'db_connect_fail' );
+            // phpcs:enable
             return false;
         } elseif ( $this->dbh ) {
             if ( !$this->has_connected ) {
@@ -254,8 +245,10 @@ class WPDADB_WPDB extends \wpdb {
             $this->ready = true;
             $this->set_sql_mode();
             $this->select( $this->dbname, $this->dbh );
+            // phpcs:enable
             return true;
         }
+        // phpcs:enable
         return false;
     }
 
@@ -282,7 +275,9 @@ class WPDADB_WPDB extends \wpdb {
             $this->timer_start();
         }
         if ( !empty( $this->dbh ) && $this->use_mysqli ) {
+            // phpcs:disable
             $this->result = mysqli_query( $this->dbh, $query );
+            // phpcs:enable
         }
         $this->num_queries++;
         if ( defined( 'SAVEQUERIES' ) && SAVEQUERIES ) {
@@ -298,7 +293,9 @@ class WPDADB_WPDB extends \wpdb {
 
     public function wpda_fetch_from_cursor() {
         if ( $this->use_mysqli && 'mysqli_result' === get_class( $this->result ) ) {
+            // phpcs:disable
             return mysqli_fetch_object( $this->result );
+            // phpcs:enable
         }
         return null;
     }

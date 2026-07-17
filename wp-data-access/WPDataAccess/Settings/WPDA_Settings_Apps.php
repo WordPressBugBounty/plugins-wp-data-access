@@ -21,7 +21,7 @@ namespace WPDataAccess\Settings {
                 // Security check.
                 $wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
                 if ( ! wp_verify_nonce( $wp_nonce, 'wpda-apps-settings' ) ) {
-                    wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                    wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
                 }
 
                 if ( 'save' === $action ) {
@@ -48,7 +48,7 @@ namespace WPDataAccess\Settings {
                   action="?page=<?php echo esc_attr( $this->page ); ?>&tab=apps">
                 <table class="wpda-table-settings">
                     <tr>
-                        <th><?php echo __( 'Scroll Offset', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Scroll Offset', 'wp-data-access' ); ?></th>
                         <td>
                             <input
                                 type="number" step="1" min="0" max="999" name="scroll_offset" maxlength="3"
@@ -60,19 +60,19 @@ namespace WPDataAccess\Settings {
                     <input type="hidden" name="action" value="save"/>
                     <button type="submit" class="button button-primary">
                         <i class="fas fa-check wpda_icon_on_button"></i>
-                        <?php echo __( 'Save Apps Settings', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Save Apps Settings', 'wp-data-access' ); ?>
                     </button>
                     <a href="javascript:void(0)"
-                       onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+                       onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
                            jQuery('input[name=&quot;action&quot;]').val('setdefaults');
                            jQuery('#wpda_settings_backend').trigger('submit')
                            }"
                        class="button">
                         <i class="fas fa-times-circle wpda_icon_on_button"></i>
-                        <?php echo __( 'Reset Apps Settings To Defaults', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Reset Apps Settings To Defaults', 'wp-data-access' ); ?>
                     </a>
                 </div>
-                <?php wp_nonce_field( 'wpda-apps-settings', '_wpnonce', false ); ?>
+                <?php esc_attr( wp_nonce_field( 'wpda-apps-settings', '_wpnonce', false ) ); ?>
             </form>
             <?php
 

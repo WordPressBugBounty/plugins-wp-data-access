@@ -101,7 +101,7 @@ class WPDA_Google_Drive extends WPDA_Drive {
 
         if ( ! isset( $this->drive['access_token'] ) ) return false;
 
-        $file      = fopen( $local_file, 'r' );
+        $file      = fopen( $local_file, 'r' ); // phpcs:ignore
         $file_size = filesize( $local_file );
 
         $metadata = array(
@@ -113,7 +113,7 @@ class WPDA_Google_Drive extends WPDA_Drive {
         $delimiter = '----' . $boundary;
 
         fseek( $file, 0 );
-        $file_content = fread( $file, $file_size );
+        $file_content = fread( $file, $file_size ); // phpcs:ignore
 
         $body =
             "--$delimiter\r\n" .

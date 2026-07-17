@@ -43,7 +43,7 @@ class WPDA_Settings_Legacy_FrontEnd extends WPDA_Settings_Legacy_Page {
             $wp_nonce = ( isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '' );
             // input var okay.
             if ( !wp_verify_nonce( $wp_nonce, 'wpda-front-end-settings-' . WPDA::get_current_user_login() ) ) {
-                wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
             }
             if ( 'save' === $action ) {
                 WPDA::set_option( WPDA::OPTION_FE_PAGINATION, ( isset( $_REQUEST['pagination'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['pagination'] ) ) : null ) );
@@ -72,7 +72,7 @@ class WPDA_Settings_Legacy_FrontEnd extends WPDA_Settings_Legacy_Page {
                 <table class="wpda-table-settings">
                     <tr style="border-top: 1px solid #ccc">
                         <th><?php 
-        echo __( 'Default pagination value', 'wp-data-access' );
+        esc_html_e( 'Default pagination value', 'wp-data-access' );
         ?></th>
                         <td>
                             <input
@@ -93,12 +93,12 @@ class WPDA_Settings_Legacy_FrontEnd extends WPDA_Settings_Legacy_Page {
                     <button type="submit" class="button button-primary">
                         <i class="fas fa-check wpda_icon_on_button"></i>
                         <?php 
-        echo __( 'Save Front-end Settings', 'wp-data-access' );
+        esc_html_e( 'Save Front-end Settings', 'wp-data-access' );
         ?>
                     </button>
                     <a href="javascript:void(0)"
                        onclick="if (confirm('<?php 
-        echo __( 'Reset to defaults?', 'wp-data-access' );
+        esc_html_e( 'Reset to defaults?', 'wp-data-access' );
         ?>')) {
                            jQuery('input[name=&quot;action&quot;]').val('setdefaults');
                            jQuery('#wpda_settings_frontend').trigger('submit')
@@ -106,7 +106,7 @@ class WPDA_Settings_Legacy_FrontEnd extends WPDA_Settings_Legacy_Page {
                        class="button">
                         <i class="fas fa-times-circle wpda_icon_on_button"></i>
                         <?php 
-        echo __( 'Reset Front-end Settings To Defaults', 'wp-data-access' );
+        esc_html_e( 'Reset Front-end Settings To Defaults', 'wp-data-access' );
         ?>
                     </a>
                 </div>

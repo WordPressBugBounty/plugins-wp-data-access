@@ -103,10 +103,11 @@ class WPDP {
      * WPDP constructor
      */
     public function __construct( $main_menu_slug = null ) {
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended -- verfication in main app
         if ( isset( $_REQUEST['page'] ) ) {
             $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) );
-            // input var okay.
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
         $this->main_menu_slug = $main_menu_slug;
         $this->projects_page_title = 'Data Projects';
         $this->templates_page_title = 'Project Templates';
@@ -200,7 +201,7 @@ class WPDP {
 			<div class="wrap">
 				<h1 class="wp-heading-inline">
 					<span><?php 
-        echo $this->projects_page_title;
+        echo esc_attr( $this->projects_page_title );
         ?></span>
 					<a href="<?php 
         echo 'https://docs.legacy.wpdataaccess.com/docs/data-projects/';
@@ -211,7 +212,7 @@ class WPDP {
 				</h1>
 				<p>
 					<?php 
-        echo __( 'ERROR: Repository table(s) not found!', 'wp-data-access' );
+        esc_html_e( 'ERROR: Repository table(s) not found!', 'wp-data-access' );
         ?>
 				</p>
 			</div>
@@ -225,7 +226,7 @@ class WPDP {
 			<div class="wrap">
 				<h1 class="wp-heading-inline">
 					<span><?php 
-        echo $this->projects_page_title;
+        echo esc_attr( $this->projects_page_title );
         ?></span>
 					<a href="<?php 
         echo 'https://docs.legacy.wpdataaccess.com/docs/project-templates/';
@@ -236,7 +237,7 @@ class WPDP {
 				</h1>
 				<p>
 					<?php 
-        echo __( 'ERROR: Repository table(s) not found!', 'wp-data-access' );
+        esc_html_e( 'ERROR: Repository table(s) not found!', 'wp-data-access' );
         ?>
 				</p>
 			</div>
@@ -258,10 +259,11 @@ class WPDP {
         $project_project_table_name = $wpdb->prefix . 'wpda_project';
         $project_page_table_name = $wpdb->prefix . 'wpda_project_page';
         $query_projects = "select * from {$project_project_table_name} where add_to_menu = 'Yes' order by project_sequence";
+        // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- plugin table
         $projects = $wpdb->get_results( $query_projects, 'ARRAY_A' );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
+        // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
         if ( count( $projects ) > 0 ) {
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             // Check for repository tables to prevent dashboard errors.
             if ( !WPDP_Project_Design_Table_Model::table_exists() || !WPDP_Page_Model::table_exists() ) {
                 return;
@@ -278,21 +280,24 @@ class WPDP {
                 // Cannot determine the user role(s). Not able to show project menus.
                 break;
             }
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- plugin table
             $query_pages = $wpdb->prepare( " select * from {$project_page_table_name} " . " where project_id = %d " . " and add_to_menu = 'Yes' " . " order by page_sequence", [$project['project_id']] );
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
             $pages = $wpdb->get_results( $query_pages, 'ARRAY_A' );
-            // phpcs:ignore Standard.Category.SniffName.ErrorCode
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
             $project_menu_shown = false;
             foreach ( $pages as $page ) {
                 $user_has_role = false;
                 if ( '' === $page['page_role'] || null === $page['page_role'] ) {
                     $user_has_role = in_array( 'administrator', $user_roles );
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                 } else {
                     $user_role_array = explode( ',', $page['page_role'] );
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     foreach ( $user_role_array as $user_role_array_item ) {
                         $user_has_role = in_array( $user_role_array_item, $user_roles );
-                        //phpcs:ignore - 8.1 proof
+                        // phpcs:ignore -- 8.1 proof
                         if ( $user_has_role ) {
                             break;
                         }
@@ -479,10 +484,10 @@ class WPDP {
      */
     public function manage_project_page() {
         $ids = explode( '_', (string) $this->page );
-        //phpcs:ignore - 8.1 proof
+        // phpcs:ignore -- 8.1 proof
         if ( 4 !== count( $ids ) ) {
-            //phpcs:ignore - 8.1 proof
-            wp_die( __( 'ERROR: Wrong arguments [missing page]', 'wp-data-access' ) );
+            // phpcs:ignore -- 8.1 proof
+            wp_die( esc_attr__( 'ERROR: Wrong arguments [missing page]', 'wp-data-access' ) );
         }
         $project_id = $ids[2];
         $page_id = $ids[3];
@@ -493,11 +498,15 @@ class WPDP {
                 $post_id = $this->wpdp_projects_content[$project_id . '_' . $page_id];
                 $post = get_post( $post_id );
                 $content = $post->post_content;
+                // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                 $content = apply_filters( 'the_content', $content );
+                // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                 $content = str_replace( ']]>', ']]&gt;', $content );
+                // phpcs:disable WordPress.Security.EscapeOutput
                 echo $content;
+                // phpcs:enable WordPress.Security.EscapeOutput
             } else {
-                wp_die( __( 'ERROR: Project page initialization failed', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Project page initialization failed', 'wp-data-access' ) );
             }
         }
     }

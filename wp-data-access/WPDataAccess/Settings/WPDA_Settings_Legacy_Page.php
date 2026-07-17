@@ -8,10 +8,10 @@ namespace WPDataAccess\Settings {
 
         public function __construct() {
 
-            if ( isset( $_REQUEST['page'] ) ) {
-                $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ); // input var okay.
+            if ( isset( $_REQUEST['page'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             } else {
-                wp_die( __( 'ERROR: Wrong arguments [missing page argument]', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Wrong arguments [missing page argument]', 'wp-data-access' ) );
             }
 
         }

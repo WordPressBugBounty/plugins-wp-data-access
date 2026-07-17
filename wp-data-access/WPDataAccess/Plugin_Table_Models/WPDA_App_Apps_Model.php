@@ -11,7 +11,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public static function select_all( $app_id ) {
 
 			global $wpdb;
-			return $wpdb->get_results(
+			return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'SELECT * FROM `%1s` WHERE app_id = %d order by seq_nr', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -20,25 +20,25 @@ namespace WPDataAccess\Plugin_Table_Models {
 					)
 				), // db call ok; no-cache ok.
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			); // phpcs:ignore
 
 		}
 
 		public static function list() {
 
 			global $wpdb;
-			return $wpdb->get_results(
+			return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare('
 						SELECT * 
-						FROM `%1s` 
+						FROM %i
 						ORDER BY app_id, seq_nr, app_id_detail
-					', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
+					',
 					array(
 						WPDA::remove_backticks( self::get_base_table_name() )
 					)
-				), // db call ok; no-cache ok.
+				),
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			);
 
 		}
 
@@ -49,7 +49,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		) {
 
 			global $wpdb;
-			if ( 1 === $wpdb->insert(
+			if ( 1 === $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
 					static::get_base_table_name(),
 					array(
 						'app_id'        => $app_id,
@@ -69,7 +69,7 @@ namespace WPDataAccess\Plugin_Table_Models {
             global $wpdb;
 
             if ( $delete_as_detail ) {
-                $wpdb->delete(
+                $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
                     static::get_base_table_name(),
                     array(
                         'app_id_detail' => $app_id,
@@ -77,7 +77,7 @@ namespace WPDataAccess\Plugin_Table_Models {
                 );
             }
 
-			return $wpdb->delete(
+			return $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				static::get_base_table_name(),
 				array(
 					'app_id' => $app_id,

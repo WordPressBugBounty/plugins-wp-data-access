@@ -97,7 +97,7 @@ namespace WPDataAccess\Utilities {
 			);
 
 			if ( '' === $args['message_text'] ) {
-				wp_die( __( 'ERROR: Wrong arguments [missing message text argument]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [missing message text argument]', 'wp-data-access' ) );
 			}
 
 			$this->message_text           = $args['message_text'];

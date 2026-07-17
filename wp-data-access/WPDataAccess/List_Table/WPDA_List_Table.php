@@ -5,6 +5,7 @@
  *
  * @package WPDataAccess\List_Table
  */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\List_Table;
 
 use WPDataAccess\Connection\WPDADB;
@@ -416,11 +417,11 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
         global $wpdb;
         if ( !isset( $args['table_name'] ) ) {
             // Calling WPDA_List_Table without a table_name doesn't make sense.
-            wp_die( __( 'ERROR: Wrong arguments [no table argument]', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Wrong arguments [no table argument]', 'wp-data-access' ) );
         }
         if ( !isset( $args['wpda_list_columns'] ) ) {
             // Calling WPDA_List_Table without a column list is not allowed.
-            wp_die( __( 'ERROR: Wrong arguments [no columns argument]', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Wrong arguments [no columns argument]', 'wp-data-access' ) );
         }
         parent::__construct( array(
             'singular' => ( isset( $args['singular'] ) ? $args['singular'] : __( 'Row', 'wp-data-access' ) ),
@@ -441,17 +442,16 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
             // it in all situations. It is a fast query which makes our application much more safe and reliable.
             $this->wpda_data_dictionary = new WPDA_Dictionary_Exist($this->schema_name, $this->table_name);
             if ( !$this->wpda_data_dictionary->table_exists() ) {
-                wp_die( __( 'ERROR: Invalid table name or not authorized', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Invalid table name or not authorized', 'wp-data-access' ) );
             }
         }
         $this->pid = ( isset( $args['pid'] ) ? $args['pid'] : '' );
         // Get menu slag of current page.
         if ( isset( $_REQUEST['page'] ) ) {
             $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) );
-            // input var okay.
         } else {
             // In order to show a list table we need a page.
-            wp_die( __( 'ERROR: Wrong arguments [no page argument]', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Wrong arguments [no page argument]', 'wp-data-access' ) );
         }
         // Use column list: argument wpda_list_columns (availability already checked).
         $this->wpda_list_columns =& $args['wpda_list_columns'];
@@ -540,7 +540,6 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
         $this->search_value = ( is_scalar( $this->get_search_value() ) ? str_replace( "\\'", '', (string) $this->get_search_value() ) : '' );
         if ( isset( $_REQUEST["{$this->search_item_name}_old_value"] ) ) {
             $this->search_value_old = sanitize_text_field( wp_unslash( $_REQUEST["{$this->search_item_name}_old_value"] ) );
-            // input var okay.
         } else {
             $this->search_value_old = $this->search_value;
         }
@@ -548,7 +547,6 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
         if ( 'page_number' !== $this->page_number_item_name ) {
             if ( isset( $_REQUEST['page_number'] ) ) {
                 $requested_page_number = sanitize_text_field( wp_unslash( $_REQUEST['page_number'] ) );
-                // input var okay.
                 $this->page_number_link = '&page_number=' . $requested_page_number;
                 $this->page_number_item = "<input type='hidden' name='page_number' value='" . $requested_page_number . "' />";
             }
@@ -696,7 +694,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
      * @since   1.0.0
      */
     public function no_items() {
-        echo __( 'No data found', 'wp-data-access' );
+        echo esc_attr__( 'No data found', 'wp-data-access' );
     }
 
     /**
@@ -738,7 +736,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
         if ( $this->wpda_list_columns->get_table_columns()[0]['column_name'] === $column_name || $column_name === $this->first_display_column ) {
             // First column: add row actions.
             $count = count( $this->wpda_list_columns->get_table_primary_key() );
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             if ( 0 === $count ) {
                 // No actions without a primary key!
                 // This automatically covers view processing correctly.
@@ -752,7 +750,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
                     $actions = array();
                     $this->column_default_add_action( $item, $column_name, $actions );
                     if ( is_array( $actions ) && count( $actions ) > 0 ) {
-                        //phpcs:ignore - 8.1 proof
+                        // phpcs:ignore -- 8.1 proof
                         return sprintf( '%1$s %2$s', $this->render_column_content( $item, $column_name ), $this->row_actions( $actions ) );
                     } else {
                         return sprintf( '%1$s', $this->render_column_content( $item, $column_name ) );
@@ -806,8 +804,9 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
 
 						<script type='text/javascript'>
 							jQuery("#wpda_invisible_container").append("<?php 
+                    // phpcs:disable WordPress.Security.EscapeOutput
                     echo $view_form;
-                    // phpcs:ignore WordPress.Security.EscapeOutput
+                    // phpcs:enable WordPress.Security.EscapeOutput
                     ?>");
 						</script>
 
@@ -848,8 +847,9 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
 
 						<script type='text/javascript'>
 							jQuery("#wpda_invisible_container").append("<?php 
+                    // phpcs:disable WordPress.Security.EscapeOutput
                     echo $edit_form;
-                    // phpcs:ignore WordPress.Security.EscapeOutput
+                    // phpcs:enable WordPress.Security.EscapeOutput
                     ?>");
 						</script>
 
@@ -890,8 +890,9 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
 
 						<script type='text/javascript'>
 							jQuery("#wpda_invisible_container").append("<?php 
+                    // phpcs:disable WordPress.Security.EscapeOutput
                     echo $delete_form;
-                    // phpcs:ignore WordPress.Security.EscapeOutput
+                    // phpcs:enable WordPress.Security.EscapeOutput
                     ?>");
 						</script>
 
@@ -970,7 +971,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
                 $media_type = WPDA_Media_Model::get_column_media( $this->table_name, $column_name, $this->schema_name );
                 if ( 'Image' === $media_type ) {
                     $image_ids = explode( ',', (string) $item[$column_name] );
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     $image_src = '';
                     foreach ( $image_ids as $image_id ) {
                         $url = wp_get_attachment_url( esc_attr( $image_id ) );
@@ -985,7 +986,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
                     return sprintf( '<img src="%s" class="wpda_tooltip" width="100%%">', $item[$column_name] );
                 } elseif ( 'Attachment' === $media_type ) {
                     $media_ids = explode( ',', (string) $item[$column_name] );
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     $media_links = '';
                     foreach ( $media_ids as $media_id ) {
                         $url = wp_get_attachment_url( esc_attr( $media_id ) );
@@ -1020,7 +1021,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
                     }
                 } elseif ( 'Audio' === $media_type ) {
                     $audio_ids = explode( ',', (string) $item[$column_name] );
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     $audio_src = '';
                     foreach ( $audio_ids as $audio_id ) {
                         if ( 'audio' === substr( get_post_mime_type( $audio_id ), 0, 5 ) ) {
@@ -1036,7 +1037,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
                     return $audio_src;
                 } elseif ( 'Video' === $media_type ) {
                     $video_ids = explode( ',', (string) $item[$column_name] );
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     $video_src = '';
                     foreach ( $video_ids as $video_id ) {
                         if ( 'video' === substr( get_post_mime_type( $video_id ), 0, 5 ) ) {
@@ -1071,7 +1072,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
             if ( 'csv' !== WPDA::get_option( WPDA::OPTION_PLUGIN_SET_FORMAT ) && isset( $this->columns_indexed[$column_name]['data_type'] ) && 'set' === $this->columns_indexed[$column_name]['data_type'] ) {
                 $list = '<' . WPDA::get_option( WPDA::OPTION_PLUGIN_SET_FORMAT ) . '>';
                 $listarray = explode( ',', (string) $item[$column_name] );
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 foreach ( $listarray as $listitem ) {
                     $list .= "<li>{$listitem}</li>";
                 }
@@ -1114,6 +1115,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
         $case_sensitive_search = ( isset( $_REQUEST['wpda_c'] ) && 'true' === $_REQUEST['wpda_c'] ? "<input type='hidden' name='wpda_c' value='true'>" : '' );
         $add_schema_and_table_name = ( !is_admin() ? '' : "\n\t\t\t\t\t<input type='hidden' name='wpdaschema_name' value='{$esc_attr( $schema_name )}' />\n\t\t\t\t\t<input type='hidden' name='table_name' value='{$esc_attr( $table_name )}' />\n\t\t\t\t" );
         // Hide schema and table name on front-end
+        // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
         $form = <<<EOT
 \t\t\t\t<form id='{$esc_attr( $form_id )}' action='{$url}' method='post'>
 \t\t\t\t\t{$get_key_input_fields}
@@ -1184,7 +1186,11 @@ EOT;
     protected function render_column_content( $item, $column_name, $substitute_newlines = true ) {
         $column_content = ( isset( $item["lookup_value_{$column_name}"] ) ? $item["lookup_value_{$column_name}"] : $item[$column_name] );
         if ( 'off' === WPDA::get_option( WPDA::OPTION_BE_TEXT_WRAP_SWITCH ) && WPDA::get_option( WPDA::OPTION_BE_TEXT_WRAP ) < strlen( (string) $column_content ) ) {
-            $title = sprintf( __( 'Output limited to %1$s characters', 'wp-data-access' ), WPDA::get_option( WPDA::OPTION_BE_TEXT_WRAP ) );
+            $title = sprintf( 
+                /* translators: %s = number of characters before text is wrapped */
+                __( 'Output limited to %1$s characters', 'wp-data-access' ),
+                WPDA::get_option( WPDA::OPTION_BE_TEXT_WRAP )
+             );
             if ( $substitute_newlines ) {
                 return str_replace( "\n", '<br/>', substr( esc_html( str_replace( '&', '&amp;', (string) $column_content ) ), 0, WPDA::get_option( WPDA::OPTION_BE_TEXT_WRAP ) ) . ' <a href="javascript:void(0)" title="' . $title . '">&bull;&bull;&bull;</a>' );
             } else {
@@ -1475,32 +1481,26 @@ EOT;
 					<input id="wpda_main_form_orderby" type="hidden" name="orderby"
 						   value="<?php 
         echo ( isset( $_REQUEST['orderby'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) ) : '' );
-        // input var okay.
         ?>"/>
 					<input id="wpda_main_form_order" type="hidden" name="order"
 						   value="<?php 
         echo ( isset( $_REQUEST['order'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) ) : '' );
-        // input var okay.
         ?>"/>
 					<input id="wpda_main_form_post_mime_type" type="hidden" name="post_mime_type"
 						   value="<?php 
         echo ( isset( $_REQUEST['post_mime_type'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['post_mime_type'] ) ) ) : '' );
-        // input var okay.
         ?>"/>
 					<input id="wpda_main_form_detached" type="hidden" name="detached"
 						   value="<?php 
         echo ( isset( $_REQUEST['detached'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['detached'] ) ) ) : '' );
-        // input var okay.
         ?>"/>
 					<input id="wpda_main_db_schema" type="hidden" name="wpda_main_db_schema"
 						   value="<?php 
         echo ( isset( $_REQUEST['wpda_main_db_schema'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['wpda_main_db_schema'] ) ) ) : '' );
-        // input var okay.
         ?>"/>
 					<input id="wpda_main_favourites" type="hidden" name="wpda_main_favourites"
 						   value="<?php 
         echo ( isset( $_REQUEST['wpda_main_favourites'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['wpda_main_favourites'] ) ) ) : '' );
-        // input var okay.
         ?>"/>
 					<?php 
         wp_nonce_field( 'wpda-export-' . wp_json_encode( $this->table_name ), '_wpnonce', false );
@@ -1600,7 +1600,7 @@ EOT;
                 $this->wpda_import->add_button();
             }
         } else {
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             if ( WPDA::is_wpda_table( $this->table_name ) || ('on' === WPDA::get_option( WPDA::OPTION_BE_ALLOW_INSERT ) && count( $this->wpda_list_columns->get_table_primary_key() )) > 0 ) {
                 $storage_type = ( WPDA::is_wpda_table( $this->table_name ) ? __( 'respository', 'wp-data-access' ) : __( 'table', 'wp-data-access' ) );
                 // Prepare url.
@@ -1631,12 +1631,13 @@ EOT;
 							<input type="hidden" name="action" value="new">
 							<button type="submit" class="page-title-action wpda_tooltip"
 									title="<?php 
-                echo sprintf( __( 'Add new %1$s to %2$s', 'wp-data-access' ), esc_attr( $this->_args['singular'] ), esc_attr( $storage_type ) );
+                /* translators: 1 = entiry name; 2: storage type */
+                echo esc_attr( sprintf( __( 'Add new %1$s to %2$s', 'wp-data-access' ), $this->_args['singular'], $storage_type ) );
                 ?>"
 							>
 								<i class="fas fa-plus-circle wpda_icon_on_button"></i>
 								<?php 
-                echo __( 'Add New', 'wp-data-access' );
+                echo esc_attr__( 'Add New', 'wp-data-access' );
                 ?>
 							</button>
 							<?php 
@@ -1782,7 +1783,7 @@ EOT;
                 // Check access rights.
                 if ( 'on' !== $this->allow_delete ) {
                     // Deleting records from list table is not allowed.
-                    wp_die( __( 'ERROR: Not authorized [delete not allowed]', 'wp-data-access' ) );
+                    wp_die( esc_attr__( 'ERROR: Not authorized [delete not allowed]', 'wp-data-access' ) );
                 }
                 // Prepare wp_nonce action security check.
                 $wp_nonce_action = "wpda-delete-{$this->table_name}";
@@ -1795,7 +1796,7 @@ EOT;
                     // Check if key is available.
                     if ( !isset( $_REQUEST[$key] ) ) {
                         // input var okay.
-                        wp_die( __( 'ERROR: Invalid URL [missing primary key values]', 'wp-data-access' ) );
+                        wp_die( esc_attr__( 'ERROR: Invalid URL [missing primary key values]', 'wp-data-access' ) );
                     }
                     // Write key value pair to array.
                     $row_to_be_deleted[$i]['key'] = $key;
@@ -1810,13 +1811,13 @@ EOT;
                 $wp_nonce = ( isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '' );
                 // input var okay.
                 if ( !wp_verify_nonce( $wp_nonce, $wp_nonce_action ) ) {
-                    wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                    wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
                 }
                 // All key column values available: delete record.
                 // Prepare named array for delete operation.
                 $next_row_to_be_deleted = array();
                 $count_rows = count( $row_to_be_deleted );
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 for ($i = 0; $i < $count_rows; $i++) {
                     $next_row_to_be_deleted[$row_to_be_deleted[$i]['key']] = $row_to_be_deleted[$i]['value'];
                 }
@@ -1839,7 +1840,7 @@ EOT;
                 // Check access rights.
                 if ( 'on' !== $this->allow_delete ) {
                     // Deleting records from list table is not allowed.
-                    die( __( 'ERROR: Not authorized [delete not allowed]', 'wp-data-access' ) );
+                    die( esc_attr__( 'ERROR: Not authorized [delete not allowed]', 'wp-data-access' ) );
                 }
                 // We first need to check if all the necessary information is available.
                 if ( !isset( $_REQUEST['bulk-selected'] ) ) {
@@ -1856,12 +1857,13 @@ EOT;
                 $wp_nonce = ( isset( $_REQUEST['_wpnonce2'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce2'] ) ) : '' );
                 // input var okay.
                 if ( !wp_verify_nonce( $wp_nonce, $wp_nonce_action ) ) {
-                    die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                    die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
                 }
+                // phpcs:disable WordPress.Security.ValidatedSanitizedInput
                 $bulk_rows = (array) $_REQUEST['bulk-selected'];
-                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+                // phpcs:enable WordPress.Security.ValidatedSanitizedInput
                 $no_rows = count( $bulk_rows );
-                // # rows to be deleted. //phpcs:ignore - 8.1 proof being safe
+                // # rows to be deleted.  // phpcs:ignore -- 8.1 proof being safe
                 $rows_to_be_deleted = array();
                 // Gonna hold rows to be deleted.
                 for ($i = 0; $i < $no_rows; $i++) {
@@ -1875,7 +1877,7 @@ EOT;
                         foreach ( $this->wpda_list_columns->get_table_primary_key() as $key ) {
                             // Check if key is available.
                             if ( !isset( $row_object[$key] ) ) {
-                                wp_die( __( 'ERROR: Invalid URL [missing primary key values]', 'wp-data-access' ) );
+                                wp_die( esc_attr__( 'ERROR: Invalid URL [missing primary key values]', 'wp-data-access' ) );
                             }
                             // Write key value pair to array.
                             $rows_to_be_deleted[$i][$j]['key'] = $key;
@@ -1886,7 +1888,7 @@ EOT;
                 }
                 // Looks like everything is there. Delete records from table...
                 $no_key_cols = count( $this->wpda_list_columns->get_table_primary_key() );
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 $rows_successfully_deleted = 0;
                 // Number of rows successfully deleted.
                 $rows_with_errors = 0;
@@ -1951,7 +1953,7 @@ EOT;
                 if ( !WPDA::is_wpda_table( $this->table_name ) ) {
                     if ( 'on' !== WPDA::get_option( WPDA::OPTION_BE_EXPORT_ROWS ) ) {
                         // Exporting rows from list table is not allowed.
-                        die( __( 'ERROR: Not authorized [export not allowed]', 'wp-data-access' ) );
+                        die( esc_attr__( 'ERROR: Not authorized [export not allowed]', 'wp-data-access' ) );
                     }
                 }
                 // We first need to check if all the necessary information is available.
@@ -1968,12 +1970,13 @@ EOT;
                 $wp_nonce = ( isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '' );
                 // input var okay.
                 if ( !wp_verify_nonce( $wp_nonce, 'wpda-export-' . wp_json_encode( $this->table_name ) ) ) {
-                    die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                    die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
                 }
+                // phpcs:disable WordPress.Security.ValidatedSanitizedInput
                 $bulk_rows = (array) $_REQUEST['bulk-selected'];
-                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+                // phpcs:enable WordPress.Security.ValidatedSanitizedInput
                 $no_rows = count( $bulk_rows );
-                // # rows to be exported. //phpcs:ignore - 8.1 proof being safe
+                // # rows to be exported.  // phpcs:ignore -- 8.1 proof being safe
                 $format_type = '';
                 switch ( $this->current_action() ) {
                     case 'bulk-export-xml':
@@ -2007,7 +2010,7 @@ EOT;
                         foreach ( $this->wpda_list_columns->get_table_primary_key() as $key ) {
                             // Check if key is available.
                             if ( !isset( $row_object[$key] ) ) {
-                                wp_die( __( 'ERROR: Invalid URL', 'wp-data-access' ) );
+                                wp_die( esc_attr__( 'ERROR: Invalid URL', 'wp-data-access' ) );
                             }
                             if ( !isset( $columns[$key] ) ) {
                                 $columns[$key] = array();
@@ -2065,9 +2068,11 @@ EOT;
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
             if ( is_admin() ) {
-                wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+                /* translators: %s = remote database name */
+                wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
             } else {
-                die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+                /* translators: %s = remote database name */
+                die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
             }
         }
         $row_deleted = $wpdadb->delete( $this->table_name, $where );
@@ -2097,9 +2102,11 @@ EOT;
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
             if ( is_admin() ) {
-                wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+                /* translators: %s = remote database name */
+                wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
             } else {
-                die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+                /* translators: %s = remote database name */
+                die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
             }
         }
         if ( '' === $this->schema_name ) {
@@ -2112,7 +2119,6 @@ EOT;
             }
         }
         return $wpdadb->get_var( $query );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
     }
 
     /**
@@ -2129,9 +2135,11 @@ EOT;
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
             if ( is_admin() ) {
-                wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+                /* translators: %s = remote database name */
+                wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
             } else {
-                die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+                /* translators: %s = remote database name */
+                die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
             }
         }
         // Selected columns cannot be changed by the user at this time. No check for SQL injection needed now.
@@ -2187,7 +2195,6 @@ EOT;
         // Debug query.
         // var_dump( $query );
         $this->items = $wpdadb->get_results( $query, 'ARRAY_A' );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
     }
 
     /**
@@ -2198,10 +2205,8 @@ EOT;
     protected function get_order_by() {
         if ( !empty( $_REQUEST['orderby'] ) ) {
             $orderby_arg = sanitize_sql_orderby( wp_unslash( $_REQUEST['orderby'] ) );
-            // input var okay.
             if ( !empty( $_REQUEST['order'] ) ) {
                 $order_arg = sanitize_text_field( wp_unslash( $_REQUEST['order'] ) );
-                // input var okay.
             } else {
                 $order_arg = '';
             }
@@ -2217,7 +2222,7 @@ EOT;
             } else {
                 // The user provided a column name which is not in the table. Most probably the result of a
                 // SQL injection attack, so let's terminate.
-                wp_die( __( 'ERROR: Invalid URL [invalid column name]', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Invalid URL [invalid column name]', 'wp-data-access' ) );
             }
         } else {
             return '';
@@ -2241,7 +2246,7 @@ EOT;
                 // Primary key is used to ensure uniqueness.
                 $actions = $this->get_bulk_actions();
                 if ( is_array( $actions ) && 0 < count( $actions ) ) {
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     $columns = array(
                         'cb' => '<input type="checkbox" />',
                     );
@@ -2393,8 +2398,10 @@ EOT;
     protected function get_search_value() {
         if ( 'off' === WPDA::get_option( WPDA::OPTION_BE_REMEMBER_SEARCH ) ) {
             if ( isset( $_REQUEST[$this->search_item_name] ) ) {
-                return wp_filter_nohtml_kses( wp_unslash( $_REQUEST[$this->search_item_name] ) );
-                // input var okay.
+                // phpcs:disable WordPress.Security.ValidatedSanitizedInput
+                $value = wp_filter_nohtml_kses( wp_unslash( $_REQUEST[$this->search_item_name] ) );
+                // phpcs:enable WordPress.Security.ValidatedSanitizedInput
+                return $value;
             }
         }
         if ( 'wpda_wpdp_' === substr( $this->page, 0, 10 ) ) {
@@ -2413,12 +2420,15 @@ EOT;
             $cookie_name = $this->page . '_search_' . str_replace( '.', '_', $this->table_name );
         }
         if ( isset( $_REQUEST[$this->search_item_name] ) && '' !== $_REQUEST[$this->search_item_name] ) {
-            // input var okay.
-            return wp_filter_nohtml_kses( wp_unslash( $_REQUEST[$this->search_item_name] ) );
-            // input var okay.
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput
+            $value = wp_filter_nohtml_kses( wp_unslash( $_REQUEST[$this->search_item_name] ) );
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput
+            return $value;
         } elseif ( isset( $_COOKIE[$cookie_name] ) ) {
-            return wp_filter_nohtml_kses( wp_unslash( $_COOKIE[$cookie_name] ) );
-            // input var okay.
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput
+            $value = wp_filter_nohtml_kses( wp_unslash( $_COOKIE[$cookie_name] ) );
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput
+            return $value;
         } else {
             return null;
         }
@@ -2438,7 +2448,7 @@ EOT;
      */
     public function print_column_headers( $with_id = true ) {
         list( $columns, $hidden, $sortable, $primary ) = $this->get_column_info();
-        //phpcs:ignore - 8.1 proof
+        // phpcs:ignore -- 8.1 proof
         // *********************
         // *** BEGIN CHANGES ***
         // *********************
@@ -2448,25 +2458,23 @@ EOT;
         // *******************
         if ( isset( $_REQUEST['orderby'] ) ) {
             $current_orderby = sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) );
-            // input var okay.
         } else {
             $current_orderby = '';
         }
         if ( isset( $_REQUEST['order'] ) && 'desc' === $_REQUEST['order'] ) {
-            // input var okay.
             $current_order = 'desc';
         } else {
             $current_order = 'asc';
         }
         if ( !empty( $columns['cb'] ) ) {
             static $cb_counter = 1;
-            $columns['cb'] = '<label class="screen-reader-text" for="cb-select-all-' . $cb_counter . '">' . __( 'Select All' ) . '</label>' . '<input id="cb-select-all-' . $cb_counter . '" type="checkbox" />';
+            $columns['cb'] = '<label class="screen-reader-text" for="cb-select-all-' . $cb_counter . '">' . __( 'Select All', 'wp-data-access' ) . '</label>' . '<input id="cb-select-all-' . $cb_counter . '" type="checkbox" />';
             $cb_counter++;
         }
         foreach ( $columns as $column_key => $column_display_name ) {
             $class = array('manage-column', "column-{$column_key}");
             if ( in_array( $column_key, (array) $hidden ) ) {
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 $class[] = 'hidden';
             }
             if ( 'cb' === $column_key ) {
@@ -2479,7 +2487,7 @@ EOT;
             }
             if ( isset( $sortable[$column_key] ) ) {
                 list( $orderby, $desc_first ) = (array) $sortable[$column_key];
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 if ( $current_orderby === $orderby ) {
                     $order = ( 'asc' === $current_order ? 'desc' : 'asc' );
                     $class[] = 'sorted';
@@ -2650,7 +2658,12 @@ EOT;
         // Add estimate character if row_count_estimate is enabled.
         $estimate = ( $this->row_count_estimate['is_estimate'] ? '~' : '' );
         /* translators: %s: number of items (2x) */
-        $output = '<span class="displaying-num">' . sprintf( _n( '%s item', '%s items', $total_items ), $estimate . number_format_i18n( $total_items ) ) . '</span>';
+        $output = '<span class="displaying-num">' . sprintf( _n(
+            '%s item',
+            '%s items',
+            $total_items,
+            'wp-data-access'
+        ), $estimate . number_format_i18n( $total_items ) ) . '</span>';
         $current = $this->get_pagenum();
         if ( $this->search_value !== $this->search_value_old ) {
             $current = 1;
@@ -2697,7 +2710,7 @@ EOT;
                 $link_with_post_support,
                 'first-page button',
                 '',
-                __( 'First page' ),
+                __( 'First page', 'wp-data-access' ),
                 '&laquo;'
             );
             // *******************
@@ -2714,7 +2727,7 @@ EOT;
                 $link_with_post_support,
                 'prev-page button',
                 max( 1, $current - 1 ),
-                __( 'Previous page' ),
+                __( 'Previous page', 'wp-data-access' ),
                 '&lsaquo;'
             );
             // *******************
@@ -2723,18 +2736,18 @@ EOT;
         }
         if ( 'bottom' === $which ) {
             $html_current_page = $current;
-            $total_pages_before = '<span class="screen-reader-text">' . __( 'Current Page' ) . '</span><span id="table-paging" class="paging-input"><span class="tablenav-paging-text">';
+            $total_pages_before = '<span class="screen-reader-text">' . __( 'Current Page', 'wp-data-access' ) . '</span><span id="table-paging" class="paging-input"><span class="tablenav-paging-text">';
         } else {
             $html_current_page = sprintf(
                 "%s<input class='current-page' id='current-page-selector' type='text' name='paged' value='%s' size='%d' aria-describedby='table-paging' /><span class='tablenav-paging-text'>",
-                '<label for="current-page-selector" class="screen-reader-text">' . __( 'Current Page' ) . '</label>',
+                '<label for="current-page-selector" class="screen-reader-text">' . __( 'Current Page', 'wp-data-access' ) . '</label>',
                 $current,
                 strlen( (string) $total_pages )
             );
         }
         $html_total_pages = sprintf( "<span class='total-pages'>%s</span>", number_format_i18n( $total_pages ) );
         /* translators: %s: current page/total pages */
-        $page_links[] = $total_pages_before . sprintf( _x( '%1$s of %2$s', 'paging' ), $html_current_page, $html_total_pages ) . $total_pages_after;
+        $page_links[] = $total_pages_before . sprintf( _x( '%1$s of %2$s', 'paging', 'wp-data-access' ), $html_current_page, $html_total_pages ) . $total_pages_after;
         if ( $disable_next ) {
             $page_links[] = '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&rsaquo;</span>';
         } else {
@@ -2745,7 +2758,7 @@ EOT;
                 $link_with_post_support,
                 'next-page button',
                 min( $total_pages, $current + 1 ),
-                __( 'Next page' ),
+                __( 'Next page', 'wp-data-access' ),
                 '&rsaquo;'
             );
             // *******************
@@ -2762,7 +2775,7 @@ EOT;
                 $link_with_post_support,
                 'last-page button',
                 $total_pages,
-                __( 'Last page' ),
+                __( 'Last page', 'wp-data-access' ),
                 '&raquo;'
             );
             // *******************
@@ -2780,8 +2793,11 @@ EOT;
             $page_class = ' no-pages';
         }
         $this->_pagination = "<div class='tablenav-pages{$page_class}'>{$output}</div>";
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $this->_pagination;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

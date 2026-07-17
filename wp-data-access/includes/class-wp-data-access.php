@@ -45,6 +45,7 @@ use WPDataAccess\Premium\WPDAPRO_Dashboard\WPDAPRO_Widget_Project;
  * @see WP_Data_Access_I18n
  * @see WP_Data_Access_Loader
  */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 class WP_Data_Access {
     /**
      * Reference to plugin loader
@@ -82,9 +83,7 @@ class WP_Data_Access {
      */
     public function __construct() {
         if ( isset( $_REQUEST['page'] ) ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) );
-            // phpcs:ignore WordPress.Security.NonceVerification
         }
         $this->load_dependencies();
         $this->set_locale();
@@ -288,25 +287,22 @@ class WP_Data_Access {
             function () {
                 if ( !isset( $_POST['wpnonce'], $_POST['wpdaschema_name'] ) ) {
                     WPDA::sent_header( 'application/json' );
-                    echo WPDA::sent_msg( 'ERROR', 'Invalid arguments' );
-                    // phpcs:ignore WordPress.Security.EscapeOutput
+                    WPDA::sent_msg( 'ERROR', 'Invalid arguments' );
                     wp_die();
                 }
+                // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
                 $wpnonce = sanitize_text_field( wp_unslash( $_REQUEST['wpnonce'] ) );
-                // input var okay.
                 if ( !WPDA::current_user_is_admin() || !wp_verify_nonce( $wpnonce, 'wpda_dbinit_admin_' . WPDA::get_current_user_login() ) ) {
                     WPDA::sent_header( 'application/json' );
-                    echo WPDA::sent_msg( 'ERROR', 'Not authorized' );
-                    // phpcs:ignore WordPress.Security.EscapeOutput
+                    WPDA::sent_msg( 'ERROR', 'Not authorized' );
                     wp_die();
                 }
                 $wpdaschema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpdaschema_name'] ) );
-                // input var okay.
+                // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
                 $wpdadb = WPDADB::get_db_connection( $wpdaschema_name );
                 if ( null === $wpdadb ) {
                     WPDA::sent_header( 'application/json' );
-                    echo WPDA::sent_msg( 'ERROR', 'Cannot connect to database' );
-                    // phpcs:ignore WordPress.Security.EscapeOutput
+                    WPDA::sent_msg( 'ERROR', 'Cannot connect to database' );
                     wp_die();
                 }
                 $suppress_errors = $wpdadb->suppress_errors( true );
@@ -314,12 +310,10 @@ class WP_Data_Access {
                 $error = $wpdadb->last_error;
                 $wpdadb->suppress_errors( $suppress_errors );
                 if ( '' === $error ) {
-                    //phpcs:ignore - 8.1 proof
-                    echo WPDA::sent_msg( 'OK', '' );
-                    // phpcs:ignore WordPress.Security.EscapeOutput
+                    // phpcs:ignore -- 8.1 proof
+                    WPDA::sent_msg( 'OK', '' );
                 } else {
-                    echo WPDA::sent_msg( 'ERROR', "Function not created [{$error}]" );
-                    // phpcs:ignore WordPress.Security.EscapeOutput
+                    WPDA::sent_msg( 'ERROR', "Function not created [{$error}]" );
                 }
                 wp_die();
             },
@@ -406,8 +400,9 @@ class WP_Data_Access {
      */
     public function add_id_to_script( $tag, $handle, $src ) {
         if ( 'wpda_datatables' === $handle ) {
+            // phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript
             $tag = '<script id="wpda_datatables" src="' . $src . '"></script>';
-            // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+            // phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
         }
         return $tag;
     }
@@ -471,7 +466,45 @@ class WP_Data_Access {
      * @since   1.0.0
      */
     public function run() {
+        $this->loader->add_action( 'init', $this, 'register_blocks' );
+        $this->loader->add_action( 'enqueue_block_assets', $this, 'enqueue_block_assets' );
         $this->loader->run();
+    }
+
+    public function register_blocks() {
+        register_block_type( plugin_dir_path( dirname( __FILE__ ) ) . 'assets/gtb', array(
+            'render_callback' => array($this, 'render_wp_data_access_app_block'),
+        ) );
+    }
+
+    public function enqueue_block_assets() {
+        wp_enqueue_style( 'dashicons' );
+    }
+
+    public function render_wp_data_access_app_block( $attributes ) {
+        $appid = ( isset( $attributes['appid'] ) ? sanitize_text_field( $attributes['appid'] ) : '' );
+        $feedback = filter_var( $attributes['feedback'] ?? false, FILTER_VALIDATE_BOOLEAN );
+        $builders = filter_var( $attributes['builders'] ?? false, FILTER_VALIDATE_BOOLEAN );
+        $hidetitlebar = filter_var( $attributes['hidetitlebar'] ?? false, FILTER_VALIDATE_BOOLEAN );
+        $fullscreen = filter_var( $attributes['fullscreen'] ?? false, FILTER_VALIDATE_BOOLEAN );
+        if ( empty( $appid ) ) {
+            return null;
+        }
+        if ( !shortcode_exists( 'wpda_app' ) ) {
+            return 'Shortcode wpda_app is not registered.';
+        }
+        $shortcode = sprintf(
+            '[wpda_app app_id="%s" builders="%s" feedback="%s" hidetitlebar="%s" fullscreen="%s"]',
+            esc_attr( $appid ),
+            ( $builders ? 'false' : 'true' ),
+            ( $feedback ? 'true' : 'false' ),
+            ( $hidetitlebar ? 'true' : 'false' ),
+            ( $fullscreen ? 'true' : 'false' )
+        );
+        $wrapper_attributes = get_block_wrapper_attributes( array(
+            'class' => 'wpda-wp-data-access-app',
+        ) );
+        return sprintf( '<div %s>%s</div>', $wrapper_attributes, do_shortcode( $shortcode ) );
     }
 
     /**
@@ -493,7 +526,6 @@ class WP_Data_Access {
     public function wpdataaccess_settings_page() {
         WPDA_Dashboard::add_dashboard();
         $current_tab = ( isset( $_REQUEST['tab'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['tab'] ) ) : 'plugin' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         switch ( $current_tab ) {
             case 'apps':
                 $wpda_settings_class_name = 'WPDA_Settings_Apps';
@@ -534,3 +566,5 @@ class WP_Data_Access {
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

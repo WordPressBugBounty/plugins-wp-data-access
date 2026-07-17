@@ -57,10 +57,10 @@ namespace WPDataRoles {
 				$user_login = $wp_user->data->user_login;
 				// Get access to editable roles
 				global $wp_roles;
-				if ( isset( $_REQUEST['wpda_role'] ) && is_array( $_REQUEST['wpda_role'] ) ) {
+				if ( isset( $_REQUEST['wpda_role'] ) && is_array( $_REQUEST['wpda_role'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified on main page
 					// Process roles
 					$sanitized_roles = array();
-					foreach ( $_REQUEST['wpda_role'] as $new_user_role ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+					foreach ( $_REQUEST['wpda_role'] as $new_user_role ) { // phpcs:ignore -- verified on main page
 						$sanitized_new_user_role = sanitize_text_field( wp_unslash( $new_user_role ) ); // input var okay.
 						$wp_user->add_role( $sanitized_new_user_role );
 						$sanitized_roles[ $sanitized_new_user_role ] = true;

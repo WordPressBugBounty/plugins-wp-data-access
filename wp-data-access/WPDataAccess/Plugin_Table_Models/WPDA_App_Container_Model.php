@@ -9,56 +9,48 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
     public static function select( $app_id, $cnt_seq_nr ) {
         global $wpdb;
         if ( 0 === $cnt_seq_nr ) {
-            return $wpdb->get_results( 
-                $wpdb->prepare( 
-                    'SELECT * FROM `%1s` WHERE app_id = %d and cnt_seq_nr = 0 order by cnt_id',
-                    // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                    array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id)
-                 ),
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders -- plugin table
+            $dataset = $wpdb->get_results( 
+                $wpdb->prepare( 'SELECT * FROM `%1s` WHERE app_id = %d and cnt_seq_nr = 0 order by cnt_id', array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id) ),
                 // db call ok; no-cache ok.
                 'ARRAY_A'
              );
-            // phpcs:ignore Standard.Category.SniffName.ErrorCode
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
+            return $dataset;
         } else {
-            return $wpdb->get_results( 
-                $wpdb->prepare( 
-                    'SELECT * FROM `%1s` WHERE app_id = %d and cnt_seq_nr > 0 order by cnt_seq_nr, cnt_id',
-                    // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                    array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id)
-                 ),
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders -- plugin table
+            $dataset = $wpdb->get_results( 
+                $wpdb->prepare( 'SELECT * FROM `%1s` WHERE app_id = %d and cnt_seq_nr > 0 order by cnt_seq_nr, cnt_id', array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id) ),
                 // db call ok; no-cache ok.
                 'ARRAY_A'
              );
-            // phpcs:ignore Standard.Category.SniffName.ErrorCode
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
+            return $dataset;
         }
     }
 
     public static function select_all( $app_id ) {
         global $wpdb;
-        return $wpdb->get_results( 
-            $wpdb->prepare( 
-                'SELECT * FROM `%1s` WHERE app_id = %d order by cnt_seq_nr',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id)
-             ),
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders -- plugin table
+        $dataset = $wpdb->get_results( 
+            $wpdb->prepare( 'SELECT * FROM `%1s` WHERE app_id = %d order by cnt_seq_nr', array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id) ),
             // db call ok; no-cache ok.
             'ARRAY_A'
          );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
+        return $dataset;
     }
 
     public static function get_container( $app_id, $cnt_id ) {
         global $wpdb;
-        return $wpdb->get_results( 
-            $wpdb->prepare( 
-                'SELECT * FROM `%1s` WHERE app_id = %d AND cnt_id = %d',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id, $cnt_id)
-             ),
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders -- plugin table
+        $dataset = $wpdb->get_results( 
+            $wpdb->prepare( 'SELECT * FROM `%1s` WHERE app_id = %d AND cnt_id = %d', array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id, $cnt_id) ),
             // db call ok; no-cache ok.
             'ARRAY_A'
          );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
+        return $dataset;
     }
 
     public static function create(
@@ -74,21 +66,19 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
     ) {
         global $wpdb;
         if ( 1 === $cnt_seq_nr ) {
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders -- plugin table
             $max_seq_nr = $wpdb->get_results( 
-                $wpdb->prepare( 
-                    'SELECT max(cnt_seq_nr) FROM `%1s` WHERE app_id = %d',
-                    // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                    array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id)
-                 ),
+                $wpdb->prepare( 'SELECT max(cnt_seq_nr) FROM `%1s` WHERE app_id = %d', array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id) ),
                 // db call ok; no-cache ok.
                 'ARRAY_N'
              );
-            // phpcs:ignore Standard.Category.SniffName.ErrorCode
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
             if ( isset( $max_seq_nr[0][0] ) ) {
                 $cnt_seq_nr = $max_seq_nr[0][0] + 1;
             }
         }
-        if ( 1 === $wpdb->insert( static::get_base_table_name(), array(
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
+        $rows = $wpdb->insert( static::get_base_table_name(), array(
             'cnt_dbs'      => $app_dbs,
             'cnt_tbl'      => $app_tbl,
             'cnt_cls'      => $app_cls,
@@ -98,7 +88,9 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
             'cnt_table'    => $cnt_table,
             'cnt_relation' => $cnt_relation,
             'cnt_query'    => $cnt_query,
-        ) ) ) {
+        ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
+        if ( 1 === $rows ) {
             // Return new container
             $cnt_id = $wpdb->insert_id;
             return array(
@@ -123,6 +115,7 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
         $cnt_relation = null
     ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
         $wpdb->update( static::get_base_table_name(), array(
             'cnt_dbs'      => $app_dbs,
             'cnt_tbl'      => $app_tbl,
@@ -133,21 +126,28 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
             'app_id' => $app_id,
             'cnt_id' => $app_cnt,
         ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->last_error;
     }
 
     public static function delete( $app_id ) {
         global $wpdb;
-        return $wpdb->delete( static::get_base_table_name(), array(
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
+        $delete = $wpdb->delete( static::get_base_table_name(), array(
             'app_id' => $app_id,
         ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        return $delete;
     }
 
     public static function delete_container( $cnt_id ) {
         global $wpdb;
-        return $wpdb->delete( static::get_base_table_name(), array(
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
+        $delete = $wpdb->delete( static::get_base_table_name(), array(
             'cnt_id' => $cnt_id,
         ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        return $delete;
     }
 
     public static function update_master(
@@ -158,6 +158,7 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
         $app_query
     ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
         $wpdb->update( static::get_base_table_name(), array(
             'cnt_dbs'   => $app_dbs,
             'cnt_tbl'   => $app_tbl,
@@ -167,66 +168,79 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
             'app_id'     => $app_id,
             'cnt_seq_nr' => 0,
         ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->last_error;
     }
 
     public static function update_table_settings( $cnt_id, $cnt_table_settings ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
         $wpdb->update( static::get_base_table_name(), array(
             'cnt_table' => $cnt_table_settings,
         ), array(
             'cnt_id' => $cnt_id,
         ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->last_error;
     }
 
     public static function update_rform_settings( $cnt_id, $cnt_form_settings ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
         $wpdb->update( static::get_base_table_name(), array(
             'cnt_rform' => $cnt_form_settings,
         ), array(
             'cnt_id' => $cnt_id,
         ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->last_error;
     }
 
     public static function update_form_settings( $cnt_id, $cnt_form_settings ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
         $wpdb->update( static::get_base_table_name(), array(
             'cnt_form' => $cnt_form_settings,
         ), array(
             'cnt_id' => $cnt_id,
         ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->last_error;
     }
 
     public static function update_chart_settings( $cnt_id, $cnt_chart_settings ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
         $wpdb->update( static::get_base_table_name(), array(
             'cnt_chart' => $cnt_chart_settings,
         ), array(
             'cnt_id' => $cnt_id,
         ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->last_error;
     }
 
     public static function update_dashboard_settings( $cnt_id, $cnt_dashboard_settings ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
         $wpdb->update( static::get_base_table_name(), array(
             'cnt_dashboard' => $cnt_dashboard_settings,
         ), array(
             'cnt_id' => $cnt_id,
         ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->last_error;
     }
 
     public static function update_map_settings( $cnt_id, $cnt_map_settings ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
         $wpdb->update( static::get_base_table_name(), array(
             'cnt_map' => $cnt_map_settings,
         ), array(
             'cnt_id' => $cnt_id,
         ) );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->last_error;
     }
 
@@ -237,22 +251,21 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
 
     public static function copy( $app_id_old, $app_id_new ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders -- plugin table
         $containers = $wpdb->get_results( 
-            $wpdb->prepare( 
-                'SELECT * FROM `%1s` WHERE app_id = %d order by cnt_seq_nr',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id_old)
-             ),
+            $wpdb->prepare( 'SELECT * FROM `%1s` WHERE app_id = %d order by cnt_seq_nr', array(WPDA::remove_backticks( self::get_base_table_name() ), $app_id_old) ),
             // db call ok; no-cache ok.
             'ARRAY_A'
          );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
         $cnt_id_conversion = array();
         foreach ( $containers as $container ) {
             $cnt_id = $container['cnt_id'];
             $container['app_id'] = $app_id_new;
             unset($container['cnt_id']);
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
             $wpdb->insert( static::get_base_table_name(), $container );
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
             $cnt_id_conversion[$cnt_id] = $wpdb->insert_id;
         }
         foreach ( $cnt_id_conversion as $cnt_id_old => $cnt_id_new ) {
@@ -272,12 +285,14 @@ class WPDA_App_Container_Model extends WPDA_Plugin_Table_Base_Model {
                             // Master no longer available
                             $relation = null;
                         }
+                        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
                         $wpdb->update( static::get_base_table_name(), array(
                             'cnt_relation' => $relation,
                         ), array(
                             'app_id' => $app_id_new,
                             'cnt_id' => $cnt_id_new,
                         ) );
+                        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                     }
                 }
             }

@@ -30,16 +30,13 @@ class WPDA_Publisher_Model extends WPDA_Plugin_Table_Base_Model {
      */
     public static function get_publication( $pub_id ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders -- plugin table
         $dataset = $wpdb->get_results( 
-            $wpdb->prepare( 
-                'SELECT * FROM `%1s` WHERE pub_id = %d',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( self::get_base_table_name() ), $pub_id)
-             ),
+            $wpdb->prepare( 'SELECT * FROM `%1s` WHERE pub_id = %d', array(WPDA::remove_backticks( self::get_base_table_name() ), $pub_id) ),
             // db call ok; no-cache ok.
             'ARRAY_A'
          );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
         return ( 1 === $wpdb->num_rows ? $dataset : false );
     }
 
@@ -52,31 +49,25 @@ class WPDA_Publisher_Model extends WPDA_Plugin_Table_Base_Model {
      */
     public static function get_publication_by_name( $pub_name ) {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders -- plugin table
         $dataset = $wpdb->get_results( 
-            $wpdb->prepare( 
-                'SELECT * FROM `%1s` WHERE pub_name = %s',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( self::get_base_table_name() ), $pub_name)
-             ),
+            $wpdb->prepare( 'SELECT * FROM `%1s` WHERE pub_name = %s', array(WPDA::remove_backticks( self::get_base_table_name() ), $pub_name) ),
             // db call ok; no-cache ok.
             'ARRAY_A'
          );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
         return ( 1 === $wpdb->num_rows ? $dataset : false );
     }
 
     public static function get_publication_list() {
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders -- plugin table
         return $wpdb->get_results( 
-            $wpdb->prepare( 
-                'SELECT * FROM `%1s` ORDER BY pub_name',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( self::get_base_table_name() ))
-             ),
+            $wpdb->prepare( 'SELECT * FROM `%1s` ORDER BY pub_name', array(WPDA::remove_backticks( self::get_base_table_name() )) ),
             // db call ok; no-cache ok.
             'ARRAY_A'
          );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
     }
 
     public static function get_temporary_table_from_custom_query( $database, $query ) {

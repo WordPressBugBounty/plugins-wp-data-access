@@ -308,19 +308,19 @@ namespace WPDataAccess\List_Table {
 			$this->schema_name = $args['wpdaschema_name'];
 			if ( '' === $this->schema_name ) {
 				// No pre defined schema_name!
-				if ( isset( $_REQUEST['wpdaschema_name'] ) ) {
+				if ( isset( $_REQUEST['wpdaschema_name'] ) ) { // phpcs:ignore
 					// Get schema name from URL.
-					$this->schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpdaschema_name'] ) ); // input var okay.
+					$this->schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpdaschema_name'] ) ); // phpcs:ignore
 				}
 			}
 
 			$this->table_name = $args['table_name'];
 			if ( '' === $this->table_name ) {
 				// No pre defined table_name!
-				if ( isset( $_REQUEST['table_name'] ) ) {
+				if ( isset( $_REQUEST['table_name'] ) ) { // phpcs:ignore
 					// Get table name from URL. (later we'll check if the table exists in the WordPress database to
 					// protect ourselves against SQL injection).
-					$this->table_name = sanitize_text_field( wp_unslash( $_REQUEST['table_name'] ) ); // input var okay.
+					$this->table_name = sanitize_text_field( wp_unslash( $_REQUEST['table_name'] ) ); // phpcs:ignore
 				}
 			}
 
@@ -345,24 +345,20 @@ namespace WPDataAccess\List_Table {
 			if ( isset( $args['action'] ) ) {
 				$this->action = $args['action'];
 			} else {
-				if ( isset( $_REQUEST['action'] ) ) {
-					$this->action = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ); // input var okay; sanitization okay.
+				if ( isset( $_REQUEST['action'] ) ) { // phpcs:ignore
+					$this->action = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ); // phpcs:ignore
 				}
 			}
 
 			if ( false !== $this->page_hook_suffix ) {
 				if (
 					is_admin() &&
-					! isset( $_REQUEST['page_action'] ) &&
+					! isset( $_REQUEST['page_action'] ) && // phpcs:ignore
 					(
-						! ( 'new' === $this->action ||
-							 'edit' === $this->action ||
-							 'view' === $this->action ||
-							 'user_menu' === $this->action
-						)
+						! ( 'new' === $this->action || 'edit' === $this->action || 'view' === $this->action || 'user_menu' === $this->action ) // phpcs:ignore
 					)
 				) {
-					$page_action = isset( $_REQUEST['page_action'] ) ? 'defined' : '';
+					$page_action = isset( $_REQUEST['page_action'] ) ? 'defined' : ''; // phpcs:ignore
 					if ( $page_action === '' ) {
 						// Add screen options.
 						add_action( 'load-' . $this->page_hook_suffix, array( $this, 'page_screen_options' ) );
@@ -495,7 +491,7 @@ namespace WPDataAccess\List_Table {
 
 			$form->prepare_form();
 
-			if ( isset( $_POST['postaction'] ) && 'list' === $_POST['postaction'] ) {
+			if ( isset( $_POST['postaction'] ) && 'list' === $_POST['postaction'] ) { // phpcs:ignore
 				// Jump back to list after pressing SUBMIT > LIST
 				$this->display_list_table();
 			} else {
@@ -588,8 +584,8 @@ namespace WPDataAccess\List_Table {
 		 * @since   1.0.0
 		 */
 		public function page_screen_options() {
-			if ( isset( $_REQUEST['child_tab'] ) ) {
-				$this->child_request = sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // input var okay; sanitization okay.
+			if ( isset( $_REQUEST['child_tab'] ) ) { // phpcs:ignore
+				$this->child_request = sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // phpcs:ignore
 			}
 
 			if ( false !== $this->child_request ) {
@@ -778,9 +774,9 @@ namespace WPDataAccess\List_Table {
 						);
 					} else {
 						$setname = 'default';
-						if ( isset( $_REQUEST['page'] ) ) {
-							$ids = explode( '_', sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) );//phpcs:ignore - 8.1 proof
-							if ( 4 === count( $ids ) ) {//phpcs:ignore - 8.1 proof
+						if ( isset( $_REQUEST['page'] ) ) { // phpcs:ignore
+							$ids = explode( '_', sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) ); // phpcs:ignore
+							if ( 4 === count( $ids ) ) { // phpcs:ignore -- 8.1 proof
 								$proj_id = $ids[2];
 								$page_id = $ids[3];
 								$project = new WPDP_Project( $proj_id, $page_id );
@@ -876,18 +872,15 @@ namespace WPDataAccess\List_Table {
 			if (
 				is_object( $screen ) &&
 				$screen->id === $this->page_hook_suffix &&
-				isset( $_REQUEST['screenoptionnonce'] )
+				isset( $_REQUEST['screenoptionnonce'] ) // phpcs:ignore
 			) {
 				// check_admin_referer( 'screen-options-nonce', 'screenoptionnonce' );
 
-				if (
-					isset( $_REQUEST['wp_screen_options']['option'] ) &&
-					isset( $_REQUEST['wp_screen_options']['value'] )
-				) {
+				if ( isset( $_REQUEST['wp_screen_options']['option'] ) && isset( $_REQUEST['wp_screen_options']['value'] ) ) { // phpcs:ignore
 					update_user_meta(
 						WPDA::get_current_user_id(),
-						sanitize_text_field( wp_unslash( $_REQUEST['wp_screen_options']['option'] ) ),
-						sanitize_text_field( wp_unslash( $_REQUEST['wp_screen_options']['value'] ) ) // input var okay.
+						sanitize_text_field( wp_unslash( $_REQUEST['wp_screen_options']['option'] ) ), // phpcs:ignore
+						sanitize_text_field( wp_unslash( $_REQUEST['wp_screen_options']['value'] ) ) // phpcs:ignore
 					);
 				}
 
@@ -915,8 +908,8 @@ namespace WPDataAccess\List_Table {
 
 				$cols_hidden = array();
 				foreach ( $cols as $col => $label ) {
-					if ( isset( $_REQUEST[ $col . '-hide-setting' ] ) && 'HIDE' === $_REQUEST[ $col . '-hide-setting' ] ) {
-						array_push( $cols_hidden, $col );//phpcs:ignore - 8.1 proof
+					if ( isset( $_REQUEST[ $col . '-hide-setting' ] ) && 'HIDE' === $_REQUEST[ $col . '-hide-setting' ] ) { // phpcs:ignore
+						array_push( $cols_hidden, $col );  // phpcs:ignore -- 8.1 proof
 					}
 				}
 
@@ -940,7 +933,7 @@ namespace WPDataAccess\List_Table {
 			ob_start();
 			?>
 			<fieldset class="metabox-prefs">
-				<legend><?php echo __( 'Columns' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></legend>
+				<legend><?php esc_html_e( 'Columns', 'wp-data-access' ); ?></legend>
 				<?php
 				$screen = get_current_screen();
 				foreach ( $screen->get_options() as $screen_option ) {

@@ -1,6 +1,6 @@
 <?php
 
-// phpcs:ignore Standard.Category.SniffName.ErrorCode
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\Dashboard;
 
 use WPDataAccess\WPDA;
@@ -72,15 +72,10 @@ class WPDA_Widget_Code extends WPDA_Widget {
      */
     public static function widget() {
         $panel_name = ( isset( $_REQUEST['wpda_panel_name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_panel_name'] ) ) : '' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $panel_code_id = ( isset( $_REQUEST['wpda_panel_code_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_panel_code_id'] ) ) : '' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $panel_column = ( isset( $_REQUEST['wpda_panel_column'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_panel_column'] ) ) : '1' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $column_position = ( isset( $_REQUEST['wpda_column_position'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_column_position'] ) ) : 'prepend' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $widget_sequence_nr = ( isset( $_REQUEST['wpda_widget_sequence_nr'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_widget_sequence_nr'] ) ) : '1' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $wdg = new WPDA_Widget_Code(array(
             'name'      => $panel_name,
             'code_id'   => $panel_code_id,
@@ -89,8 +84,9 @@ class WPDA_Widget_Code extends WPDA_Widget {
             'widget_id' => $widget_sequence_nr,
         ));
         WPDA::sent_header( 'text/html; charset=UTF-8' );
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $wdg->container();
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         wp_die();
     }
 
@@ -100,9 +96,12 @@ class WPDA_Widget_Code extends WPDA_Widget {
      * @return void
      */
     public static function refresh() {
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo static::msg( 'ERROR', 'Method not available for this panel type' );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         wp_die();
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

@@ -82,7 +82,7 @@ class WPDP_Project_Page_List extends WPDP_Child_List_Table {
         echo esc_attr( $item['page_id'] );
         ?>"
 				 title="<?php 
-        echo __( 'Shortcodes', 'wp-data-access' );
+        esc_html_e( 'Shortcodes', 'wp-data-access' );
         ?>"
 				 style="display:none"
 			>
@@ -111,11 +111,11 @@ class WPDP_Project_Page_List extends WPDP_Child_List_Table {
         echo esc_attr( $item['page_id'] );
         ?>"]'
 							onclick="jQuery.notify('<?php 
-        echo __( 'Shortcode successfully copied to clipboard!' );
+        esc_html_e( 'Shortcode successfully copied to clipboard!', 'wp-data-access' );
         ?>','info')"
 					>
 						<?php 
-        echo __( 'Copy', 'wp-data-access' );
+        esc_html_e( 'Copy', 'wp-data-access' );
         ?>
 					</button>
 					<button class="button button-primary wpda_shortcode_button"
@@ -123,7 +123,7 @@ class WPDP_Project_Page_List extends WPDP_Child_List_Table {
 							onclick="jQuery('.ui-dialog-content').dialog('close')"
 					>
 						<?php 
-        echo __( 'Close', 'wp-data-access' );
+        esc_html_e( 'Close', 'wp-data-access' );
         ?>
 					</button>
 				</p>
@@ -134,8 +134,7 @@ class WPDP_Project_Page_List extends WPDP_Child_List_Table {
 					<p>
 						Shortcode wpdadiehard is not enabled for all output types.<br/>
 						<a href="<?php 
-            echo admin_url( 'options-general.php' );
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            echo esc_url( admin_url( 'options-general.php' ) );
             ?>?page=wpdataaccess" class="wpda_shortcode_link">&raquo; Manage settings</a>
 					</p>
 					<?php 

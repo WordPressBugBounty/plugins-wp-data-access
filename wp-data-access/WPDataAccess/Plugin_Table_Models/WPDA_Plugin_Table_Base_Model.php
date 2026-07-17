@@ -31,7 +31,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		 */
 		public static function check_base_table_name() {
 			if ( null === static::BASE_TABLE_NAME ) {
-				wp_die( __( 'Wrong usage of class WPDA_Plugin_Table_Base_Model [missing BASE_TABLE_NAME]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'Wrong usage of class WPDA_Plugin_Table_Base_Model [missing BASE_TABLE_NAME]', 'wp-data-access' ) );
 			}
 		}
 
@@ -68,7 +68,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 			static::check_base_table_name();
 
 			global $wpdb;
-			$result = $wpdb->get_results(
+			$result = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'SELECT count(*) AS noitems FROM `%1s` ', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -76,7 +76,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 					)
 				),
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			); 
 
 			if ( 1 === $wpdb->num_rows ) {
 				return $result[0]['noitems'];

@@ -129,20 +129,18 @@ namespace WPDataAccess\Utilities {
 				// Security check.
 				$wp_nonce = isset( $_REQUEST['_wpnonceimport'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonceimport'] ) ) : '?'; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, 'wpda-import-from-data-explorer-' . WPDA::get_current_user_login() ) ) {
-					wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				if ( isset( $_FILES['filename'] ) ) {
 
-					// phpcs:disable
+					// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 					$temp_file_name = sanitize_text_field( $_FILES['filename']['tmp_name'] ); // For Windows: do NOT unslash!
-					// phpcs:enable
-					$temp_file_type = sanitize_text_field( wp_unslash( $_FILES['filename']['type'] ) );
-					$orig_file_name = sanitize_text_field( wp_unslash( $_FILES['filename']['name'] ) );
+					// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+					$temp_file_type = sanitize_text_field( wp_unslash( $_FILES['filename']['type'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+					$orig_file_name = sanitize_text_field( wp_unslash( $_FILES['filename']['name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
-					if ( 0 === $_FILES['filename']['error']
-						 && is_uploaded_file( $temp_file_name )
-					) {
+					if ( 0 === $_FILES['filename']['error'] && is_uploaded_file( $temp_file_name ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 						if (
 							'application/zip' === $temp_file_type ||
 							'application/x-zip' === $temp_file_type ||
@@ -158,15 +156,17 @@ namespace WPDataAccess\Utilities {
 									}
 								} else {
 									// Error reading ZIP file.
+									/* translators: %s = file name */
 									$this->import_failed( sprintf( __( 'Import failed [error reading ZIP file `%s`]', 'wp-data-access' ), $orig_file_name ) );
 								}
 							} else {
 								// ZipArchive not installed.
+								/* translators: %s = solution message */
 								$this->import_failed( sprintf( __( 'Import failed - ZipArchive not installed %s', 'wp-data-access' ), self::SOLUTIONS ) );
 							}
 						} else {
 							// Process plain file.
-							$this->file_pointer = fopen( $temp_file_name, 'rb' );
+							$this->file_pointer = fopen( $temp_file_name, 'rb' ); // phpcs:ignore
 							$this->import( $orig_file_name );
 						}
 					}
@@ -191,7 +191,7 @@ namespace WPDataAccess\Utilities {
 		 */
 		protected function import( $file_name ) {
 			// Check if errors should be shown.
-			$hide_errors = isset( $_REQUEST['hide_errors'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['hide_errors'] ) ) : 'off';
+			$hide_errors = isset( $_REQUEST['hide_errors'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['hide_errors'] ) ) : 'off'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
 
 			$result = true;
 			global $wpdb;
@@ -199,9 +199,11 @@ namespace WPDataAccess\Utilities {
 			$wpdadb = WPDADB::get_db_connection( $this->schema_name );
 			if ( null === $wpdadb ) {
 				if ( is_admin() ) {
-					wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				} else {
-					die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				}
 			}
 
@@ -209,7 +211,7 @@ namespace WPDataAccess\Utilities {
 
 			if ( false !== $this->file_pointer ) {
 				while ( ! feof( $this->file_pointer ) ) {
-					$this->file_content .= fread( $this->file_pointer, 4096 );
+					$this->file_content .= fread( $this->file_pointer, 4096 ); // phpcs:ignore
 
 					// Replace WP prefix and WPDA prefix.
 					$this->file_content = str_replace( '{wp_schema}', $wpdb->dbname, $this->file_content );
@@ -246,14 +248,18 @@ namespace WPDataAccess\Utilities {
 
 			// Process file content.
 			if ( ! $result ) {
+				/* translators: %s = file name */
 				$this->import_failed( sprintf( __( 'Import `%s` failed [check import file]', 'wp-data-access' ), $file_name ) );
 			} else {
 				// Import succeeded.
+				// phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
 				$msg = new WPDA_Message_Box(
 					array(
+						/* translators: %s = file name */
 						'message_text' => sprintf( __( 'Import `%s` completed succesfully', 'wp-data-access' ), $file_name ),
 					)
 				);
+				// phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
 				$msg->box();
 			}
 		}
@@ -282,13 +288,16 @@ namespace WPDataAccess\Utilities {
 		 * @since   1.6.0
 		 */
 		protected function upload_failed() {
+			// phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
 			$msg = new WPDA_Message_Box(
 				array(
+					/* translators: %s = solution message */
 					'message_text'           => sprintf( __( 'File upload failed %s', 'wp-data-access' ), self::SOLUTIONS ),
 					'message_type'           => 'error',
 					'message_is_dismissible' => false,
 				)
 			);
+			// phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
 			$msg->box();
 		}
 
@@ -308,8 +317,8 @@ namespace WPDataAccess\Utilities {
 			<a href="javascript:void(0)"
 			   onclick="jQuery('#upload_file_container_multi').show()"
 			   class="wpda_tooltip <?php echo esc_attr( $class ); ?>"
-			   title="<?php echo __( 'Allows to import data and execute SQL scripts', 'wp-data-access' ); ?>.
-			<?php echo __( 'Add a ; and a new line character at the end of every SQL statement', 'wp-data-access' ); ?>"
+			   title="<?php esc_html_e( 'Allows to import data and execute SQL scripts', 'wp-data-access' ); ?>.
+			<?php esc_html_e( 'Add a ; and a new line character at the end of every SQL statement', 'wp-data-access' ); ?>"
 			>
 				<i class="fas fa-code wpda_icon_on_button"></i> <?php echo esc_attr( $label ); ?></a>
 			<?php
@@ -330,11 +339,11 @@ namespace WPDataAccess\Utilities {
 			<script type='text/javascript'>
 				function before_submit_upload() {
 					if (jQuery('#filename').val() == '') {
-						alert('<?php echo __( 'No file to import!', 'wp-data-access' ); ?>');
+						alert('<?php esc_html_e( 'No file to import!', 'wp-data-access' ); ?>');
 						return false;
 					}
 					if (!(jQuery('#filename')[0].files[0].size < <?php echo esc_attr( WPDA::convert_memory_to_decimal( @ini_get( 'upload_max_filesize' ) ) ); ?>)) {
-						alert("<?php echo __( 'File exceeds maximum size of', 'wp-data-access' ); ?> <?php echo esc_attr( @ini_get( 'upload_max_filesize' ) ); ?>!");
+						alert("<?php esc_html_e( 'File exceeds maximum size of', 'wp-data-access' ); ?> <?php echo esc_attr( @ini_get( 'upload_max_filesize' ) ); ?>!");
 						return false;
 					}
 				}
@@ -364,21 +373,21 @@ namespace WPDataAccess\Utilities {
 					} else {
 						?>
 						<p>
-							<strong><?php echo __( 'ERROR', 'wp-data-access' ); ?></strong>
+							<strong><?php esc_html_e( 'ERROR', 'wp-data-access' ); ?></strong>
 						</p>
 						<p class="wpda_list_indent">
 							<?php
-							echo __( 'Your configuration does not allow file uploads!', 'wp-data-access' );
+							esc_html_e( 'Your configuration does not allow file uploads!', 'wp-data-access' );
 							echo ' ';
-							echo __( 'Set', 'wp-data-access' );
+							esc_html_e( 'Set', 'wp-data-access' );
 							echo ' <strong>';
-							echo __( 'file_uploads', 'wp-data-access' );
+							esc_html_e( 'file_uploads', 'wp-data-access' );
 							echo '</strong> ';
-							echo __( 'to', 'wp-data-access' );
+							esc_html_e( 'to', 'wp-data-access' );
 							echo ' <strong>';
-							echo __( 'On', 'wp-data-access' );
+							esc_html_e( 'On', 'wp-data-access' );
 							echo '</strong> (<a href="https://docs.wpdataaccess.com/limitations.html">';
-							echo __( 'see documentation', 'wp-data-access' );
+							esc_html_e( 'see documentation', 'wp-data-access' );
 							echo '</a>).';
 							?>
 						</p>
@@ -401,7 +410,7 @@ namespace WPDataAccess\Utilities {
 			?>
 			<p class="wpda_list_indent">
 				<?php
-				echo $this->info_text . ' ' . __( 'Maximum supported file size is', 'wp-data-access' ) . ' <strong>' . @ini_get( 'upload_max_filesize' ) . '</strong>. '; // phpcs:ignore WordPress.Security.EscapeOutput
+				echo $this->info_text . ' ' . esc_attr__( 'Maximum supported file size is', 'wp-data-access' ) . ' <strong>' . @ini_get( 'upload_max_filesize' ) . '</strong>. '; // phpcs:ignore WordPress.Security.EscapeOutput
 				?>
 			</p>
 			<p class="wpda_list_indent">
@@ -409,7 +418,7 @@ namespace WPDataAccess\Utilities {
 					   accept="<?php echo esc_attr( $file_extensions ); ?>">
 				<label style="vertical-align:baseline;">
 					<input type="checkbox" name="hide_errors" style="vertical-align:sub;" checked>
-					<?php echo __( 'Hide errors', 'wp-data-access' ); ?>
+					<?php esc_html_e( 'Hide errors', 'wp-data-access' ); ?>
 				</label>
 			</p>
 			<p class="wpda_list_indent">
@@ -417,21 +426,21 @@ namespace WPDataAccess\Utilities {
 						class="button button-primary"
 						onclick="return before_submit_upload()">
 					<i class="fas fa-code wpda_icon_on_button"></i>
-					<?php echo __( 'Import file/Execute script(s)', 'wp-data-access' ); ?>
+					<?php esc_html_e( 'Import file/Execute script(s)', 'wp-data-access' ); ?>
 				</button>
 				<a href="javascript:void(0)"
 				   onclick="jQuery('#upload_file_container_multi').hide()"
 				   class="button button-secondary">
 					<i class="fas fa-times-circle wpda_icon_on_button"></i>
-					<?php echo __( 'Cancel', 'wp-data-access' ); ?>
+					<?php esc_html_e( 'Cancel', 'wp-data-access' ); ?>
 				</a>
 				<input type="hidden" name="action" value="import">
 				<?php wp_nonce_field( 'wpda-import-from-data-explorer-' . WPDA::get_current_user_login(), '_wpnonceimport', false ); ?>
 			</p>
 			<p class="wpda_list_indent">
 				<?php
-				echo '<strong>' . __( 'IMPORTANT', 'wp-data-access' ) . '</strong> &minus; ' .
-					__( 'Add a ; and a new line character at the end of every SQL statement', 'wp-data-access' );
+				echo '<strong>' . esc_attr__( 'IMPORTANT', 'wp-data-access' ) . '</strong> &minus; ' .
+					esc_attr__( 'Add a ; and a new line character at the end of every SQL statement', 'wp-data-access' );
 				?>
 			</p>
 			<?php

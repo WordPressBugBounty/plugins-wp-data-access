@@ -22,7 +22,7 @@ namespace WPDataAccess\Settings {
                 // Security check.
                 $wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
                 if ( ! wp_verify_nonce( $wp_nonce, 'wpda-dashboard-settings-' . WPDA::get_current_user_login() ) ) {
-                    wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                    wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
                 }
 
                 if ( 'save' === $action ) {
@@ -68,7 +68,7 @@ namespace WPDataAccess\Settings {
                   action="?page=<?php echo esc_attr( $this->page ); ?>&tab=legacy&vtab=dashboard">
                 <table class="wpda-table-settings">
                     <tr style="border-top: 1px solid #ccc">
-                        <th><?php echo __( 'Dashboard role access', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Dashboard role access', 'wp-data-access' ); ?></th>
                         <td>
                             <div class="wpda_separator_bottom">
                                 Select roles to grant dashboard access:
@@ -92,7 +92,7 @@ namespace WPDataAccess\Settings {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php echo __( 'Dashboard user access', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Dashboard user access', 'wp-data-access' ); ?></th>
                         <td>
                             <div class="wpda_separator_bottom">
                                 Select users to grant dashboard access:
@@ -116,7 +116,7 @@ namespace WPDataAccess\Settings {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php echo __( 'Hide default tab', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Hide default tab', 'wp-data-access' ); ?></th>
                         <td>
                             <div class="wpda_separator_bottom">
                                 Hide default tab for the following roles:
@@ -154,7 +154,7 @@ namespace WPDataAccess\Settings {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php echo __( 'Create dashboard', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Create dashboard', 'wp-data-access' ); ?></th>
                         <td>
                             <div class="wpda_separator_bottom">
                                 All dashboard users are allowed to create new dashboards by default.
@@ -198,16 +198,16 @@ namespace WPDataAccess\Settings {
                     <input type="hidden" name="action" value="save"/>
                     <button type="submit" class="button button-primary">
                         <i class="fas fa-check wpda_icon_on_button"></i>
-                        <?php echo __( 'Save Dashboard Settings', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Save Dashboard Settings', 'wp-data-access' ); ?>
                     </button>
                     <a href="javascript:void(0)"
-                       onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+                       onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
                            jQuery('input[name=&quot;action&quot;]').val('setdefaults');
                            jQuery('#wpda_settings_dashboard').trigger('submit')
                            }"
                        class="button">
                         <i class="fas fa-times-circle wpda_icon_on_button"></i>
-                        <?php echo __( 'Reset Dashboard Settings To Defaults', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Reset Dashboard Settings To Defaults', 'wp-data-access' ); ?>
                     </a>
                 </div>
                 <?php wp_nonce_field( 'wpda-dashboard-settings-' . WPDA::get_current_user_login(), '_wpnonce', false ); ?>
@@ -229,8 +229,8 @@ namespace WPDataAccess\Settings {
 
         private function update( $key, $option ) {
 
-            if ( isset( $_REQUEST[ $key ] ) ) {
-                $request = isset( $_REQUEST[ $key ] ) ? $_REQUEST[ $key ] : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+            if ( isset( $_REQUEST[ $key ] ) ) { // phpcs:ignore
+                $request = isset( $_REQUEST[ $key ] ) ? $_REQUEST[ $key ] : null; // phpcs:ignore
                 if ( is_array( $request ) ) {
                     $value = sanitize_text_field( wp_unslash( implode( ',', $request ) ) );
                 } else {

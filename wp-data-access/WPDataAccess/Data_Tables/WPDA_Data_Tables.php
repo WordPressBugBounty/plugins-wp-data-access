@@ -5,6 +5,7 @@
  *
  * @package WPDataAccess\Data_Tables
  */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\Data_Tables;
 
 use stdClass;
@@ -282,7 +283,6 @@ class WPDA_Data_Tables {
                     $hyperlink_html = ( isset( $hyperlink->hyperlink_html ) ? $hyperlink->hyperlink_html : '' );
                     if ( $hyperlink_label !== '' && $hyperlink_html !== '' ) {
                         array_push( $hyperlinks, $hyperlink_label );
-                        //phpcs:ignore - 8.1 proof
                     }
                 }
             }
@@ -402,7 +402,6 @@ class WPDA_Data_Tables {
             }
             return $columns;
         } else {
-            //phpcs:ignore - 8.1 proof
             $columns = explode( ',', (string) $column_names );
             // Create column ARRAY
             // Check if columns exist to prevent sql injection
@@ -453,7 +452,6 @@ class WPDA_Data_Tables {
             $wpda_database_columns_obj->searchBuilderType = WPDA::get_sb_type( $this->wpda_list_columns->get_column_data_type( $this->columns[$i] ) );
             $wpda_database_columns .= json_encode( $wpda_database_columns_obj );
             if ( $i < count( $this->columns ) - 1 ) {
-                //phpcs:ignore - 8.1 proof
                 $wpda_database_columns .= ',';
             }
         }
@@ -634,6 +632,7 @@ class WPDA_Data_Tables {
         $this->serverSide = true;
         // Set pagination values.
         $offset = 0;
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         if ( isset( $_REQUEST['start'] ) && ctype_digit( $_REQUEST['start'] ) ) {
             $offset = (int) $_REQUEST['start'];
             // input var okay.
@@ -652,6 +651,7 @@ class WPDA_Data_Tables {
             $limit = (int) $_REQUEST['more_limit'];
             // input var okay.
         }
+        // phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         if ( '' !== $pub_id && '0' != $pub_id ) {
             // Get data
             $publication = WPDA_Publisher_Model::get_publication( $pub_id );
@@ -730,20 +730,16 @@ class WPDA_Data_Tables {
             // Remote database not available
         }
         // Add field filters from shortcode
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
         $filter_field_name = str_replace( '`', '', sanitize_text_field( wp_unslash( $_REQUEST['filter_field_name'] ) ) );
-        // input var okay.
         $filter_field_value = sanitize_text_field( wp_unslash( $_REQUEST['filter_field_value'] ) );
-        // input var okay.
+        // phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
         if ( '' !== $filter_field_name && '' !== $filter_field_value ) {
             $filter_field_name_array = array_map( 'trim', explode( ',', $filter_field_name ) );
-            //phpcs:ignore - 8.1 proof
             $filter_field_value_array = array_map( 'trim', explode( ',', $filter_field_value ) );
-            //phpcs:ignore - 8.1 proof
             if ( count( $filter_field_name_array ) === count( $filter_field_value_array ) ) {
-                //phpcs:ignore - 8.1 proof
                 // Add filter to where clause
                 for ($i = 0; $i < count( $filter_field_name_array ); $i++) {
-                    //phpcs:ignore - 8.1 proof
                     if ( '' === $where ) {
                         $where = $wpdadb->prepare( " where `{$filter_field_name_array[$i]}` like %s ", array($filter_field_value_array[$i]) );
                     } else {
@@ -780,7 +776,6 @@ class WPDA_Data_Tables {
             // Check if columns exist (prevent sql injection).
             $wpda_dictionary_checks = new WPDA_Dictionary_Exist($database, $table_name);
             $column_array = explode( ',', (string) $columns );
-            //phpcs:ignore - 8.1 proof
             $has_dynamic_hyperlinks = false;
             foreach ( $column_array as $column ) {
                 if ( 'wpda_hyperlink_' !== substr( $column, 0, 15 ) ) {
@@ -809,7 +804,6 @@ class WPDA_Data_Tables {
                 }
                 foreach ( $hyperlink_substitution_columns as $hyperlink_substitution_column => $val ) {
                     if ( !in_array( $hyperlink_substitution_column, $column_array ) ) {
-                        //phpcs:ignore - 8.1 proof
                         $columns .= ",{$hyperlink_substitution_column}";
                     }
                 }
@@ -824,8 +818,8 @@ class WPDA_Data_Tables {
             $orderby_columns = array();
             $orderby_args = array();
             // Sanitize argument array and write result to temporary sanitizes array for processing:
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput
             foreach ( $_REQUEST['order'] as $order_column ) {
-                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
                 if ( isset( $order_column['column'] ) ) {
                     $orderby_args[] = array(
                         'column' => sanitize_sql_orderby( wp_unslash( $order_column['column'] ) ),
@@ -833,6 +827,7 @@ class WPDA_Data_Tables {
                     );
                 }
             }
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput
             foreach ( $orderby_args as $order_column ) {
                 // input var okay.
                 $column_index = $order_column['column'];
@@ -876,7 +871,6 @@ class WPDA_Data_Tables {
         $geo_radius_col = '';
         // Execute query.
         $column_array = explode( ',', (string) $columns );
-        //phpcs:ignore - 8.1 proof
         $column_array_orig = $column_array;
         $images_array = array();
         $imagesurl_array = array();
@@ -903,7 +897,6 @@ class WPDA_Data_Tables {
             foreach ( $column_array as $col ) {
                 if ( isset( $column_images[$col] ) ) {
                     array_push( $images_array, $i );
-                    //phpcs:ignore - 8.1 proof
                 }
                 $i++;
             }
@@ -911,7 +904,6 @@ class WPDA_Data_Tables {
             foreach ( $column_array as $col ) {
                 if ( isset( $column_attachments[$col] ) ) {
                     array_push( $attachments_array, $i );
-                    //phpcs:ignore - 8.1 proof
                 }
                 $i++;
             }
@@ -924,29 +916,22 @@ class WPDA_Data_Tables {
             if ( 'Image' === WPDA_Media_Model::get_column_media( $table_name, $col, $database ) ) {
                 if ( !isset( $images_array[$i] ) ) {
                     array_push( $images_array, $i );
-                    //phpcs:ignore - 8.1 proof
                 }
             } elseif ( 'ImageURL' === WPDA_Media_Model::get_column_media( $table_name, $col, $database ) ) {
                 array_push( $imagesurl_array, $i );
-                //phpcs:ignore - 8.1 proof
             } elseif ( 'Attachment' === WPDA_Media_Model::get_column_media( $table_name, $col, $database ) ) {
                 if ( !isset( $attachments_array[$i] ) ) {
                     array_push( $attachments_array, $i );
-                    //phpcs:ignore - 8.1 proof
                 }
             } elseif ( 'Hyperlink' === WPDA_Media_Model::get_column_media( $table_name, $col, $database ) ) {
                 if ( !isset( $hyperlinks_array[$i] ) ) {
                     array_push( $hyperlinks_array, $i );
-                    //phpcs:ignore - 8.1 proof
                     array_push( $hyperlinks_array_col, $col );
-                    //phpcs:ignore - 8.1 proof
                 }
             } elseif ( 'Audio' === WPDA_Media_Model::get_column_media( $table_name, $col, $database ) ) {
                 array_push( $audio_array, $i );
-                //phpcs:ignore - 8.1 proof
             } elseif ( 'Video' === WPDA_Media_Model::get_column_media( $table_name, $col, $database ) ) {
                 array_push( $video_array, $i );
-                //phpcs:ignore - 8.1 proof
             }
             $i++;
         }
@@ -974,14 +959,12 @@ class WPDA_Data_Tables {
         }
         $hyperlinks = array();
         if ( count( $hyperlinks_column_index ) ) {
-            //phpcs:ignore - 8.1 proof
             if ( isset( $table_settings->hyperlinks ) ) {
                 foreach ( $table_settings->hyperlinks as $hyperlink ) {
                     $hyperlink_label = ( isset( $hyperlink->hyperlink_label ) ? $hyperlink->hyperlink_label : '' );
                     $hyperlink_target = ( isset( $hyperlink->hyperlink_target ) ? $hyperlink->hyperlink_target : false );
                     $hyperlink_html = ( isset( $hyperlink->hyperlink_html ) ? $hyperlink->hyperlink_html : '' );
                     if ( $hyperlink_label !== '' && $hyperlink_html !== '' ) {
-                        //phpcs:ignore - 8.1 proof
                         array_push( $hyperlinks, array(
                             'hyperlink_label'  => $hyperlink_label,
                             'hyperlink_target' => $hyperlink_target,
@@ -1004,7 +987,6 @@ class WPDA_Data_Tables {
         }
         $wpdadb->suppress_errors( true );
         $rows = $wpdadb->get_results( $query, 'ARRAY_N' );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
         if ( '' !== $wpdadb->last_error ) {
             $this->create_empty_response( $wpdadb->last_error, $query );
             wp_die();
@@ -1015,7 +997,6 @@ class WPDA_Data_Tables {
             if ( 'on' === $nl2br && null !== $nl2br ) {
                 // Replace NL with BR tags
                 for ($nl = 0; $nl < count( $row ); $nl++) {
-                    //phpcs:ignore - 8.1 proof
                     $row[$nl] = nl2br( (string) $row[$nl] );
                 }
             }
@@ -1049,13 +1030,10 @@ class WPDA_Data_Tables {
                 }
             }
             for ($i = 0; $i < count( $imagesurl_array ); $i++) {
-                //phpcs:ignore - 8.1 proof
                 $row[$imagesurl_array[$i]] = '<img src="' . $row[$imagesurl_array[$i]] . '" width="100%">';
             }
             for ($i = 0; $i < count( $images_array ); $i++) {
-                //phpcs:ignore - 8.1 proof
                 $image_ids = explode( ',', (string) $row[$images_array[$i]] );
-                //phpcs:ignore - 8.1 proof
                 $image_src = '';
                 foreach ( $image_ids as $image_id ) {
                     $url = wp_get_attachment_url( esc_attr( $image_id ) );
@@ -1067,9 +1045,7 @@ class WPDA_Data_Tables {
                 $row[$images_array[$i]] = $image_src;
             }
             for ($i = 0; $i < count( $attachments_array ); $i++) {
-                //phpcs:ignore - 8.1 proof
                 $media_ids = explode( ',', (string) $row[$attachments_array[$i]] );
-                //phpcs:ignore - 8.1 proof
                 $media_links = '';
                 foreach ( $media_ids as $media_id ) {
                     $url = wp_get_attachment_url( esc_attr( $media_id ) );
@@ -1086,7 +1062,6 @@ class WPDA_Data_Tables {
             if ( isset( $hyperlinks_array ) ) {
                 $hyperlink_definition = ( isset( $table_settings->table_settings->hyperlink_definition ) && 'text' === $table_settings->table_settings->hyperlink_definition ? 'text' : 'json' );
                 for ($i = 0; $i < count( $hyperlinks_array ); $i++) {
-                    //phpcs:ignore - 8.1 proof
                     if ( 'json' === $hyperlink_definition ) {
                         $hyperlink = json_decode( (string) $row[$hyperlinks_array[$i]], true );
                         if ( is_array( $hyperlink ) && isset( $hyperlink['label'] ) && isset( $hyperlink['url'] ) && isset( $hyperlink['target'] ) ) {
@@ -1109,9 +1084,7 @@ class WPDA_Data_Tables {
                 }
             }
             for ($i = 0; $i < count( $audio_array ); $i++) {
-                //phpcs:ignore - 8.1 proof
                 $media_ids = explode( ',', (string) $row[$audio_array[$i]] );
-                //phpcs:ignore - 8.1 proof
                 $media_links = '';
                 foreach ( $media_ids as $media_id ) {
                     if ( 'audio' === substr( get_post_mime_type( $media_id ), 0, 5 ) ) {
@@ -1127,9 +1100,7 @@ class WPDA_Data_Tables {
                 $row[$audio_array[$i]] = $media_links;
             }
             for ($i = 0; $i < count( $video_array ); $i++) {
-                //phpcs:ignore - 8.1 proof
                 $media_ids = explode( ',', (string) $row[$video_array[$i]] );
-                //phpcs:ignore - 8.1 proof
                 $media_links = '';
                 foreach ( $media_ids as $media_id ) {
                     if ( 'video' === substr( get_post_mime_type( $media_id ), 0, 5 ) ) {
@@ -1145,7 +1116,6 @@ class WPDA_Data_Tables {
             }
             // Format date and time columns
             for ($i = 0; $i < count( $row ); $i++) {
-                //phpcs:ignore - 8.1 proof
                 if ( '' !== $row[$i] && null !== $row[$i] ) {
                     if ( isset( $column_array_clean[$i] ) ) {
                         if ( isset( $column_array_ordered[$column_array_clean[$i]] ) ) {
@@ -1166,11 +1136,9 @@ class WPDA_Data_Tables {
             }
             // Remove script tags if available
             for ($i = 0; $i < count( $row ); $i++) {
-                //phpcs:ignore - 8.1 proof
                 $row[$i] = str_replace( array('<script>', '</script>'), array('&lt;script&gt;', '&lt;/script&gt;'), (string) $row[$i] );
             }
             array_push( $rows_final, $row );
-            //phpcs:ignore - 8.1 proof
         }
         if ( $this->serverSide ) {
             if ( isset( $_REQUEST['records_total'] ) && is_numeric( $_REQUEST['records_total'] ) && (!isset( $json->wpda_count_on_each_request ) || false === $json->wpda_count_on_each_request) ) {
@@ -1185,7 +1153,6 @@ class WPDA_Data_Tables {
             }
         } else {
             $rows_estimate = count( $rows_final );
-            //phpcs:ignore - 8.1 proof
             $do_real_count = false;
         }
         if ( 'more' === $publication_mode ) {
@@ -1200,7 +1167,6 @@ class WPDA_Data_Tables {
                 // Count rows in table = real row count
                 $query2 = "select count(*) from `{$wpdadb->dbname}`.`{$table_name}`";
                 $count_rows = $wpdadb->get_results( $query2, 'ARRAY_N' );
-                // phpcs:ignore Standard.Category.SniffName.ErrorCode
                 $count_table = $count_rows[0][0];
                 // Number of rows in table.
             }
@@ -1216,7 +1182,6 @@ class WPDA_Data_Tables {
                         // Count rows in selection (only necessary if a search criteria was entered).
                         $query3 = "select count(*) from `{$wpdadb->dbname}`.`{$table_name}` {$where}";
                         $count_rows_filtered = $wpdadb->get_results( $query3, 'ARRAY_N' );
-                        // phpcs:ignore Standard.Category.SniffName.ErrorCode
                         $count_table_filtered = $count_rows_filtered[0][0];
                         // Number of rows in table.
                     }
@@ -1274,16 +1239,16 @@ class WPDA_Data_Tables {
     private function get_orderby_from_request() {
         $orderby = '';
         // Init order by.
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput
         if ( isset( $_REQUEST['order'] ) && is_array( $_REQUEST['order'] ) ) {
-            // input var okay.
             foreach ( $_REQUEST['order'] as $order_column ) {
-                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
                 if ( isset( $order_column['column'], $order_column['dir'] ) && is_numeric( $order_column['column'] ) && ('asc' === $order_column['dir'] || 'desc' === $order_column['dir']) ) {
                     $preprend = ( '' === $orderby ? ' order by ' : ',' );
                     $orderby .= $preprend . (intval( $order_column['column'] ) + 1) . ' ' . $order_column['dir'];
                 }
             }
         }
+        // phpcs:enable WordPress.Security.ValidatedSanitizedInput
         return $orderby;
     }
 
@@ -1322,3 +1287,5 @@ class WPDA_Data_Tables {
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

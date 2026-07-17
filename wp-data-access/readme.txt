@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 5.5.76
+Stable tag: 5.5.77
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -131,6 +131,27 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.77 =
+* Released 2026-07-17
+* Added: Gutenberg block support for [wpda_app] shortcode
+* Added: Display multiple cards per row
+* Added: Missing parameters for shortcode generation
+* Added: Check for unsaved changes in Visual Query Builder on close
+* Changed: Inline editing now requires update enabled (use option "hide edit icon")
+* Changed: Cascading column filter behavior
+* Fixed: Cascading column filters with client-side processing
+* Fixed: CSV import button icons alignment
+* Fixed: Lazy loaded lookups not rerendering when open
+* Fixed: Visual Query conversion
+* Fixed: Visual Query Builder column row layout
+* Fixed: Visual Query Builder alias not editable
+* Fixed: Visual Query Builder missing plus icon button
+* CSS Table Editor now available to free users
+* Added css class pp-table-detail-panel-container to detail panel
+* Code review
+* Extended nonce action
+* Updated freemius SDK
 
 = 5.5.76 =
 * Released 2026-07-07

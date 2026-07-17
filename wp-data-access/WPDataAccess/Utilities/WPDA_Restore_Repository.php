@@ -16,12 +16,12 @@ namespace WPDataAccess\Utilities {
 
 			$suppress = $wpdb->suppress_errors( true );
 			foreach ( WPDA_Repository::CREATE_TABLE as $key => $value ) {
-				if ( isset( $_REQUEST[ $key ] ) ) {
-					if ( 'replace' === $_REQUEST[ $key ] || 'add' === $_REQUEST[ $key ] ) {
+				if ( isset( $_REQUEST[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
+					if ( 'replace' === $_REQUEST[ $key ] || 'add' === $_REQUEST[ $key ] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
 						$this->restore_table(
 							$wpdb->prefix . $key,
 							$wpdb->prefix . $key . self::BACKUP_TABLE_EXTENSION . $restore_date,
-							sanitize_text_field( wp_unslash( $_REQUEST[ $key ] ) )
+							sanitize_text_field( wp_unslash( $_REQUEST[ $key ] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
 						);
 					}
 				}
@@ -38,7 +38,7 @@ namespace WPDataAccess\Utilities {
 			$table_name     = WPDA::remove_backticks( $arg_table_name );
 			$bck_table_name = WPDA::remove_backticks( $arg_bck_table_name );
 
-			$same_cols = $wpdb->get_results(
+			$same_cols = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'
 					select c1.column_name as column_name
@@ -82,7 +82,7 @@ namespace WPDataAccess\Utilities {
 			}
 
 			// Restore data
-			$result = $wpdb->query(
+			$result = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'insert into `%1s` (%1s) select %1s from `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(

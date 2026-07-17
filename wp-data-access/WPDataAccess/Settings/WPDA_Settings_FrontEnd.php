@@ -32,7 +32,7 @@ namespace WPDataAccess\Settings {
 				// Security check.
 				$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, 'wpda-front-end-settings-' . WPDA::get_current_user_login() ) ) {
-					wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				if ( 'save' === $action ) {
@@ -61,7 +61,7 @@ namespace WPDataAccess\Settings {
 								$table_access_selected_new_value_checked[ $key ] = $value;
 							} else {
 								// An invalid table name was provided. Might be an sql injection attack or an invalid state.
-								wp_die( __( 'ERROR: Table not found', 'wp-data-access' ) );
+								wp_die( esc_attr__( 'ERROR: Table not found', 'wp-data-access' ) );
 							}
 						}
 					} else {
@@ -140,7 +140,7 @@ namespace WPDataAccess\Settings {
 				  action="?page=<?php echo esc_attr( $this->page ); ?>&tab=frontend">
 				<table class="wpda-table-settings">
 					<tr>
-						<th><?php echo __( 'Table access', 'wp-data-access' ); ?></th>
+						<th><?php esc_html_e( 'Table access', 'wp-data-access' ); ?></th>
 						<td>
 							<select name="database" id="schema_name">
 								<?php
@@ -158,7 +158,7 @@ namespace WPDataAccess\Settings {
 									name="table_access"
 									value="show"
 									<?php echo 'show' === $table_access ? 'checked' : ''; ?>
-								><?php echo $is_wp_database ? __( 'Show WordPress tables', 'wp-data-access' ) : __( 'Show all tables', 'wp-data-access' ); ?>
+								><?php echo $is_wp_database ? esc_attr__( 'Show WordPress tables', 'wp-data-access' ) : esc_attr__( 'Show all tables', 'wp-data-access' ); ?>
 							</label>
 							<br/>
 							<?php
@@ -170,7 +170,7 @@ namespace WPDataAccess\Settings {
 										name="table_access"
 										value="hide"
 										<?php echo 'hide' === $table_access ? 'checked' : ''; ?>
-									><?php echo __( 'Hide WordPress tables', 'wp-data-access' ); ?>
+									><?php esc_html_e( 'Hide WordPress tables', 'wp-data-access' ); ?>
 								</label>
 								<br/>
 								<?php
@@ -182,7 +182,7 @@ namespace WPDataAccess\Settings {
 									name="table_access"
 									value="select"
 									<?php echo 'select' === $table_access ? 'checked' : ''; ?>
-								><?php echo __( 'Show only selected tables', 'wp-data-access' ); ?>
+								><?php esc_html_e( 'Show only selected tables', 'wp-data-access' ); ?>
 							</label>
 							<div id="tables_selected" <?php echo 'select' === $table_access ? '' : 'style="display:none"'; ?>>
 								<br/>
@@ -215,13 +215,13 @@ namespace WPDataAccess\Settings {
 						</td>
 					</tr>
 					<tr>
-						<th><?php echo __( 'Admin toolbar', 'wp-data-access' ); ?></th>
+						<th><?php esc_html_e( 'Admin toolbar', 'wp-data-access' ); ?></th>
 						<td>
 							<label>
 								<input type="checkbox" name="add_projects_to_toolbar"
 									<?php echo 'on' === $add_projects_to_toolbar ? 'checked' : ''; ?>
 								/>
-								<?php echo __( 'Add projects to toolbar', 'wp-data-access' ); ?>
+								<?php esc_html_e( 'Add projects to toolbar', 'wp-data-access' ); ?>
 							</label>
 						</td>
 					</tr>
@@ -231,16 +231,16 @@ namespace WPDataAccess\Settings {
 					<input type="hidden" name="action" value="save"/>
 					<button type="submit" class="button button-primary">
 						<i class="fas fa-check wpda_icon_on_button"></i>
-						<?php echo __( 'Save Front-end Settings', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Save Front-end Settings', 'wp-data-access' ); ?>
 					</button>
 					<a href="javascript:void(0)"
-					   onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+					   onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
 						   jQuery('input[name=&quot;action&quot;]').val('setdefaults');
 						   jQuery('#wpda_settings_frontend').trigger('submit')
 						   }"
 					   class="button">
 						<i class="fas fa-times-circle wpda_icon_on_button"></i>
-						<?php echo __( 'Reset Front-end Settings To Defaults', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Reset Front-end Settings To Defaults', 'wp-data-access' ); ?>
 					</a>
 				</div>
 				<?php wp_nonce_field( 'wpda-front-end-settings-' . WPDA::get_current_user_login(), '_wpnonce', false ); ?>

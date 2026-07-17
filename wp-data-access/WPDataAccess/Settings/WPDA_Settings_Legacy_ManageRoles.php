@@ -29,12 +29,12 @@ namespace WPDataAccess\Settings {
 				if ( 'delete' === $_REQUEST['action'] ) {
 					$wp_nonce = isset( $_REQUEST['_wpnoncedelrole'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnoncedelrole'] ) ) : ''; // input var okay.
 					if ( ! wp_verify_nonce( $wp_nonce, 'wpda-manage-roles-settings-' . WPDA::get_current_user_login() ) ) {
-						wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+						wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 					}
 				} else {
 					$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 					if ( ! wp_verify_nonce( $wp_nonce, 'wpda-manage-roles-settings-' . WPDA::get_current_user_login() ) ) {
-						wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+						wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 					}
 				}
 
@@ -52,10 +52,10 @@ namespace WPDataAccess\Settings {
 					if ( isset( $_REQUEST['wpda_role_name'] ) && is_array( $_REQUEST['wpda_role_name'] ) &&
 						isset( $_REQUEST['wpda_role_label'] ) && is_array( $_REQUEST['wpda_role_label'] )
 					) {
-						$no_roles = count( $_REQUEST['wpda_role_name'] );//phpcs:ignore - 8.1 proof
+						$no_roles = count( $_REQUEST['wpda_role_name'] ); // phpcs:ignore -- 8.1 proof
 						for ( $i = 0; $i < $no_roles; $i ++ ) {
-							$sanitized_new_role_name  = sanitize_text_field( wp_unslash( $_REQUEST['wpda_role_name'][ $i ] ) ); // input var okay.
-							$sanitized_new_role_label = sanitize_text_field( wp_unslash( $_REQUEST['wpda_role_label'][ $i ] ) ); // input var okay.
+							$sanitized_new_role_name  = sanitize_text_field( wp_unslash( $_REQUEST['wpda_role_name'][ $i ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+							$sanitized_new_role_label = sanitize_text_field( wp_unslash( $_REQUEST['wpda_role_label'][ $i ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 							add_role( $sanitized_new_role_name, $sanitized_new_role_label );
 						}
 					}
@@ -103,26 +103,26 @@ namespace WPDataAccess\Settings {
 
 					<tr style="border-top: 1px solid #ccc">
 						<th>
-							<?php echo __( 'Plugin Role Management', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'Plugin Role Management', 'wp-data-access' ); ?>
 						</th>
 						<td>
 							<label>
 								<input type="checkbox" name="enable_role_management"
 									<?php echo 'on' === $enable_role_management ? 'checked' : ''; ?>/>
-								<?php echo __( 'Enable role management', 'wp-data-access' ); ?>
+								<?php esc_html_e( 'Enable role management', 'wp-data-access' ); ?>
 							</label>
 							<br/>
 							<label>
 								<input type="checkbox" name="use_roles_in_shortcode"
 									<?php echo 'on' === $use_roles_in_shortcode ? 'checked' : ''; ?>/>
-								<?php echo __( 'Use roles in Data Projects shortcodes', 'wp-data-access' ); ?>
+								<?php esc_html_e( 'Use roles in Data Projects shortcodes', 'wp-data-access' ); ?>
 							</label>
 						</td>
 					</tr>
 
 					<tr>
 						<th>
-							<?php echo __( 'Available Roles', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'Available Roles', 'wp-data-access' ); ?>
 						</th>
 						<td>
 							<div id="list_roles">
@@ -155,16 +155,16 @@ namespace WPDataAccess\Settings {
 					<input type="hidden" name="action" value="save"/>
 					<button type="submit" class="button button-primary">
 						<i class="fas fa-check wpda_icon_on_button"></i>
-						<?php echo __( 'Save Manage Roles Settings', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Save Manage Roles Settings', 'wp-data-access' ); ?>
 					</button>
 					<a href="javascript:void(0)"
-					   onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+					   onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
 						   jQuery('input[name=\'action\']').val('setdefaults');
 						   jQuery('#wpda_settings_manage_roles').trigger('submit');
 						   }"
 					   class="button button-secondary">
 						<i class="fas fa-times-circle wpda_icon_on_button"></i>
-						<?php echo __( 'Reset Manage Roles Settings To Defaults', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Reset Manage Roles Settings To Defaults', 'wp-data-access' ); ?>
 					</a>
 				</div>
 				<?php wp_nonce_field( 'wpda-manage-roles-settings-' . WPDA::get_current_user_login(), '_wpnonce', false ); ?>
@@ -191,7 +191,7 @@ namespace WPDataAccess\Settings {
 				}
 
 				jQuery('.dashicons-trash').on('click', function (e) {
-					if (confirm('<?php echo __( 'Delete role?', 'wp-data-access' ) . '\n' . __( 'Role will be removed from all users.', 'wp-data-access' ) . '\n' . __( 'This action cannot be undone!', 'wp-data-access' ); ?>')) {
+					if (confirm('<?php echo esc_attr__( 'Delete role?', 'wp-data-access' ) . '\n' . esc_attr__( 'Role will be removed from all users.', 'wp-data-access' ) . '\n' . esc_attr__( 'This action cannot be undone!', 'wp-data-access' ); ?>')) {
 						parent = jQuery(e.target).parent();
 						parent_id = parent.attr('id');
 						jQuery('#delete_role_name').val(parent_id);

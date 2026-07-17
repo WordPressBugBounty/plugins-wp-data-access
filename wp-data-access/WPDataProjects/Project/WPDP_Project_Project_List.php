@@ -61,7 +61,7 @@ class WPDP_Project_Project_List extends WPDP_Parent_List_Table {
 					>
 						<i class="fas fa-plus-circle wpda_icon_on_button"></i>
 						<?php 
-        echo __( 'Add New', 'wp-data-access' );
+        esc_html_e( 'Add New', 'wp-data-access' );
         ?>
 					</button>
 				</div>

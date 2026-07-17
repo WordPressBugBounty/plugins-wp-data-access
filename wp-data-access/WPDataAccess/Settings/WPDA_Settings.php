@@ -5,6 +5,7 @@
  *
  * @package WPDataAccess\Settings
  */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\Settings;
 
 /**
@@ -64,10 +65,9 @@ abstract class WPDA_Settings {
         // Get menu slug of current page.
         if ( isset( $_REQUEST['page'] ) ) {
             $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) );
-            // input var okay.
         } else {
             // In order to show a list table we need a page.
-            wp_die( __( 'ERROR: Wrong arguments [missing page argument]', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Wrong arguments [missing page argument]', 'wp-data-access' ) );
         }
         $this->current_tab = $current_tab;
         // Tabs array is filled in constructor to add i18n.
@@ -103,7 +103,7 @@ abstract class WPDA_Settings {
 			<div class="wrap">
 				<h1>
 					<?php 
-        echo __( 'WP Data Access Settings', 'wp-data-access' );
+        esc_html_e( 'WP Data Access Settings', 'wp-data-access' );
         ?>
 				</h1>
 				<?php 
@@ -138,3 +138,5 @@ abstract class WPDA_Settings {
     }
 
 }
+
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

@@ -85,7 +85,7 @@ class WPDA_Export_Scheduler {
                                         $drive->cleanup( $name . $separator . '*' . $file_ext . '.zip', $fkp );
                                     }
                                     // Remove ZIP file
-                                    unlink( $zipfile );
+                                    wp_delete_file( $zipfile );
                                     self::mail( $eml, "Export {$name} successfully completed at " . gmdate( 'Y-m-d H:i:s' ) );
                                 }
                             } else {
@@ -99,7 +99,9 @@ class WPDA_Export_Scheduler {
                                 self::mail( $eml, "Export {$name} successfully completed at " . gmdate( 'Y-m-d H:i:s' ) );
                             }
                             // Remove temporary file
+                            // phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fclose
                             fclose( $temporary_file );
+                            // phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_fclose
                         }
                     }
                 }

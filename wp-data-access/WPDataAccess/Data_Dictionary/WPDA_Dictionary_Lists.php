@@ -60,7 +60,7 @@ namespace WPDataAccess\Data_Dictionary {
 				)
 			);
 
-			return $wpdadb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			return $wpdadb->get_results( $query, 'ARRAY_A' ); 
 		}
 
 		public static function get_table_row_count_ajax() {
@@ -69,9 +69,9 @@ namespace WPDataAccess\Data_Dictionary {
 				isset( $_POST['wpdaschema_name'] ) &&
 				isset( $_POST['wpdatable_name'] )
 			) {
-				$wpnonce     = sanitize_text_field( wp_unslash( $_REQUEST['wpda_wpnonce'] ) ); // input var okay.
-				$schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpdaschema_name'] ) ); // input var okay.
-				$table_name  = sanitize_text_field( wp_unslash( $_REQUEST['wpdatable_name'] ) ); // input var okay.
+				$wpnonce     = sanitize_text_field( wp_unslash( $_REQUEST['wpda_wpnonce'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+				$schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpdaschema_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+				$table_name  = sanitize_text_field( wp_unslash( $_REQUEST['wpdatable_name'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
 				if ( ! wp_verify_nonce( $wpnonce, "wpda-get-row-count-{$table_name}" ) ) {
 					echo json_encode( array() );
@@ -82,7 +82,7 @@ namespace WPDataAccess\Data_Dictionary {
 						echo json_encode( array() );
 					} else {
 						$query = 'select count(*) as row_count from `' . str_replace( '`', '', $table_name ) . '`';
-						echo json_encode( $wpdadb->get_results( $query, 'ARRAY_A' ) ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+						echo json_encode( $wpdadb->get_results( $query, 'ARRAY_A' ) ); 
 					}
 				}
 			} else {
@@ -133,7 +133,7 @@ namespace WPDataAccess\Data_Dictionary {
 									$tables = array();
 								}
 							}
-							if ( count( $tables ) > 0 ) {//phpcs:ignore - 8.1 proof
+							if ( count( $tables ) > 0 ) { // phpcs:ignore -- 8.1 proof
 								$and = " and `table_name` in ('" . implode( "','", $tables ) . "') ";
 							}
 						}
@@ -156,7 +156,7 @@ namespace WPDataAccess\Data_Dictionary {
 							)
 						);
 
-						echo json_encode( $wpdadb->get_results( $query, 'ARRAY_A' ) ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+						echo json_encode( $wpdadb->get_results( $query, 'ARRAY_A' ) ); 
 					}
 				}
 			} else {
@@ -199,7 +199,7 @@ namespace WPDataAccess\Data_Dictionary {
 							)
 						);
 
-						echo json_encode( $wpdadb->get_results( $query, 'ARRAY_A' ) ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+						echo json_encode( $wpdadb->get_results( $query, 'ARRAY_A' ) ); 
 					}
 				}
 			} else {
@@ -251,7 +251,7 @@ namespace WPDataAccess\Data_Dictionary {
 
                 $indexes = array();
                 foreach ($indexes_dbs as $index_dbs) {
-                    $indexes[] = array_change_key_case((array)$index_dbs); //phpcs:ignore - 8.1 proof
+                    $indexes[] = array_change_key_case((array)$index_dbs);  // phpcs:ignore -- 8.1 proof
                 }
 
                 return array(
@@ -289,7 +289,7 @@ namespace WPDataAccess\Data_Dictionary {
 					)
 				);
 
-				return $wpdadb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				return $wpdadb->get_results( $query, 'ARRAY_A' ); 
 			}
 		}
 
@@ -304,7 +304,7 @@ namespace WPDataAccess\Data_Dictionary {
 		 */
 		public static function get_db_schemas( $incl_remote_dbs = true ) {
 			global $wpdb;
-			$schemas = $wpdb->get_results(
+			$schemas = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				'SELECT schema_name AS schema_name
 				   FROM information_schema.schemata
 				  ORDER BY schema_name',
@@ -319,10 +319,10 @@ namespace WPDataAccess\Data_Dictionary {
 						'schema_name' => $key,
 					);
 				}
-				asort( $remote );//phpcs:ignore - 8.1 proof
+				asort( $remote ); // phpcs:ignore -- 8.1 proof
 			}
 
-			return array_merge( $schemas, $remote );//phpcs:ignore - 8.1 proof
+			return array_merge( $schemas, $remote ); // phpcs:ignore -- 8.1 proof
 		}
 
 		/**
@@ -422,7 +422,7 @@ namespace WPDataAccess\Data_Dictionary {
 					),
 					'ARRAY_A'
 				);
-				if ( 1 === count( $row ) ) {//phpcs:ignore - 8.1 proof
+				if ( 1 === count( $row ) ) { // phpcs:ignore -- 8.1 proof
 					return $row[0]['engine'];
 				} else {
 					return null;

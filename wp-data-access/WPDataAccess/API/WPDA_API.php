@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Standard.Category.SniffName.ErrorCode
+<?php
 
 /**
  * JSON REST API.

@@ -186,7 +186,9 @@ class WPDA_Tree extends WPDA_API_Core {
     public function get_dbs( $include_disabled = false ) {
         // Local databases
         global $wpdb;
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $local = $wpdb->get_results( "\n\t\t\t\t\tSELECT  schema_name AS dbs,\n\t\t\t\t\t\t\t'local' AS dbs_type,\n\t\t\t\t\t\t\t'false' AS pds\n\t\t\t\t\t   FROM information_schema.schemata\n\t\t\t\t\t  ORDER BY schema_name\n\t\t\t  \t", 'ARRAY_A' );
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         for ($i = 0; $i < count( $local ); $i++) {
             if ( $wpdb->dbname === $local[$i]['dbs'] ) {
                 // WordPress database
@@ -226,7 +228,7 @@ class WPDA_Tree extends WPDA_API_Core {
         return $this->WPDA_Rest_Response( 
             '',
             array_merge( $local, $remote ),
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             $context
          );
     }
@@ -237,11 +239,7 @@ class WPDA_Tree extends WPDA_API_Core {
             return $this->WPDA_Rest_Response( '', array() );
         }
         $query = $wpdadb->prepare( "\n\t\t\t\t\tselect table_name as table_name\n\t\t\t\t\t  from information_schema.tables\n\t\t\t\t\t where table_schema = %s\n\t\t\t\t\t order by table_name\n\t\t\t\t", array($wpdadb->dbname) );
-        return $this->WPDA_Rest_Response( '', array_column( 
-            $wpdadb->get_results( $query, 'ARRAY_A' ),
-            // phpcs:ignore Standard.Category.SniffName.ErrorCode
-            'table_name'
-         ) );
+        return $this->WPDA_Rest_Response( '', array_column( $wpdadb->get_results( $query, 'ARRAY_A' ), 'table_name' ) );
     }
 
     private function get_tbl( $dbs ) {
@@ -258,11 +256,7 @@ class WPDA_Tree extends WPDA_API_Core {
                 'wpda_tables' => WPDA::get_wpda_tables(),
             );
         }
-        return $this->WPDA_Rest_Response( '', array_column( 
-            $wpdadb->get_results( $query, 'ARRAY_A' ),
-            // phpcs:ignore Standard.Category.SniffName.ErrorCode
-            'table_name'
-         ), $context );
+        return $this->WPDA_Rest_Response( '', array_column( $wpdadb->get_results( $query, 'ARRAY_A' ), 'table_name' ), $context );
     }
 
     private function get_vws( $dbs ) {
@@ -271,11 +265,7 @@ class WPDA_Tree extends WPDA_API_Core {
             return $this->WPDA_Rest_Response( '', array() );
         }
         $query = $wpdadb->prepare( "\n\t\t\t\t\tselect table_name as view_name\n\t\t\t\t\t  from information_schema.tables\n\t\t\t\t\t where table_schema = %s\n\t\t\t\t\t   and table_type in ('VIEW', 'SYSTEM VIEW')\n\t\t\t\t\t order by table_name\n\t\t\t\t", array($wpdadb->dbname) );
-        return $this->WPDA_Rest_Response( '', array_column( 
-            $wpdadb->get_results( $query, 'ARRAY_A' ),
-            // phpcs:ignore Standard.Category.SniffName.ErrorCode
-            'view_name'
-         ) );
+        return $this->WPDA_Rest_Response( '', array_column( $wpdadb->get_results( $query, 'ARRAY_A' ), 'view_name' ) );
     }
 
     public function get_cls( $dbs, $tbl ) {

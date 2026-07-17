@@ -11,7 +11,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public static function get_by_id( $app_id ) {
 
 			global $wpdb;
-			$dataset = $wpdb->get_results(
+			$dataset = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'SELECT * FROM `%1s` WHERE app_id = %d', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -20,7 +20,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 					)
 				), // db call ok; no-cache ok.
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			); 
 
 			return 1 === $wpdb->num_rows ? $dataset : false;
 
@@ -29,7 +29,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public static function get_by_name( $app_name ) {
 
 			global $wpdb;
-			$dataset = $wpdb->get_results(
+			$dataset = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'SELECT * FROM `%1s` WHERE app_name = %s', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -38,7 +38,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 					)
 				), // db call ok; no-cache ok.
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			); 
 
 			return 1 === $wpdb->num_rows ? $dataset : false;
 
@@ -47,7 +47,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public static function list() {
 
 			global $wpdb;
-			return $wpdb->get_results(
+			return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'SELECT * FROM `%1s` ORDER BY app_name', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -55,14 +55,14 @@ namespace WPDataAccess\Plugin_Table_Models {
 					)
 				), // db call ok; no-cache ok.
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			); 
 
 		}
 
         public static function has_any() {
 
             global $wpdb;
-            $wpdb->get_results(
+            $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
                 $wpdb->prepare(
                     'SELECT 1 FROM `%1s` LIMIT 1', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
                     array(
@@ -70,7 +70,7 @@ namespace WPDataAccess\Plugin_Table_Models {
                     )
                 ), // db call ok; no-cache ok.
                 'ARRAY_A'
-            ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+            ); 
 
             return 1 === $wpdb->num_rows;
 
@@ -79,7 +79,7 @@ namespace WPDataAccess\Plugin_Table_Models {
         public static function add_to_dashboard_menu() {
 
 			global $wpdb;
-			return $wpdb->get_results(
+			return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'SELECT * FROM `%1s` WHERE `app_add_to_menu` = 1 ORDER BY app_name', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -87,7 +87,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 					)
 				), // db call ok; no-cache ok.
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			); 
 
 		}
 
@@ -99,7 +99,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		) {
 
 			global $wpdb;
-			if ( 1 === $wpdb->insert(
+			if ( 1 === $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
 					static::get_base_table_name(),
 					array(
 						'app_name'     => $app_name,
@@ -124,7 +124,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public static function delete( $app_id ) {
 
 			global $wpdb;
-			return $wpdb->delete(
+			return $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				static::get_base_table_name(),
 				array(
 					'app_id' => $app_id,
@@ -143,7 +143,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		) {
 
 			global $wpdb;
-			$wpdb->update(
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				static::get_base_table_name(),
 				array(
 					'app_name'        => $app_name,
@@ -180,7 +180,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 
             // Copy app
             global $wpdb;
-            if ( 1 === $wpdb->insert(
+            if ( 1 === $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
                     static::get_base_table_name(),
                     array(
                         'app_name'     => $new_app_name,
@@ -242,7 +242,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		) {
 
 			global $wpdb;
-			$wpdb->update(
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				static::get_base_table_name(),
 				array(
 					'app_theme' => $app_theme,

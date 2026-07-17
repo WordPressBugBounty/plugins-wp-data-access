@@ -46,7 +46,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 			static::check_base_table_name();
 
 			global $wpdb;
-			return $wpdb->get_results(
+			return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'select * from `%1s` where project_id = %d and page_id = %d', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -56,7 +56,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 					)
 				),
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			); 
 		}
 
 		/**
@@ -70,7 +70,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 			static::check_base_table_name();
 
 			global $wpdb;
-			return $wpdb->get_results(
+			return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'select * from `%1s` where page_id = %d', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -79,7 +79,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 					)
 				),
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			); 
 		}
 
 	}

@@ -30,6 +30,7 @@ use WPDataAccess\WPDA;
  * @see WP_Data_Access_Switch::activate()
  * @see WP_Data_Access_Switch::deactivate()
  */
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound
 class WP_Data_Access_Switch {
     /**
      * Activate plugin WP Data Access
@@ -55,8 +56,9 @@ class WP_Data_Access_Switch {
             if ( is_multisite() ) {
                 global $wpdb;
                 // Multisite installation.
+                // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $blogids = $wpdb->get_col( "select blog_id from {$wpdb->blogs}" );
-                // db call ok; no-cache ok.
+                // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 foreach ( $blogids as $blog_id ) {
                     // Activate blog.
                     switch_to_blog( $blog_id );
@@ -141,8 +143,9 @@ class WP_Data_Access_Switch {
             if ( is_multisite() ) {
                 global $wpdb;
                 // Multisite installation.
+                // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $blogids = $wpdb->get_col( "select blog_id from {$wpdb->blogs}" );
-                // db call ok; no-cache ok.
+                // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 foreach ( $blogids as $blog_id ) {
                     // Deactivate blog.
                     switch_to_blog( $blog_id );
@@ -216,3 +219,5 @@ class WP_Data_Access_Switch {
     }
 
 }
+
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound

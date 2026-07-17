@@ -16,7 +16,7 @@ namespace WPDataAccess\Settings {
 				if ( 'delete_remote_database' === $action ) {
 					$wp_nonce = isset( $_REQUEST['_wpnoncedelrdb'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnoncedelrdb'] ) ) : ''; // input var okay.
 					if ( ! wp_verify_nonce( $wp_nonce, 'wpda-delete-remote-database-' . WPDA::get_current_user_login() ) ) {
-						wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+						wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 					}
 
 					if ( isset( $_REQUEST['remote_database_name'] ) ) {
@@ -26,7 +26,7 @@ namespace WPDataAccess\Settings {
 				} elseif ( 'update_remote_database' === $action ) {
 					$wp_nonce = isset( $_REQUEST['_wpnonceupdrdb'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonceupdrdb'] ) ) : ''; // input var okay.
 					if ( ! wp_verify_nonce( $wp_nonce, 'wpda-update-remote-database-' . WPDA::get_current_user_login() ) ) {
-						wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+						wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 					}
 
 					$database_old = isset( $_REQUEST['remote_database_old'] ) ?
@@ -62,7 +62,7 @@ namespace WPDataAccess\Settings {
 					if ( '' === $database_old || '' === $database || '' === $host || '' === $username || '' === $password || '' === $port || '' === $schema || '' === $enabled ) {
 						$msg = new WPDA_Message_Box(
 							array(
-								'message_text'           => sprintf( __( 'Cannot save remote database connection [missing arguments]', 'wp-data-access' ) ),
+								'message_text'           => __( 'Cannot save remote database connection [missing arguments]', 'wp-data-access' ),
 								'message_type'           => 'error',
 								'message_is_dismissible' => false,
 							)
@@ -89,7 +89,7 @@ namespace WPDataAccess\Settings {
 				} else {
 					$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 					if ( ! wp_verify_nonce( $wp_nonce, 'wpda-plugin-settings-' . WPDA::get_current_user_login() ) ) {
-						wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+						wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 					}
 
 					if ( 'save' === $action ) {
@@ -131,11 +131,11 @@ namespace WPDataAccess\Settings {
 						if ( isset( $_REQUEST['remote_database_name'] ) && isset( $_REQUEST['remote_database_enabled'] ) ) {
 							if ( is_array( $_REQUEST['remote_database_name'] ) &&
 								is_array( $_REQUEST['remote_database_enabled'] ) &&
-								count( $_REQUEST['remote_database_name'] ) === count( $_REQUEST['remote_database_enabled'] )//phpcs:ignore - 8.1 proof
+								count( $_REQUEST['remote_database_name'] ) === count( $_REQUEST['remote_database_enabled'] ) // phpcs:ignore -- 8.1 proof
 							) {
 								$i = 0;
-								while ( $i < count( $_REQUEST['remote_database_name'] ) ) {//phpcs:ignore - 8.1 proof
-									$rdb_name = sanitize_text_field( wp_unslash( $_REQUEST['remote_database_name'][ $i ] ) );
+								while ( $i < count( $_REQUEST['remote_database_name'] ) ) { // phpcs:ignore -- 8.1 proof
+									$rdb_name = sanitize_text_field( wp_unslash( $_REQUEST['remote_database_name'][ $i ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 									$dbs      = WPDADB::get_remote_database( $rdb_name, true );
 									if ( ! $dbs ) {
 										$msg = new WPDA_Message_Box(
@@ -154,7 +154,7 @@ namespace WPDataAccess\Settings {
 											$dbs['password'],
 											$dbs['port'],
 											$dbs['database'],
-											$_REQUEST['remote_database_enabled'][ $i ] === 'FALSE',
+											$_REQUEST['remote_database_enabled'][ $i ] === 'FALSE', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 											false,
 											$dbs['ssl'],
 											$dbs['ssl_key'],
@@ -266,7 +266,7 @@ namespace WPDataAccess\Settings {
 			<script>
 				function delete_remote_database(id) {
 					remote_database_name = jQuery('#remote_database_name' + id).val();
-					if (confirm("<?php echo __( 'Delete remote database connection from plugin repository?', 'wp-data-access' ); ?>")) {
+					if (confirm("<?php esc_html_e( 'Delete remote database connection from plugin repository?', 'wp-data-access' ); ?>")) {
 						jQuery('#delete_remote_database_name').val(remote_database_name);
 						jQuery('#wpda_delete_database').submit();
 					}
@@ -372,7 +372,7 @@ namespace WPDataAccess\Settings {
 				<div id="wpda_update_database_popup_header">
 					<span style="display:inline-block;margin-top:5px;">
 						<strong>
-							<?php echo __( 'Edit Remote Database Connection', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'Edit Remote Database Connection', 'wp-data-access' ); ?>
 						</strong>
 					</span>
 					<span class="button" style="float:right;height:10px;"
@@ -445,11 +445,11 @@ namespace WPDataAccess\Settings {
 					</div>
 					<input type="hidden" name="remote_database_old" id="remote_database_old" value=""">
 					<input type="hidden" name="action" value="update_remote_database"/>
-					<input type="submit" class="button button-secondary" value="<?php echo __( 'Save', 'wp-data-access' ); ?>">
+					<input type="submit" class="button button-secondary" value="<?php esc_html_e( 'Save', 'wp-data-access' ); ?>">
 					<a href="javascript:void(0)"
 					   onclick="jQuery('#wpda_update_database_popup').hide()"
 					   class="button button-secondary">
-						<?php echo __( 'Cancel', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Cancel', 'wp-data-access' ); ?>
 					</a>
 					<?php
 					$rdb_wp_nonce_action = 'wpda-update-remote-database-' . WPDA::get_current_user_login();
@@ -472,25 +472,25 @@ namespace WPDataAccess\Settings {
 				  action="?page=<?php echo esc_attr( $this->page ); ?>&tab=plugin">
 				<table class="wpda-table-settings" id="wpda_table_plugin">
 					<tr>
-						<th><?php echo __( 'Plugin menu', 'wp-data-access' ); ?></th>
+						<th><?php esc_html_e( 'Plugin menu', 'wp-data-access' ); ?></th>
 						<td>
 							<label>
 								<input type="checkbox" name="hide_admin_menu" <?php echo 'on' === $hide_admin_menu ? 'checked="checked"' : ''; ?>/>
-								<?php echo __( 'Hide plugin menu in admin panel', 'wp-data-access' ); ?>
+								<?php esc_html_e( 'Hide plugin menu in admin panel', 'wp-data-access' ); ?>
 							</label>
 						</td>
 					</tr>
 					<tr>
-						<th><?php echo __( 'Notices', 'wp-data-access' ); ?></th>
+						<th><?php esc_html_e( 'Notices', 'wp-data-access' ); ?></th>
 						<td>
 							<label>
 								<input type="checkbox" name="hide_foreign_notices" <?php echo $hide_foreign_notices === 'on' ? 'checked' : ''; ?> />
-								<?php echo __( 'Hide notices of other themes and plugins on WP Data Access admin pages', 'wp-data-access' ); ?>
+								<?php esc_html_e( 'Hide notices of other themes and plugins on WP Data Access admin pages', 'wp-data-access' ); ?>
 							</label>
 						</td>
 					</tr>
 					<tr>
-						<th><?php echo __( 'Panel cookies', 'wp-data-access' ); ?></th>
+						<th><?php esc_html_e( 'Panel cookies', 'wp-data-access' ); ?></th>
 						<td>
 							<label>
 								<input
@@ -498,7 +498,7 @@ namespace WPDataAccess\Settings {
 									name="panel_cookies"
 									value="clear"
 									<?php echo 'clear' === $panel_cookies ? 'checked' : ''; ?>
-								><?php echo __( 'Clear when switching panels', 'wp-data-access' ); ?>
+								><?php esc_html_e( 'Clear when switching panels', 'wp-data-access' ); ?>
 							</label>
 							<br/>
 							<label>
@@ -507,22 +507,22 @@ namespace WPDataAccess\Settings {
 									name="panel_cookies"
 									value="keep"
 									<?php echo 'keep' === $panel_cookies ? 'checked' : ''; ?>
-								><?php echo __( 'Keep when switching panels', 'wp-data-access' ); ?>
+								><?php esc_html_e( 'Keep when switching panels', 'wp-data-access' ); ?>
 							</label>
 						</td>
 					</tr>
 					<tr>
-						<th><?php echo __( 'Secret key and IV' ); ?></th>
+						<th><?php esc_html_e( 'Secret key and IV', 'wp-data-access' ); ?></th>
 						<td>
 							<input type="text" name="secret_key" value="<?php echo esc_attr( $secret_key ); ?>"/>
 							<br/>
 							<input type="text" name="secret_iv" value="<?php echo esc_attr( $secret_iv ); ?>"/>
 							<br/><br/>
-							<span class="dashicons dashicons-info"></span><?php echo __( 'Existing remote database connection settings will be converted', 'wp-data-access' ); ?>
+							<span class="dashicons dashicons-info"></span><?php esc_html_e( 'Existing remote database connection settings will be converted', 'wp-data-access' ); ?>
 						</td>
 					</tr>
 					<tr>
-						<th><?php echo __( 'Remote database connections' ); ?></th>
+						<th><?php esc_html_e( 'Remote database connections', 'wp-data-access' ); ?></th>
 						<td>
 							<?php
 							$i = 0;
@@ -534,10 +534,10 @@ namespace WPDataAccess\Settings {
 								   onclick="delete_remote_database('<?php echo esc_attr( $i ); ?>')"
 								   style="text-decoration:none;"
 								   class="wpda_tooltip"
-								   title="<?php echo __( 'Delete remote database connection from plugin repository', 'wp-data-access' ); ?>">
+								   title="<?php esc_html_e( 'Delete remote database connection from plugin repository', 'wp-data-access' ); ?>">
 									<span class="dashicons dashicons-trash" style="font-size:18px;"></span>
 								</a>
-								<label class="wpda_tooltip" title="<?php echo __( 'Disable remote database connection', 'wp-data-access' ); ?>">
+								<label class="wpda_tooltip" title="<?php esc_html_e( 'Disable remote database connection', 'wp-data-access' ); ?>">
 									<input type="checkbox" name="remote_database[]" id="remote_database<?php echo esc_attr( $i ); ?>" onclick="update_rdb_setting('<?php echo esc_attr( $i ); ?>')" <?php echo esc_attr( $checked ); ?>>
 									<input type="hidden" name="remote_database_name[]" id="remote_database_name<?php echo esc_attr( $i ); ?>" value="<?php echo esc_attr( $remote_database ); ?>">
 									<input type="hidden" name="remote_database_enabled[]" id="remote_database_enabled<?php echo esc_attr( $i ); ?>" value="<?php echo esc_attr( $enabled ); ?>">
@@ -547,7 +547,7 @@ namespace WPDataAccess\Settings {
 								   onclick="edit_rdb_setting('<?php echo esc_attr( $remote_database ); ?>')"
 								   style="text-decoration:none;"
 								   class="wpda_tooltip"
-								   title="<?php echo __( 'Edit remote database connection', 'wp-data-access' ); ?>">
+								   title="<?php esc_html_e( 'Edit remote database connection', 'wp-data-access' ); ?>">
 									<span class="dashicons dashicons-edit" style="font-size:18px;"></span>
 								</a><br/>
 								<?php
@@ -557,13 +557,13 @@ namespace WPDataAccess\Settings {
 						</td>
 					</tr>
 					<tr>
-						<th><?php echo __( 'Debug mode', 'wp-data-access' ); ?></th>
+						<th><?php esc_html_e( 'Debug mode', 'wp-data-access' ); ?></th>
 						<td>
 							<label>
 								<input
 									type="checkbox"
 									name="debug" <?php echo 'on' === $debug ? 'checked' : ''; ?>
-								><?php echo __( 'Enable debug mode', 'wp-data-access' ); ?>
+								><?php esc_html_e( 'Enable debug mode', 'wp-data-access' ); ?>
 							</label>
 						</td>
 					</tr>
@@ -572,16 +572,16 @@ namespace WPDataAccess\Settings {
 					<input type="hidden" name="action" value="save"/>
 					<button type="submit" class="button button-primary">
 						<i class="fas fa-check wpda_icon_on_button"></i>
-						<?php echo __( 'Save Plugin Settings', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Save Plugin Settings', 'wp-data-access' ); ?>
 					</button>
 					<a href="javascript:void(0)"
-					   onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+					   onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
 						   jQuery('input[name=&quot;action&quot;]').val('setdefaults');
 						   jQuery('#wpda_settings_plugin').trigger('submit')
 						   }"
 					   class="button">
 						<i class="fas fa-times-circle wpda_icon_on_button"></i>
-						<?php echo __( 'Reset Plugin Settings To Defaults', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Reset Plugin Settings To Defaults', 'wp-data-access' ); ?>
 					</a>
 				</div>
 				<?php wp_nonce_field( 'wpda-plugin-settings-' . WPDA::get_current_user_login(), '_wpnonce', false ); ?>

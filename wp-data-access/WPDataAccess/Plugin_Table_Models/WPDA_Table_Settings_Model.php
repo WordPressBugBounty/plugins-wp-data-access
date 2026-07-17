@@ -28,7 +28,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 				$schema_name = $wpdb->dbname;
 			}
 
-			return $wpdb->get_results(
+			return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'SELECT wpda_table_settings FROM `%1s` WHERE wpda_schema_name = %s AND wpda_table_name = %s', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -53,7 +53,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public static function insert( $table_name, $table_settings, $schema_name ) {
 			global $wpdb;
 
-			return ( 1 === $wpdb->insert(
+			return ( 1 === $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
 				static::get_base_table_name(),
 				array(
 					'wpda_schema_name'    => $schema_name,
@@ -76,7 +76,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public static function update( $table_name, $table_settings, $schema_name ) {
 			global $wpdb;
 
-			return $wpdb->update(
+			return $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				static::get_base_table_name(),
 				array(
 					'wpda_table_settings' => $table_settings,

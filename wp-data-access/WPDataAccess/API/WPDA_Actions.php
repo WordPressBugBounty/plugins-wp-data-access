@@ -191,6 +191,7 @@ class WPDA_Actions extends WPDA_API_Core {
     public static function get_row_count( $dbs, $tbl ) {
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
+            /* translators: %s = database name */
             return sprintf( __( 'Database %s not available', 'wp-data-access' ), esc_attr( $dbs ) );
         }
         $suppress_errors = $wpdadb->suppress_errors;
@@ -231,10 +232,8 @@ class WPDA_Actions extends WPDA_API_Core {
             return $this->bad_request();
         } else {
             foreach ( $files as $file ) {
-                // phpcs:disable
                 $temp_file_name = sanitize_text_field( $file['tmp_name'] );
                 // For Windows: do NOT unslash!
-                // phpcs:enable
                 $temp_file_type = sanitize_text_field( wp_unslash( $file['type'] ) );
                 $orig_file_name = sanitize_text_field( wp_unslash( $file['name'] ) );
                 if ( 0 === $file['error'] && is_uploaded_file( $temp_file_name ) ) {
@@ -260,12 +259,14 @@ class WPDA_Actions extends WPDA_API_Core {
                             } else {
                                 // Error reading ZIP file.
                                 $errors = true;
+                                // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                                 $response[] = array(
                                     $orig_file_name => array(
                                         'status' => 'error',
                                         'msg'    => sprintf( __( 'Import failed [error reading ZIP file `%s`]', 'wp-data-access' ), $orig_file_name ),
                                     ),
                                 );
+                                // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                             }
                         } else {
                             // ZipArchive not installed.
@@ -273,13 +274,15 @@ class WPDA_Actions extends WPDA_API_Core {
                             $response[] = array(
                                 $orig_file_name => array(
                                     'status' => 'error',
-                                    'msg'    => sprintf( __( 'Import failed - ZipArchive not installed %s', 'wp-data-access' ) ),
+                                    'msg'    => __( 'Import failed - ZipArchive not installed', 'wp-data-access' ),
                                 ),
                             );
                         }
                     } else {
                         // Process plain file.
+                        // phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fopen
                         $this->file_pointer = fopen( $temp_file_name, 'rb' );
+                        // phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_fopen
                         $status = $this->import( $orig_file_name, $dbs );
                         if ( isset( $status['status'], $status['msg'] ) ) {
                             $errors = $errors || 'error' === $status['status'];
@@ -473,6 +476,7 @@ class WPDA_Actions extends WPDA_API_Core {
         }
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
+            /* translators: %s = database name */
             return sprintf( __( 'Remote database %s not available', 'wp-data-access' ), esc_attr( $dbs ) );
         }
         $suppress_errors = $wpdadb->suppress_errors;
@@ -496,10 +500,12 @@ class WPDA_Actions extends WPDA_API_Core {
         }
         $wpdadb_from = WPDADB::get_db_connection( $from_dbs );
         if ( null === $wpdadb_from ) {
+            /* translators: %s = database name */
             return sprintf( __( 'Remote database %s not available', 'wp-data-access' ), esc_attr( $from_dbs ) );
         }
         $wpdadb_to = WPDADB::get_db_connection( $to_dbs );
         if ( null === $wpdadb_to ) {
+            /* translators: %s = database name */
             return sprintf( __( 'Remote database %s not available', 'wp-data-access' ), esc_attr( $to_dbs ) );
         }
         $suppress_errors_from = $wpdadb_from->suppress_errors;
@@ -545,8 +551,10 @@ class WPDA_Actions extends WPDA_API_Core {
         }
         if ( '1' === $copy_data ) {
             // Copy data from source to destination table.
-            set_time_limit( 0 );
             // Prevent time out.
+            // phpcs:disable Squiz.PHP.DiscouragedFunctions.Discouraged
+            set_time_limit( 0 );
+            // phpcs:enable Squiz.PHP.DiscouragedFunctions.Discouraged
             // Buffer rows to prevent exhausting memory.
             $buffer_size = 1000;
             // Default buffer
@@ -638,6 +646,7 @@ class WPDA_Actions extends WPDA_API_Core {
         }
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
+            /* translators: %s = database name */
             return sprintf( __( 'Remote database %s not available', 'wp-data-access' ), esc_attr( $dbs ) );
         }
         $suppress_errors = $wpdadb->suppress_errors;
@@ -654,6 +663,7 @@ class WPDA_Actions extends WPDA_API_Core {
         }
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
+            /* translators: %s = database name */
             return sprintf( __( 'Remote database %s not available', 'wp-data-access' ), esc_attr( $dbs ) );
         }
         $suppress_errors = $wpdadb->suppress_errors;
@@ -674,24 +684,13 @@ class WPDA_Actions extends WPDA_API_Core {
     private function post_drop_table( $dbs, $tbl ) {
         global $wpdb;
         $suppress = $wpdb->suppress_errors( true );
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder -- plugin table
         // Table settings...
-        $wpdb->query( $wpdb->prepare( 
-            'delete from `%1s` where wpda_schema_name = %s and wpda_table_name = %s ',
-            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-            array(WPDA::remove_backticks( WPDA_Table_Settings_Model::get_base_table_name() ), $dbs, $tbl)
-         ) );
+        $wpdb->query( $wpdb->prepare( 'delete from `%1s` where wpda_schema_name = %s and wpda_table_name = %s ', array(WPDA::remove_backticks( WPDA_Table_Settings_Model::get_base_table_name() ), $dbs, $tbl) ) );
         // WordPress media library columns...
-        $wpdb->query( $wpdb->prepare( 
-            'delete from `%1s` where media_schema_name = %s and media_table_name = %s ',
-            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-            array(WPDA::remove_backticks( WPDA_Media_Model::get_base_table_name() ), $dbs, $tbl)
-         ) );
+        $wpdb->query( $wpdb->prepare( 'delete from `%1s` where media_schema_name = %s and media_table_name = %s ', array(WPDA::remove_backticks( WPDA_Media_Model::get_base_table_name() ), $dbs, $tbl) ) );
         // Data menus...
-        $wpdb->query( $wpdb->prepare( 
-            'delete from `%1s` where menu_schema_name = %s and menu_table_name = %s ',
-            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-            array(WPDA::remove_backticks( WPDA_User_Menus_Model::get_base_table_name() ), $dbs, $tbl)
-         ) );
+        $wpdb->query( $wpdb->prepare( 'delete from `%1s` where menu_schema_name = %s and menu_table_name = %s ', array(WPDA::remove_backticks( WPDA_User_Menus_Model::get_base_table_name() ), $dbs, $tbl) ) );
         $wpdb->suppress_errors( $suppress );
     }
 
@@ -706,15 +705,19 @@ class WPDA_Actions extends WPDA_API_Core {
         global $wpdb;
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
+            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
             return array(
                 'status' => 'error',
                 'msg'    => sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $dbs ) ),
             );
+            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
         }
         $suppress = $wpdadb->suppress_errors( true );
         if ( false !== $this->file_pointer ) {
             while ( !feof( $this->file_pointer ) ) {
+                // phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fread
                 $this->file_content .= fread( $this->file_pointer, 4096 );
+                // phpcs:enable WordPress.WP.AlternativeFunctions.file_system_operations_fread
                 // Replace WP prefix and WPDA prefix.
                 $this->file_content = str_replace( '{wp_schema}', $wpdb->dbname, $this->file_content );
                 $this->file_content = str_replace( '{wp_prefix}', $wpdb->prefix, $this->file_content );
@@ -746,6 +749,7 @@ class WPDA_Actions extends WPDA_API_Core {
         }
         $wpdadb->suppress_errors( $suppress );
         // Process file content.
+        // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
         if ( 0 < count( $errors ) ) {
             return array(
                 'status' => 'error',
@@ -760,6 +764,7 @@ class WPDA_Actions extends WPDA_API_Core {
                 'errors' => $errors,
             );
         }
+        // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
     }
 
 }

@@ -45,7 +45,7 @@ namespace WPDataAccess\Utilities {
 		 */
 		public function __construct( $file_path ) {
 
-			$this->file_pointer = fopen( $file_path, 'rb' );
+			$this->file_pointer = fopen( $file_path, 'rb' ); // phpcs:ignore
 
 		}
 
@@ -55,7 +55,7 @@ namespace WPDataAccess\Utilities {
 		 * @since   2.0.12
 		 */
 		public function __destruct() {
-			fclose( $this->file_pointer );
+			fclose( $this->file_pointer ); // phpcs:ignore
 		}
 
 		/**
@@ -84,7 +84,8 @@ namespace WPDataAccess\Utilities {
 
 			$wpdadb = WPDADB::get_db_connection( $schema_name );
 			if ( null === $wpdadb ) {
-				wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $schema_name ) ) );
+				/* translators: %s = database name */
+				wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $schema_name ) ) );
 			}
 
 			$suppress = $wpdadb->suppress_errors( 'on' === $hide_errors );
@@ -95,7 +96,7 @@ namespace WPDataAccess\Utilities {
 
 			if ( false !== $this->file_pointer ) {
 				while ( ! feof( $this->file_pointer ) ) {
-					$this->file_content .= fread( $this->file_pointer, 4096 );
+					$this->file_content .= fread( $this->file_pointer, 4096 ); // phpcs:ignore
 
 					// Replace WP prefix and WPDA prefix.
 					$this->file_content = str_replace( '{wp_schema}', $wpdb->dbname, $this->file_content );
@@ -119,7 +120,7 @@ namespace WPDataAccess\Utilities {
 						$rows ++;
 
 						// Write file content to array for security check (150 characters is sufficient to check DML and table name).
-						$dml_check = explode( ' ', substr( trim( $sql ), 0, 150 ) );//phpcs:ignore - 8.1 proof
+						$dml_check = explode( ' ', substr( trim( $sql ), 0, 150 ) ); // phpcs:ignore -- 8.1 proof
 
 						if ( ! isset( $dml_check[0] ) || ! isset( $dml_check[1] ) ) {
 							// No content.

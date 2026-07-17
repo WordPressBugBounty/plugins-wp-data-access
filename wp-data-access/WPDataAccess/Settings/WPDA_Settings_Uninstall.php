@@ -22,7 +22,7 @@ namespace WPDataAccess\Settings {
 				// Security check.
 				$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, 'wpda-uninstall-settings-' . WPDA::get_current_user_login() ) ) {
-					wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				if ( 'save' === $action ) {
@@ -65,25 +65,25 @@ namespace WPDataAccess\Settings {
 				<table class="wpda-table-settings">
 					<tr>
 						<th>
-							<?php echo __( 'On Plugin Uninstall', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'On Plugin Uninstall', 'wp-data-access' ); ?>
 						</th>
 						<td>
 							<label>
 								<input type="checkbox" name="delete_plugin" style="margin-right: 0" checked
 									   disabled="disabled">
-								<?php echo __( 'Delete plugin', 'wp-data-access' ); ?>
+								<?php esc_html_e( 'Delete plugin', 'wp-data-access' ); ?>
 							</label>
 							<br/>
 							<label>
 								<input type="checkbox" name="delete_tables"
 									   style="margin-right: 0" <?php echo 'on' === $delete_tables ? 'checked' : ''; ?>>
-								<?php echo __( 'Delete plugin tables (all data will be lost)', 'wp-data-access' ); ?>
+								<?php esc_html_e( 'Delete plugin tables (all data will be lost)', 'wp-data-access' ); ?>
 							</label>
 							<br/>
 							<label>
 								<input type="checkbox" name="delete_options"
 									   style="margin-right: 0" <?php echo 'on' === $delete_options ? 'checked' : ''; ?>>
-								<?php echo __( 'Delete plugin settings (all settings will be lost)', 'wp-data-access' ); ?>
+								<?php esc_html_e( 'Delete plugin settings (all settings will be lost)', 'wp-data-access' ); ?>
 							</label>
 						</td>
 					</tr>
@@ -92,16 +92,16 @@ namespace WPDataAccess\Settings {
 					<input type="hidden" name="action" value="save"/>
 					<button type="submit" class="button button-primary">
 						<i class="fas fa-check wpda_icon_on_button"></i>
-						<?php echo __( 'Save Uninstall Settings', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Save Uninstall Settings', 'wp-data-access' ); ?>
 					</button>
 					<a href="javascript:void(0)"
-					   onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+					   onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
 						   jQuery('input[name=\'action\']').val('setdefaults');
 						   jQuery('#wpda_settings_uninstall').trigger('submit');
 						   }"
 					   class="button button-secondary">
 						<i class="fas fa-times-circle wpda_icon_on_button"></i>
-						<?php echo __( 'Reset Uninstall Settings To Defaults', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Reset Uninstall Settings To Defaults', 'wp-data-access' ); ?>
 					</a>
 				</div>
 				<?php wp_nonce_field( 'wpda-uninstall-settings-' . WPDA::get_current_user_login(), '_wpnonce', false ); ?>

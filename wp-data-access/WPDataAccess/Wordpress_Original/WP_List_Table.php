@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable
 namespace WPDataAccess\Wordpress_Original;
 // As advised by WordPress we'll use our own copy of WP_List_Table.
 //
@@ -1893,3 +1894,4 @@ class WP_List_Table {
 		printf( "<script type='text/javascript'>list_args = %s;</script>\n", wp_json_encode( $args ) );
 	}
 }
+// phpcs:enable

@@ -173,11 +173,13 @@ namespace WPDataAccess\API {
 			} else {
 				if ( '' === $wpdb->last_error ) {
 					return new \WP_Error(
+						/* translators: %s = last dbs error */
 						sprintf( __( 'Failed to save changes [%s]', 'wp-data-access' ), $wpdb->last_error ),
 						array( 'status' => 420 )
 					);
 				} else {
 					return new \WP_Error(
+						/* translators: %s = last dbs error */
 						sprintf( __( 'Failed to save changes [%s]', 'wp-data-access' ), $wpdb->last_error ),
 						array( 'status' => 420 )
 					);
@@ -226,6 +228,7 @@ namespace WPDataAccess\API {
 						return $this->WPDA_Rest_Response( __( 'Changes successfully saved', 'wp-data-access' ) );
 					} else {
 						return new \WP_Error(
+							/* translators: %s = last dbs error */
 							sprintf( __( 'Failed to save changes [%s]', 'wp-data-access' ), $wpdb->last_error ),
 							array( 'status' => 420 )
 						);
@@ -235,6 +238,7 @@ namespace WPDataAccess\API {
 						return $this->WPDA_Rest_Response( __( 'Changes successfully saved', 'wp-data-access' ) );
 					} else {
 						return new \WP_Error(
+							/* translators: %s = last dbs error */
 							sprintf( __( 'Failed to save changes [%s]', 'wp-data-access' ), $wpdb->last_error ),
 							array( 'status' => 420 )
 						);
@@ -301,6 +305,7 @@ namespace WPDataAccess\API {
 			if ( null === $sql_dml ) {
 				return new \WP_Error(
 					sprintf(
+						/* translators: %s = contact message */
 						__( 'Failed to save changes [%s]', 'wp-data-access' ),
 						'please contact the plugin development team'
 					),
@@ -341,6 +346,7 @@ namespace WPDataAccess\API {
 				$msg = '' !== $wpdb->last_error ? " [{$wpdb->last_error}]" : '';
 
 				return new \WP_Error(
+					/* translators: %s = error message */
 					sprintf( __( 'Failed to save changes [%s]', 'wp-data-access' ), $msg ),
 					array( 'status' => 420 )
 				);
@@ -428,6 +434,7 @@ namespace WPDataAccess\API {
 
 			if ( $dml_succeeded >= 0 && $dml_failed === 0 ) {
 				return $this->WPDA_Rest_Response(
+					/* translators: %s = table name */
 					sprintf( __( 'Saved dashboard menus for table `%s`', 'wp-data-access' ), $table_name ),
 					$new_menus
 				);
@@ -436,7 +443,8 @@ namespace WPDataAccess\API {
 				$msg = '' !== $wpdb->last_error ? " [{$wpdb->last_error}]" : '';
 
 				return new \WP_Error(
-					sprintf( __( 'Cannot save dashboard menus for table `%s`%s', 'wp-data-access' ), $table_name, $msg ),
+					/* translators: 1: table name; 2: error message */
+					sprintf( __( 'Cannot save dashboard menus for table `%1$s`%2$s', 'wp-data-access' ), $table_name, $msg ),
 					array( 'status' => 420 )
 				);
 			}
@@ -489,12 +497,12 @@ namespace WPDataAccess\API {
 					unset( $rest_api_settings[ $schema_name ][ $table_name ]['select'] );
 					if (
 						isset( $rest_api_settings[ $schema_name ][ $table_name ] ) &&
-						0 === count( $rest_api_settings[ $schema_name ][ $table_name ] )//phpcs:ignore - 8.1 proof
+						0 === count( $rest_api_settings[ $schema_name ][ $table_name ] ) // phpcs:ignore -- 8.1 proof
 					) {
 						unset( $rest_api_settings[ $schema_name ][ $table_name ] );
 						if (
 							isset( $rest_api_settings[ $schema_name ] ) &&
-							0 === count( $rest_api_settings[ $schema_name ] )//phpcs:ignore - 8.1 proof
+							0 === count( $rest_api_settings[ $schema_name ] ) // phpcs:ignore -- 8.1 proof
 						) {
 							unset( $rest_api_settings[ $schema_name ] );
 						}
@@ -509,6 +517,7 @@ namespace WPDataAccess\API {
 			update_option( WPDA_API::WPDA_REST_API_TABLE_ACCESS, $rest_api_settings );
 
 			return $this->WPDA_Rest_Response(
+				/* translators: %s = table name */
 				sprintf( __( 'Saved REST API settings for table `%s`', 'wp-data-access' ), $table_name )
 			);
 		}

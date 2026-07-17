@@ -124,7 +124,7 @@ namespace WPDataProjects\List_Table {
 		public function __construct( array $args = array() ) {
 			if ( isset( $args['project_id'] ) ) {
 				$this->project_id = sanitize_text_field( wp_unslash( $args['project_id'] ) );
-			} elseif ( isset( $_REQUEST['tab'] ) && 'tables' === $_REQUEST['tab'] ) {
+			} elseif ( isset( $_REQUEST['tab'] ) && 'tables' === $_REQUEST['tab'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
 				$this->project_id = 'wpda_sys_tables';
 			}
 			if ( isset( $args['page_id'] ) ) {
@@ -133,7 +133,7 @@ namespace WPDataProjects\List_Table {
 
 			$this->project = new WPDP_Project( $this->project_id, $this->page_id );
 			if ( null === $this->project->get_project() ) {
-				wp_die( __( 'Data Project page not found [need a valid project_id and page_id]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'Data Project page not found [need a valid project_id and page_id]', 'wp-data-access' ) );
 			}
 			$this->title    = $this->project->get_title();
 			$this->subtitle = $this->project->get_subtitle();
@@ -211,7 +211,7 @@ namespace WPDataProjects\List_Table {
 			$wpda_repository->inform_user();
 
 			if ( 'only' === $this->allow_insert && 'new' !== $this->action ) {
-				wp_die( __( 'ERROR: Action not allowed', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Action not allowed', 'wp-data-access' ) );
 			}
 
 			if (
@@ -223,7 +223,7 @@ namespace WPDataProjects\List_Table {
 				if ( ( 'only' === $this->allow_insert || null === $this->allow_insert ) && 'new' === $this->action ) {
 					// Allow these actions (exceptions)
 				} else {
-					wp_die( __( 'ERROR: Action not allowed', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Action not allowed', 'wp-data-access' ) );
 				}
 			}
 
@@ -272,7 +272,7 @@ namespace WPDataProjects\List_Table {
 
 			$form->prepare_form();
 
-			if ( isset( $_POST['postaction'] ) && 'list' === $_POST['postaction'] ) {
+			if ( isset( $_POST['postaction'] ) && 'list' === $_POST['postaction'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified in parent class
 				// Jump back to list after pressing SUBMIT > LIST
 				// Change column list from edit to list mode
 				$this->wpda_list_columns =

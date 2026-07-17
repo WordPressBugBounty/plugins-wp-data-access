@@ -132,7 +132,7 @@ namespace WPDataProjects\List_Table {
 										$wpdadb = WPDADB::get_db_connection( $target_schema_name );
 										if ( null !== $wpdadb ) {
 											$where = '';
-											for ( $i = 1; $i < count( $column_options_relationship->source_column_name ); $i++ ) {//phpcs:ignore - 8.1 proof
+											for ( $i = 1; $i < count( $column_options_relationship->source_column_name ); $i++ ) { // phpcs:ignore -- 8.1 proof
 												if ( isset( $item[ $column_options_relationship->source_column_name[ $i ] ] ) ) {
 													$value            = $item[ $column_options_relationship->source_column_name[ $i ] ];
 													$data_type_lookup = null;
@@ -318,8 +318,7 @@ namespace WPDataProjects\List_Table {
 
 		protected function add_full_table_downloads_add_args() {
 			if ( $this->has_default_where && '' !== trim( $this->page_id ) ) {
-				$esc_attr = 'esc_attr';
-				echo "<input type='hidden' name='pid_default_where' value='{$esc_attr( $this->page_id )}'/>";
+				echo '<input type="hidden" name="pid_default_where" value="' . esc_attr( $this->page_id ) . '"/>';
 			}
 		}
 

@@ -243,29 +243,29 @@ namespace WPDataAccess\Design_Table {
 		 * @since 1.1.0
 		 */
 		public function __construct() {
-			if ( isset( $_REQUEST['page'] ) ) {
-				$this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ); // input var okay.
+			if ( isset( $_REQUEST['page'] ) ) { // phpcs:ignore
+				$this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ); // phpcs:ignore
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments [page not found]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [page not found]', 'wp-data-access' ) );
 			}
 
-			if ( isset( $_REQUEST['action'] ) ) {
-				$this->action = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ); // input var okay.
+			if ( isset( $_REQUEST['action'] ) ) { // phpcs:ignore
+				$this->action = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ); // phpcs:ignore
 			}
 
-			if ( isset( $_REQUEST['action2'] ) ) {
-				$this->action2        = sanitize_text_field( wp_unslash( $_REQUEST['action2'] ) ); // input var okay.
+			if ( isset( $_REQUEST['action2'] ) ) { // phpcs:ignore
+				$this->action2        = sanitize_text_field( wp_unslash( $_REQUEST['action2'] ) ); // phpcs:ignore
 				$this->action2_posted = $this->action2;
 			}
 
-			if ( isset( $_REQUEST['design_mode'] ) ) {
-				$this->design_mode = sanitize_text_field( wp_unslash( $_REQUEST['design_mode'] ) ); // input var okay.
+			if ( isset( $_REQUEST['design_mode'] ) ) { // phpcs:ignore
+				$this->design_mode = sanitize_text_field( wp_unslash( $_REQUEST['design_mode'] ) ); // phpcs:ignore
 			} else {
 				$this->design_mode = WPDA::get_option( WPDA::OPTION_BE_DESIGN_MODE ); // Default design mode.
 			}
 
-			if ( isset( $_REQUEST['caller'] ) ) {
-				$this->caller = sanitize_text_field( wp_unslash( $_REQUEST['caller'] ) ); // input var okay.
+			if ( isset( $_REQUEST['caller'] ) ) { // phpcs:ignore
+				$this->caller = sanitize_text_field( wp_unslash( $_REQUEST['caller'] ) ); // phpcs:ignore
 			}
 
 			$this->fulltext_support = get_option( 'wpda_fulltext_support' );
@@ -273,15 +273,15 @@ namespace WPDataAccess\Design_Table {
 			global $wpdb;
 
 			if ( 'init' === $this->action2 ) {
-				if ( isset( $_REQUEST['wpda_table_name'] ) && isset( $_REQUEST['wpda_schema_name'] ) ) {
+				if ( isset( $_REQUEST['wpda_table_name'] ) && isset( $_REQUEST['wpda_schema_name'] ) ) { // phpcs:ignore
 					// Check if table is already in repository.
-					$wpdb->get_results(
+					$wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 						$wpdb->prepare(
 							'select * from `%1s` where wpda_schema_name = %s and wpda_table_name = %s ', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 							array(
 								WPDA::remove_backticks( WPDA_Design_Table_Model::get_base_table_name() ),
-								sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) ),
-								sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) ),
+								sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) ), // phpcs:ignore
+								sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) ), // phpcs:ignore
 							)
 						)
 					);
@@ -293,17 +293,17 @@ namespace WPDataAccess\Design_Table {
 						$this->action2 = 'wpda_reverse_engineering';
 					}
 				} else {
-					wp_die( __( 'ERROR: Wrong arguments [table not found]', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Wrong arguments [table not found]', 'wp-data-access' ) );
 				}
 			}
 
 			if ( 'wpda_reverse_engineering' === $this->action2 || 'wpda_reconcile' === $this->action2 ) {
-				if ( isset( $_REQUEST['wpda_table_name_re'] ) && isset( $_REQUEST['wpda_schema_name_re'] ) ) {
-					$wpda_table_name_re  = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name_re'] ) );
-					$wpda_schema_name_re = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name_re'] ) );
+				if ( isset( $_REQUEST['wpda_table_name_re'] ) && isset( $_REQUEST['wpda_schema_name_re'] ) ) { // phpcs:ignore
+					$wpda_table_name_re  = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name_re'] ) ); // phpcs:ignore
+					$wpda_schema_name_re = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name_re'] ) ); // phpcs:ignore
 					if ( 'wpda_reconcile' === $this->action2 ) {
 						// Before table can be reconciled old table structure must be deleted.
-						$wpdb->query(
+						$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 							$wpdb->prepare(
 								'delete from `%1s` where wpda_table_name = %s and wpda_schema_name = %s ', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 								array(
@@ -316,42 +316,42 @@ namespace WPDataAccess\Design_Table {
 					}
 					// Start reverse engineering table.
 					$wpda_reverse_engineering = new WPDA_Reverse_Engineering( $wpda_table_name_re, $wpda_schema_name_re );
-					$this->design_mode        = isset( $_REQUEST['design_mode_re'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['design_mode_re'] ) ) : $this->design_mode; // input var okay.
+					$this->design_mode        = isset( $_REQUEST['design_mode_re'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['design_mode_re'] ) ) : $this->design_mode; // phpcs:ignore
 					$table_structure          = $wpda_reverse_engineering->get_designer_format( $this->design_mode );
-					if ( count( $table_structure ) > 0 ) {//phpcs:ignore - 8.1 proof
-						if ( isset( $_REQUEST['wpda_table_name'] ) && '' !== trim( $_REQUEST['wpda_table_name'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-							$this->wpda_table_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) );
+					if ( count( $table_structure ) > 0 ) { // phpcs:ignore -- 8.1 proof
+						if ( isset( $_REQUEST['wpda_table_name'] ) && '' !== trim( $_REQUEST['wpda_table_name'] ) ) { // phpcs:ignore
+							$this->wpda_table_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) ); // phpcs:ignore
 						} else {
 							$this->wpda_table_name = $wpda_table_name_re;
 						}
-						if ( isset( $_REQUEST['wpda_schema_name'] ) && '' !== trim( $_REQUEST['wpda_schema_name'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-							$this->wpda_schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) );
+						if ( isset( $_REQUEST['wpda_schema_name'] ) && '' !== trim( $_REQUEST['wpda_schema_name'] ) ) { // phpcs:ignore
+							$this->wpda_schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) ); // phpcs:ignore
 						} else {
 							$this->wpda_schema_name = $wpda_schema_name_re;
 						}
 						$this->wpda_table_design = $table_structure;
 					} else {
-						wp_die( __( 'ERROR: Reverse engineering table failed [invalid structure]', 'wp-data-access' ) );
+						wp_die( esc_attr__( 'ERROR: Reverse engineering table failed [invalid structure]', 'wp-data-access' ) );
 					}
 					if ( ! WPDA_Design_Table_Model::insert_reverse_engineered( $this->wpda_table_name, $this->wpda_schema_name, $this->wpda_table_design ) ) {
-						wp_die( __( 'ERROR: Reverse engineering table failed [insert failed]', 'wp-data-access' ) );
+						wp_die( esc_attr__( 'ERROR: Reverse engineering table failed [insert failed]', 'wp-data-access' ) );
 					} else {
 						// Convert named array to object (needed to display structure).
 						$this->wpda_table_design = json_decode( json_encode( $table_structure ) );
 					}
 					$this->action2 = 'edit';
 				} else {
-					wp_die( __( 'ERROR: Wrong arguments [table not found]', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Wrong arguments [table not found]', 'wp-data-access' ) );
 				}
-			} elseif ( isset( $_REQUEST['wpda_table_name'] ) && isset( $_REQUEST['wpda_schema_name'] ) ) {
-				$this->wpda_table_name  = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) );
-				$this->wpda_schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) );
+			} elseif ( isset( $_REQUEST['wpda_table_name'] ) && isset( $_REQUEST['wpda_schema_name'] ) ) { // phpcs:ignore
+				$this->wpda_table_name  = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) ); // phpcs:ignore
+				$this->wpda_schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) ); // phpcs:ignore
 				$this->model            = new WPDA_Design_Table_Model();
 
 				if ( 'new' === $this->action2 ) {
 					$insert_result = $this->model->insert();
 					if ( false === $insert_result || $insert_result < 1 ) {
-						wp_die( __( 'ERROR: Insert failed', 'wp-data-access' ) );
+						wp_die( esc_attr__( 'ERROR: Insert failed', 'wp-data-access' ) );
 					}
 					$this->action2 = 'edit'; // Show saved records and allow editing.
 				} elseif ( 'edit' === $this->action2 && 'init' !== $this->action2_posted ) {
@@ -475,6 +475,21 @@ namespace WPDataAccess\Design_Table {
 			}
 
 			$this->databases = WPDA_Dictionary_Lists::get_db_schemas();
+
+			if ( ! isset( $_REQUEST['_wpnonce'] ) ) {
+				wp_die( esc_attr__( 'Not authorized', 'wp-data-access' ) );
+			} else {
+				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], "wpda-design-table-form-{$this->wpda_table_name}" ) ) { // direct form access
+					if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], "wpda-alter-{$this->wpda_table_name}" ) ) { // access from alter table button
+						$dsg_tbl = 'wpda-query-' . WPDA_Design_Table_Model::get_base_table_name() . '-' . $_POST['wpda_schema_name'] . '-' . $_POST['wpda_table_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+						if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], $dsg_tbl ) ) { // access from list table
+							wp_die( esc_attr__( 'Not authorized', 'wp-data-access' ) );
+						}
+					}
+				}
+				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			}
 		}
 
 		public function prepare_form() {}
@@ -523,7 +538,8 @@ namespace WPDataAccess\Design_Table {
 
 			$wpdadb = WPDADB::get_db_connection( $this->wpda_schema_name );
 			if ( null === $wpdadb ) {
-				wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->wpda_schema_name ) ) );
+				/* translators: %s = remote database name */
+				wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->wpda_schema_name ) ) );
 			}
 
 			$suppress               = $wpdadb->suppress_errors( true );
@@ -621,7 +637,7 @@ namespace WPDataAccess\Design_Table {
 
 				if ( ! $real_column_found ) {
 					// Drop column
-					//phpcs:ignore - 8.1 proof
+					 // phpcs:ignore -- 8.1 proof
 					array_push(
 						$this->alter_table_statement,
 						'DROP COLUMN `' . str_replace( '`', '', $real_column->column_name ) . '`,' . self::NEW_LINE
@@ -633,7 +649,7 @@ namespace WPDataAccess\Design_Table {
 				}
 			}
 
-			if ( 0 < count( $this->alter_table_statement ) ) {//phpcs:ignore - 8.1 proof
+			if ( 0 < count( $this->alter_table_statement ) ) { // phpcs:ignore -- 8.1 proof
 				$this->create_table_statement .= "ALTER TABLE `{$this->wpda_table_name}` ";
 				foreach ( $this->alter_table_statement as $sql ) {
 					$this->create_table_statement .= $sql;
@@ -642,19 +658,19 @@ namespace WPDataAccess\Design_Table {
 					substr( $this->create_table_statement, 0, strrpos( $this->create_table_statement, ',' ) ) .
 					';' . self::NEW_LINE . self::NEW_LINE;
 
-				$array_difference_1 = array_diff( $create_keys_design, $create_keys_real ); //phpcs:ignore - 8.1 proof
-				$array_difference_2 = array_diff( $create_keys_real, $create_keys_design ); //phpcs:ignore - 8.1 proof
-				if ( 0 !== count( $array_difference_1 ) || 0 !== count( $array_difference_2 ) ) { //phpcs:ignore - 8.1 proof
-					if ( 0 < count( $create_keys_real ) ) { //phpcs:ignore - 8.1 proof
+				$array_difference_1 = array_diff( $create_keys_design, $create_keys_real );  // phpcs:ignore -- 8.1 proof
+				$array_difference_2 = array_diff( $create_keys_real, $create_keys_design );  // phpcs:ignore -- 8.1 proof
+				if ( 0 !== count( $array_difference_1 ) || 0 !== count( $array_difference_2 ) ) {  // phpcs:ignore -- 8.1 proof
+					if ( 0 < count( $create_keys_real ) ) {  // phpcs:ignore -- 8.1 proof
 						$this->create_table_statement =
 							"ALTER TABLE `{$this->wpda_table_name}` DROP PRIMARY KEY;" .
 							self::NEW_LINE . self::NEW_LINE . $this->create_table_statement;
 					}
-					if ( 0 < count( $create_keys_design ) ) { //phpcs:ignore - 8.1 proof
+					if ( 0 < count( $create_keys_design ) ) {  // phpcs:ignore -- 8.1 proof
 						$alter_table_statement =
 							"ALTER TABLE `{$this->wpda_table_name}` ADD PRIMARY KEY  ";
 						foreach ( $create_keys_design as $key ) {
-							$alter_table_statement .= $key === reset( $create_keys_design ) ? '(' : ',';//phpcs:ignore - 8.1 proof
+							$alter_table_statement .= $key === reset( $create_keys_design ) ? '(' : ','; // phpcs:ignore -- 8.1 proof
 							$alter_table_statement .= '`' . str_replace( '`', '', $key ) . '`';
 						}
 						$alter_table_statement .= ');' . self::NEW_LINE . self::NEW_LINE;
@@ -692,7 +708,7 @@ namespace WPDataAccess\Design_Table {
 							$unique = '';
 						}
 					}
-					$column_names_array            = explode( ',', ( string ) $design_index->column_names );//phpcs:ignore - 8.1 proof
+					$column_names_array            = explode( ',', ( string ) $design_index->column_names ); // phpcs:ignore -- 8.1 proof
 					$column_names                  = '`' . implode( '`,`', $column_names_array ) . '`';
 					$this->create_table_statement .=
 						"CREATE $unique INDEX `" . str_replace( '`', '', $design_index->index_name ) . "` ON `{$this->wpda_table_name}` ($column_names);" .
@@ -732,7 +748,7 @@ namespace WPDataAccess\Design_Table {
 			array_push(
 				$this->alter_table_statement,
 				$alter_table_statement
-			);//phpcs:ignore - 8.1 proof
+			); // phpcs:ignore -- 8.1 proof
 		}
 
 		/**
@@ -744,13 +760,16 @@ namespace WPDataAccess\Design_Table {
 		 */
 		protected function drop_table() {
 			if ( $this->is_wp_table ) {
+				// phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
 				$msg = new WPDA_Message_Box(
 					array(
+						/* translators: %s = table name */
 						'message_text'           => sprintf( __( 'Cannot drop WordPress table `%s`', 'wp-data-access' ), $this->wpda_table_name ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
 				);
+				// phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
 				$msg->box();
 
 				return;
@@ -759,17 +778,21 @@ namespace WPDataAccess\Design_Table {
 			if ( $this->table_exists ) {
 				$wpdadb = WPDADB::get_db_connection( $this->wpda_schema_name );
 				if ( null === $wpdadb ) {
-					wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->wpda_schema_name ) ) );
+					/* translators: %s = remote database name */
+					wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->wpda_schema_name ) ) );
 				}
 
 				$suppress             = $wpdadb->suppress_errors( true );
 				$drop_table_statement = "DROP TABLE `{$this->wpda_table_name}`";
 				if ( $wpdadb->query( $drop_table_statement ) ) {
+					// phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
 					$msg = new WPDA_Message_Box(
 						array(
+							/* translators: %s = table name */
 							'message_text' => sprintf( __( 'Table `%s` dropped', 'wp-data-access' ), $this->wpda_table_name ),
 						)
 					);
+					// phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
 					$msg->box();
 				} else {
 					$msg = new WPDA_Message_Box(
@@ -797,7 +820,7 @@ namespace WPDataAccess\Design_Table {
 
 			$create_keys = array();
 			foreach ( $this->wpda_table_design->table as $row ) {
-				$this->create_table_statement .= $row === reset( $this->wpda_table_design->table ) ? '(' : ',';//phpcs:ignore - 8.1 proof
+				$this->create_table_statement .= $row === reset( $this->wpda_table_design->table ) ? '(' : ','; // phpcs:ignore -- 8.1 proof
 				$this->create_table_statement .= '`' . str_replace( '`', '', $row->column_name ) . '`';
 				$this->create_table_statement .= ' ';
 				$this->create_table_statement .= $row->data_type;
@@ -841,10 +864,10 @@ namespace WPDataAccess\Design_Table {
 				}
 				$this->create_table_statement .= self::NEW_LINE;
 			}
-			if ( 0 < count( $create_keys ) ) {//phpcs:ignore - 8.1 proof
+			if ( 0 < count( $create_keys ) ) { // phpcs:ignore -- 8.1 proof
 				$this->create_table_statement .= ',PRIMARY KEY ';
 				foreach ( $create_keys as $key ) {
-					$this->create_table_statement .= $key === reset( $create_keys ) ? '(' : ',';//phpcs:ignore - 8.1 proof
+					$this->create_table_statement .= $key === reset( $create_keys ) ? '(' : ','; // phpcs:ignore -- 8.1 proof
 					$this->create_table_statement .= '`' . str_replace( '`', '', $key ) . '`';
 				}
 				$this->create_table_statement .= ')';
@@ -855,7 +878,7 @@ namespace WPDataAccess\Design_Table {
 				$this->create_table_statement .= ' ENGINE ' . $this->wpda_table_design->engine;
 			}
 			if ( isset( $this->wpda_table_design->collation ) && '' !== $this->wpda_table_design->collation ) {
-				$collation                     = explode( '_', $this->wpda_table_design->collation );//phpcs:ignore - 8.1 proof
+				$collation                     = explode( '_', $this->wpda_table_design->collation ); // phpcs:ignore -- 8.1 proof
 				$this->create_table_statement .= ' DEFAULT CHARACTER SET ' . $collation[0] . ' COLLATE=' . $this->wpda_table_design->collation;
 			}
 			$this->create_table_statement .= ';' . self::NEW_LINE . self::NEW_LINE;
@@ -872,7 +895,8 @@ namespace WPDataAccess\Design_Table {
 				// Create table and indexes.
 				$wpdadb = WPDADB::get_db_connection( $this->wpda_schema_name );
 				if ( null === $wpdadb ) {
-					wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->wpda_schema_name ) ) );
+					/* translators: %s = remote database name */
+					wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->wpda_schema_name ) ) );
 				}
 
 				$suppress = $wpdadb->suppress_errors( true );
@@ -1109,19 +1133,19 @@ namespace WPDataAccess\Design_Table {
 
 				function pre_submit() {
 					if (jQuery('#wpda_table_name').val() === '') {
-						alert('<?php echo __( 'Table name cannot be empty' ); ?>');
+						alert('<?php echo esc_attr__( 'Table name cannot be empty', 'wp-data-access' ); ?>');
 						return false;
 					}
 					if ('<?php echo esc_attr( $this->action2 ); ?>' === 'new') {
 						if (wpda_db_table_name[jQuery('#wpda_table_name').val()]) {
-							alert('<?php echo __( 'Table name already used for another table design' ); ?>');
+							alert('<?php echo esc_attr__( 'Table name already used for another table design', 'wp-data-access' ); ?>');
 							return false;
 						}
 					}
 					var all_columns_entered = true;
 					jQuery("input[name='column_name[]']").each(function () {
 						if (jQuery(this).val() === '') {
-							alert('<?php echo __( 'Column names cannot be empty' ); ?>');
+							alert('<?php echo esc_attr__( 'Column names cannot be empty', 'wp-data-access' ); ?>');
 							all_columns_entered = false;
 						}
 					});
@@ -1494,7 +1518,7 @@ namespace WPDataAccess\Design_Table {
 
 				function pre_submit_re() {
 					if (wpda_db_table_name[jQuery('select[name="wpda_table_name_re"]').val()]) {
-						alert('<?php echo __( 'Table name already used for another table design' ); ?>');
+						alert('<?php echo esc_attr__( 'Table name already used for another table design', 'wp-data-access' ); ?>');
 						return false;
 					}
 					jQuery('#design_mode_re').val(jQuery('input[name="design_mode"]:checked').val());
@@ -1531,7 +1555,7 @@ namespace WPDataAccess\Design_Table {
 						href="?page=<?php echo '' === $this->caller ? esc_attr( $this->page ) : esc_attr( \WP_Data_Access_Admin::PAGE_MAIN ); ?>"
 						style="display: inline-block; vertical-align: unset;"
 						class="dashicons dashicons-arrow-left-alt2 wpda_tooltip"
-						title="<?php echo __( 'List', 'wp-data-access' ); ?>"
+						title="<?php echo esc_attr__( 'List', 'wp-data-access' ); ?>"
 					></a>
 					Data Designer
 				</h1>
@@ -1546,6 +1570,7 @@ namespace WPDataAccess\Design_Table {
 						<input type="hidden" name="wpda_schema_name"
 							   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
+						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 					</form>
 					<form id="wpda_alter_table_form"
 						  action="?page=<?php echo esc_attr( $this->page ); ?>"
@@ -1557,6 +1582,7 @@ namespace WPDataAccess\Design_Table {
 						<input type="hidden" name="wpda_schema_name"
 							   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
+						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 					</form>
 					<form id="wpda_drop_table_form"
 						  action="?page=<?php echo esc_attr( $this->page ); ?>"
@@ -1568,6 +1594,7 @@ namespace WPDataAccess\Design_Table {
 						<input type="hidden" name="wpda_schema_name"
 							   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
+						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 					</form>
 					<form id="wpda_create_index_form"
 						  action="?page=<?php echo esc_attr( $this->page ); ?>"
@@ -1579,6 +1606,7 @@ namespace WPDataAccess\Design_Table {
 						<input type="hidden" name="wpda_schema_name"
 							   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
+						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 					</form>
 					<form id="wpda_drop_index_form"
 						  action="?page=<?php echo esc_attr( $this->page ); ?>"
@@ -1590,6 +1618,7 @@ namespace WPDataAccess\Design_Table {
 						<input type="hidden" name="wpda_schema_name"
 							   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
+						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 					</form>
 				</div>
 				<style>
@@ -1635,7 +1664,7 @@ namespace WPDataAccess\Design_Table {
 						   style="text-align:center;width:150px;"
 						   data-clipboard-text="<?php echo str_replace( self::NEW_LINE, "\n", $this->create_table_statement ) . str_replace( self::NEW_LINE, "\n", $this->create_index_statement ); // phpcs:ignore WordPress.Security.EscapeOutput ?>">
 							<i class="fas fa-clipboard wpda_icon_on_button"></i>
-							<?php echo __( 'Copy to clipboard' ); ?>
+							<?php echo esc_attr__( 'Copy to clipboard', 'wp-data-access' ); ?>
 						</a>
 						<br/>
 						<div style="height: 5px;"></div>
@@ -1643,7 +1672,7 @@ namespace WPDataAccess\Design_Table {
 						   style="text-align:center;width:150px;"
 						   onclick="jQuery('#overlay_show_create_table').hide()">
 							<i class="fas fa-times-circle wpda_icon_on_button"></i>
-							<?php echo __( 'Close' ); ?>
+							<?php echo esc_attr__( 'Close', 'wp-data-access' ); ?>
 						</a>
 					</div>
 				</div>
@@ -1654,10 +1683,10 @@ namespace WPDataAccess\Design_Table {
 						<?php } ?>
 						var sql_to_clipboard = new ClipboardJS('#button-copy-clipboard');
 						sql_to_clipboard.on('success', function (e) {
-							jQuery.notify('<?php echo __( 'SQL successfully copied to clipboard!' ); ?>','info');
+							jQuery.notify('<?php echo esc_attr__( 'SQL successfully copied to clipboard!', 'wp-data-access' ); ?>','info');
 						});
 						sql_to_clipboard.on('error', function (e) {
-							jQuery.notify('<?php echo __( 'Could not copy SQL to clipboard!' ); ?>','error');
+							jQuery.notify('<?php echo esc_attr__( 'Could not copy SQL to clipboard!', 'wp-data-access' ); ?>','error');
 						});
 						jQuery('#wpda_table_structure').sortable();
 						jQuery( '.wpda_tooltip' ).tooltip();
@@ -1673,7 +1702,7 @@ namespace WPDataAccess\Design_Table {
 						<div class="wpda_reverse_engineering">
 							<form id="wpda_reverse_engineering_form"
 								  action="?page=<?php echo esc_attr( $this->page ); ?>" method="post">
-								<label><?php echo __( 'Load table from database' ); ?> </label>
+								<label><?php echo esc_attr__( 'Load table from database', 'wp-data-access' ); ?> </label>
 								<select name="wpda_schema_name_re" id="wpda_schema_name_re_list" onchange="get_tables()">
 									<?php
 									global $wpdb;
@@ -1714,7 +1743,8 @@ namespace WPDataAccess\Design_Table {
 									   onclick="return pre_submit_re()"
 								>
 								<a href="javascript:void(0)" onclick="jQuery('#wpda_reverse_engineering').hide()"
-								   class="button"><?php echo __( 'Dismiss' ); ?></a>
+								   class="button"><?php echo esc_attr__( 'Dismiss', 'wp-data-access' ); ?></a>
+								<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 							</form>
 						</div>
 					</div>
@@ -1734,6 +1764,7 @@ namespace WPDataAccess\Design_Table {
 							<input type="hidden" name="wpda_schema_name_re"
 								   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 							<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
+							<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 						</form>
 					</div>
 					<?php
@@ -1756,6 +1787,7 @@ namespace WPDataAccess\Design_Table {
 							<input type="hidden" name="wpda_schema_name"
 								   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 							<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
+							<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 						</form>
 						<form id="show_alter_table_form" action="?page=<?php echo esc_attr( $this->page ); ?>"
 							  method="post">
@@ -1766,6 +1798,7 @@ namespace WPDataAccess\Design_Table {
 							<input type="hidden" name="wpda_schema_name"
 								   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 							<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
+							<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 						</form>
 					</div>
 					<form id="design_table_form"
@@ -1775,7 +1808,7 @@ namespace WPDataAccess\Design_Table {
 						<fieldset class="wpda_fieldset">
 							<legend>
 								<span>
-									<?php echo __( 'Table definition', 'wp-data-access' ); ?>
+									<?php echo esc_attr__( 'Table definition', 'wp-data-access' ); ?>
 									<?php
 									if (
 										'' !== $this->wpda_schema_name &&
@@ -1784,7 +1817,7 @@ namespace WPDataAccess\Design_Table {
 									) {
 										$table_structure = json_decode( json_encode( $this->wpda_table_design ), true );
 										if ( isset( $table_structure['table'] ) ) {
-											$column_names = array_column( (array) $table_structure['table'], 'column_name' ); //phpcs:ignore - 8.1 proof
+											$column_names = array_column( (array) $table_structure['table'], 'column_name' );  // phpcs:ignore -- 8.1 proof
 										} else {
 											$column_names = array();
 										}
@@ -1801,7 +1834,7 @@ namespace WPDataAccess\Design_Table {
 							<thead>
 							<tr>
 								<td class="wpda-table-structure-first-column">
-									<label for "wpda_schema_name"><?php echo __( 'Database' ); ?> </label>
+									<label for "wpda_schema_name"><?php echo esc_attr__( 'Database', 'wp-data-access' ); ?> </label>
 								</td>
 								<td>
 									<select name="wpda_schema_name" id="wpda_schema_name" style="width:100%;max-width:100%;">
@@ -1836,7 +1869,7 @@ namespace WPDataAccess\Design_Table {
 												   onclick="return switch_mode(event)"
 												<?php echo 'basic' === $this->design_mode ? 'checked' : ''; ?>
 											>
-											<?php echo __( 'Basic Design Mode' ); ?>
+											<?php echo esc_attr__( 'Basic Design Mode', 'wp-data-access' ); ?>
 										</label>
 										<label>
 											<input type="radio"
@@ -1846,13 +1879,13 @@ namespace WPDataAccess\Design_Table {
 												   onclick="return switch_mode(event)"
 												<?php echo 'advanced' === $this->design_mode ? 'checked' : ''; ?>
 											>
-											<?php echo __( 'Advanced Design Mode' ); ?>
+											<?php echo esc_attr__( 'Advanced Design Mode', 'wp-data-access' ); ?>
 										</label>
 									</span>
 								</td>							</tr>
 							<tr>
 								<td class="wpda-table-structure-first-column">
-									<label for "wpda_table_name"><?php echo __( 'Table name' ); ?> </label>
+									<label for "wpda_table_name"><?php echo esc_attr__( 'Table name', 'wp-data-access' ); ?> </label>
 								</td>
 								<td>
 									<input type="text" name="wpda_table_name" id="wpda_table_name" maxlength="64"
@@ -1868,31 +1901,31 @@ namespace WPDataAccess\Design_Table {
 										if ( $this->is_wp_table ) {
 											?>
 											<span style="vertical-align:-webkit-baseline-middle; cursor:pointer;"
-												  title="<?php echo __( 'You cannot use a WordPress table name', 'wp-data-access' ); ?>"
+												  title="<?php echo esc_attr__( 'You cannot use a WordPress table name', 'wp-data-access' ); ?>"
 												  class="dashicons dashicons-flag wpda_tooltip">
 											</span>
 											<?php
 										} else {
 											?>
-											<i title="<?php echo __( 'A table with this name already exists in the database', 'wp-data-access' ); ?>"
+											<i title="<?php echo esc_attr__( 'A table with this name already exists in the database', 'wp-data-access' ); ?>"
 												  class="fas fa-info-circle pointer wpda_tooltip" style="padding: 0 5px; font-size: 24px; line-height: 30px"></i>
 											<?php
 										}
 										?>
 										<a href="javascript:void(0)"
 											   id="reconcile_button"
-											onclick="if (confirm('<?php echo __( 'Reconcile table? Your current modifications will be lost!' ); ?>')) { jQuery('#wpda_reconcile_form').submit(); }"
+											onclick="if (confirm('<?php echo esc_attr__( 'Reconcile table? Your current modifications will be lost!', 'wp-data-access' ); ?>')) { jQuery('#wpda_reconcile_form').submit(); }"
 											class="button wpda_tooltip"
 											title="Update table design from database table (overwrites current design)">
 											<i class="fas fa-redo wpda_icon_on_button"></i>
-											<?php echo __( 'Reconcile' ); ?>
+											<?php echo esc_attr__( 'Reconcile', 'wp-data-access' ); ?>
 										</a>
 										<?php
 									} else {
 										$title = __( 'New table', 'wp-data-access' );
 										?>
 										<span style="vertical-align:-webkit-baseline-middle; cursor:pointer;"
-											  title="<?php echo $title; // phpcs:ignore WordPress.Security.EscapeOutput ?>"
+											  title="<?php echo esc_attr( $title ); ?>"
 											  class="dashicons dashicons-warning wpda_tooltip">
 										</span>
 										<?php
@@ -1908,9 +1941,9 @@ namespace WPDataAccess\Design_Table {
 										<a href="javascript:void(0)"
 										   onclick="jQuery('#wpda_reverse_engineering').show()"
 										   class="button wpda_view_table wpda_tooltip"
-										   title="<?php echo __( 'Load table from database' ); ?>"
+										   title="<?php echo esc_attr__( 'Load table from database', 'wp-data-access' ); ?>"
 										>
-											<?php echo __( 'Reverse engineering' ); ?>
+											<?php echo esc_attr__( 'Reverse engineering', 'wp-data-access' ); ?>
 										</a>
 										<?php
 									}
@@ -1922,7 +1955,7 @@ namespace WPDataAccess\Design_Table {
 							<?php if ( 'advanced' === $this->design_mode ) { ?>
 								<tr>
 									<td class="wpda-table-structure-first-column">
-										<label for "engine"><?php echo __( 'Engine' ); ?> </label>
+										<label for "engine"><?php echo esc_attr__( 'Engine', 'wp-data-access' ); ?> </label>
 									</td>
 									<td>
 										<select name="engine" id="engine" style="width:100%;max-width:100%;" class="wpda_view_table">
@@ -1956,21 +1989,21 @@ namespace WPDataAccess\Design_Table {
 											   title="Generates a create table script from table and index design."
 											   onclick="jQuery('#show_create_table_form').submit();">
 												<i class="fas fa-code wpda_icon_on_button"></i>
-												<?php echo __( 'Show CREATE TABLE script' ); ?>
+												<?php echo esc_attr__( 'Show CREATE TABLE script', 'wp-data-access' ); ?>
 											</a>
 											<a id="button_show_alter_table" href="javascript:void(0)"
 											   class="button button-secondary wpda_tooltip"
 											   title="Generates a alter table script from table and index design."
 											   onclick="jQuery('#show_alter_table_form').submit();">
 												<i class="fas fa-code wpda_icon_on_button"></i>
-												<?php echo __( 'Show ALTER TABLE script' ); ?>
+												<?php echo esc_attr__( 'Show ALTER TABLE script', 'wp-data-access' ); ?>
 											</a>
 										</span>
 									</td>
 								</tr>
 								<tr>
 									<td class="wpda-table-structure-first-column">
-										<label for "collation"><?php echo __( 'Collation' ); ?> </label>
+										<label for "collation"><?php echo esc_attr__( 'Collation', 'wp-data-access' ); ?> </label>
 									</td>
 									<td>
 										<select name="collation" id="collation" style="width:100%;max-width:100%;"
@@ -2013,7 +2046,7 @@ namespace WPDataAccess\Design_Table {
 											<label id="checkbox_show_deleted_label">
 												<input id="checkbox_show_deleted" type="checkbox"
 													   onclick="if (jQuery(this).is(':checked')) { jQuery('.wpda_column_deleted').show(); } else {  jQuery('.wpda_column_deleted').hide(); }">
-												<?php echo __( 'Show deleted columns and indexes' ); ?>
+												<?php echo esc_attr__( 'Show deleted columns and indexes', 'wp-data-access' ); ?>
 											</label>
 										</span>
 									</td>
@@ -2026,7 +2059,7 @@ namespace WPDataAccess\Design_Table {
 						<fieldset class="wpda_fieldset">
 							<legend>
 								<span>
-									<?php echo __( 'Add columns', 'wp-data-access' ); ?>
+									<?php echo esc_attr__( 'Add columns', 'wp-data-access' ); ?>
 								</span>
 							</legend>
 						<table class="wpda-table-structure" style="border-collapse: collapse;">
@@ -2034,27 +2067,27 @@ namespace WPDataAccess\Design_Table {
 								<tr>
 									<th class="wpda-table-structure-first-column-move"></th>
 									<th>
-										<?php echo __( 'Column name' ); ?>
+										<?php echo esc_attr__( 'Column name', 'wp-data-access' ); ?>
 									</th>
 									<th>
-										<?php echo __( 'Column type' ); ?>
+										<?php echo esc_attr__( 'Column type', 'wp-data-access' ); ?>
 									</th>
 									<?php if ( 'advanced' === $this->design_mode ) { ?>
 										<th>
-											<?php echo __( 'Type attribute' ); ?>
+											<?php echo esc_attr__( 'Type attribute', 'wp-data-access' ); ?>
 										</th>
 									<?php } ?>
 									<th style="min-width:60px;">
-										<?php echo __( 'Key?' ); ?>
+										<?php echo esc_attr__( 'Key?', 'wp-data-access' ); ?>
 									</th>
 									<th style="min-width:90px;">
-										<?php echo __( 'Mandatory?' ); ?>
+										<?php echo esc_attr__( 'Mandatory?', 'wp-data-access' ); ?>
 									</th>
 									<th>
-										<?php echo __( 'Max length' ); ?>
+										<?php echo esc_attr__( 'Max length', 'wp-data-access' ); ?>
 									</th>
 									<th>
-										<?php echo __( 'Extra' ); ?>
+										<?php echo esc_attr__( 'Extra', 'wp-data-access' ); ?>
 										<i title="Possible values:
 
 auto_increment
@@ -2068,10 +2101,10 @@ Or combined:
 default_generated on update current_timestamp" class="fas fa-circle-question pointer wpda_tooltip"></i>
 									</th>
 									<th>
-										<?php echo __( 'Default value' ); ?>
+										<?php echo esc_attr__( 'Default value', 'wp-data-access' ); ?>
 									</th>
 									<th>
-										<?php echo __( 'List values' ); ?>
+										<?php echo esc_attr__( 'List values', 'wp-data-access' ); ?>
 									</th>
 									<th class="wpda-table-structure-last-column">
 										<a href="javascript:void(0)"
@@ -2109,7 +2142,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 										}
 										?>
 									   "
-									   onclick="if ( confirm('Create database table `<?php echo WPDA::remove_backticks( $this->wpda_schema_name ); // phpcs:ignore WordPress.Security.EscapeOutput ?>`.`<?php echo WPDA::remove_backticks( $this->wpda_table_name ); // phpcs:ignore WordPress.Security.EscapeOutput ?>`?\nDoes not create indexes!') ) { jQuery('#wpda_create_table_form').submit(); }"
+									   onclick="if ( confirm('Create database table `<?php echo esc_attr( WPDA::remove_backticks( $this->wpda_schema_name ) ); ?>`.`<?php echo esc_attr( WPDA::remove_backticks( $this->wpda_table_name ) ); ?>`?\nDoes not create indexes!') ) { jQuery('#wpda_create_table_form').submit(); }"
 										<?php
 										if ( $this->table_exists || 'new' === strtolower( $this->action2 ) ) {
 											echo ' readonly disabled';
@@ -2117,14 +2150,14 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 										?>
 									>
 										<i class="fas fa-check wpda_icon_on_button"></i>
-										<?php echo __( 'CREATE TABLE', 'wp-data-access' ); ?>
+										<?php echo esc_attr__( 'CREATE TABLE', 'wp-data-access' ); ?>
 									</a>
 									<a id="button_alter_table" href="javascript:void(0)" class="button wpda_view wpda_tooltip"
 									   title="Writes design changes to database table and indexes."
-									   onclick="if ( confirm('Alter database table `<?php echo WPDA::remove_backticks( $this->wpda_schema_name ); // phpcs:ignore WordPress.Security.EscapeOutput ?>`.`<?php echo WPDA::remove_backticks( $this->wpda_table_name ); // phpcs:ignore WordPress.Security.EscapeOutput ?>`?\nAlters modified indexes as well!') ) { jQuery('#wpda_alter_table_form').submit(); }"
+									   onclick="if ( confirm('Alter database table `<?php echo esc_attr( WPDA::remove_backticks( $this->wpda_schema_name ) ); ?>`.`<?php echo esc_attr( WPDA::remove_backticks( $this->wpda_table_name ) ); ?>`?\nAlters modified indexes as well!') ) { jQuery('#wpda_alter_table_form').submit(); }"
 									>
 										<i class="fas fa-redo wpda_icon_on_button"></i>
-										<?php echo __( 'ALTER TABLE', 'wp-data-access' ); ?>
+										<?php echo esc_attr__( 'ALTER TABLE', 'wp-data-access' ); ?>
 									</a>
 									<a href="javascript:void(0)"
 									   title="This action drops your database table! Not your table design... This cannot be undone."
@@ -2135,7 +2168,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 										}
 										?>
 									   "
-									   onclick="if ( confirm('Drop database table `<?php echo WPDA::remove_backticks( $this->wpda_schema_name ); // phpcs:ignore WordPress.Security.EscapeOutput ?>`.`<?php echo WPDA::remove_backticks( $this->wpda_table_name ); // phpcs:ignore WordPress.Security.EscapeOutput ?>`?\nTable design will not be deleted!') ) { jQuery('#wpda_drop_table_form').submit(); }"
+									   onclick="if ( confirm('Drop database table `<?php echo esc_attr( WPDA::remove_backticks( $this->wpda_schema_name ) ); ?>`.`<?php echo esc_attr( WPDA::remove_backticks( $this->wpda_table_name ) ); ?>`?\nTable design will not be deleted!') ) { jQuery('#wpda_drop_table_form').submit(); }"
 										<?php
 										if ( ! $this->table_exists ) {
 											echo ' readonly disabled';
@@ -2143,7 +2176,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 										?>
 									>
 										<i class="fas fa-trash wpda_icon_on_button"></i>
-										<?php echo __( 'DROP TABLE', 'wp-data-access' ); ?>
+										<?php echo esc_attr__( 'DROP TABLE', 'wp-data-access' ); ?>
 									</a>
 									<input type='hidden' name='caller'
 										   value='<?php echo esc_attr( $this->caller ); ?>'/>
@@ -2158,6 +2191,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 							</tfoot>
 						</table>
 						</fieldset>
+						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 					</form>
 					<form id="wpda_reset_form" action="?page=<?php echo esc_attr( $this->page ); ?>" method="post">
 						<input type="hidden" name="action" value="edit"/>
@@ -2172,13 +2206,15 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 						}
 						?>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
+						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 					</form>
 					<form id="switch_mode_form" method="post"
 						  action="?page=<?php echo esc_attr( $this->page ); ?>">
 						<input type="hidden" name="design_mode"
-							   value="<?php echo 'basic' === $this->design_mode ? 'advanced' : 'basic'; // phpcs:ignore WordPress.Security.EscapeOutput ?>">
+							   value="<?php echo 'basic' === $this->design_mode ? 'advanced' : 'basic'; ?>">
 						<input type="hidden" name="action" value="edit">
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
+						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 					</form>
 				</div>
 				<br/>
@@ -2188,20 +2224,20 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 						<fieldset class="wpda_fieldset">
 							<legend>
 								<span>
-									<?php echo __( 'Add indexes' ); ?>
+									<?php echo esc_attr__( 'Add indexes', 'wp-data-access' ); ?>
 								</span>
 							</legend>
 						<table class="wpda-table-structure" style="border-collapse: collapse;">
 							<thead>
 							<tr>
 								<th style="padding-left:10px;">
-									<?php echo __( 'Index name' ); ?>
+									<?php echo esc_attr__( 'Index name', 'wp-data-access' ); ?>
 								</th>
 								<th>
-									<?php echo __( 'Type?' ); ?>
+									<?php echo esc_attr__( 'Type?', 'wp-data-access' ); ?>
 								</th>
 								<th>
-									<?php echo __( 'Column name(s)' ); ?>
+									<?php echo esc_attr__( 'Column name(s)', 'wp-data-access' ); ?>
 								</th>
 								<th></th>
 								<th class="wpda-table-structure-last-column" style="width:20px;">
@@ -2233,33 +2269,34 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 									<a id="wpda_create_index" href="javascript:void(0)"
 									   title="Drops all indexes and recreates them."
 									   class="button wpda_view wpda_tooltip"
-									   onclick="if ( confirm('<?php echo __( 'Drop all deleted indexes and recreate all changed indexes for table' . ' `' . $this->wpda_table_name . '`?' ); ?>') ) { jQuery('#wpda_create_index_form').submit(); }"
+									   onclick="if ( confirm('<?php echo 'Drop all deleted indexes and recreate all changed indexes for table' . ' `' . esc_attr( $this->wpda_table_name ) . '`?'; ?>') ) { jQuery('#wpda_create_index_form').submit(); }"
 									>
 										<i class="fas fa-check wpda_icon_on_button"></i>
-										<?php echo __( '(RE)CREATE INDEXES', 'wp-data-access' ); ?>
+										<?php echo esc_attr__( '(RE)CREATE INDEXES', 'wp-data-access' ); ?>
 									</a>
 									<a id="wpda_drop_index" href="javascript:void(0)"
 									   title="This action drops your indexes from the database! This cannot be undone."
 									   class="button wpda_view wpda_tooltip"
-									   onclick="if ( confirm('<?php echo __( 'Drop all indexes for table' . ' `' . $this->wpda_table_name . '`?\n' . __( 'Does not drop primary key indexes and index designs!' ) ); ?>'))  { jQuery('#wpda_drop_index_form').submit(); }"
+									   onclick="if ( confirm('<?php echo esc_attr__( 'Drop all indexes for table', 'wp-data-access' ) . ' `' . esc_attr( $this->wpda_table_name ) . '`?\n' . esc_attr__( 'Does not drop primary key indexes and index designs!', 'wp-data-access' ); ?>'))  { jQuery('#wpda_drop_index_form').submit(); }"
 									>
 										<i class="fas fa-trash wpda_icon_on_button"></i>
-										<?php echo __( 'DROP INDEXES', 'wp-data-access' ); ?>
+										<?php echo esc_attr__( 'DROP INDEXES', 'wp-data-access' ); ?>
 									</a>
 									<input type='hidden' name='caller'
 										   value='<?php echo esc_attr( $this->caller ); ?>'/>
 									<a id="submit_indexes" href="javascript:void(0)"
 									   title="Does NOT create indexes! It just saves your index design..."
-									   onclick="if (!jQuery(this).attr('disabled')) { jQuery('#design_table_form_indexes').submit(); } else { alert('<?php echo __( 'Save table design changes first!' ); ?>'); }"
+									   onclick="if (!jQuery(this).attr('disabled')) { jQuery('#design_table_form_indexes').submit(); } else { alert('<?php echo esc_attr__( 'Save table design changes first!', 'wp-data-access' ); ?>'); }"
 									   class="button button-primary wpda_view_index wpda_tooltip">
 										<i class="fas fa-check wpda_icon_on_button"></i>
-										<?php echo __( 'Save Indexes' ); ?>
+										<?php echo esc_attr__( 'Save Indexes', 'wp-data-access' ); ?>
 									</a>
 								</td>
 							</tr>
 							</tfoot>
 						</table>
 						</fieldset>
+						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
 					</form>
 				</div>
 				<?php
@@ -2271,14 +2308,14 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 							<tfoot>
 							<tr>
 								<td>
-									<h3><?php echo __( 'The following CREATE TABLE statement failed' ); ?></h3>
+									<h3><?php echo esc_attr__( 'The following CREATE TABLE statement failed', 'wp-data-access' ); ?></h3>
 									<div>
 										<div style="padding:10px; text-align: left; width: fit-content; margin: 0 auto;">
 											<?php echo $this->create_table_statement; // phpcs:ignore WordPress.Security.EscapeOutput ?>
 										</div>
 									</div>
 									<div>
-										<strong><?php echo $this->wpdb_error; // phpcs:ignore WordPress.Security.EscapeOutput ?></strong>
+										<strong><?php echo esc_attr( $this->wpdb_error ); ?></strong>
 									</div>
 								</td>
 							</tr>
@@ -2287,7 +2324,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 					</div>
 					<?php
 				}
-				if ( null !== $this->create_index_failed && 0 < count( $this->create_index_failed ) ) {//phpcs:ignore - 8.1 proof
+				if ( null !== $this->create_index_failed && 0 < count( $this->create_index_failed ) ) { // phpcs:ignore -- 8.1 proof
 					?>
 					<br/>
 					<div class="wpda_design_table">
@@ -2295,7 +2332,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 							<tfoot>
 							<tr>
 								<td>
-									<h3><?php echo __( 'The following CREATE INDEX statement(s) failed' ); ?></h3>
+									<h3><?php echo esc_attr__( 'The following CREATE INDEX statement(s) failed', 'wp-data-access' ); ?></h3>
 									<div>
 										<div style="padding:10px; text-align: left; width: fit-content; margin: 0 auto;">
 											<?php
@@ -2320,14 +2357,14 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 							<tfoot>
 							<tr>
 								<td>
-									<h3><?php echo __( 'The following ALTER TABLE statement failed' ); ?></h3>
+									<h3><?php echo esc_attr__( 'The following ALTER TABLE statement failed', 'wp-data-access' ); ?></h3>
 									<div>
 										<div style="padding:10px; text-align: left; width: fit-content; margin: 0 auto;">
 											<?php echo $this->create_table_statement; // phpcs:ignore WordPress.Security.EscapeOutput ?>
 										</div>
 									</div>
 									<div>
-										<strong><?php echo $this->wpdb_error; // phpcs:ignore WordPress.Security.EscapeOutput ?></strong>
+										<strong><?php echo esc_attr( $this->wpdb_error ); ?></strong>
 									</div>
 								</td>
 							</tr>
@@ -2485,7 +2522,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 							'<?php echo esc_attr( $design_index->index_name ); ?>',
 							'<?php echo esc_attr( $design_index->unique ); ?>',
 							'<?php echo esc_attr( $design_index->column_names ); ?>',
-							'<?php echo $index_changed; // phpcs:ignore WordPress.Security.EscapeOutput ?>'
+							'<?php echo esc_attr( $index_changed ); ?>'
 						);
 					</script>
 					<?php
@@ -2620,7 +2657,8 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 		protected function drop_index( $index_name ) {
 			$wpdadb = WPDADB::get_db_connection( $this->wpda_schema_name );
 			if ( null === $wpdadb ) {
-				wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->wpda_schema_name ) ) );
+				/* translators: %s = remote database name */
+				wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->wpda_schema_name ) ) );
 			}
 
 			$suppress = $wpdadb->suppress_errors( true );
@@ -2628,11 +2666,14 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 			// Index is deleted from table design: drop index
 			$drop_index_statement = 'DROP INDEX `' . str_replace( '`', '', $index_name ) . "` ON `{$this->wpda_table_name}`";
 			if ( $wpdadb->query( $drop_index_statement ) ) {
+				// phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
 				$msg = new WPDA_Message_Box(
 					array(
+						/* translators: %s = index name */
 						'message_text' => sprintf( __( 'Index `%s` dropped', 'wp-data-access' ), esc_attr( $index_name) ),
 					)
 				);
+				// phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
 				$msg->box();
 			} else {
 				$msg = new WPDA_Message_Box(
@@ -2656,7 +2697,8 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 		protected function create_index() {
 			$wpdadb = WPDADB::get_db_connection( $this->wpda_schema_name );
 			if ( null === $wpdadb ) {
-				wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->wpda_schema_name ) ) );
+				/* translators: %s = remote database name */
+				wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->wpda_schema_name ) ) );
 			}
 
 			$suppress = $wpdadb->suppress_errors( true );
@@ -2681,7 +2723,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 						$unique = '';
 					}
 				}
-				$column_names_array            = explode( ',', ( string ) $index->column_names );//phpcs:ignore - 8.1 proof
+				$column_names_array            = explode( ',', ( string ) $index->column_names ); // phpcs:ignore -- 8.1 proof
 				$column_names                  = '`' . implode( '`,`', $column_names_array ) . '`';
 				$create_index_statement        =
 					"CREATE $unique INDEX `" . str_replace( '`', '', $index->index_name ) . "` ON `{$this->wpda_table_name}` ($column_names)";
@@ -2692,11 +2734,14 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 				}
 
 				if ( $wpdadb->query( $create_index_statement ) ) {
+					// phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
 					$msg = new WPDA_Message_Box(
 						array(
+							/* translators: %s = index name */
 							'message_text' => sprintf( __( 'Index `%s` created', 'wp-data-access' ), $index->index_name ),
 						)
 					);
+					// phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
 					$msg->box();
 				} else {
 					$msg = new WPDA_Message_Box(

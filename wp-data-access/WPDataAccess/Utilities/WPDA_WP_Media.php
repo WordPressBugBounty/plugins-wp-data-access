@@ -11,8 +11,8 @@ namespace WPDataAccess\Utilities {
 			// Get WordPress media library columns from URL argument.
 			$media_columns = array();
 
-			if ( isset( $_POST['media'] ) && is_array( $_POST['media'] ) ) {
-				$media_array = rest_sanitize_array( $_POST['media'] );
+			if ( isset( $_POST['media'] ) && is_array( $_POST['media'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- already verified
+				$media_array = rest_sanitize_array( $_POST['media'] ); // phpcs:ignore
 				foreach ( $media_array as $media ) {
 					if ( isset( $media['target'], $columns[ $media['target'] ]['name'] ) ) {
 						// Column target is stored in element data.

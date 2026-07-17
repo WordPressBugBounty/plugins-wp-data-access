@@ -74,7 +74,7 @@ namespace WPDataProjects\Project {
 			$schema_names = WPDA_Dictionary_Lists::get_db_schemas();
 			$databases    = array();
 			foreach ( $schema_names as $schema_name ) {
-				array_push( $databases, $schema_name['schema_name'] );//phpcs:ignore - 8.1 proof
+				array_push( $databases, $schema_name['schema_name'] ); // phpcs:ignore -- 8.1 proof
 			}
 
 			$tables       = array();
@@ -111,7 +111,7 @@ namespace WPDataProjects\Project {
 						}
 						$tables = array();
 						foreach ( $tables_named as $key => $value ) {
-							array_push( $tables, $key );//phpcs:ignore - 8.1 proof
+							array_push( $tables, $key ); // phpcs:ignore -- 8.1 proof
 						}
 						break;
 					default:
@@ -164,14 +164,14 @@ namespace WPDataProjects\Project {
 					$lov         = array();
 					$lov_options = array();
 					// For some reason get_posts always sorts DESC on ID: reverse array.
-					$posts_reverse = array_reverse( $posts );//phpcs:ignore - 8.1 proof
+					$posts_reverse = array_reverse( $posts ); // phpcs:ignore -- 8.1 proof
 					// Set first element to blank.
-					array_push( $lov, '' );//phpcs:ignore - 8.1 proof
-					array_push( $lov_options, '0' );//phpcs:ignore - 8.1 proof
+					array_push( $lov, '' ); // phpcs:ignore -- 8.1 proof
+					array_push( $lov_options, '0' ); // phpcs:ignore -- 8.1 proof
 					foreach ( $posts_reverse as $post ) {
 						$post_element = $post->post_title . ' (ID=' . $post->ID . ')';
-						array_push( $lov, $post_element );//phpcs:ignore - 8.1 proof
-						array_push( $lov_options, $post->ID );//phpcs:ignore - 8.1 proof
+						array_push( $lov, $post_element ); // phpcs:ignore -- 8.1 proof
+						array_push( $lov_options, $post->ID ); // phpcs:ignore -- 8.1 proof
 					}
 
 					$item->set_enum( $lov );
@@ -192,15 +192,15 @@ namespace WPDataProjects\Project {
 					$lov         = array();
 					$lov_options = array();
 					foreach ( $wp_roles->roles as $role => $val ) {
-						array_push( $lov_options, $role );//phpcs:ignore - 8.1 proof
-						array_push( $lov, isset( $val['name'] ) ? $val['name'] : $role );//phpcs:ignore - 8.1 proof
+						array_push( $lov_options, $role ); // phpcs:ignore -- 8.1 proof
+						array_push( $lov, isset( $val['name'] ) ? $val['name'] : $role ); // phpcs:ignore -- 8.1 proof
 					}
 					$item->set_enum( $lov );
 					$item->set_enum_options( $lov_options );
 					$this->form_items[ $i ] = new WPDA_Simple_Form_Item_Set( $item );
 				} elseif ( 'page_setname' === $item->get_item_name() ) {
 					global $wpdb;
-					$setnames = $wpdb->get_results(
+					$setnames = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 						$wpdb->prepare(
 							'select distinct wpda_table_setname from `%1s` order by wpda_table_setname', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 							array(
@@ -211,10 +211,10 @@ namespace WPDataProjects\Project {
 					);
 					$lov      = array();
 					foreach ( $setnames as $setname ) {
-						array_push( $lov, $setname['wpda_table_setname'] );//phpcs:ignore - 8.1 proof
+						array_push( $lov, $setname['wpda_table_setname'] ); // phpcs:ignore -- 8.1 proof
 					}
-					if ( 0 === count( $lov ) ) {//phpcs:ignore - 8.1 proof
-						array_push( $lov, 'default' );//phpcs:ignore - 8.1 proof
+					if ( 0 === count( $lov ) ) { // phpcs:ignore -- 8.1 proof
+						array_push( $lov, 'default' ); // phpcs:ignore -- 8.1 proof
 					}
 					$item->set_enum( $lov );
 					$this->form_items[ $i ] = new WPDA_Simple_Form_Item_Enum( $item );
@@ -238,7 +238,7 @@ namespace WPDataProjects\Project {
 			$tables    = array();
 			$db_tables = WPDA_Dictionary_Lists::get_tables( true, $database ); // select all db tables and views
 			foreach ( $db_tables as $db_table ) {
-				//phpcs:ignore - 8.1 proof
+				 // phpcs:ignore -- 8.1 proof
 				array_push( $tables, $db_table['table_name'] ); // add table or view to array
 			}
 

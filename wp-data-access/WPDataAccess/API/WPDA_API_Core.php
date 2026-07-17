@@ -602,13 +602,14 @@ abstract class WPDA_API_Core {
     }
 
     protected function get_env() {
-        return array(
-            'ip'    => $_SERVER['REMOTE_ADDR'],
+        $env = array(
+            'ip'    => ( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '' ),
             'id'    => WPDA::get_current_user_id(),
             'user'  => WPDA::get_current_user_login(),
             'roles' => WPDA::get_current_user_roles(),
             'login' => 'anonymous' !== WPDA::get_current_user_login(),
         );
+        return $env;
     }
 
     protected function get_table_info( $dbs, $tbl, $default_where = '' ) {
@@ -622,7 +623,6 @@ abstract class WPDA_API_Core {
         }
         $query = $wpdadb->prepare( "\n\t\t\t\t\tselect table_type,\n\t\t\t\t\t       engine,\n\t\t\t\t\t       table_rows\n\t\t\t\t\t  from information_schema.tables\n\t\t\t\t\t where table_schema = %s\n\t\t\t\t\t   and table_name   = %s\n\t\t\t\t", array($wpdadb->dbname, $tbl) );
         $resultset = $wpdadb->get_results( $query, 'ARRAY_N' );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
         if ( count( $resultset ) === 1 ) {
             if ( null !== $resultset[0][2] ) {
                 return array(

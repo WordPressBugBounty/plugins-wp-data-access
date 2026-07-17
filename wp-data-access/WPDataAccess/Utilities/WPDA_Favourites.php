@@ -43,10 +43,12 @@ namespace WPDataAccess\Utilities {
 		 * @since 1.2.0
 		 */
 		public function __construct() {
+			// phpcs:disable WordPress.Security.NonceVerification.Recommended -- already verified
 			if ( isset( $_REQUEST['wpdaschema_name'] ) && isset( $_REQUEST['table_name'] ) ) {
-				$this->schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpdaschema_name'] ) ); // input var okay.
-				$this->table_name  = sanitize_text_field( wp_unslash( $_REQUEST['table_name'] ) ); // input var okay.
+				$this->schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpdaschema_name'] ) );
+				$this->table_name  = sanitize_text_field( wp_unslash( $_REQUEST['table_name'] ) );
 			}
+			// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		}
 
 		/**

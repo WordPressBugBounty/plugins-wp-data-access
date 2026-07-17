@@ -82,7 +82,7 @@ namespace WPDataProjects\Utilities {
 				WPDP_Page_Model::BASE_TABLE_NAME
 			);
 
-			if ( count( $this->optionsets ) > 0 ) {//phpcs:ignore - 8.1 proof
+			if ( count( $this->optionsets ) > 0 ) { // phpcs:ignore -- 8.1 proof
 				$this->get_child_optionsets();
 				$this->insert_optionsets();
 			}
@@ -129,7 +129,7 @@ namespace WPDataProjects\Utilities {
 			$wpdb->suppress_errors = true;
 
 			$query = "select * from $table_name $where";
-			$rows  = $wpdb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore WordPress.DB.PreparedSQL
+			$rows  = $wpdb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 			if ( $wpdb->num_rows > 0 ) {
 				// Prepare row export: get column names and data types.
@@ -170,8 +170,8 @@ namespace WPDataProjects\Utilities {
 					}
 					echo "\n(";
 
-					$keys        = array_keys( $row );//phpcs:ignore - 8.1 proof
-					$last_column = end( $keys );//phpcs:ignore - 8.1 proof
+					$keys        = array_keys( $row ); // phpcs:ignore -- 8.1 proof
+					$last_column = end( $keys ); // phpcs:ignore -- 8.1 proof
 					foreach ( $row as $column_name => $column_value ) {
 						if (
 							! ( WPDP_Project_Model::get_base_table_name() === $table_name && 'project_id' === $column_name ) &&

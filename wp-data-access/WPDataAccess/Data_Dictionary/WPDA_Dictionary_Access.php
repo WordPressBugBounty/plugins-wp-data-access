@@ -202,10 +202,8 @@ namespace WPDataAccess\Data_Dictionary {
 		 */
 		public static function can_create_db() {
 			global $wpdb;
-			$wpdb->get_results(
-				"select * from information_schema.user_privileges
-				 where privilege_type = 'CREATE'
-				   and replace(grantee, '\'', '') = current_user()"
+			$wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				"select * from information_schema.user_privileges where privilege_type = 'CREATE' and replace(grantee, '\'', '') = current_user()" // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
 			);
 
 			return $wpdb->num_rows > 0;
@@ -219,10 +217,8 @@ namespace WPDataAccess\Data_Dictionary {
 		 */
 		public static function can_drop_db() {
 			global $wpdb;
-			$wpdb->get_results(
-				"select * from information_schema.user_privileges 
-				 where privilege_type = 'DROP'
-				   and replace(grantee, '\'', '') = current_user()"
+			$wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				"select * from information_schema.user_privileges where privilege_type = 'DROP' and replace(grantee, '\'', '') = current_user()" // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
 			);
 
 			return $wpdb->num_rows > 0;

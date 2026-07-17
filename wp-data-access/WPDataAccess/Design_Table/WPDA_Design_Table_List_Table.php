@@ -50,7 +50,7 @@ namespace WPDataAccess\Design_Table {
 					<input type="hidden" name="action" value="edit">
 					<button type="submit" class="page-title-action">
 						<i class="fas fa-plus-circle wpda_icon_on_button"></i>
-						<?php echo __( 'Design new table', 'wp-data-access' ); ?>
+						<?php echo esc_attr__( 'Design new table', 'wp-data-access' ); ?>
 					</button>
 					<?php
 					// Add import button to title.
@@ -76,7 +76,7 @@ namespace WPDataAccess\Design_Table {
 				if ( null !== $item['wpda_table_design'] ) {
 					$table_structure = json_decode( $item['wpda_table_design'], true );
 					if ( isset( $table_structure['table'] ) ) {
-						$column_names = array_column( (array) $table_structure['table'], 'column_name' ); //phpcs:ignore - 8.1 proof
+						$column_names = array_column( (array) $table_structure['table'], 'column_name' );  // phpcs:ignore -- 8.1 proof
 					} else {
 						$column_names = array();
 					}

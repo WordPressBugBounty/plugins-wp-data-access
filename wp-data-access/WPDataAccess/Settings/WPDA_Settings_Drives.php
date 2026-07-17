@@ -1,5 +1,6 @@
 <?php
 
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on settings page
 namespace WPDataAccess\Settings {
 
     use WPDataAccess\Drive\WPDA_Drives;
@@ -32,8 +33,8 @@ namespace WPDataAccess\Settings {
 
         private function save_local_drive() {
 
-            $local_file_system = trim( sanitize_text_field( wp_unslash( $_POST['local_file_system'] ) ) ); // input var okay.
-            $local_enabled     = isset( $_POST['local_enabled'] ) && 'on' === $_POST['local_enabled'];
+            $local_file_system = trim( sanitize_text_field( wp_unslash( $_POST['local_file_system'] ) ) );  // phpcs:ignore
+            $local_enabled     = isset( $_POST['local_enabled'] ) && 'on' === $_POST['local_enabled']; // phpcs:ignore
 
             if ( '' === $local_file_system ) {
                 WPDA_Drives::delete_drive( 'local' );
@@ -62,6 +63,7 @@ namespace WPDataAccess\Settings {
 
         private function save_ftp_server( $index ) {
 
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
             $ftp_server_name     = trim( sanitize_text_field( wp_unslash( $_POST['ftp_server_name'][ $index ] ) ) );
             $ftp_enabled         = isset( $_POST['ftp_enabled'] ) && 'on' === $_POST['ftp_enabled'][ $index ];
             $ftp_host            = sanitize_text_field( wp_unslash( $_POST['ftp_host'][ $index ] ) );
@@ -72,6 +74,7 @@ namespace WPDataAccess\Settings {
             $ftp_passive         = isset( $_POST['ftp_passive'] ) && 'on' === $_POST['ftp_passive'][ $index ];
             $ftp_timeout         = sanitize_text_field( wp_unslash( $_POST['ftp_timeout'][ $index ] ) );
             $ftp_directory       = sanitize_text_field( wp_unslash( $_POST['ftp_directory'][ $index ] ) );
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
             $ftp_drive = new WPDA_Ftp( $ftp_server_name );
             if (
@@ -103,6 +106,7 @@ namespace WPDataAccess\Settings {
 
         private function save_sftp_server( $index ) {
 
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
             $sftp_server_name     = trim( sanitize_text_field( wp_unslash( $_POST['sftp_server_name'][ $index ] ) ) );
             $sftp_enabled         = isset( $_POST['sftp_enabled'] ) && 'on' === $_POST['sftp_enabled'][ $index ];
             $sftp_host            = sanitize_text_field( wp_unslash( $_POST['sftp_host'][ $index ] ) );
@@ -111,6 +115,7 @@ namespace WPDataAccess\Settings {
             $sftp_port            = sanitize_text_field( wp_unslash( $_POST['sftp_port'][ $index ] ) );
             $sftp_timeout         = sanitize_text_field( wp_unslash( $_POST['sftp_timeout'][ $index ] ) );
             $sftp_directory       = sanitize_text_field( wp_unslash( $_POST['sftp_directory'][ $index ] ) );
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
             $ftp_drive = new WPDA_Sftp( $sftp_server_name );
             if (
@@ -140,7 +145,7 @@ namespace WPDataAccess\Settings {
 
         private function save_dropbox() {
 
-            $dropbox_authorization = trim( sanitize_text_field( wp_unslash( $_POST['dropbox_authorization'] ) ) ); // input var okay.
+            $dropbox_authorization = trim( sanitize_text_field( wp_unslash( $_POST['dropbox_authorization'] ) ) ); // phpcs:ignore
 
             if ( '' !== trim( $dropbox_authorization ) ) {
                 $dropbox_drive = new WPDA_Dropbox();
@@ -170,7 +175,7 @@ namespace WPDataAccess\Settings {
 
         private function update_dropbox() {
 
-            $dropbox_enabled = isset( $_POST['dropbox_enabled'] ) && 'on' === $_POST['dropbox_enabled'];
+            $dropbox_enabled = isset( $_POST['dropbox_enabled'] ) && 'on' === $_POST['dropbox_enabled']; // phpcs:ignore
 
             $dropbox_drive = WPDA_Drives::get_drive( 'dropbox'  );
             if ( false !== $dropbox_drive ) {
@@ -181,7 +186,7 @@ namespace WPDataAccess\Settings {
 
         private function save_google_drive() {
 
-            $google_drive_authorization = trim( sanitize_text_field( wp_unslash( $_POST['google_drive_authorization'] ) ) ); // input var okay.
+            $google_drive_authorization = trim( sanitize_text_field( wp_unslash( $_POST['google_drive_authorization'] ) ) ); // phpcs:ignore
 
             if ( '' !== trim( $google_drive_authorization ) ) {
                 $google_drive_drive = new WPDA_Google_Drive();
@@ -211,7 +216,7 @@ namespace WPDataAccess\Settings {
 
         private function update_google_drive() {
 
-            $google_drive_enabled = isset( $_POST['google_drive_enabled'] ) && 'on' === $_POST['google_drive_enabled'];
+            $google_drive_enabled = isset( $_POST['google_drive_enabled'] ) && 'on' === $_POST['google_drive_enabled']; // phpcs:ignore -- verified
 
             $google_drive_drive = WPDA_Drives::get_drive( 'google_drive'  );
             if ( false !== $google_drive_drive ) {
@@ -228,7 +233,7 @@ namespace WPDataAccess\Settings {
                 // Security check.
                 $wp_nonce = isset( $_POST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ) : ''; // input var okay.
                 if ( ! wp_verify_nonce( $wp_nonce, 'wpda-drives-settings-' . WPDA::get_current_user_login() ) ) {
-                    wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                    wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
                 }
 
                 if ( 'save' === $action ) {
@@ -348,7 +353,7 @@ namespace WPDataAccess\Settings {
 
                                 <div>
                                     <label style="display:block">Enter full local path:</label>
-                                    <input type="text" name="local_file_system" style="width: 240px" value="<?php echo isset( $local_drive['drive']['path'] ) ? $local_drive['drive']['path'] : ''; ?>" />
+                                    <input type="text" name="local_file_system" style="width: 240px" value="<?php echo isset( $local_drive['drive']['path'] ) ? $local_drive['drive']['path'] : ''; // phpcs:ignore WordPress.Security.EscapeOutput ?>" />
                                     <div>&nbsp;</div>
                                     <div>
                                         Verify that the folder exists and that the server has permission to write files to it.
@@ -359,7 +364,7 @@ namespace WPDataAccess\Settings {
                                                 type="checkbox"
                                                 name="local_enabled"
                                             <?php echo isset( $local_drive['enabled'] ) && $local_drive['enabled'] ? 'checked' : ''; ?>
-                                        /> <?php echo __( 'Activate', 'wp-data-access' ); ?>
+                                        /> <?php esc_html_e( 'Activate', 'wp-data-access' ); ?>
                                     </label>
                                 </div>
                             </div>
@@ -506,7 +511,7 @@ namespace WPDataAccess\Settings {
                                                 type="checkbox"
                                                 name="dropbox_enabled"
                                                 <?php echo isset( $dropbox_drive['enabled'] ) && $dropbox_drive['enabled'] ? 'checked' : ''; ?>
-                                            /> <?php echo __( 'Activate', 'wp-data-access' ); ?>
+                                            /> <?php esc_html_e( 'Activate', 'wp-data-access' ); ?>
                                         </label>
                                         <input type="hidden" name="dropbox_authorized" />
                                         <?php
@@ -602,7 +607,7 @@ namespace WPDataAccess\Settings {
                                                     type="checkbox"
                                                     name="google_drive_enabled"
                                                 <?php echo isset( $google_drive_drive['enabled'] ) && $google_drive_drive['enabled'] ? 'checked' : ''; ?>
-                                            /> <?php echo __( 'Activate', 'wp-data-access' ); ?>
+                                            /> <?php esc_html_e( 'Activate', 'wp-data-access' ); ?>
                                         </label>
                                         <input type="hidden" name="google_drive_authorized" />
                                         <?php
@@ -652,16 +657,16 @@ namespace WPDataAccess\Settings {
                     <input type="hidden" name="deleted_drives" id="deleted_drives" />
                     <button type="submit" class="button button-primary">
                         <i class="fas fa-check wpda_icon_on_button"></i>
-                        <?php echo __( 'Save Drive Settings', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Save Drive Settings', 'wp-data-access' ); ?>
                     </button>
                     <a href="javascript:void(0)"
-                       onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+                       onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
                            jQuery('input[name=\'action\']').val('setdefaults');
                            jQuery('#wpda_settings_drives').trigger('submit');
                            }"
                        class="button button-secondary">
                         <i class="fas fa-times-circle wpda_icon_on_button"></i>
-                        <?php echo __( 'Reset Drive Settings To Defaults', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Reset Drive Settings To Defaults', 'wp-data-access' ); ?>
                     </a>
                 </div>
 
@@ -1020,4 +1025,4 @@ namespace WPDataAccess\Settings {
 
     }
 
-}
+}// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

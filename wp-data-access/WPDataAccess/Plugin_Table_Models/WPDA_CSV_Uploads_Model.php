@@ -11,7 +11,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 
 		public static function query( $csv_id ) {
 			global $wpdb;
-			return $wpdb->get_results(
+			return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'select * from `%1s` where csv_id = %d', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -24,13 +24,13 @@ namespace WPDataAccess\Plugin_Table_Models {
 
 		public static function insert( $csv_name, $real_file_name, $orig_file_name, $csv_encoding = null ) {
 			global $wpdb;
-			if ( 1 === $wpdb->insert(
+			if ( 1 === $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
 				static::get_base_table_name(),
 				array(
 					'csv_name'           => $csv_name,
 					'csv_real_file_name' => $real_file_name,
 					'csv_orig_file_name' => $orig_file_name,
-					'csv_timestamp'      => date( 'Y-m-d H:i:s' ),
+					'csv_timestamp'      => gmdate( 'Y-m-d H:i:s' ),
                     'csv_encoding'       => $csv_encoding,
 				)
 			)
@@ -43,12 +43,12 @@ namespace WPDataAccess\Plugin_Table_Models {
 
 		public static function update( $csv_id, $real_file_name, $orig_file_name, $csv_encoding = null ) {
 			global $wpdb;
-			return ( 1 === $wpdb->update(
+			return ( 1 === $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				static::get_base_table_name(),
 				array(
 					'csv_real_file_name' => $real_file_name,
 					'csv_orig_file_name' => $orig_file_name,
-					'csv_timestamp'      => date( 'Y-m-d H:i:s' ),
+					'csv_timestamp'      => gmdate( 'Y-m-d H:i:s' ),
                     'csv_encoding'       => $csv_encoding,
 				),
 				array(
@@ -84,7 +84,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 
 			global $wpdb;
 			$wpdb->suppress_errors( true );
-			$rows_update = $wpdb->query(
+			$rows_update = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'update `%1s` set csv_mapping = %s where csv_id = %d', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -95,7 +95,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 				)
 			);
 
-			echo '' === $wpdb->last_error ? 'UPD-' . esc_attr( $rows_update ) : 'ERR-' . $wpdb->last_error; // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '' === $wpdb->last_error ? 'UPD-' . esc_attr( $rows_update ) : 'ERR-' . esc_attr( $wpdb->last_error );
 		}
 
 		public static function preview_mapping() {
@@ -126,7 +126,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 
 			global $wpdb;
 			if ( '' !== $wpdb->last_error ) {
-				echo 'ERR-' . $wpdb->last_error; // phpcs:ignore WordPress.Security.EscapeOutput
+				echo 'ERR-' . esc_attr( $wpdb->last_error );
 			}
 			if ( 1 === $wpdb->num_rows ) {
 				if ( ! isset( $dbrow[0]->csv_real_file_name ) ) {
@@ -135,8 +135,8 @@ namespace WPDataAccess\Plugin_Table_Models {
 					$upload_dir = WPDA::get_plugin_upload_dir();
 					$file_name  = $upload_dir . $dbrow[0]->csv_real_file_name;
 
-					@ini_set( 'auto_detect_line_endings', true );
-					if ( false !== ( $fp = fopen( $file_name, 'rb' ) ) ) {
+					@ini_set( 'auto_detect_line_endings', true ); // phpcs:ignore
+					if ( false !== ( $fp = fopen( $file_name, 'rb' ) ) ) { // phpcs:ignore
 						$mapping            = isset( $dbrow[0]->csv_mapping ) ? json_decode( $dbrow[0]->csv_mapping, true ) : array();
 						$delimiter          = isset( $mapping['settings']['delimiter'] ) ? $mapping['settings']['delimiter'] : ',';
 						$has_header_columns = isset( $mapping['settings']['has_header_columns'] ) ? $mapping['settings']['has_header_columns'] : true;
@@ -168,9 +168,9 @@ namespace WPDataAccess\Plugin_Table_Models {
 						if ( 'false' !== $has_header_columns ) {
 							echo '<thead>';
 							if ( false !== ( $data = fgetcsv( $fp, 0, $delimiter, '"' ) ) ) {
-								$number_of_columns = count( $data );//phpcs:ignore - 8.1 proof
+								$number_of_columns = count( $data ); // phpcs:ignore -- 8.1 proof
 								echo '<tr>';
-								for ( $column = 0; $column < count( $data ); $column++ ) {//phpcs:ignore - 8.1 proof
+								for ( $column = 0; $column < count( $data ); $column++ ) { // phpcs:ignore -- 8.1 proof
 									echo '<th>' . esc_attr( $data[$column] ) . '</th>';
 								}
 								echo '</tr>';
@@ -184,7 +184,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 						while ( false !== ( $data = fgetcsv( $fp, 0, $delimiter, '"' ) ) ) {
 							if ( $row >= $start && $row < $end ) {
 								echo '<tr>';
-								for ( $column = 0; $column < count( $data ); $column++ ) {//phpcs:ignore - 8.1 proof
+								for ( $column = 0; $column < count( $data ); $column++ ) { // phpcs:ignore -- 8.1 proof
 									echo '<td>' . esc_attr( $data[$column] ) . '</td>';
 								}
 								echo '</tr>';
@@ -194,12 +194,12 @@ namespace WPDataAccess\Plugin_Table_Models {
 							$row++;
 						}
 						if ( ! $fnd ) {
-							echo '<tr colspan="' . esc_attr( $number_of_columns ) . '"><td>' . __( 'No data found', 'wp-data-access' ) . '</td></tr>';
+							echo '<tr colspan="' . esc_attr( $number_of_columns ) . '"><td>' . esc_attr__( 'No data found', 'wp-data-access' ) . '</td></tr>';
 						}
 						echo '</tbody>';
 						echo '</table>';
 
-						fclose( $fp );
+						fclose( $fp ); // phpcs:ignore
 					} else {
 						echo 'ERR-File not found';
 					}

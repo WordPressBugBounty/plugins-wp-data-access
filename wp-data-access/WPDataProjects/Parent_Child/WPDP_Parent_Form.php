@@ -131,19 +131,19 @@ namespace WPDataProjects\Parent_Child {
 			if ( isset( $args['mode'] ) ) {
 				$this->mode = $args['mode'];
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments [missing mode]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [missing mode]', 'wp-data-access' ) );
 			}
 
 			if ( isset( $args['child_request'] ) ) {
 				$this->child_request = $args['child_request'];
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments [missing child_request]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [missing child_request]', 'wp-data-access' ) );
 			}
 
 			$action = null;
-			if ( isset( $_REQUEST['action'] ) ) {
+			if ( isset( $_REQUEST['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
 				// Possible values: "new", "edit" and "view".
-				$action              = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ); // input var okay.
+				$action              = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
 				$this->action_posted = $action;
 			} elseif ( isset( $args['action'] ) ) {
 				$action              = $args['action'];
@@ -158,12 +158,13 @@ namespace WPDataProjects\Parent_Child {
 
 			if ( 'new' !== $action || $this->child_request ) {
 				if ( isset( $this->relations['parent']['key'] ) && is_array( $this->relations['parent']['key'] ) ) {
+					// phpcs:disable WordPress.Security.NonceVerification.Recommended -- already verified
 					foreach ( $this->relations['parent']['key'] as $key ) {
 						if ( isset( $_REQUEST[ 'WPDA_PARENT_KEY*' . $key ] ) ) {
-							array_push( $this->parent_key, $key );//phpcs:ignore - 8.1 proof
+							array_push( $this->parent_key, $key ); // phpcs:ignore -- 8.1 proof
 							$this->parent_key_value[ $key ] = sanitize_text_field( wp_unslash( $_REQUEST[ 'WPDA_PARENT_KEY*' . $key ] ) ); // input var okay.
 						} elseif ( isset( $_REQUEST[ $key ] ) ) {
-							array_push( $this->parent_key, $key );//phpcs:ignore - 8.1 proof
+							array_push( $this->parent_key, $key ); // phpcs:ignore -- 8.1 proof
 							$this->parent_key_value[ $key ] = sanitize_text_field( wp_unslash( $_REQUEST[ $key ] ) ); // input var okay.
 						}
 
@@ -171,6 +172,7 @@ namespace WPDataProjects\Parent_Child {
 							$this->children = $this->relations['children'];
 						}
 					}
+					// phpcs:enable WordPress.Security.NonceVerification.Recommended
 				}
 			}
 
@@ -200,9 +202,9 @@ namespace WPDataProjects\Parent_Child {
 				}
 			}
 
-			if ( isset( $_REQUEST['child_tab'] ) ) {
-				if ( isset( $this->tabs[ $_REQUEST['child_tab'] ] ) ) {
-					$this->current_tab = sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // input var okay.
+			if ( isset( $_REQUEST['child_tab'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
+				if ( isset( $this->tabs[ $_REQUEST['child_tab'] ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
+					$this->current_tab = sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
 				}
 			}
 
@@ -267,7 +269,7 @@ namespace WPDataProjects\Parent_Child {
 				// Record successfully inserted: reload page to show tabs
 				?>
 				<script>
-					jQuery("#wpda_simple_form_0 input[name='wpda_message']").val("<?php echo __( 'Succesfully saved changes to database', 'wp-data-access' ); ?>");
+					jQuery("#wpda_simple_form_0 input[name='wpda_message']").val("<?php esc_html_e( 'Succesfully saved changes to database', 'wp-data-access' ); ?>");
 					jQuery("#wpda_simple_form_0").submit();
 				</script>
 				<?php
@@ -294,7 +296,7 @@ namespace WPDataProjects\Parent_Child {
 			if (
 					'edit' === $this->mode &&
 					( 'new' === $this->child_action || 'edit' === $this->child_action ) &&
-					( ! ( isset( $_POST['postaction'] ) && 'childlist' === $_POST['postaction'] ) )
+					( ! ( isset( $_POST['postaction'] ) && 'childlist' === $_POST['postaction'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified in parent class
 			) {
 				$this->button_add_new( $child, $child_table_name );
 				echo '<div style="clear:both;"></div>';
@@ -319,7 +321,7 @@ namespace WPDataProjects\Parent_Child {
 
 			$wpda_child_form->prepare_form();
 
-			if ( isset( $_POST['postaction'] ) && 'childlist' === $_POST['postaction'] ) {
+			if ( isset( $_POST['postaction'] ) && 'childlist' === $_POST['postaction'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified in parent class
 				$this->show_child_list_table( $child_table_name, $child );
 			} else {
 				$wpda_child_form->show();
@@ -333,7 +335,7 @@ namespace WPDataProjects\Parent_Child {
 		 * @param array  $child Child info
 		 */
 		protected function show_child_list_table( $child_table_name, $child ) {
-			$is_list_table_selection = isset( $_REQUEST['list_table_selection'] );
+			$is_list_table_selection = isset( $_REQUEST['list_table_selection'] ); // phpcs:ignore -- verified in parent class
 			if ( 'edit' === $this->mode ) {
 				$this->button_add_new( $child, $child_table_name );
 			}
@@ -366,13 +368,13 @@ namespace WPDataProjects\Parent_Child {
 		 * Add a tab for every child
 		 */
 		protected function add_tabs() {
-			if ( count( $this->children ) > 0 ) {//phpcs:ignore - 8.1 proof
+			if ( count( $this->children ) > 0 ) { // phpcs:ignore -- 8.1 proof
 				?>
 			<h2 class="nav-tab-wrapper">
 				<?php
 				$requested_page_number = 1;
-				if ( isset( $_REQUEST['page_number'] ) ) {
-					$requested_page_number = sanitize_text_field( wp_unslash( $_REQUEST['page_number'] ) ); // input var okay.
+				if ( isset( $_REQUEST['page_number'] ) ) { // phpcs:ignore -- verified in parent class
+					$requested_page_number = sanitize_text_field( wp_unslash( $_REQUEST['page_number'] ) ); // phpcs:ignore -- verified in parent class
 				}
 				foreach ( $this->tabs as $tab => $name ) {
 					$class        = ( $tab === $this->current_tab ) ? ' nav-tab-active' : '';
@@ -415,8 +417,8 @@ namespace WPDataProjects\Parent_Child {
 		 */
 		protected function add_parent_args() {
 			$child_tab = '';
-			if ( isset( $_REQUEST['child_tab'] ) ) {
-				$child_tab = sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // input var okay.
+			if ( isset( $_REQUEST['child_tab'] ) ) { // phpcs:ignore -- verified in parent class
+				$child_tab = sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // phpcs:ignore -- verified in parent class
 			}
 			?>
 			<input type='hidden' name='child_tab' value='<?php echo esc_attr( $child_tab ); ?>'/>
@@ -433,8 +435,8 @@ namespace WPDataProjects\Parent_Child {
 			// When we are coming from a child we'll need to get our parent key
 			if ( isset( $this->relations['parent']['key'] ) && is_array( $this->relations['parent']['key'] ) ) {
 				foreach ( $this->relations['parent']['key'] as $key ) {
-					if ( isset( $_REQUEST[ 'WPDA_PARENT_KEY*' . $key ] ) ) {
-						$this->form_items_new_values[ $key ] = sanitize_text_field( wp_unslash( $_REQUEST[ 'WPDA_PARENT_KEY*' . $key ] ) ); // input var okay.
+					if ( isset( $_REQUEST[ 'WPDA_PARENT_KEY*' . $key ] ) ) { // phpcs:ignore -- verified in parent class
+						$this->form_items_new_values[ $key ] = sanitize_text_field( wp_unslash( $_REQUEST[ 'WPDA_PARENT_KEY*' . $key ] ) ); // phpcs:ignore -- verified in parent class
 					}
 				}
 			}
@@ -472,7 +474,7 @@ namespace WPDataProjects\Parent_Child {
 					<input type="hidden" name="action" value="new">
 					<button type="submit" class="button wpda_tooltip" title="<?php echo esc_attr( $title ); ?>">
 						<i class="fas fa-plus-circle wpda_icon_on_button"></i>
-						<?php echo __( 'Add New', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Add New', 'wp-data-access' ); ?>
 					</button>
 				</form>
 				<?php
@@ -494,7 +496,7 @@ namespace WPDataProjects\Parent_Child {
 							title="Add existing row"
 					>
 						<i class="fas fa-plus-circle wpda_icon_on_button"></i>
-						<?php echo __( 'Add Existing', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Add Existing', 'wp-data-access' ); ?>
 					</button>
 				</form>
 				<?php
@@ -523,17 +525,17 @@ namespace WPDataProjects\Parent_Child {
 			if ( 'new' !== $this->action_posted || $this->child_request ) {
 				?>
 				<input type="button"
-					   value="<?php echo __( 'show more', 'wp-data-access' ); ?> &gt;&gt;&gt;"
+					   value="<?php esc_html_e( 'show more', 'wp-data-access' ); ?> &gt;&gt;&gt;"
 					   class="button"
 					   id="show_more_less_button"
 					   style="float:right;display:none;">
 				<script type='text/javascript'>
 					function show_more_less() {
 						jQuery('.row-show-less-more').toggle();
-						if (jQuery('#show_more_less_button').val() === '<?php echo __( 'show more', 'wp-data-access' ); ?> &gt;&gt;&gt;') {
-							jQuery('#show_more_less_button').val('<<< <?php echo __( 'show less', 'wp-data-access' ); ?>');
+						if (jQuery('#show_more_less_button').val() === '<?php esc_html_e( 'show more', 'wp-data-access' ); ?> &gt;&gt;&gt;') {
+							jQuery('#show_more_less_button').val('<<< <?php esc_html_e( 'show less', 'wp-data-access' ); ?>');
 						} else {
-							jQuery('#show_more_less_button').val('<?php echo __( 'show more', 'wp-data-access' ); ?> &gt;&gt;&gt;');
+							jQuery('#show_more_less_button').val('<?php esc_html_e( 'show more', 'wp-data-access' ); ?> &gt;&gt;&gt;');
 						}
 					}
 

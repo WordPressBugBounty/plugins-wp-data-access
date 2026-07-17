@@ -119,7 +119,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
         $schema_names = WPDA_Dictionary_Lists::get_db_schemas();
         foreach ( $schema_names as $schema_name ) {
             array_push( $this->databases, $schema_name['schema_name'] );
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
         }
         // Add scripts and styles.
         WPDA_Data_Tables::enqueue_styles_and_script();
@@ -143,7 +143,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 			>
 				<i class="fas fa-bug wpda_icon_on_button"></i>
 				<?php 
-        echo __( 'Test', 'wp-data-access' );
+        echo esc_attr__( 'Test', 'wp-data-access' );
         ?>
 			</a>
 			<?php 
@@ -319,7 +319,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
         $columns = array();
         foreach ( $table_columns->get_table_columns() as $table_column ) {
             array_push( $columns, $table_column['column_name'] );
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
         }
         $column_labels = $table_columns->get_table_column_headers();
         $json_editing = WPDA::get_option( WPDA::OPTION_DP_JSON_EDITING );
@@ -332,7 +332,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
                     $hyperlink_html = ( isset( $hyperlink->hyperlink_html ) ? $hyperlink->hyperlink_html : '' );
                     if ( $hyperlink_label !== '' && $hyperlink_html !== '' ) {
                         array_push( $this->hyperlinks, $hyperlink_label );
-                        //phpcs:ignore - 8.1 proof
+                        // phpcs:ignore -- 8.1 proof
                     }
                 }
             }
@@ -662,8 +662,9 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 				<?php 
         if ( null !== $this->hyperlinks && is_array( $this->hyperlinks ) ) {
             foreach ( $this->hyperlinks as $hyperlink ) {
+                // phpcs:disable WordPress.Security.EscapeOutput
                 echo "hyperlinks.push('{$hyperlink}');";
-                // phpcs:ignore WordPress.Security.EscapeOutput
+                // phpcs:enable WordPress.Security.EscapeOutput
             }
         }
         ?>
@@ -705,7 +706,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 				function select_columns() {
 					if (!(Array.isArray(table_columns) && table_columns.length)) {
 						alert("<?php 
-        echo __( 'To select columns you need to save your data table first', 'wp-data-access' );
+        echo esc_attr__( 'To select columns you need to save your data table first', 'wp-data-access' );
         ?>");
 						return;
 					}
@@ -803,7 +804,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 				function format_cpt_columns() {
 					if (!(Array.isArray(cpt_fields) && cpt_fields.length)) {
 						alert("<?php 
-        echo __( 'To format columns you need to save your data table first', 'wp-data-access' );
+        echo esc_attr__( 'To format columns you need to save your data table first', 'wp-data-access' );
         ?>");
 						return;
 					}
@@ -819,10 +820,10 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 					dialog_table.append(
 						jQuery('<tr></tr>').append(
 							jQuery('<th style="text-align:left;"><?php 
-        echo __( 'Field Name', 'wp-data-access' );
+        echo esc_attr__( 'Field Name', 'wp-data-access' );
         ?></th>'),
 							jQuery('<th style="text-align:left;"><?php 
-        echo __( 'Field Label', 'wp-data-access' );
+        echo esc_attr__( 'Field Label', 'wp-data-access' );
         ?></th>'),
 						)
 					);
@@ -887,7 +888,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 				function format_columns() {
 					if (!(Array.isArray(table_columns) && table_columns.length)) {
 						alert("<?php 
-        echo __( 'To format columns you need to save your data table first', 'wp-data-access' );
+        echo esc_attr__( 'To format columns you need to save your data table first', 'wp-data-access' );
         ?>");
 						return;
 					}
@@ -913,10 +914,10 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 					dialog_table.append(
 						jQuery('<tr></tr>').append(
 							jQuery('<th style="text-align:left;"><?php 
-        echo __( 'Column Name', 'wp-data-access' );
+        echo esc_attr__( 'Column Name', 'wp-data-access' );
         ?></th>'),
 							jQuery('<th style="text-align:left;"><?php 
-        echo __( 'Column Label', 'wp-data-access' );
+        echo esc_attr__( 'Column Label', 'wp-data-access' );
         ?></th>'),
 						)
 					);
@@ -1060,8 +1061,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 					jQuery.ajax({
 						type: "POST",
 						url: "<?php 
-        echo admin_url( 'admin-ajax.php?action=wpda_test_publication' );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        echo esc_url( admin_url( 'admin-ajax.php?action=wpda_test_publication' ) );
         ?>",
 						data: {
 							wpnonce: "<?php 
@@ -1128,7 +1128,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
         echo esc_attr( $pub_id );
         ?>"
 				 title="<?php 
-        echo __( 'Shortcode', 'wp-data-access' );
+        echo esc_attr__( 'Shortcode', 'wp-data-access' );
         ?>"
 				 style="display:none"
 			>
@@ -1149,11 +1149,11 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
         echo esc_attr( $pub_id );
         ?>"]'
 							onclick="jQuery.notify('<?php 
-        echo __( 'Shortcode successfully copied to clipboard!' );
+        echo esc_attr__( 'Shortcode successfully copied to clipboard!', 'wp-data-access' );
         ?>','info')"
 					>
 						<?php 
-        echo __( 'Copy', 'wp-data-access' );
+        echo esc_attr__( 'Copy', 'wp-data-access' );
         ?>
 					</button>
 					<button class="button button-primary wpda_shortcode_button"
@@ -1161,7 +1161,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 							onclick="jQuery('.ui-dialog-content').dialog('close')"
 					>
 						<?php 
-        echo __( 'Close', 'wp-data-access' );
+        echo esc_attr__( 'Close', 'wp-data-access' );
         ?>
 					</button>
 				</p>
@@ -1171,8 +1171,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 					<p>
 						Shortcode wpdataaccess is not enabled for all output types.
 						<a href="<?php 
-            echo admin_url( 'options-general.php' );
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            echo esc_url( admin_url( 'options-general.php' ) );
             ?>?page=wpdataaccess" class="wpda_shortcode_link">&raquo; Manage settings</a>
 					</p>
 					<?php 
@@ -1182,7 +1181,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 			<a href="javascript:void(0)"
 			   class="button view wpda_tooltip"
 			   title="<?php 
-        echo __( 'Get shortcode', 'wp-data-access' );
+        echo esc_attr__( 'Get shortcode', 'wp-data-access' );
         ?>"
 			   onclick="jQuery('#wpda_publication_<?php 
         echo esc_attr( $pub_id );
@@ -1191,7 +1190,7 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
 				<span style="white-space:nowrap">
 					<i class="fas fa-code wpda_icon_on_button"></i>
 					<?php 
-        echo __( 'Shortcode', 'wp-data-access' );
+        echo esc_attr__( 'Shortcode', 'wp-data-access' );
         ?>
 				</span>
 			</a>
@@ -1296,12 +1295,12 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
         echo esc_attr( $pub_id );
         ?>">
 					<span><strong><?php 
-        echo __( 'Test', 'wp-data-access' );
+        echo esc_attr__( 'Test', 'wp-data-access' );
         ?> (pub_id=<?php 
         echo esc_attr( $pub_id );
         ?>
 							- <?php 
-        echo __( 'data table looks different on your website', 'wp-data-access' );
+        echo esc_attr__( 'data table looks different on your website', 'wp-data-access' );
         ?>)
 						</strong></span>
 					<span class="button" style="float:right;"
@@ -1312,8 +1311,9 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
         ?>').remove();">x</span><br/>
 				</div>
 				<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $publication;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>
 			</div>
 			<script type='text/javascript'>
@@ -1322,8 +1322,9 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
         ?>").appendTo("#wpbody-content");
 			</script>
 			<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo ob_get_clean();
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         wp_die();
     }
 

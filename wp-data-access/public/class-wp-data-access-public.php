@@ -20,6 +20,7 @@ use WPDataAccess\WPDA;
  * @author  Peter Schulz
  * @since   1.0.0
  */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 class WP_Data_Access_Public {
     /**
      * Add stylesheets to front-end
@@ -111,8 +112,8 @@ class WP_Data_Access_Public {
         // SAVING SPACE - According to the plugin guidelines it is allowed to include external fonts:
         // https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/#8-plugins-may-not-send-executable-code-via-third-party-systems .
         // Load fontawesome icons.
+        // phpcs:disable WordPress.WP.EnqueuedResourceParameters.MissingVersion
         wp_register_style(
-            // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
             'wpda_fontawesome_icons',
             WPDA::CDN_FONTAWESOME . 'all.min.css',
             array(),
@@ -255,8 +256,8 @@ class WP_Data_Access_Public {
      * @since   1.0.0
      */
     public function register_shortcodes() {
-        add_shortcode( 'wpda_app_builder', array($this, 'wpda_app_builder') );
         add_shortcode( 'wpda_app', array($this, 'wpda_app') );
+        add_shortcode( 'wpda_app_builder', array($this, 'wpda_app_builder') );
         add_shortcode( 'wpda_data_explorer', array($this, 'wpda_data_explorer') );
         add_shortcode( 'wpda_query_builder', array($this, 'wpda_query_builder') );
         add_shortcode( 'wpdataaccess', array($this, 'wpdataaccess') );
@@ -526,14 +527,11 @@ class WP_Data_Access_Public {
             if ( count( $filter_field_name_array ) === count( $filter_field_value_array ) ) {
                 //phpcs:ignore - 8.1 proof
                 // Add filter to where clause.
+                // phpcs:disable Generic.CodeAnalysis.ForLoopWithTestFunctionCall, Squiz.PHP.DisallowSizeFunctionsInLoops, WordPress.DB.PreparedSQLPlaceholders
                 for ($i = 0; $i < count( $filter_field_name_array ); $i++) {
-                    // phpcs:ignore Generic.CodeAnalysis.ForLoopWithTestFunctionCall, Squiz.PHP.DisallowSizeFunctionsInLoops
-                    $default_where .= (( '' === $default_where ? '' : ' and ' )) . $wpdb->prepare( 
-                        ' `%1s` like %s ',
-                        // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                        array(WPDA::remove_backticks( $filter_field_name_array[$i] ), $filter_field_value_array[$i])
-                     );
+                    $default_where .= (( '' === $default_where ? '' : ' and ' )) . $wpdb->prepare( ' `%1s` like %s ', array(WPDA::remove_backticks( $filter_field_name_array[$i] ), $filter_field_value_array[$i]) );
                 }
+                // phpcs:enable Generic.CodeAnalysis.ForLoopWithTestFunctionCall, Squiz.PHP.DisallowSizeFunctionsInLoops, WordPress.DB.PreparedSQLPlaceholders
             }
         }
         // Is this a Data Projects page or a table administration page?
@@ -590,8 +588,10 @@ class WP_Data_Access_Public {
         if ( '' !== $wp_atts['project_id'] && '' !== $wp_atts['page_id'] ) {
             // Show Data Projects page (check is performed in WPDP_List_Page).
             // Get page values.
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
             $project_page = $wpdb->get_results( $wpdb->prepare( "\n                    select * from {$wpdb->prefix}wpda_project_page\n                    where project_id = %d\n                      and page_id    = %d\n                \t", array($wp_atts['project_id'], $wp_atts['page_id']) ), 'ARRAY_A' );
             // db call ok; no-cache ok.
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             if ( 0 === $wpdb->num_rows ) {
                 // This should never happen as it was already tested before.
                 return __( 'ERROR: Data Project page not found [need a valid project_id and page_id]', 'wp-data-access' );
@@ -754,3 +754,5 @@ class WP_Data_Access_Public {
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

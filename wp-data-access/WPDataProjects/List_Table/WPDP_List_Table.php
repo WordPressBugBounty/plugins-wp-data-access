@@ -71,7 +71,7 @@ namespace WPDataProjects\List_Table {
 					return '';
 				}
 
-				$image_ids = explode( ',', $item[ $column_name ] );//phpcs:ignore - 8.1 proof
+				$image_ids = explode( ',', $item[ $column_name ] ); // phpcs:ignore -- 8.1 proof
 				$image_src = '';
 
 				foreach ( $image_ids as $image_id ) {
@@ -91,7 +91,7 @@ namespace WPDataProjects\List_Table {
 					return '';
 				}
 
-				$media_ids   = explode( ',', $item[ $column_name ] );//phpcs:ignore - 8.1 proof
+				$media_ids   = explode( ',', $item[ $column_name ] ); // phpcs:ignore -- 8.1 proof
 				$media_links = '';
 
 				foreach ( $media_ids as $media_id ) {

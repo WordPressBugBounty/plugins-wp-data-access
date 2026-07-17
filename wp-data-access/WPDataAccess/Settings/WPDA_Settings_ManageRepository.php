@@ -30,7 +30,7 @@ namespace WPDataAccess\Settings {
 				// Security check.
 				$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, 'wpda-settings-recreate-repository-' . WPDA::get_current_user_login() ) ) {
-					wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				// Recreate repository.
@@ -55,7 +55,7 @@ namespace WPDataAccess\Settings {
 			global $wpdb;
 
 			$suppress = $wpdb->suppress_errors( true );
-			$wpdb->get_results(
+			$wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'select 1 from `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -85,7 +85,7 @@ namespace WPDataAccess\Settings {
 				// Security check.
 				$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, 'wpda-repository-settings-' . WPDA::get_current_user_login() ) ) {
-					wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				if ( 'save' === $action ) {
@@ -200,7 +200,7 @@ namespace WPDataAccess\Settings {
 				// Security check
 				$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, 'wpda-settings-create_backup-repository-' . WPDA::get_current_user_login() ) ) {
-					wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				$wpda_repository = new WPDA_Repository();
@@ -209,7 +209,7 @@ namespace WPDataAccess\Settings {
 				// Security check
 				$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, 'wpda-settings-remove_backup-repository-' . WPDA::get_current_user_login() ) ) {
-					wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				if ( isset( $_REQUEST['backup_date'] ) ) {
@@ -229,11 +229,11 @@ namespace WPDataAccess\Settings {
 			} elseif ( isset( $_REQUEST['remove_backup'] ) && 'true' === $_REQUEST['remove_backup'] ) {
 				$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, 'wpda-settings-remove_backup-repository-' . WPDA::get_current_user_login() ) ) {
-					wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				// Remove all repository backups
-				$backup_tables = $wpdb->get_results(
+				$backup_tables = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- plugin table
 					$wpdb->prepare(
 						$query, // phpcs:ignore WordPress.DB.PreparedSQL
 						array(
@@ -256,9 +256,9 @@ namespace WPDataAccess\Settings {
 					'ARRAY_N'
 				);
 				foreach ( $backup_tables as $backup_table ) {
-					$wpdb->query(
+					$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 						$wpdb->prepare(
-							'drop table `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
+							'drop table `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders, 	WordPress.DB.DirectDatabaseQuery.SchemaChange
 							array(
 								WPDA::remove_backticks( $backup_table[0] ),
 							)
@@ -276,7 +276,7 @@ namespace WPDataAccess\Settings {
 				if ( isset( $_REQUEST['restore_date'] ) ) {
 					$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 					if ( ! wp_verify_nonce( $wp_nonce, 'wpda-settings-restore_backup-repository-' . WPDA::get_current_user_login() ) ) {
-						wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+						wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 					}
 
 					// Start repository restore procedure
@@ -288,73 +288,73 @@ namespace WPDataAccess\Settings {
 
 			// Count backup tables rows
 			if ( $app_table_name_exists ) {
-				$no_app_items = WPDA_App_Model::count();//phpcs:ignore - 8.1 proof
+				$no_app_items = WPDA_App_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_app_items = 0;
 			}
 			if ( $app_container_table_name_exists ) {
-				$no_app_container_items = WPDA_App_Container_Model::count();//phpcs:ignore - 8.1 proof
+				$no_app_container_items = WPDA_App_Container_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_app_container_items = 0;
 			}
 			if ( $app_apps_table_name_exists ) {
-				$no_app_apps_items = WPDA_App_Apps_Model::count();//phpcs:ignore - 8.1 proof
+				$no_app_apps_items = WPDA_App_Apps_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_app_apps_items = 0;
 			}
 			if ( $menus_table_name_exists ) {
-				$no_menu_items = WPDA_User_Menus_Model::count();//phpcs:ignore - 8.1 proof
+				$no_menu_items = WPDA_User_Menus_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_menu_items = 0;
 			}
 			if ( $design_table_name_exists ) {
-				$no_table_designs = WPDA_Design_Table_Model::count();//phpcs:ignore - 8.1 proof
+				$no_table_designs = WPDA_Design_Table_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_table_designs = 0;
 			}
 			if ( $logging_table_exists ) {
-				$no_logs = WPDA_Logging_Model::count();//phpcs:ignore - 8.1 proof
+				$no_logs = WPDA_Logging_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_logs = 0;
 			}
 			if ( $media_table_exists ) {
-				$no_media = WPDA_Media_Model::count();//phpcs:ignore - 8.1 proof
+				$no_media = WPDA_Media_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_media = 0;
 			}
 			if ( $data_projects_project_name_exists ) {
-				$no_projects = WPDP_Project_Model::count();//phpcs:ignore - 8.1 proof
+				$no_projects = WPDP_Project_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_projects = 0;
 			}
 			if ( $data_projects_page_name_exists ) {
-				$no_pages = WPDP_Page_Model::count();//phpcs:ignore - 8.1 proof
+				$no_pages = WPDP_Page_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_pages = 0;
 			}
 			if ( $data_projects_table_name_exists ) {
-				$no_project_table_designs = WPDP_Project_Design_Table_Model::count();//phpcs:ignore - 8.1 proof
+				$no_project_table_designs = WPDP_Project_Design_Table_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_project_table_designs = 0;
 			}
 			if ( $data_publication_table_name_exists ) {
-				$no_data_publication = WPDA_Publisher_Model::count();//phpcs:ignore - 8.1 proof
+				$no_data_publication = WPDA_Publisher_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_data_publication = 0;
 			}
 			if ( $table_settings_table_exists ) {
-				$no_table_settings = WPDA_Table_Settings_Model::count();//phpcs:ignore - 8.1 proof
+				$no_table_settings = WPDA_Table_Settings_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_table_settings = 0;
 			}
 			if ( $csv_import_table_exists ) {
-				$no_csv_import = WPDA_CSV_Uploads_Model::count();//phpcs:ignore - 8.1 proof
+				$no_csv_import = WPDA_CSV_Uploads_Model::count(); // phpcs:ignore -- 8.1 proof
 			} else {
 				$no_csv_import = 0;
 			}
 
 			// Count backup tables
-			$backup_tables    = $wpdb->get_results(
+			$backup_tables    = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- plugin tables
 				$wpdb->prepare(
 					$query, // phpcs:ignore WordPress.DB.PreparedSQL
 					array(
@@ -422,7 +422,7 @@ namespace WPDataAccess\Settings {
 			?>
 			<form id="wpda-download-actual-respository"
 				  method="post"
-				  action="<?php echo admin_url( 'admin.php' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>?action=wpda_export"
+				  action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>?action=wpda_export"
 				  target="_blank"
 				  style="display: none"
 			>
@@ -446,7 +446,7 @@ namespace WPDataAccess\Settings {
 			</form>
 			<form id="wpda-download-backup"
 				  method="post"
-				  action="<?php echo admin_url( 'admin.php' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>?action=wpda_export"
+				  action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>?action=wpda_export"
 				  target="_blank"
 				  style="display: none"
 			>
@@ -470,7 +470,7 @@ namespace WPDataAccess\Settings {
 			</form>
 			<form id="wpda-remove-backup"
 				  method="post"
-				  action="<?php echo admin_url( 'admin.php' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository"
+				  action="<?php esc_url( admin_url( 'admin.php' ) ); ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository"
 				  style="display: none"
 			>
 				<input type="hidden" name="backup_date" id="remove_backup_date">
@@ -480,7 +480,7 @@ namespace WPDataAccess\Settings {
 			</form>
 			<form id="wpda-create-backup"
 				  method="post"
-				  action="<?php echo admin_url( 'admin.php' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository"
+				  action="<?php esc_url( admin_url( 'admin.php' ) ); ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository"
 				  style="display: none"
 			>
 				<input type="hidden" name="create_backup" value="true">
@@ -489,7 +489,7 @@ namespace WPDataAccess\Settings {
 			</form>
 			<form id="wpda-remove-all-backups"
 				  method="post"
-				  action="<?php echo admin_url( 'admin.php' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository"
+				  action="<?php esc_url( admin_url( 'admin.php' ) ); ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository"
 				  style="display: none"
 			>
 				<input type="hidden" name="remove_backup" value="true">
@@ -498,7 +498,7 @@ namespace WPDataAccess\Settings {
 			</form>
 			<form id="wpda-restore-respository"
 				  method="post"
-				  action="<?php echo admin_url( 'admin.php' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository"
+				  action="<?php esc_url( admin_url( 'admin.php' ) ); ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository"
 				  style="display: none"
 			>
 				<input type="hidden" name="wpda_app" id="restore_app_table_name">
@@ -520,19 +520,19 @@ namespace WPDataAccess\Settings {
 				<input type="submit">
 			</form>
 			<form id="wpda_settings_repository" method="post"
-				  action="<?php echo admin_url( 'admin.php' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository">
+				  action="<?php esc_url( admin_url( 'admin.php' ) ); ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository">
 				<table class="wpda-table-settings">
 
 					<tr>
 						<th>
-							<?php echo __( 'On Plugin Update', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'On Plugin Update', 'wp-data-access' ); ?>
 						</th>
 						<td>
 							<label>
 								<input type="checkbox" name="keep_backup_tables"
 									<?php echo 'on' === $keep_backup_tables ? 'checked' : ''; ?>>
-								<strong><?php echo __( 'Keep backup of repository tables', 'wp-data-access' ); ?></strong>
-								<?php echo __( '(creates backup tables on plugin updates)', 'wp-data-access' ); ?>
+								<strong><?php esc_html_e( 'Keep backup of repository tables', 'wp-data-access' ); ?></strong>
+								<?php esc_html_e( '(creates backup tables on plugin updates)', 'wp-data-access' ); ?>
 							</label>
 							<br/>
 							<label style="display: inline-block; margin-top: 5px">
@@ -544,7 +544,7 @@ namespace WPDataAccess\Settings {
 							   class="button"
 							   onclick="jQuery('#wpda-download-actual-respository').submit()"
 							>
-								<?php echo __( 'Download actual repository tables' ); ?>
+								<?php esc_html_e( 'Download actual repository tables', 'wp-data-access' ); ?>
 							</a>
 							<div style="width: fit-content">
 							<?php
@@ -899,13 +899,13 @@ namespace WPDataAccess\Settings {
 											   class="button"
 											   onclick="jQuery('.wpda-restore-repository-backup-selected').removeClass('wpda-restore-repository-backup-selected'); jQuery('#wpda-restore-repository-backup').hide();"
 											>
-												<?php echo __( 'Cancel' ); ?>
+												<?php esc_html_e( 'Cancel', 'wp-data-access' ); ?>
 											</a>
 											<a href="javascript:void(0)"
 											   class="button"
 											   onclick="restore_respository_tables()"
 											>
-												<?php echo __( 'Restore' ); ?>
+												<?php esc_html_e( 'Restore', 'wp-data-access' ); ?>
 											</a>
 										</div>
 									</fieldset>
@@ -917,22 +917,22 @@ namespace WPDataAccess\Settings {
 							<div class="wpda-spacer"></div>
 							<a href="javascript:void(0)"
 							   class="button"
-							   onclick=" if (confirm('<?php echo __( 'Backup repository tables?', 'wp-data-access' ); ?>')) { jQuery('#wpda-create-backup').submit(); }"
+							   onclick=" if (confirm('<?php esc_html_e( 'Backup repository tables?', 'wp-data-access' ); ?>')) { jQuery('#wpda-create-backup').submit(); }"
 							>
-								<?php echo __( 'Create new repository backup' ); ?>
+								<?php esc_html_e( 'Create new repository backup', 'wp-data-access' ); ?>
 							</a>
 							<a href="javascript:void(0)"
 							   class="button <?php echo 0 === $no_backup_tables ? 'disabled' : ''; ?>"
-							   onclick="if (confirm('<?php echo __( 'Delete all backup tables?', 'wp-data-access' ) . '\n' . __( 'This action cannot be undone.', 'wp-data-access' ) . '\n' . __( '\\\'Cancel\\\' to stop, \\\'OK\\\' to delete.', 'wp-data-access' ); ?>')) { jQuery('#wpda-remove-all-backups').submit(); }"
+							   onclick="if (confirm('<?php echo esc_attr__( 'Delete all backup tables?', 'wp-data-access' ) . '\n' . esc_attr__( 'This action cannot be undone.', 'wp-data-access' ) . '\n' . esc_attr__( '\\\'Cancel\\\' to stop, \\\'OK\\\' to delete.', 'wp-data-access' ); ?>')) { jQuery('#wpda-remove-all-backups').submit(); }"
 							>
-								<?php echo __( 'Delete all (' ) . esc_html( $no_backup_tables ) . __( ') repository backup tables' ); ?>
+								<?php echo esc_attr__( 'Delete all (', 'wp-data-access' ) . esc_attr( $no_backup_tables ) . esc_attr__( ') repository backup tables', 'wp-data-access' ); ?>
 							</a>
 						</td>
 					</tr>
 
 					<tr>
 						<th>
-							<?php echo __( 'Apps', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'Apps', 'wp-data-access' ); ?>
 						</th>
 						<td>
 							<span class="dashicons <?php echo $app_table_name_exists ? 'dashicons-yes' : 'dashicons-no'; ?>"></span>
@@ -946,7 +946,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_app_items ); ?>
-									<?php echo __( 'apps defined in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'apps defined in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -956,7 +956,7 @@ namespace WPDataAccess\Settings {
 
 					<tr>
 						<th>
-							<?php echo __( 'App Containers', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'App Containers', 'wp-data-access' ); ?>
 						</th>
 						<td>
 							<span class="dashicons <?php echo $app_container_table_name_exists ? 'dashicons-yes' : 'dashicons-no'; ?>"></span>
@@ -970,7 +970,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_app_container_items ); ?>
-									<?php echo __( 'apps containers defined in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'apps containers defined in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -980,7 +980,7 @@ namespace WPDataAccess\Settings {
 
 					<tr>
 						<th>
-							<?php echo __( 'App Apps', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'App Apps', 'wp-data-access' ); ?>
 						</th>
 						<td>
 							<span class="dashicons <?php echo $app_apps_table_name_exists ? 'dashicons-yes' : 'dashicons-no'; ?>"></span>
@@ -994,7 +994,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_app_apps_items ); ?>
-									<?php echo __( 'app apps defined in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'app apps defined in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1004,7 +1004,7 @@ namespace WPDataAccess\Settings {
 
 					<tr>
 						<th>
-							<?php echo __( 'Table Settings', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'Table Settings', 'wp-data-access' ); ?>
 						</th>
 						<td>
 							<span class="dashicons <?php echo $table_settings_table_exists ? 'dashicons-yes' : 'dashicons-no'; ?>"></span>
@@ -1018,7 +1018,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_table_settings ); ?>
-									<?php echo __( 'table settings defined in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'table settings defined in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1028,7 +1028,7 @@ namespace WPDataAccess\Settings {
 
 					<tr>
 						<th>
-							<?php echo __( 'Manage Media', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'Manage Media', 'wp-data-access' ); ?>
 						</th>
 						<td>
 							<span class="dashicons <?php echo $media_table_exists ? 'dashicons-yes' : 'dashicons-no'; ?>"></span>
@@ -1042,7 +1042,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_media ); ?>
-									<?php echo __( 'media columns defined in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'media columns defined in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1066,7 +1066,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_table_designs ); ?>
-									<?php echo __( 'table designs in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'table designs in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1104,7 +1104,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_projects ); ?>
-									<?php echo __( 'data projects in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'data projects in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1114,7 +1114,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_pages ); ?>
-									<?php echo __( 'project pages in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'project pages in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1124,7 +1124,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_project_table_designs ); ?>
-									<?php echo __( 'project tables in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'project tables in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1148,7 +1148,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_data_publication ); ?>
-									<?php echo __( 'data tables in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'data tables in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1172,7 +1172,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_menu_items ); ?>
-									<?php echo __( 'menus in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'menus in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1182,7 +1182,7 @@ namespace WPDataAccess\Settings {
 
 					<tr>
 						<th>
-							<?php echo __( 'CSV Uploads', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'CSV Uploads', 'wp-data-access' ); ?>
 						</th>
 						<td>
 							<span class="dashicons <?php echo $csv_import_table_exists ? 'dashicons-yes' : 'dashicons-no'; ?>"></span>
@@ -1196,7 +1196,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_csv_import ); ?>
-									<?php echo __( 'menus in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'menus in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1220,7 +1220,7 @@ namespace WPDataAccess\Settings {
 								<span class="dashicons dashicons-yes"></span>
 								<strong>
 									<?php echo esc_attr( $no_logs ); ?>
-									<?php echo __( 'logging rows in repository', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'logging rows in repository', 'wp-data-access' ); ?>
 								</strong>
 								<?php
 							}
@@ -1233,25 +1233,25 @@ namespace WPDataAccess\Settings {
 					<input type="hidden" name="action" value="save"/>
 					<button type="submit" class="button button-primary">
 						<i class="fas fa-check wpda_icon_on_button"></i>
-						<?php echo __( 'Save Manage Respository Settings', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Save Manage Respository Settings', 'wp-data-access' ); ?>
 					</button>
 					<a href="javascript:void(0)"
-					   onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+					   onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
 						   jQuery('input[name=\'action\']').val('setdefaults');
 						   jQuery('#wpda_settings_repository').trigger('submit');
 						   }"
 					   class="button button-secondary">
 						<i class="fas fa-times-circle wpda_icon_on_button"></i>
-						<?php echo __( 'Reset Manage Repository Settings To Defaults', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Reset Manage Repository Settings To Defaults', 'wp-data-access' ); ?>
 					</a>
 					<?php
 					$wpnonce_recreate = wp_create_nonce( 'wpda-settings-recreate-repository-' . WPDA::get_current_user_login() );
 					?>
-					<a href="<?php echo admin_url( 'admin.php' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository&repos=true&_wpnonce=<?php echo esc_attr( $wpnonce_recreate ); ?>"
+					<a href="<?php esc_url( admin_url( 'admin.php' ) ); ?>?page=<?php echo esc_attr( $this->page ); ?>&tab=repository&repos=true&_wpnonce=<?php echo esc_attr( $wpnonce_recreate ); ?>"
 					   class="button button-secondary">
 						<i class="fas fa-redo wpda_icon_on_button"></i>
-						<?php echo __( 'Recreate', 'wp-data-access' ); ?> WP Data Access
-						<?php echo __( 'Repository', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Recreate', 'wp-data-access' ); ?> WP Data Access
+						<?php esc_html_e( 'Repository', 'wp-data-access' ); ?>
 					</a>
 				</div>
 				<?php wp_nonce_field( 'wpda-repository-settings-' . WPDA::get_current_user_login(), '_wpnonce', false ); ?>
@@ -1273,10 +1273,10 @@ namespace WPDataAccess\Settings {
 					! $data_publication_table_name_exists
 				) {
 					?>
-					<p><strong><?php echo __( 'Your repository has errors!', 'wp-data-access' ); ?></strong></p>
+					<p><strong><?php esc_html_e( 'Your repository has errors!', 'wp-data-access' ); ?></strong></p>
 					<p>
-						<?php echo __( 'Recreate the WP Data Access repository to solve this problem.', 'wp-data-access' ); ?>
-						<?php echo __( 'Please leave your comments on the support forum if the problem remains.', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Recreate the WP Data Access repository to solve this problem.', 'wp-data-access' ); ?>
+						<?php esc_html_e( 'Please leave your comments on the support forum if the problem remains.', 'wp-data-access' ); ?>
 						(<a href="https://wordpress.org/support/plugin/wp-data-access/" target="_blank">go to forum</a>)
 					</p>
 					<?php

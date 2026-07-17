@@ -124,9 +124,11 @@ namespace WPDataAccess\Data_Dictionary {
 			$this->wpdadb = WPDADB::get_db_connection( $this->schema_name );
 			if ( null === $this->wpdadb ) {
 				if ( is_admin() ) {
-					wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name)  ) );
+					/* translators: %s = database name */
+					wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name)  ) ) );
 				} else {
-					die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) ) );
 				}
 			}
 
@@ -299,7 +301,7 @@ namespace WPDataAccess\Data_Dictionary {
 				)
 			);
 
-			$this->table_columns            = $this->wpdadb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			$this->table_columns            = $this->wpdadb->get_results( $query, 'ARRAY_A' ); 
 			$this->searchable_table_columns = $this->table_columns; // Contains all columns and is not modified
 
 			foreach ( $this->table_columns as $column ) {
@@ -364,7 +366,7 @@ namespace WPDataAccess\Data_Dictionary {
 					$this->table_primary_key[]                  = $result[0]['Column_name'];
 					$this->table_primary_key_check[ $key_name ] = true;
 					$i = 1;
-					while ( $i < count( $result ) ) {//phpcs:ignore - 8.1 proof
+					while ( $i < count( $result ) ) { // phpcs:ignore -- 8.1 proof
 						if ( $key_name === $result[ $i ]['Key_name'] ) {
 							$this->table_primary_key[]                                     = $result[ $i ]['Column_name'];
 							$this->table_primary_key_check[ $result[ $i ]['Column_name'] ] = true;
@@ -399,14 +401,14 @@ namespace WPDataAccess\Data_Dictionary {
 				foreach ( $result as $row ) {
 					if ( $index_name !== $row['Key_name'] ) {
 						if ( '' !== $index_name ) {
-							array_push( $return, $row['Column_name'] );//phpcs:ignore - 8.1 proof
+							array_push( $return, $row['Column_name'] ); // phpcs:ignore -- 8.1 proof
 							$index = array();
 						}
 						$index_name = $row['Key_name'];
 					}
-					array_push( $index, $row['Column_name'] );//phpcs:ignore - 8.1 proof
+					array_push( $index, $row['Column_name'] ); // phpcs:ignore -- 8.1 proof
 				}
-				array_push( $return, $index );//phpcs:ignore - 8.1 proof
+				array_push( $return, $index ); // phpcs:ignore -- 8.1 proof
 			}
 
 			return $return;
@@ -435,7 +437,7 @@ namespace WPDataAccess\Data_Dictionary {
 		protected function set_table_column_headers() {
 
 			if ( ! isset( $this->table_columns ) ) {
-				wp_die( __( 'ERROR: Wrong arguments [no columns found]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [no columns found]', 'wp-data-access' ) );
 			}
 
 			$primary_nr                 = 0;
@@ -453,7 +455,7 @@ namespace WPDataAccess\Data_Dictionary {
 
 					if ( $this->is_primary_key_column( $value['column_name'] ) ) {
 						$key_text = __( 'key', 'wp-data-access' );
-						if ( count( $this->table_primary_key ) > 1 ) {//phpcs:ignore - 8.1 proof
+						if ( count( $this->table_primary_key ) > 1 ) { // phpcs:ignore -- 8.1 proof
 							$label .= " ($key_text #" . ( ++ $primary_nr ) . ')';
 						} else {
 							$label .= " ($key_text)";

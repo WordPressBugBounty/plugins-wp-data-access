@@ -44,7 +44,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public static function setup_pool() {
 			if ( ! self::$pool_setup ) {
 				global $wpdb;
-				$media = $wpdb->get_results(
+				$media = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 					$wpdb->prepare(
 						"select * from `%1s` where media_activated = 'Yes'", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 						array(
@@ -125,7 +125,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 				$schema_name = $wpdb->dbname;
 			}
 
-			return ( 1 === $wpdb->insert(
+			return ( 1 === $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
 				static::get_base_table_name(),
 				array(
 					'media_schema_name' => $schema_name,
@@ -154,7 +154,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 				$schema_name = $wpdb->dbname;
 			}
 
-			return $wpdb->update(
+			return $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				static::get_base_table_name(),
 				array(
 					'media_type' => $media_type,
@@ -182,7 +182,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 				$schema_name = $wpdb->dbname;
 			}
 
-			return $wpdb->delete(
+			return $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				static::get_base_table_name(),
 				array(
 					'media_schema_name' => $schema_name,

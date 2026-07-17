@@ -42,10 +42,11 @@ namespace WPDataAccess\WPDA_Navi {
 				</div>
 
 				<div class="wpda-navi-container-header-image">
-					<img src="<?php echo plugins_url('../../assets/images/coding-isometric-01-blauw.png', __FILE__); ?>"/>
+					<img src="<?php echo esc_attr( plugins_url('../../assets/images/coding-isometric-01-blauw.png', __FILE__ ) ); ?>"/>
 				</div>
 			</div>
 			<?php
+			WPDA::load_wp_tables();
 		}
 
         private function tool_status( $tool ) {
@@ -113,32 +114,32 @@ namespace WPDataAccess\WPDA_Navi {
                                 <tr>
                                     <td>Tables</td>
                                     <td class="items"><?php echo esc_attr( $this->option_legacy_tools['tables'][1] ); ?></td>
-                                    <td class="status" data-tool="tables"><?php echo $this->tool_status( $this->option_legacy_tools['tables'] ); ?></td>
+                                    <td class="status" data-tool="tables"><?php echo $this->tool_status( $this->option_legacy_tools['tables'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
                                 </tr>
                                 <tr>
                                     <td>Forms</td>
                                     <td class="items"><?php echo esc_attr( $this->option_legacy_tools['forms'][1] ); ?></td>
-                                    <td class="status" data-tool="forms"><?php echo $this->tool_status( $this->option_legacy_tools['forms'] ); ?></td>
+                                    <td class="status" data-tool="forms"><?php echo $this->tool_status( $this->option_legacy_tools['forms'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
                                 </tr>
                                 <tr>
                                     <td>Templates</td>
                                     <td class="items"><?php echo esc_attr( $this->option_legacy_tools['templates'][1] ); ?></td>
-                                    <td class="status" data-tool="templates"><?php echo $this->tool_status( $this->option_legacy_tools['templates'] ); ?></td>
+                                    <td class="status" data-tool="templates"><?php echo $this->tool_status( $this->option_legacy_tools['templates'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
                                 </tr>
                                 <tr>
                                     <td>Designer</td>
                                     <td class="items"><?php echo esc_attr( $this->option_legacy_tools['designer'][1] ); ?></td>
-                                    <td class="status" data-tool="designer"><?php echo $this->tool_status( $this->option_legacy_tools['designer'] ); ?></td>
+                                    <td class="status" data-tool="designer"><?php echo $this->tool_status( $this->option_legacy_tools['designer'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
                                 </tr>
                                 <tr>
                                     <td>Dashboards</td>
                                     <td class="items"><?php echo esc_attr( $this->option_legacy_tools['dashboards'][1] ); ?></td>
-                                    <td class="status" data-tool="dashboards"><?php echo $this->tool_status( $this->option_legacy_tools['dashboards'] ); ?></td>
+                                    <td class="status" data-tool="dashboards"><?php echo $this->tool_status( $this->option_legacy_tools['dashboards'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
                                 </tr>
                                 <tr>
                                     <td>Charts</td>
                                     <td class="items"><?php echo esc_attr( $this->option_legacy_tools['charts'][1] ); ?></td>
-                                    <td class="status" data-tool="charts"><?php echo $this->tool_status( $this->option_legacy_tools['charts'] ); ?></td>
+                                    <td class="status" data-tool="charts"><?php echo $this->tool_status( $this->option_legacy_tools['charts'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -151,7 +152,7 @@ namespace WPDataAccess\WPDA_Navi {
                         <div style="display: none">
                             <form
                                 id="wpda-legacy-tool-settings-form-data"
-                                action="<?php echo admin_url( 'admin.php' ); ?>?page=wpda_navi"
+                                action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>?page=wpda_navi"
                                 method="POST"
                             >
                                 <input
@@ -330,48 +331,55 @@ namespace WPDataAccess\WPDA_Navi {
 
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
+								<li>
+									<a href="https://docs.rad.wpdataaccess.com/running-apps.html#%E2%9C%8F%EF%B8%8F-using-the-gutenberg-block-editor" target="_blank" class="whatsnew">
+										Gutenberg block support for [wpda_app] shortcode.
+									</a>
+								</li>
+								<li>
+									<a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/detail-panel.html#%E2%9A%99%EF%B8%8F-multiple-cards-per-row" target="_blank" class="whatsnew">
+										Show multiple cards per row in a grid.
+									</a>
+								</li>
+								<li>
+									<a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/row-actions.html#%E2%9A%99%EF%B8%8F-hide-edit-icon" target="_blank" class="whatsnew">
+										Turn on <strong>allow update</strong> and <strong>hide edit icon</strong> to enable inline editing and disable forms.
+									</a>
+								</li>
                                 <li>
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/column-filters.html" target="_blank" class="whatsnew">
-                                        ⭐ Show column filters in popup (on mobile devices).
+                                        Show column filters in popup (on mobile devices).
                                     </a>
                                 </li>
                                 <li>
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/column-filters.html" target="_blank" class="whatsnew">
-                                        😎 Completely restyled UI for compact column filters.
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/columns/column-actions.html" target="_blank" class="whatsnew">
-                                        🔎︎ Added single-select search panes.
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/charts.html" target="_blank" class="whatsnew">
-                                        📊 Apply arithmetic functions to chart columns.
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://docs.rad.wpdataaccess.com/dashboard-builder/" target="_blank" class="whatsnew">
-                                        📶 Dashboards now available as app type.
+                                        Completely restyled UI for compact column filters.
                                     </a>
                                 </li>
                                 <li>
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/detail-panel.html#%E2%9A%99%EF%B8%8F-enable-table-display-mode" target="_blank" class="whatsnew">
-                                        💎 Switch between Table View and Card View.
+                                        Switch between Table View and Card View.
                                     </a>
                                 </li>
                                 <li>
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/detail-panel.html" target="_blank" class="whatsnew">
-                                        😎 Even cooler interactive detail panel creation.
+                                        Even cooler interactive detail panel creation.
                                     </a>
                                 </li>
                                 <li>
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/columns/computed-fields.html" target="_blank" class="whatsnew">
-                                        🎁 Computed Text Fields for FREE USERS.
+                                        Computed Text Fields for FREE USERS.
                                     </a>
                                 </li>
+								<li>									
+									<a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/css-table-editor.html#css-table-editor" target="_blank" class="whatsnew">
+										CSS Table Editor now available to FREE USERS.
+									</a>
+								</li>
                                 <li>
-                                    👁️ Visual Query Builder for FREE USERS (use new Query Builder).
+									<a href="https://docs.sql.wpdataaccess.com/visual-query-builder.html" target="_blank" class="whatsnew">
+                                    	Visual Query Builder now available to FREE USERS.
+									</a>
                                 </li>
 							</ul>
 						</div>

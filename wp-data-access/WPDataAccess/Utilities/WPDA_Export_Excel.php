@@ -39,7 +39,7 @@ namespace WPDataAccess\Utilities {
 			echo '<Styles><Style ss:ID="s62"><Font ss:Bold="1"/></Style></Styles>';
 			echo '<Worksheet ss:Name="Table ' . esc_attr( $this->table_names ) . ' export">';
 			echo '<Table>';
-			if ( is_array( $this->rows ) && count( $this->rows ) > 0 ) {//phpcs:ignore - 8.1 proof
+			if ( is_array( $this->rows ) && count( $this->rows ) > 0 ) { // phpcs:ignore -- 8.1 proof
 				echo '<Row>';
 				foreach ( $this->rows[0] as $column_name => $column_value ) {
 					echo '<Cell ss:StyleID="s62"><Data ss:Type="String">' . esc_attr( $this->wpda_list_columns->get_column_label( $column_name ) ) . '</Data></Cell>';

@@ -90,7 +90,7 @@ namespace WPDataAccess\Data_Dictionary {
 						// Local check...
 						// Since a table name (and therefor schema name as well) can be provided on the url we need to check for
 						// sql injection. We'll do this by checking of the schema name exists in our database.
-						$wpdb->get_results(
+						$wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 							$wpdb->prepare(
 								'
 									SELECT TRUE
@@ -104,7 +104,7 @@ namespace WPDataAccess\Data_Dictionary {
 						); // db call ok; no-cache ok.
 						if ( 1 !== $wpdb->num_rows ) {
 							// Schema name doesn't exist! It makes no sense to continue.
-							wp_die( __( 'ERROR: Wrong arguments [schema name not found]', 'wp-data-access' ) );
+							wp_die( esc_attr__( 'ERROR: Wrong arguments [schema name not found]', 'wp-data-access' ) );
 						} else {
 							self::$schema_name_cache[ $schema_name ] = true;
 						}
@@ -189,7 +189,7 @@ namespace WPDataAccess\Data_Dictionary {
 					)
 				)
 			); // db call ok; no-cache ok.
-			$wpdadb->get_results(); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			$wpdadb->get_results(); 
 
 			return ( 1 === $wpdadb->num_rows );
 		}
@@ -236,7 +236,7 @@ namespace WPDataAccess\Data_Dictionary {
 					)
 				)
 			); // db call ok; no-cache ok.
-			$wpdadb->get_results(); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			$wpdadb->get_results(); 
 
 			return ( 1 === $wpdadb->num_rows );
 		}
@@ -318,7 +318,7 @@ namespace WPDataAccess\Data_Dictionary {
 				)
 			); // db call ok; no-cache ok.
 
-			$wpdadb->get_results(); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			$wpdadb->get_results(); 
 
 			if ( 1 === $wpdadb->num_rows ) {
 				self::$table_name_cache[ "$this->schema_name.$this->table_name" ] = true;
@@ -357,7 +357,7 @@ namespace WPDataAccess\Data_Dictionary {
 					)
 				)
 			); // db call ok; no-cache ok.
-			$wpdadb->get_results(); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			$wpdadb->get_results(); 
 
 			return ( 1 === $wpdadb->num_rows );
 		}
@@ -397,7 +397,7 @@ namespace WPDataAccess\Data_Dictionary {
 					)
 				)
 			); // db call ok; no-cache ok.
-			$wpdadb->get_results(); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			$wpdadb->get_results(); 
 
 			return ( 1 === $wpdadb->num_rows );
 		}
@@ -428,14 +428,14 @@ namespace WPDataAccess\Data_Dictionary {
 					)
 				)
 			); // db call ok; no-cache ok.
-			$wpdadb->get_results(); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			$wpdadb->get_results(); 
 
 			return ( 1 === $wpdadb->num_rows );
 		}
 
 		public static function schema_exists( $schema_name ) {
 			global $wpdb;
-			$wpdb->get_results(
+			$wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->prepare(
 					'
 							SELECT TRUE

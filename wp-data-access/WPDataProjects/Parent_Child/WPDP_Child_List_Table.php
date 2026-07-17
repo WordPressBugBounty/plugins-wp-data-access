@@ -75,19 +75,19 @@ namespace WPDataProjects\Parent_Child {
 			if ( isset( $args['mode'] ) ) {
 				$this->mode = $args['mode'];
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments [missing mode]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [missing mode]', 'wp-data-access' ) );
 			}
 
 			if ( isset( $args['parent'] ) ) {
 				$this->parent = $args['parent'];
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments [missing parent]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [missing parent]', 'wp-data-access' ) );
 			}
 
 			if ( isset( $args['child'] ) ) {
 				$this->child = $args['child'];
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments [missing child]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [missing child]', 'wp-data-access' ) );
 			}
 
 			$args['child_request'] = true;
@@ -105,8 +105,8 @@ namespace WPDataProjects\Parent_Child {
 				$args['bulk_actions_enabled'] = false;
 			}
 
-			if ( isset( $_REQUEST['child_tab'] ) ) {
-				$this->child_tab = sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // input var okay.
+			if ( isset( $_REQUEST['child_tab'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
+				$this->child_tab = sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
 			}
 
 			$this->page_number_item_name = 'child_page_number';
@@ -209,9 +209,11 @@ namespace WPDataProjects\Parent_Child {
 			$wpdadb = WPDADB::get_db_connection( $this->schema_name );
 			if ( null === $wpdadb ) {
 				if ( is_admin() ) {
-					wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				} else {
-					die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				}
 			}
 
@@ -238,7 +240,7 @@ namespace WPDataProjects\Parent_Child {
 				$index                   = 0;
 
 				foreach ( $parent_key as $key ) {
-					if ( $key === reset( $parent_key ) ) {//phpcs:ignore - 8.1 proof
+					if ( $key === reset( $parent_key ) ) { // phpcs:ignore -- 8.1 proof
 						$parent_key_column_names .= "(`$key`";
 						$select_column_names     .= '`' . $child_table_select[ $index ] . '`';
 					} else {
@@ -253,7 +255,7 @@ namespace WPDataProjects\Parent_Child {
 				$where = '';
 
 				foreach ( $child_table_where as $child_where ) {
-					if ( $child_where === reset( $child_table_where ) ) {//phpcs:ignore - 8.1 proof
+					if ( $child_where === reset( $child_table_where ) ) { // phpcs:ignore -- 8.1 proof
 						$and = '';
 					} else {
 						$and = ' and ';
@@ -263,13 +265,13 @@ namespace WPDataProjects\Parent_Child {
 							$wpdadb->prepare(
 								" $and `$child_where` = %f ",
 								$this->parent['parent_key_value'][ $this->parent['parent_key'][ $index ] ]
-							); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+							); 
 					} else {
 						$where .=
 							$wpdadb->prepare(
 								" $and `$child_where` = %s ",
 								$this->parent['parent_key_value'][ $this->parent['parent_key'][ $index ] ]
-							); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+							); 
 					}
 					$index ++;
 				}
@@ -282,7 +284,7 @@ namespace WPDataProjects\Parent_Child {
 
 				$this->where =
 					" where ($parent_key_column_names {$this->where_in} " .
-					" (select $select_column_names from $schema_table_name where $where)) "; // phpcs:ignore Standard.Category.SniffName.ErrorCode
+					" (select $select_column_names from $schema_table_name where $where)) "; 
 			} elseif ( isset( $this->child['relation_1n'] ) ) {
 				$child_key = $this->child['relation_1n']['child_key'];
 				$data_type = $this->child['relation_1n']['data_type'];
@@ -300,7 +302,7 @@ namespace WPDataProjects\Parent_Child {
 				$where = '';
 
 				foreach ( $child_key as $key ) {
-					if ( $key === reset( $child_key ) ) {//phpcs:ignore - 8.1 proof
+					if ( $key === reset( $child_key ) ) { // phpcs:ignore -- 8.1 proof
 						$and = '';
 					} else {
 						$and = ' and ';
@@ -312,13 +314,15 @@ namespace WPDataProjects\Parent_Child {
 						if ( $parent_key == $this->parent['parent_key'] ) {
 							$parent_key_value = $this->parent['parent_key_value'][ $this->parent['parent_key'][ $index ] ];
 						} else {
+							// phpcs:disable WordPress.Security.NonceVerification.Recommended -- already verified
 							if ( isset( $_REQUEST[ 'WPDA_PARENT_KEY*' . $parent_key[ $index ] ] ) ) {
 								$parent_key_value = sanitize_text_field( wp_unslash( $_REQUEST[ 'WPDA_PARENT_KEY*' . $parent_key[ $index ] ] ) ); // input var okay.
 							} elseif ( isset( $_REQUEST[ $parent_key[ $index ] ] ) ) {
 								$parent_key_value = sanitize_text_field( wp_unslash( $_REQUEST[ $parent_key[ $index ] ] ) ); // input var okay.
 							} else {
-								wp_die( '<p style="clear: both; padding: 10px;">' . __( 'ERROR: No value for parent key found', 'wp-data-access' ) . '</p>' );
+								wp_die( '<p style="clear: both; padding: 10px;">' . esc_attr__( 'ERROR: No value for parent key found', 'wp-data-access' ) . '</p>' );
 							}
+							// phpcs:enable WordPress.Security.NonceVerification.Recommended
 						}
 					}
 
@@ -326,18 +330,18 @@ namespace WPDataProjects\Parent_Child {
 						$where .= $wpdadb->prepare(
 							" $and `$key` = %f ",
 							$parent_key_value
-						); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+						); 
 					} else {
 						$where .= $wpdadb->prepare(
 							" $and `$key` = %s ",
 							$parent_key_value
-						); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+						); 
 					}
 
 					$index++;
 				}
 
-				$this->where = " where ($where) "; // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				$this->where = " where ($where) "; 
 			}
 
 			// Add default where
@@ -363,7 +367,7 @@ namespace WPDataProjects\Parent_Child {
 			}
 
 			// Add default order by
-			return $default_orderby; // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			return $default_orderby; 
 		}
 
 		/**
@@ -468,9 +472,11 @@ namespace WPDataProjects\Parent_Child {
 			$wpdadb = WPDADB::get_db_connection( $this->schema_name );
 			if ( null === $wpdadb ) {
 				if ( is_admin() ) {
-					wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				} else {
-					die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				}
 			}
 

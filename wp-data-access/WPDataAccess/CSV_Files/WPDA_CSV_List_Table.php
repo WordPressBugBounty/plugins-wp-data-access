@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Standard.Category.SniffName.ErrorCode
+<?php 
 
 namespace WPDataAccess\CSV_Files {
 
@@ -139,7 +139,7 @@ Needs to be performed only once" onclick="jQuery(\'#mapping_form%s\').submit()">
 			unset( $actions['edit'] );
 
 			// Add new links to beginning of action list.
-			//phpcs:ignore - 8.1 proof
+			 // phpcs:ignore -- 8.1 proof
 			$actions =
 				array_merge(
 					array( 'mapping' => $mapping ),
@@ -167,6 +167,7 @@ Needs to be performed only once" onclick="jQuery(\'#mapping_form%s\').submit()">
                 $csv_encoding_field = "<input type='hidden' name='csv_encoding' value='{$esc_attr( $csv_encoding )}' />";
             }
 
+			// phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
 			$form     = <<< EOT
 				<form id='{$esc_attr( $form_id )}' method='post'
 					  action='?page={$esc_attr( $this->page )}&page_action=wpda_import_csv'
@@ -209,7 +210,7 @@ EOT;
 			if ( 'delete' === $this->current_action() ) {
 				// Check if key is available.
 				if ( ! isset( $_REQUEST['csv_id'] ) ) { // input var okay.
-					wp_die( __( 'ERROR: Invalid URL [missing primary key values]', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+					wp_die( esc_html__( 'ERROR: Invalid URL [missing primary key values]', 'wp-data-access' ) );
 				}
 				$csv_id = sanitize_text_field( wp_unslash( $_REQUEST['csv_id'] ) ); // input var okay.
 
@@ -217,15 +218,15 @@ EOT;
 				$wp_nonce_action = "wpda-delete-{$this->table_name}-{$csv_id}";
 				$wp_nonce        = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, $wp_nonce_action ) ) {
-					wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+					wp_die( esc_html__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				// Delete CSV file and data.
 				$row = WPDA_CSV_Uploads_Model::query( $csv_id );
-				if ( is_array( $row ) && 1 === count( $row ) ) {//phpcs:ignore - 8.1 proof
+				if ( is_array( $row ) && 1 === count( $row ) ) { // phpcs:ignore -- 8.1 proof
 					// Silently delete file.
 					if ( isset( $row[0]->csv_real_file_name ) ) {
-						unlink( WPDA::get_plugin_upload_dir() . $row[0]->csv_real_file_name );
+						unlink( WPDA::get_plugin_upload_dir() . $row[0]->csv_real_file_name ); // phpcs:ignore
 					}
 
 					// Delete record.
@@ -264,11 +265,11 @@ EOT;
 				$wp_nonce_action = "wpda-delete-{$this->table_name}";
 				$wp_nonce        = isset( $_REQUEST['_wpnonce2'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce2'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, $wp_nonce_action ) ) {
-					die( __( 'ERROR: Not authorized', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+					die( esc_html__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				$bulk_rows = $_REQUEST['bulk-selected']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-				//phpcs:ignore - 8.1 proof
+				 // phpcs:ignore -- 8.1 proof
 				$no_rows   = count(  ( array ) $bulk_rows ); // # rows to be deleted.
 
 				$rows_to_be_deleted = array(); // Gonna hold rows to be deleted.
@@ -279,7 +280,7 @@ EOT;
 
 					// Check if key is available.
 					if ( ! isset( $row_object['csv_id'] ) ) {
-						wp_die( __( 'ERROR: Invalid URL [missing primary key values]', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+						wp_die( esc_html__( 'ERROR: Invalid URL [missing primary key values]', 'wp-data-access' ) );
 					}
 
 					// Save key.
@@ -292,10 +293,10 @@ EOT;
 				for ( $i = 0; $i < $no_rows; $i ++ ) {
 					// Delete CSV file and data.
 					$row = WPDA_CSV_Uploads_Model::query( $rows_to_be_deleted[ $i ] );
-					if ( is_array( $row ) && 1 === count( $row ) ) {//phpcs:ignore - 8.1 proof
+					if ( is_array( $row ) && 1 === count( $row ) ) { // phpcs:ignore -- 8.1 proof
 						// Silently delete file.
 						if ( isset( $row[0]->csv_real_file_name ) ) {
-							unlink( WPDA::get_plugin_upload_dir() . $row[0]->csv_real_file_name );
+							unlink( WPDA::get_plugin_upload_dir() . $row[0]->csv_real_file_name ); // phpcs:ignore
 						}
 
 						// Delete record.

@@ -134,17 +134,17 @@ namespace WPDataAccess\Utilities {
 			$suppress = $wpdb->suppress_errors( true );
 
 			// Remove foreign key constraints on app tables
-			$wpdb->query(
-				"ALTER TABLE {$wpdb->prefix}wpda_app_apps DROP FOREIGN KEY `wp_wpda_app_apps_ibfk_1`"
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
+				"ALTER TABLE {$wpdb->prefix}wpda_app_apps DROP FOREIGN KEY `wp_wpda_app_apps_ibfk_1`" // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
 			);
-			$wpdb->query(
-				"ALTER TABLE {$wpdb->prefix}wpda_app_apps DROP FOREIGN KEY `wp_wpda_app_apps_ibfk_2`"
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
+				"ALTER TABLE {$wpdb->prefix}wpda_app_apps DROP FOREIGN KEY `wp_wpda_app_apps_ibfk_2`" // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
 			);
-			$wpdb->query(
-				"AlTER TABLE {$wpdb->prefix}wpda_app_container DROP FOREIGN KEY `wp_wpda_app_container_ibfk_1`"
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
+				"AlTER TABLE {$wpdb->prefix}wpda_app_container DROP FOREIGN KEY `wp_wpda_app_container_ibfk_1`" // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
 			);
 
-			$bck_postfix = WPDA_Restore_Repository::BACKUP_TABLE_EXTENSION . date( 'YmdHis' );
+			$bck_postfix = WPDA_Restore_Repository::BACKUP_TABLE_EXTENSION . gmdate( 'YmdHis' );
 			foreach ( static::CREATE_TABLE as $key => $value ) {
 				$table_name = $wpdb->prefix . $key;
 
@@ -158,9 +158,9 @@ namespace WPDataAccess\Utilities {
 				if ( $table_check ) {
 					// Create backup table
 					$bck_table_name = $wpdb->prefix . $key . $bck_postfix;
-					$wpdb->query(
+					$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 						$wpdb->prepare(
-							'create table `%1s` as select * from `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
+							'create table `%1s` as select * from `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
 							array(
 								WPDA::remove_backticks( $bck_table_name ),
 								WPDA::remove_backticks( $table_name ),
@@ -173,7 +173,7 @@ namespace WPDataAccess\Utilities {
 					// Create temporary table to check for changes
 					if ( $this->run_script( $value[0], '_new' ) ) {
 						// Check if table structure was changed
-						$table_diff = $wpdb->get_row(
+						$table_diff = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 							$wpdb->prepare(
 								'select column_name,ordinal_position,data_type,column_type from (
 									select column_name, ordinal_position, data_type, column_type, count(1) rowcount
@@ -202,7 +202,7 @@ namespace WPDataAccess\Utilities {
 							}
 
 							// Get columns matching old and new repository table columns to restore as many values as possible
-							$same_cols = $wpdb->get_results(
+							$same_cols = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 								$wpdb->prepare(
 									'select c1.column_name as column_name
 									 from information_schema.columns c1
@@ -229,7 +229,7 @@ namespace WPDataAccess\Utilities {
 								$selected_columns .= $same_col['column_name'] . ',';
 							}
 							$selected_columns = substr( $selected_columns, 0, strlen( $selected_columns ) - 1 );
-							$wpdb->query(
+							$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 								$wpdb->prepare(
 									'insert into `%1s` (%1s) select %1s from `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 									array(
@@ -267,7 +267,7 @@ namespace WPDataAccess\Utilities {
 				$base_table_name    = WPDA_Publisher_Model::get_base_table_name() . WPDA_Restore_Repository::BACKUP_TABLE_EXTENSION;
 
 				global $wpdb;
-				$rows = $wpdb->get_results(
+				$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 					$wpdb->prepare(
 						'
 							select table_name as table_name
@@ -284,7 +284,7 @@ namespace WPDataAccess\Utilities {
 					'ARRAY_A'
 				);
 
-				for ( $i = $backup_tables_kept; $i < count( $rows ); $i ++ ) {//phpcs:ignore - 8.1 proof
+				for ( $i = $backup_tables_kept; $i < count( $rows ); $i ++ ) { // phpcs:ignore -- 8.1 proof
 					$backup_date = substr( $rows[ $i ]['table_name'], strlen( $base_table_name ) );
 					$this->remove_backup( $backup_date );
 				}
@@ -298,9 +298,9 @@ namespace WPDataAccess\Utilities {
 			$suppress  = $wpdb->suppress_errors( true );
 			$extension = WPDA_Restore_Repository::BACKUP_TABLE_EXTENSION;
 			foreach ( self::CREATE_TABLE as $key => $value ) {
-				$wpdb->query(
+				$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 					$wpdb->prepare(
-						'drop table `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
+						'drop table `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
 						array(
 							WPDA::remove_backticks( "{$wpdb->prefix}{$key}{$extension}{$backup_date_sanitized}" ),
 						)
@@ -317,26 +317,26 @@ namespace WPDataAccess\Utilities {
 			global $wpdb;
 
 			// Remove previous data table list table settings
-			$wpdb->query(
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				"delete from {$wpdb->prefix}usermeta where meta_key like '%columnshidden%' and meta_key like '%wpda_publisher%'"
 			);
 
 			// Remove previous project page list table settings
-			$wpdb->query(
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				"delete from {$wpdb->prefix}usermeta where meta_key like '%columnshidden%' and meta_key like '%wpda_project%'"
 			);
 
 			// Allow column to contain null values
-			$wpdb->query(
-				"alter table {$wpdb->prefix}wpda_project_page modify page_allow_full_export	enum('yes','no') null default 'no'"
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
+				"alter table {$wpdb->prefix}wpda_project_page modify page_allow_full_export	enum('yes','no') null default 'no'" // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
 			);
 
 			// Remove material sort icons from data tables
-			$wpdb->query(
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				"update {$wpdb->prefix}wpda_publisher set pub_sort_icons = 'default' where pub_sort_icons = 'plugin'"
 			);
-			$wpdb->query(
-				"alter table {$wpdb->prefix}wpda_publisher modify pub_sort_icons enum('default','none')"
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
+				"alter table {$wpdb->prefix}wpda_publisher modify pub_sort_icons enum('default','none')" // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
 			);
 
 			// Remove plugin configuration settings: wrong values installed with 5.0.0 (needs to be reset on next deployment)
@@ -382,12 +382,12 @@ namespace WPDataAccess\Utilities {
 		 */
 		public function run_script( $sql_file, $wpda_postfix = '' ) {
 			$sql_repository_file   = $this->sql_repository_dir . $sql_file;
-			$sql_repository_handle = fopen( $sql_repository_file, 'r' );
+			$sql_repository_handle = fopen( $sql_repository_file, 'r' ); // phpcs:ignore
 
 			if ( $sql_repository_handle ) {
 				// Read file content and close handle.
-				$sql_repository_file_content = fread( $sql_repository_handle, filesize( $sql_repository_file ) );
-				fclose( $sql_repository_handle );
+				$sql_repository_file_content = fread( $sql_repository_handle, filesize( $sql_repository_file ) ); // phpcs:ignore
+				fclose( $sql_repository_handle ); // phpcs:ignore
 
 				global $wpdb;
 
@@ -398,7 +398,7 @@ namespace WPDataAccess\Utilities {
 				$sql_repository_file_content = str_replace( '{wpda_collate}', $wpdb->get_charset_collate(), $sql_repository_file_content );
 
 				// Run script from admin/repository.
-				return $wpdb->query( $sql_repository_file_content ); // phpcs:ignore WordPress.DB.PreparedSQL
+				return $wpdb->query( $sql_repository_file_content ); // phpcs:ignore -- plugin tables
 			}
 		}
 
@@ -413,7 +413,7 @@ namespace WPDataAccess\Utilities {
 				return;
 			}
 
-			if ( isset( $_REQUEST['setup_error'] ) && 'off' === $_REQUEST['setup_error'] ) {
+			if ( isset( $_REQUEST['setup_error'] ) && 'off' === $_REQUEST['setup_error'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
 				// Turn off menu management not available message.
 				WPDA::set_option( WPDA::OPTION_WPDA_SETUP_ERROR, 'off' );
 			} else {
@@ -440,7 +440,7 @@ namespace WPDataAccess\Utilities {
 									' ' .
 									__( 'to to solve this problem.', 'wp-data-access' ) .
 									' [' .
-									'<a href="?' . esc_url( sanitize_text_field( wp_unslash( $_SERVER['QUERY_STRING'] ) ) ) . '&setup_error=off">' . __( 'do not show this message again', 'wp-data-access' ) . '</a>' .
+									'<a href="?' . esc_url( sanitize_text_field( wp_unslash( $_SERVER['QUERY_STRING'] ) ) ) . '&setup_error=off">' . __( 'do not show this message again', 'wp-data-access' ) . '</a>' . // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 									']',
 							)
 						);
@@ -454,7 +454,7 @@ namespace WPDataAccess\Utilities {
 		public function create_new_backup() {
 			global $wpdb;
 
-			$bck_postfix = WPDA_Restore_Repository::BACKUP_TABLE_EXTENSION . date( 'YmdHis' );
+			$bck_postfix = WPDA_Restore_Repository::BACKUP_TABLE_EXTENSION . gmdate( 'YmdHis' );
 			foreach ( static::CREATE_TABLE as $key => $value ) {
 				$table_name = $wpdb->prefix . $key;
 
@@ -463,9 +463,9 @@ namespace WPDataAccess\Utilities {
 
 				if ( $table_exists->table_exists( false ) ) {
 					// Create backup table
-					$wpdb->query(
+					$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 						$wpdb->prepare(
-							'create table `%1s` as select * from `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
+							'create table `%1s` as select * from `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
 							array(
 								WPDA::remove_backticks( $wpdb->prefix . $key . $bck_postfix ),
 								WPDA::remove_backticks( $table_name ),

@@ -46,7 +46,7 @@ namespace WPDataProjects\Project {
 			if ( isset( $args['mode'] ) ) {
 				$mode = $args['mode'];
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments [missing mode]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [missing mode]', 'wp-data-access' ) );
 			}
 
 			if ( 'view' === $mode ) {
@@ -69,11 +69,11 @@ namespace WPDataProjects\Project {
 		 * @param string $add_param
 		 */
 		public function show( $allow_save = true, $add_param = '' ) {
-			if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) && isset( $_REQUEST['project_id'] ) ) {
-				$project_id = sanitize_text_field( wp_unslash( $_REQUEST['project_id'] ) ); // input var okay.
+			if ( 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) && isset( $_REQUEST['project_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
+				$project_id = sanitize_text_field( wp_unslash( $_REQUEST['project_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
 				global $wpdb;
 				$project_page_table_name = $wpdb->prefix . 'wpda_project_page';
-				$pages                   = $wpdb->get_results(
+				$pages                   = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 					$wpdb->prepare(
 						" select * from `%1s` where project_id = %d and add_to_menu = 'Yes' order by page_sequence", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 						array(
@@ -82,14 +82,14 @@ namespace WPDataProjects\Project {
 						)
 					),
 					'ARRAY_A'
-				); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				); 
 
 				$project_info = '';
 				$first_page   = true;
 				foreach ( $pages as $page ) {
 					$wpdp = new WPDP_Project( $project_id, $page['page_id'] );
 					if ( null === $wpdp->get_project() ) {
-						wp_die( __( 'Data Project page not found [need a valid project_id and page_id]', 'wp-data-access' ) );
+						wp_die( esc_attr__( 'Data Project page not found [need a valid project_id and page_id]', 'wp-data-access' ) );
 					}
 					if ( ! $first_page ) {
 						$project_info .= '<br/><br/>';
@@ -142,7 +142,7 @@ namespace WPDataProjects\Project {
 						   style="text-align:center;width:145px;"
 						   data-clipboard-text="<?php echo str_replace( '<br/>', "\n", str_replace( '"', '&quot;', $project_info ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>">
 							<i class="fas fa-clipboard wpda_icon_on_button"></i>
-							<?php echo __( 'Copy to clipboard', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'Copy to clipboard', 'wp-data-access' ); ?>
 						</a>
 						<br/>
 						<div style="height: 5px;"></div>
@@ -150,7 +150,7 @@ namespace WPDataProjects\Project {
 						   style="text-align:center;width:145px;"
 						   onclick="jQuery('#overlay_project').hide()">
 							<i class="fas fa-times-circle wpda_icon_on_button"></i>
-							<?php echo __( 'Close', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'Close', 'wp-data-access' ); ?>
 						</a>
 					</div>
 				</div>
@@ -161,10 +161,10 @@ namespace WPDataProjects\Project {
 					jQuery(function () {
 						var sql_to_clipboard = new ClipboardJS('#button-copy-clipboard');
 						sql_to_clipboard.on('success', function (e) {
-							jQuery.notify('<?php echo __( 'Info copied to clipboard!', 'wp-data-access' ); ?>','info');
+							jQuery.notify('<?php esc_html_e( 'Info copied to clipboard!', 'wp-data-access' ); ?>','info');
 						});
 						sql_to_clipboard.on('error', function (e) {
-							jQuery.notify('<?php echo __( 'Could not copy info to clipboard!', 'wp-data-access' ); ?>','error');
+							jQuery.notify('<?php esc_html_e( 'Could not copy info to clipboard!', 'wp-data-access' ); ?>','error');
 						});
 					});
 				</script>

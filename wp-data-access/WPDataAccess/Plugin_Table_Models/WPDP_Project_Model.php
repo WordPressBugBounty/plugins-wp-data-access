@@ -36,7 +36,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 
 		public static function get_project_list() {
 			global $wpdb;
-			return $wpdb->get_results(
+			return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'SELECT * FROM `%1s` ORDER BY project_name', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -44,7 +44,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 					)
 				),
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			); 
 		}
 
 	}

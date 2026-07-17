@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Standard.Category.SniffName.ErrorCode
+<?php 
 /**
  * Suppress "error - 0 - No summary was found for this file" on phpdoc generation
  *
@@ -437,7 +437,7 @@ namespace WPDataAccess\Connection {
 		public static function iswpdb( $schema_name ) {
 			global $wpdb;
 			if ( null === self::$lower_case_table_names ) {
-				$lower_case_table_names = $wpdb->get_results( "SHOW VARIABLES LIKE 'lower_case_table_names'", 'ARRAY_N' ); // db call ok; no-cache ok.
+				$lower_case_table_names = $wpdb->get_results( "SHOW VARIABLES LIKE 'lower_case_table_names'", 'ARRAY_N' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				if ( is_array( $lower_case_table_names ) && isset( $lower_case_table_names[0][1] ) ) {
 					self::$lower_case_table_names = $lower_case_table_names[0][1];
 				} else {

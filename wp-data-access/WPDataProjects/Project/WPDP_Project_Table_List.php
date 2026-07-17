@@ -77,7 +77,7 @@ namespace WPDataProjects\Project {
 					}
 					$tables = array();
 					foreach ( $tables_named as $key => $value ) {
-						array_push( $tables, $key );//phpcs:ignore - 8.1 proof
+						array_push( $tables, $key ); // phpcs:ignore -- 8.1 proof
 					}
 					break;
 				default:
@@ -124,10 +124,10 @@ namespace WPDataProjects\Project {
 					<input type="hidden" name="wpnonce"
 						   value="<?php echo esc_attr( $wpnonce ); ?>"/>
 					<input type="submit"
-						   value="<?php echo __( 'Add Template For Selected Table To Repository', 'wp-data-access' ); ?>"
+						   value="<?php esc_html_e( 'Add Template For Selected Table To Repository', 'wp-data-access' ); ?>"
 						   class="button button-secondary">
 					<input type="button"
-						   value="<?php echo __( 'Cancel', 'wp-data-access' ); ?>"
+						   value="<?php esc_html_e( 'Cancel', 'wp-data-access' ); ?>"
 						   class="button button-secondary"
 						   onclick="jQuery('#no_repository_buttons').show(); jQuery('#add_table_to_repository').hide(); return false;">
 				</div>
@@ -175,7 +175,7 @@ namespace WPDataProjects\Project {
 			$tables    = array();
 			$db_tables = WPDA_Dictionary_Lists::get_tables( true, $database ); // select all db tables and views
 			foreach ( $db_tables as $db_table ) {
-				//phpcs:ignore - 8.1 proof
+				 // phpcs:ignore -- 8.1 proof
 				array_push( $tables, $db_table['table_name'] ); // add table or view to array
 			}
 
@@ -194,7 +194,7 @@ namespace WPDataProjects\Project {
 				$columns = array( 'cb' => '<input type="checkbox" />' );
 			}
 
-			return array_merge( $columns, $this->column_headers );//phpcs:ignore - 8.1 proof
+			return array_merge( $columns, $this->column_headers ); // phpcs:ignore -- 8.1 proof
 		}
 
 		/**
@@ -246,7 +246,7 @@ namespace WPDataProjects\Project {
 							)
 						);
 					}
-					$rows = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL
+					$rows = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 					$wpdb->suppress_errors( $suppress );
 					return null === $rows ? '-' : $rows;
 				case 'wpda_table_name':
@@ -332,7 +332,7 @@ namespace WPDataProjects\Project {
 				$wp_nonce_action = "wpda-copy-{$this->table_name}";
 				$wp_nonce        = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, $wp_nonce_action ) ) {
-					die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				if ( isset( $_REQUEST['wpda_schema_name'] ) ) {
@@ -348,7 +348,7 @@ namespace WPDataProjects\Project {
 				$unique_wpda_table_setname = $this->get_unique_setname( $wpda_schema_name, $wpda_table_name, $wpda_table_setname );
 
 				global $wpdb;
-				$wpda_table_design_raw = $wpdb->get_results(
+				$wpda_table_design_raw = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 					$wpdb->prepare(
 						'SELECT * FROM `%1s` WHERE wpda_schema_name = %s AND wpda_table_name = %s AND wpda_table_setname = %s', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 						array(
@@ -362,7 +362,7 @@ namespace WPDataProjects\Project {
 				);
 				if ( $wpdb->num_rows > 0 ) {
 					$wpda_table_design_raw[0]['wpda_table_setname'] = $unique_wpda_table_setname;
-					$rows_inserted                                  = $wpdb->insert(
+					$rows_inserted                                  = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 						$this->table_name,
 						$wpda_table_design_raw[0]
 					);
@@ -417,7 +417,7 @@ namespace WPDataProjects\Project {
 			$query = "select 'x' from `%1s` where wpda_schema_name = %s and wpda_table_name = %s and wpda_table_setname = %s";
 
 			$unique_wpda_table_setname = "{$wpda_table_setname}_$i";
-			$wpdb->get_results(
+			$wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
 				$wpdb->prepare(
 					$query, // phpcs:ignore WordPress.DB.PreparedSQL
 					array(
@@ -432,7 +432,7 @@ namespace WPDataProjects\Project {
 				// Search until a free options set is found
 				$i ++;
 				$unique_wpda_table_setname = "{$wpda_table_setname}_$i";
-				$wpdb->get_results(
+				$wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter
 					$wpdb->prepare(
 						$query, // phpcs:ignore WordPress.DB.PreparedSQL
 						array(

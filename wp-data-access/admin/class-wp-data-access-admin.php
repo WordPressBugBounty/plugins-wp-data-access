@@ -32,6 +32,7 @@ use WPDataProjects\WPDP;
  * @author  Peter Schulz
  * @since   1.0.0
  */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 class WP_Data_Access_Admin {
     /**
      * Menu slug for main page
@@ -198,9 +199,7 @@ class WP_Data_Access_Admin {
      */
     public function __construct() {
         if ( isset( $_REQUEST['page'] ) ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) );
-            // phpcs:ignore WordPress.Security.NonceVerification
         }
     }
 
@@ -323,14 +322,15 @@ class WP_Data_Access_Admin {
             // SAVING SPACE - According to the plugin guidelines it is allowed to include external fonts:
             // https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/#8-plugins-may-not-send-executable-code-via-third-party-systems .
             // Load fontawesome icons.
+            // phpcs:disable WordPress.WP.EnqueuedResourceParameters.MissingVersion
             wp_enqueue_style(
-                // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
                 'wpda_fontawesome_icons',
                 WPDA::CDN_FONTAWESOME . 'all.min.css',
                 array(),
                 null,
                 false
             );
+            // phpcs:enable WordPress.WP.EnqueuedResourceParameters.MissingVersion
         }
         if ( self::PAGE_PUBLISHER === $this->page ) {
             wp_register_style(
@@ -587,6 +587,7 @@ class WP_Data_Access_Admin {
      */
     private function load_google_charts() {
         // Load Google Charts.
+        // phpcs:disable WordPress.WP.EnqueuedResourceParameters
         wp_enqueue_script(
             'wpda_google_charts',
             WPDA::GOOGLE_CHARTS,
@@ -594,6 +595,7 @@ class WP_Data_Access_Admin {
             null,
             false
         );
+        // phpcs:enable WordPress.WP.EnqueuedResourceParameters
         wp_enqueue_script(
             'wpda_google_charts_fnc',
             plugins_url( '../assets/js/wpda_google_charts.js', __FILE__ ),
@@ -923,13 +925,10 @@ class WP_Data_Access_Admin {
     public function data_explorer_page() {
         WPDA_Dashboard::add_dashboard();
         if ( isset( $_REQUEST['page_action'] ) && 'wpda_backup' === $_REQUEST['page_action'] ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             $this->backup_page();
         } elseif ( isset( $_REQUEST['page_action'] ) && 'wpda_import_csv' === $_REQUEST['page_action'] ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             $this->import_csv();
         } elseif ( isset( $_REQUEST['page_action'] ) && 'wpda_global_search' === $_REQUEST['page_action'] ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             $this->advanced_search();
         } else {
             $this->wpda_data_explorer_view->show();
@@ -939,13 +938,10 @@ class WP_Data_Access_Admin {
     public function data_explorer_page_new() {
         WPDA_Dashboard::add_dashboard();
         if ( isset( $_REQUEST['page_action'] ) && 'wpda_backup' === $_REQUEST['page_action'] ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             $this->backup_page();
         } elseif ( isset( $_REQUEST['page_action'] ) && 'wpda_import_csv' === $_REQUEST['page_action'] ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             $this->import_csv();
         } elseif ( isset( $_REQUEST['page_action'] ) && 'wpda_global_search' === $_REQUEST['page_action'] ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             $this->advanced_search();
         } else {
             $explorer = new WPDA_Data_Explorer();
@@ -1062,8 +1058,7 @@ class WP_Data_Access_Admin {
 			</h1>
 			<p>
 				<?php 
-        echo __( 'ERROR: Repository table not found!', 'wp-data-access' );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        esc_html_e( 'ERROR: Repository table not found!', 'wp-data-access' );
         ?>
 			</p>
 		</div>
@@ -1118,8 +1113,7 @@ class WP_Data_Access_Admin {
 			</h1>
 			<p>
 				<?php 
-        echo __( 'ERROR: Repository table not found!', 'wp-data-access' );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        esc_html_e( 'ERROR: Repository table not found!', 'wp-data-access' );
         ?>
 			</p>
 		</div>
@@ -1139,11 +1133,8 @@ class WP_Data_Access_Admin {
     public function backup_page() {
         $wpda_backup = new WPDA_Data_Export();
         $wp_nonce = ( isset( $_REQUEST['wp_nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wp_nonce'] ) ) : '?' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         if ( isset( $_REQUEST['action'] ) && wp_verify_nonce( $wp_nonce, 'wpda-backup-' . WPDA::get_current_user_login() ) ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             $action = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) );
-            // phpcs:ignore WordPress.Security.NonceVerification
             if ( 'new' === $action ) {
                 $wpda_backup->create_export( 'add' );
             } elseif ( 'add' === $action ) {
@@ -1191,10 +1182,10 @@ class WP_Data_Access_Admin {
                 $user_has_role = in_array( 'administrator', $user_roles, true );
             } else {
                 $user_role_array = explode( ',', (string) $menu->menu_role );
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 foreach ( $user_role_array as $user_role_array_item ) {
                     $user_has_role = in_array( $user_role_array_item, $user_roles, true );
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     if ( $user_has_role ) {
                         break;
                     }
@@ -1272,3 +1263,5 @@ class WP_Data_Access_Admin {
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

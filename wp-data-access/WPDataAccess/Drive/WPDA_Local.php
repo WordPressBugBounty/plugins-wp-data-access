@@ -69,7 +69,7 @@ namespace WPDataAccess\Drive {
             foreach ( $files_sorted as $file ) {
                 $keep_counting ++;
                 if ( $keep_counting > (int) $keep ) {
-                    unlink( $file );
+                    unlink( $file ); // phpcs:ignore
                 }
             }
 

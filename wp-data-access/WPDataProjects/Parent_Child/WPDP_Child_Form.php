@@ -64,19 +64,19 @@ namespace WPDataProjects\Parent_Child {
 			if ( isset( $args['mode'] ) ) {
 				$this->mode = $args['mode'];
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments [missing mode]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [missing mode]', 'wp-data-access' ) );
 			}
 
 			if ( isset( $args['parent'] ) ) {
 				$this->parent = $args['parent'];
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments [missing parent]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [missing parent]', 'wp-data-access' ) );
 			}
 
 			if ( isset( $args['child'] ) ) {
 				$this->child = $args['child'];
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments [missing child]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [missing child]', 'wp-data-access' ) );
 			}
 
 			$this->page_number_item_name = 'child_page_number';
@@ -112,8 +112,8 @@ namespace WPDataProjects\Parent_Child {
 		 * @return string
 		 */
 		protected function get_child_tab() {
-			if ( isset( $_REQUEST['child_tab'] ) ) {
-				return sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // input var okay.
+			if ( isset( $_REQUEST['child_tab'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
+				return sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
 			} else {
 				return '';
 			}
@@ -165,7 +165,8 @@ namespace WPDataProjects\Parent_Child {
 					// Perform insert.
 					$wpdadb = WPDADB::get_db_connection( $this->schema_name );
 					if ( null === $wpdadb ) {
-						wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+						/* translators: %s = database name */
+						wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 					}
 					$result = $wpdadb->insert( $this->child['relation_nm']['child_table'], $child_columns );
 

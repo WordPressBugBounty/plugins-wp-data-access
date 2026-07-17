@@ -1,5 +1,6 @@
 <?php
 
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\Settings;
 
 class WPDA_Settings_Legacy extends WPDA_Settings {
@@ -9,7 +10,6 @@ class WPDA_Settings_Legacy extends WPDA_Settings {
 
     protected final function add_content() {
         $this->vtab = ( isset( $_REQUEST['vtab'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['vtab'] ) ) : 'plugin' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $this->legacy_tabs = array(
             'plugin'     => 'Plugin',
             'backend'    => 'Back-end',
@@ -106,3 +106,5 @@ class WPDA_Settings_Legacy extends WPDA_Settings {
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

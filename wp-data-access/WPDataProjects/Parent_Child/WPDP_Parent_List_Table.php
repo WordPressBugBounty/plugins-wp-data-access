@@ -45,7 +45,7 @@ namespace WPDataProjects\Parent_Child {
 			if ( isset( $args['project'] ) ) {
 				$this->project = $args['project'];
 			} else {
-				wp_die( __( 'ERROR: Wrong arguments', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments', 'wp-data-access' ) );
 			}
 
 			$args['allow_import'] = 'off';
@@ -229,7 +229,8 @@ namespace WPDataProjects\Parent_Child {
 		public function delete_row_relationship( $table_name, $where ) {
 			$wpdadb = WPDADB::get_db_connection( $this->schema_name );
 			if ( null === $wpdadb ) {
-				wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+				/* translators: %s = database name */
+				wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 			}
 
 			$cannot_delete_from_view = new WPDA_Dictionary_Exist( $this->schema_name, $table_name );
@@ -263,7 +264,7 @@ namespace WPDataProjects\Parent_Child {
 						<input type="hidden" name="table_name" value="<?php echo esc_attr( $this->table_name ); ?>">
 						<button type="submit" class="page-title-action">
 							<i class="fas fa-plus-circle wpda_icon_on_button"></i>
-							<?php echo __( 'Add New', 'wp-data-access' ); ?>
+							<?php esc_html_e( 'Add New', 'wp-data-access' ); ?>
 						</button>
 					</div>
 				</form>

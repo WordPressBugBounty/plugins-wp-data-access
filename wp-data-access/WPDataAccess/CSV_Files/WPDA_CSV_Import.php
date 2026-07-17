@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Standard.Category.SniffName.ErrorCode
+<?php 
 
 namespace WPDataAccess\CSV_Files {
 
@@ -71,7 +71,7 @@ namespace WPDataAccess\CSV_Files {
 						<?php
 					}
 					?>
-					<?php echo __( 'Import CSV ' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<?php esc_html_e( 'Import CSV', 'wp-data-access' ); ?>
 				</h1>
 				<?php $this->show_body(); ?>
 			</div>
@@ -150,7 +150,7 @@ namespace WPDataAccess\CSV_Files {
 			<br/><br/>
 			<fieldset class="wpda_fieldset">
 				<legend>
-					<?php echo __( 'Select a file and click upload', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<?php esc_html_e( 'Select a file and click upload', 'wp-data-access' ); ?>
 				</legend>
 
 				<form id="form_import_table"
@@ -210,14 +210,14 @@ namespace WPDataAccess\CSV_Files {
                                         onclick="if (jQuery('#csv_name').val()===''||jQuery('#filename').val()==='') { alert('Please enter an import name and select a file'); return false; }"
                                 >
                                     <i class="fas fa-check wpda_icon_on_button"></i>
-                                    <?php echo __( 'Upload', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                    <?php esc_html_e( 'Upload', 'wp-data-access' ); ?>
                                 </button>
                                 <button type="button"
                                         onclick="window.location.href='?page=wpda&page_action=wpda_import_csv'"
                                         class="button button-secondary"
                                 >
                                     <i class="fas fa-times-circle wpda_icon_on_button"></i>
-                                    <?php echo __( 'Cancel', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                    <?php esc_html_e( 'Cancel', 'wp-data-access' ); ?>
                                 </button>
                             </td>
                         </tr>
@@ -313,7 +313,7 @@ namespace WPDataAccess\CSV_Files {
 			// Security check.
 			$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '?'; // phpcs:ignore WordPress.Security.NonceVerification
 			if ( ! wp_verify_nonce( $wp_nonce, "wpda-import-csv-{$csv_id}" ) ) {
-				wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+				wp_die( esc_html__( 'ERROR: Not authorized', 'wp-data-access' ) );
 			}
 
 			$truncate_table =
@@ -389,7 +389,7 @@ namespace WPDataAccess\CSV_Files {
 					}
 				}
 
-				// phpcs:disable
+				// phpcs:disable Squiz.PHP.DiscouragedFunctions.Discouraged
 				echo '<p>Enabling buffering...</p>';
 				set_time_limit( 0 );
 				@ini_set( 'zlib.output_compression', false );
@@ -399,7 +399,7 @@ namespace WPDataAccess\CSV_Files {
 				ob_implicit_flush( true );
 				echo '<p>Reading CSV file...</p>';
 				@ini_set( 'auto_detect_line_endings', true );
-				// phpcs:enable
+				// phpcs:enable Squiz.PHP.DiscouragedFunctions.Discouraged
 
 				if ( false !== ( $fp = fopen( $file_name, 'rb' ) ) ) { // phpcs:ignore
 					$wpdadb = WPDADB::get_db_connection( $schema_name );
@@ -435,7 +435,7 @@ namespace WPDataAccess\CSV_Files {
 															$convert_date = \DateTime::createFromFormat( str_replace( '%', '', $date_format ), $date_value );
 															if ( false === $convert_date ) {
 																$error_msg = 'Cannot convert ' . esc_attr( $date_value ) . ' to date (using format ' . esc_attr( $date_format ) . ')';
-																echo "<div>ERROR: {$error_msg}</div>";
+																echo '<div>ERROR: ' . esc_attr( $error_msg ) . '</div>';
 																$row_values_valid = false;
 
 																// Write error to log file
@@ -445,7 +445,7 @@ namespace WPDataAccess\CSV_Files {
 															}
 														} catch ( \Exception $e ) {
 															echo '<div>Cannot convert ' . esc_attr( $date_value ) . ' to date (using format ' . esc_attr( $date_format ) . ')</div>';
-															echo "<div>ERROR: {$error_msg}</div>";
+															echo '<div>ERROR: ' . esc_attr( $error_msg ) . '</div>';
 															$row_values_valid = false;
 
 															// Write error to log file
@@ -518,7 +518,7 @@ namespace WPDataAccess\CSV_Files {
 						}
 						$wpdadb->suppress_errors( $suppress_errors );
 					}
-					fclose( $fp ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+					fclose( $fp ); // phpcs:ignore
 
 					$row--;
 					echo "<p style='font-weight: bold'>Import ready!</p>";
@@ -544,7 +544,7 @@ namespace WPDataAccess\CSV_Files {
 			// Security check.
 			$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '?'; // input var okay.
 			if ( ! wp_verify_nonce( $wp_nonce, "wpda-reload-csv-{$csv_id}" ) ) {
-				wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+				wp_die( esc_html__( 'ERROR: Not authorized', 'wp-data-access' ) );
 			}
 
 			$this->show_body_upload();
@@ -559,13 +559,13 @@ namespace WPDataAccess\CSV_Files {
 			// Security check.
 			$wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '?'; // input var okay.
 			if ( ! wp_verify_nonce( $wp_nonce, "wpda-import-csv-{$this->schema_name}" ) ) {
-				wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+				wp_die( esc_html__( 'ERROR: Not authorized', 'wp-data-access' ) );
 			}
 
-			// phpcs:disable
+			// phpcs:disable Squiz.PHP.DiscouragedFunctions.Discouraged
 			$temp_file_name = isset( $_FILES['filename']['tmp_name'] ) ?
 				sanitize_text_field( $_FILES['filename']['tmp_name'] ) : ''; // For Windows: do NOT unslash!
-			// phpcs:enable
+			// phpcs:enable Squiz.PHP.DiscouragedFunctions.Discouraged
 			$orig_file_name = isset( $_FILES['filename']['name'] ) ?
 				sanitize_text_field( wp_unslash( $_FILES['filename']['name'] ) ) : '';
 
@@ -577,7 +577,7 @@ namespace WPDataAccess\CSV_Files {
 					is_uploaded_file( $temp_file_name )
 				) {
 					echo '<br/>';
-					echo __( 'Uploading file', 'wp-data-access' ) . ' <strong>' . esc_attr( $orig_file_name ) . '</strong>...'; // phpcs:ignore WordPress.Security.EscapeOutput
+					esc_html_e( 'Uploading file', 'wp-data-access' ) . ' <strong>' . esc_attr( $orig_file_name ) . '</strong>...';
 					echo '<br/><br/>';
 
 					$upload_dir     = WPDA::get_plugin_upload_dir();
@@ -595,23 +595,23 @@ namespace WPDataAccess\CSV_Files {
                             WPDA::wpda_create_content_folder();
 						}
 
-						$fw = fopen( $upload_dir . "{$real_file_name}", 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
+						$fw = fopen( $upload_dir . "{$real_file_name}", 'w' ); // phpcs:ignore
 						while ( ! feof( $this->file_pointer ) ) {
-							$file_content = fread( $this->file_pointer, 1024 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fread
+							$file_content = fread( $this->file_pointer, 1024 ); // phpcs:ignore
 
                             if ( 'UTF-8' === $csv_encoding ) {
                                 // UTF-8 encoding
-                                fwrite( $fw, mb_convert_encoding( $file_content, 'UTF-8', 'ISO-8859-1' ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite
+                                fwrite( $fw, mb_convert_encoding( $file_content, 'UTF-8', 'ISO-8859-1' ) ); // phpcs:ignore
                             } else {
                                 // No encoding
-                                fwrite( $fw, $file_content ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fwrite
+                                fwrite( $fw, $file_content ); // phpcs:ignore
                             }
 						}
 					}
-					fclose( $fp ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
-					fclose( $fw ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+					fclose( $fp ); // phpcs:ignore
+					fclose( $fw ); // phpcs:ignore
 
-					echo __( 'Saving file info...', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput
+					esc_html_e( 'Saving file info...', 'wp-data-access' );
 					echo '<br/><br/>';
 
 					if ( '' === $csv_id ) {
@@ -624,14 +624,14 @@ namespace WPDataAccess\CSV_Files {
 						if ( $result ) {
 							// Remove old file.
 							if ( isset( $oldrow[0]->csv_real_file_name ) ) {
-								unlink( WPDA::get_plugin_upload_dir() . $oldrow[0]->csv_real_file_name );
+								unlink( WPDA::get_plugin_upload_dir() . $oldrow[0]->csv_real_file_name ); // phpcs:ignore
 							}
 						}
 					}
 					if ( false === $result ) {
 						$msg = new WPDA_Message_Box(
 							array(
-								'message_text'           => __( 'Processing CSV file failed', 'wp-data-access' ),
+								'message_text'           => esc_html__( 'Processing CSV file failed', 'wp-data-access' ),
 								'message_type'           => 'error',
 								'message_is_dismissible' => false,
 							)
@@ -658,7 +658,7 @@ namespace WPDataAccess\CSV_Files {
 							<input type="submit"
 									class="page-title-action"
 									style="margin-left: 0;"
-									value="<?php echo __( 'Column mapping' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>"
+									value="<?php esc_html_e( 'Column mapping', 'wp-data-access' ); ?>"
 							/>
 							<input type="hidden" name="_wpnonce" value="<?php echo esc_attr( $wp_nonce ); ?>" />
 						</form>&nbsp;
@@ -668,7 +668,7 @@ namespace WPDataAccess\CSV_Files {
 							<input type="submit"
 									class="page-title-action"
 									style="margin-left: 0;"
-									value="<?php echo __( 'CSV file list' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>"
+									value="<?php esc_html_e( 'CSV file list', 'wp-data-access' ); ?>"
 							/>
 						</form>
 						<?php
@@ -678,7 +678,7 @@ namespace WPDataAccess\CSV_Files {
 				// File upload failed: inform user.
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'File upload failed', 'wp-data-access' ),
+						'message_text'           => esc_html__( 'File upload failed', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)

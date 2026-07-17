@@ -128,7 +128,7 @@ namespace WPDataAccess\Utilities {
 				if ( false === $current_memory_limit ||
 					 WPDA::convert_memory_to_decimal( $current_memory_limit ) < WPDA::convert_memory_to_decimal( $wp_memory_limit )
 				) {
-					@ini_set( 'memory_limit', $wp_memory_limit );
+					@ini_set( 'memory_limit', $wp_memory_limit ); // phpcs:ignore
 				}
 			}
 		}
@@ -202,7 +202,7 @@ namespace WPDataAccess\Utilities {
 			if ( isset( $this->table_primary_key[0] ) && isset( $_REQUEST[ $this->table_primary_key[0] ] ) ) {
 				// Build where clause.
 				global $wpdb;
-				$count_pk = count( $_REQUEST[ $this->table_primary_key[0] ] );//phpcs:ignore - 8.1 proof
+				$count_pk = count( $_REQUEST[ $this->table_primary_key[0] ] ); // phpcs:ignore -- 8.1 proof
 				for ( $i = 0; $i < $count_pk; $i ++ ) {
 					$and = '';
 					foreach ( $this->table_primary_key as $key ) {
@@ -212,17 +212,17 @@ namespace WPDataAccess\Utilities {
 								'`%1s` = %d', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 								array(
 									WPDA::remove_backticks( $key ),
-									sanitize_text_field( wp_unslash( $_REQUEST[ $key ][ $i ] ) )
+									sanitize_text_field( wp_unslash( $_REQUEST[ $key ][ $i ] ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 								)
-							); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+							);
 						} else {
 							$and .= $wpdb->prepare(
 								'`%1s` = %s', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 								array(
 									WPDA::remove_backticks( $key ),
-									sanitize_text_field( wp_unslash( $_REQUEST[ $key ][ $i ] ) )
+									sanitize_text_field( wp_unslash( $_REQUEST[ $key ][ $i ] ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 								)
-							); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+							);
 						}
 					}
 
@@ -248,7 +248,9 @@ namespace WPDataAccess\Utilities {
 			}
 
 			if ( is_numeric( $query_buffer_size ) && $query_buffer_size > 0 ) {
+				// phpcs:disable Squiz.PHP.DiscouragedFunctions.Discouraged
 				set_time_limit(0);
+				// phpcs:enable Squiz.PHP.DiscouragedFunctions.Discouraged
 				$this->send_export_file_large( $query_buffer_size );
 			} else {
 				$this->send_export_file();
@@ -264,9 +266,11 @@ namespace WPDataAccess\Utilities {
 			$this->wpdadb = WPDADB::get_db_connection( $this->schema_name );
 			if ( null === $this->wpdadb ) {
 				if ( is_admin() ) {
-					wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				} else {
-					die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				}
 			}
 
@@ -281,7 +285,7 @@ namespace WPDataAccess\Utilities {
 			$i   = 0;
 			$sql = $this->statement . ' limit ' . $query_buffer_size;
 
-			$this->rows      = $this->wpdadb->get_results( $sql, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			$this->rows      = $this->wpdadb->get_results( $sql, 'ARRAY_A' ); 
 			$this->row_count = $this->wpdadb->num_rows;
 
 			$this->header();
@@ -294,7 +298,7 @@ namespace WPDataAccess\Utilities {
 				$i++;
 
 				$sql             = $this->statement . ' limit ' . $query_buffer_size . ' offset ' . ($i*$query_buffer_size);
-				$this->rows      = $this->wpdadb->get_results( $sql, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				$this->rows      = $this->wpdadb->get_results( $sql, 'ARRAY_A' ); 
 				$this->row_count += $this->wpdadb->num_rows;
 			}
 
@@ -311,7 +315,7 @@ namespace WPDataAccess\Utilities {
 		 * @since    2.0.13
 		 */
 		protected function send_export_file() {
-			$this->rows      = $this->wpdadb->get_results( $this->statement, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			$this->rows      = $this->wpdadb->get_results( $this->statement, 'ARRAY_A' ); 
 			$this->row_count = $this->wpdadb->num_rows;
 
 			$this->header();

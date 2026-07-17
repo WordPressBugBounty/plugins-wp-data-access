@@ -134,7 +134,7 @@ class WPDA_Table_Actions {
      */
     public function show() {
         if ( !isset( $_REQUEST['table_name'] ) || !isset( $_REQUEST['wpdaschema_name'] ) || !isset( $_REQUEST['rownum'] ) ) {
-            wp_die( __( 'ERROR: Wrong arguments', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Wrong arguments', 'wp-data-access' ) );
         }
         $this->schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpdaschema_name'] ) );
         // input var okay.
@@ -144,13 +144,13 @@ class WPDA_Table_Actions {
         // input var okay.
         $wpda_data_dictionary = new WPDA_Dictionary_Exist($this->schema_name, $this->table_name);
         if ( !$wpda_data_dictionary->table_exists() ) {
-            echo '<div>' . __( 'ERROR: Invalid table name or not authorized', 'wp-data-access' ) . '</div>';
+            echo '<div>' . esc_attr__( 'ERROR: Invalid table name or not authorized', 'wp-data-access' ) . '</div>';
             return;
         }
         $wp_nonce = ( isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '?' );
         // input var okay.
         if ( !wp_verify_nonce( $wp_nonce, "wpda-actions-{$this->table_name}" ) ) {
-            echo '<div>' . __( 'ERROR: Not authorized', 'wp-data-access' ) . '</div>';
+            echo '<div>' . esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) . '</div>';
             return;
         }
         $this->dbo_type = ( isset( $_REQUEST['dbo_type'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['dbo_type'] ) ) : null );
@@ -159,7 +159,8 @@ class WPDA_Table_Actions {
         $this->engine = WPDA_Dictionary_Lists::get_engine( $this->schema_name, $this->table_name );
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = database name */
+            wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
         }
         $query = "show full columns from `{$wpdadb->dbname}`.`{$this->table_name}`";
         $this->table_structure = $wpdadb->get_results( $query, 'ARRAY_A' );
@@ -215,26 +216,26 @@ class WPDA_Table_Actions {
 				<div class="nav-tab-wrapper" style="padding-top: 0 !important;">
 					<?php 
         echo '<a id="' . esc_attr( $this->rownum ) . '-sel-1" class="nav-tab nav-tab-active wpda-manage-nav-tab' . '" href="javascript:void(0)" onclick="settab(\'' . esc_attr( $this->rownum ) . '\', \'1\');"
-						style="font-size:inherit;">' . '<span class="dashicons dashicons-admin-tools wpda_settings_icon"></span>' . '<span class="wpda_settings_label">' . __( 'Actions', 'wp-data-access' ) . '</span>' . '</a>';
+						style="font-size:inherit;">' . '<span class="dashicons dashicons-admin-tools wpda_settings_icon"></span>' . '<span class="wpda_settings_label">' . esc_attr__( 'Actions', 'wp-data-access' ) . '</span>' . '</a>';
         if ( 'Table' === $this->dbo_type || 'View' === $this->dbo_type ) {
             echo '<a id="' . esc_attr( $this->rownum ) . '-sel-6" class="nav-tab wpda-manage-nav-tab' . '" href="javascript:void(0)" onclick="settab(\'' . esc_attr( $this->rownum ) . '\', \'6\');"
-							style="font-size:inherit;">' . '<span class="dashicons dashicons-admin-generic wpda_settings_icon"></span> ' . '<span class="wpda_settings_label">' . __( 'Settings', 'wp-data-access' ) . '</span>' . '</a>';
+							style="font-size:inherit;">' . '<span class="dashicons dashicons-admin-generic wpda_settings_icon"></span> ' . '<span class="wpda_settings_label">' . esc_attr__( 'Settings', 'wp-data-access' ) . '</span>' . '</a>';
         }
         if ( '' !== $this->dbo_type ) {
             echo '<a id="' . esc_attr( $this->rownum ) . '-sel-2" class="nav-tab wpda-manage-nav-tab' . '" href="javascript:void(0)" onclick="settab(\'' . esc_attr( $this->rownum ) . '\', \'2\');"
-							style="font-size:inherit;">' . '<span class="dashicons dashicons-list-view wpda_settings_icon"></span> ' . '<span class="wpda_settings_label">' . __( 'Columns', 'wp-data-access' ) . '</span>' . '</a>';
+							style="font-size:inherit;">' . '<span class="dashicons dashicons-list-view wpda_settings_icon"></span> ' . '<span class="wpda_settings_label">' . esc_attr__( 'Columns', 'wp-data-access' ) . '</span>' . '</a>';
         }
         if ( 'Table' === $this->dbo_type ) {
             echo '<a id="' . esc_attr( $this->rownum ) . '-sel-3" class="nav-tab wpda-manage-nav-tab' . '" href="javascript:void(0)" onclick="settab(\'' . esc_attr( $this->rownum ) . '\', \'3\');"
-							style="font-size:inherit;">' . '<span class="dashicons dashicons-controls-forward wpda_settings_icon"></span> ' . '<span class="wpda_settings_label">' . __( 'Indexes', 'wp-data-access' ) . '</span>' . '</a>';
+							style="font-size:inherit;">' . '<span class="dashicons dashicons-controls-forward wpda_settings_icon"></span> ' . '<span class="wpda_settings_label">' . esc_attr__( 'Indexes', 'wp-data-access' ) . '</span>' . '</a>';
         }
         if ( 'Table' === $this->dbo_type ) {
             echo '<a id="' . esc_attr( $this->rownum ) . '-sel-5" class="nav-tab wpda-manage-nav-tab' . '" href="javascript:void(0)" onclick="settab(\'' . esc_attr( $this->rownum ) . '\', \'5\');"
-							style="font-size:inherit;">' . '<span class="dashicons dashicons-networking wpda_settings_icon"></span> ' . '<span class="wpda_settings_label">' . __( 'Foreign Keys', 'wp-data-access' ) . '</span>' . '</a>';
+							style="font-size:inherit;">' . '<span class="dashicons dashicons-networking wpda_settings_icon"></span> ' . '<span class="wpda_settings_label">' . esc_attr__( 'Foreign Keys', 'wp-data-access' ) . '</span>' . '</a>';
         }
         if ( 'Table' === $this->dbo_type || 'View' === $this->dbo_type ) {
             echo '<a id="' . esc_attr( $this->rownum ) . '-sel-4" class="nav-tab wpda-manage-nav-tab' . '" href="javascript:void(0)" onclick="settab(\'' . esc_attr( $this->rownum ) . '\', \'4\');"
-							style="font-size:inherit;">' . '<span class="dashicons dashicons-editor-code wpda_settings_icon"></span> ' . '<span class="wpda_settings_label">' . __( 'SQL', 'wp-data-access' ) . '</span>' . '</a>';
+							style="font-size:inherit;">' . '<span class="dashicons dashicons-editor-code wpda_settings_icon"></span> ' . '<span class="wpda_settings_label">' . esc_attr__( 'SQL', 'wp-data-access' ) . '</span>' . '</a>';
         }
         ?>
 				</div>
@@ -304,13 +305,13 @@ class WPDA_Table_Actions {
 				function copyTable(rowNum, dboType, tableName, formId) {
 					if (jQuery("#copy-table-from-" + rowNum).val()==="") {
 						alert('<?php 
-        echo __( 'Please enter a valid table name', 'wp-data-access' );
+        esc_html_e( 'Please enter a valid table name', 'wp-data-access' );
         ?>');
 						return false;
 					}
 
 					if (confirm('<?php 
-        echo __( 'Copy', 'wp-data-access' );
+        esc_html_e( 'Copy', 'wp-data-access' );
         ?> ' + dboType + '?')) {
 						jQuery("#copy_schema_name_" + tableName).val(
 							jQuery("#copy-schema-from-" + rowNum).val()
@@ -327,12 +328,12 @@ class WPDA_Table_Actions {
         ?>");
 					sql_to_clipboard.on('success', function (e) {
 						jQuery.notify('<?php 
-        echo __( 'SQL successfully copied to clipboard!', 'wp-data-access' );
+        esc_html_e( 'SQL successfully copied to clipboard!', 'wp-data-access' );
         ?>','info');
 					});
 					sql_to_clipboard.on('error', function (e) {
 						jQuery.notify('<?php 
-        echo __( 'Could not copy SQL to clipboard!', 'wp-data-access' );
+        esc_html_e( 'Could not copy SQL to clipboard!', 'wp-data-access' );
         ?>','error');
 					});
 					jQuery("#rename-table-from-<?php 
@@ -569,12 +570,12 @@ class WPDA_Table_Actions {
 									<ul class="wpda_table_settings_nested wpda_table_table_settings">
 										<h2>
 											<?php 
-        echo __( 'Table Settings', 'wp-data-access' );
+        esc_html_e( 'Table Settings', 'wp-data-access' );
         ?>
 											<a href="https://docs.legacy.wpdataaccess.com/docs/manage-table-settings/" target="_blank">
 												<span class="dashicons dashicons-editor-help wpda_tooltip"
 													  title="<?php 
-        echo __( 'Help opens in a new tab or window', 'wp-data-access' );
+        esc_html_e( 'Help opens in a new tab or window', 'wp-data-access' );
         ?>"
 													  style="cursor:pointer"></span>
 											</a>
@@ -582,7 +583,7 @@ class WPDA_Table_Actions {
 
 										<h4>
 											<?php 
-        echo __( 'Row count (configurable for InnoDB tables, federated tables and views only)', 'wp-data-access' );
+        esc_html_e( 'Row count (configurable for InnoDB tables, federated tables and views only)', 'wp-data-access' );
         ?>
 										</h4>
 
@@ -719,8 +720,7 @@ class WPDA_Table_Actions {
         echo esc_attr( WPDA::get_option( WPDA::OPTION_BE_INNODB_COUNT ) );
         ?>)
 												[<a href="<?php 
-        echo admin_url( 'options-general.php' );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        echo esc_url( admin_url( 'options-general.php' ) );
         ?>?page=wpdataaccess&tab=backend">change plugin default</a>]
 											</label>
 											<div style="margin-top: 5px; padding-left: 24px">
@@ -734,13 +734,13 @@ class WPDA_Table_Actions {
 										</div>
 										<h4>
 											<?php 
-        echo __( 'Query buffer size', 'wp-data-access' );
+        esc_html_e( 'Query buffer size', 'wp-data-access' );
         ?>
 										</h4>
 										<div style="font-size:90%;">
 											<label class="wpda_action_font">
 												<?php 
-        echo __( 'Max rows per fetch', 'wp-data-access' );
+        esc_html_e( 'Max rows per fetch', 'wp-data-access' );
         ?>
 											</label>
 											<input type="text"
@@ -759,7 +759,7 @@ Start with high values and work down until the error disappears." style="cursor:
 										</div>
 										<h4>
 											<?php 
-        echo __( 'Access control', 'wp-data-access' );
+        esc_html_e( 'Access control', 'wp-data-access' );
         ?>
 										</h4>
 										<div style="font-size:90%;">
@@ -775,13 +775,13 @@ Start with high values and work down until the error disappears." style="cursor:
         ?>
 												/>
 												<?php 
-        echo __( 'Enable row level access control (adds token to row actions)', 'wp-data-access' );
+        esc_html_e( 'Enable row level access control (adds token to row actions)', 'wp-data-access' );
         ?>
 											</label>
 										</div>
 										<h4>
 											<?php 
-        echo __( 'Process hyperlink columns as', 'wp-data-access' );
+        esc_html_e( 'Process hyperlink columns as', 'wp-data-access' );
         ?>
 										</h4>
 										<div style="font-size:90%;">
@@ -806,7 +806,7 @@ Start with high values and work down until the error disappears." style="cursor:
         ?>
 												/>
 												<?php 
-        echo __( 'Preformatted JSON (allows individual label and target setting)', 'wp-data-access' );
+        esc_html_e( 'Preformatted JSON (allows individual label and target setting)', 'wp-data-access' );
         ?>
 											</label>
 											<br/>
@@ -829,7 +829,7 @@ Start with high values and work down until the error disappears." style="cursor:
         ?>
 												/>
 												<?php 
-        echo __( 'Plain text (column name used as link, opens a new tab or window)', 'wp-data-access' );
+        esc_html_e( 'Plain text (column name used as link, opens a new tab or window)', 'wp-data-access' );
         ?>
 											</label>
 										</div>
@@ -843,7 +843,7 @@ Start with high values and work down until the error disappears." style="cursor:
 											>
 												<i class="fas fa-check wpda_icon_on_button"></i>
 												<?php 
-        echo __( 'Save Table Settings', 'wp-data-access' );
+        esc_html_e( 'Save Table Settings', 'wp-data-access' );
         ?>
 											</button>
 										</div>
@@ -853,12 +853,12 @@ Start with high values and work down until the error disappears." style="cursor:
 									<ul class="wpda_table_settings_nested wpda_table_column_settings">
 										<h2>
 											<?php 
-        echo __( 'Column Settings', 'wp-data-access' );
+        esc_html_e( 'Column Settings', 'wp-data-access' );
         ?>
 											<a href="https://docs.legacy.wpdataaccess.com/docs/column-settings/" target="_blank">
 												<span class="dashicons dashicons-editor-help wpda_tooltip"
 													  title="<?php 
-        echo __( 'Help opens in a new tab or window', 'wp-data-access' );
+        esc_html_e( 'Help opens in a new tab or window', 'wp-data-access' );
         ?>"
 													  style="cursor:pointer"></span>
 											</a>
@@ -869,44 +869,44 @@ Start with high values and work down until the error disappears." style="cursor:
 												<th>
 													<span>
 														<?php 
-        echo __( 'Column', 'wp-data-access' );
+        esc_html_e( 'Column', 'wp-data-access' );
         ?>
 													</span>
 												</th>
 												<th>
 													<span>
 														<?php 
-        echo __( 'Label on List Table', 'wp-data-access' );
+        esc_html_e( 'Label on List Table', 'wp-data-access' );
         ?>
 													</span>
 													<span
 														class="dashicons dashicons-editor-help wpda_tooltip"
 														title="<?php 
-        echo __( 'Define column labels for list tables', 'wp-data-access' );
+        esc_html_e( 'Define column labels for list tables', 'wp-data-access' );
         ?>"
 													></span>
 												</th>
 												<th>
 													<span>
 														<?php 
-        echo __( 'Label on Data Entry Form', 'wp-data-access' );
+        esc_html_e( 'Label on Data Entry Form', 'wp-data-access' );
         ?>
 													</span>
 													<span class="dashicons dashicons-editor-help wpda_tooltip"
 														  title="<?php 
-        echo __( 'Define column labels for data entry forms', 'wp-data-access' );
+        esc_html_e( 'Define column labels for data entry forms', 'wp-data-access' );
         ?>"
 													></span>
 												</th>
 												<th>
 													<span>
 														<?php 
-        echo __( 'Column Type', 'wp-data-access' );
+        esc_html_e( 'Column Type', 'wp-data-access' );
         ?>
 													</span>
 													<span class="dashicons dashicons-editor-help wpda_tooltip"
 														  title="<?php 
-        echo __( 'Featured plugin column types', 'wp-data-access' );
+        esc_html_e( 'Featured plugin column types', 'wp-data-access' );
         ?>"
 													></span>
 												</th>
@@ -1055,7 +1055,7 @@ Start with high values and work down until the error disappears." style="cursor:
                 if ( 'keys' === $add_column['disable'] ) {
                     $primary_key = $this->wpda_list_columns->get_table_primary_key();
                     if ( in_array( $column['Field'], $primary_key ) ) {
-                        //phpcs:ignore - 8.1 proof
+                        // phpcs:ignore -- 8.1 proof
                         echo 'disabled="disabled" title="Not available for key columns"';
                     }
                 }
@@ -1092,7 +1092,7 @@ Start with high values and work down until the error disappears." style="cursor:
 											>
 												<i class="fas fa-check wpda_icon_on_button"></i>
 												<?php 
-        echo __( 'Save Column Settings', 'wp-data-access' );
+        esc_html_e( 'Save Column Settings', 'wp-data-access' );
         ?>
 											</button>
 										</div>
@@ -1189,8 +1189,9 @@ Start with high values and work down until the error disappears." style="cursor:
 				var custom_column_settings = [];
 				<?php 
         foreach ( $column_settings_add_column as $add_column ) {
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo 'custom_column_settings.push("' . $add_column['name_prefix'] . '");';
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            // phpcs:enable WordPress.Security.EscapeOutput
         }
         ?>
 			</script>
@@ -1203,12 +1204,12 @@ Start with high values and work down until the error disappears." style="cursor:
 				<ul class="wpda_table_settings_nested wpda_table_dashboard_menus_settings">
 					<h2>
 						<?php 
-        echo __( 'Dashboard Menus', 'wp-data-access' );
+        esc_html_e( 'Dashboard Menus', 'wp-data-access' );
         ?>
 						<a href="https://docs.legacy.wpdataaccess.com/docs/dashboard-menus/" target="_blank">
 							<span class="dashicons dashicons-editor-help wpda_tooltip"
 								  title="<?php 
-        echo sprintf( __( 'Help opens in a new tab or window', 'wp-data-access' ), esc_attr( $this->table_name ) );
+        echo sprintf( esc_attr__( 'Help opens in a new tab or window', 'wp-data-access' ), esc_attr( $this->table_name ) );
         ?>"
 								  style="cursor:pointer;vertical-align:text-bottom;"></span>
 						</a>
@@ -1219,36 +1220,36 @@ Start with high values and work down until the error disappears." style="cursor:
 								<th>
 									<span>
 										<?php 
-        echo __( 'Menu Name', 'wp-data-access' );
+        esc_html_e( 'Menu Name', 'wp-data-access' );
         ?>
 									</span>
 									<span class="dashicons dashicons-editor-help wpda_tooltip"
 										  title="<?php 
-        echo __( 'Name of your sub menu item', 'wp-data-access' );
+        esc_html_e( 'Name of your sub menu item', 'wp-data-access' );
         ?>"
 										  style="cursor:pointer;"></span>
 								</th>
 								<th>
 									<span>
 										<?php 
-        echo __( 'Menu Slug', 'wp-data-access' );
+        esc_html_e( 'Menu Slug', 'wp-data-access' );
         ?>
 									</span>
 									<span class="dashicons dashicons-editor-help wpda_tooltip"
 										  title="<?php 
-        echo __( 'Menu slug of the main menu to which your sub menu should be added', 'wp-data-access' );
+        esc_html_e( 'Menu slug of the main menu to which your sub menu should be added', 'wp-data-access' );
         ?>"
 										  style="cursor:pointer;"></span>
 								</th>
 								<th>
 									<span>
 										<?php 
-        echo __( 'Roles Authorized', 'wp-data-access' );
+        esc_html_e( 'Roles Authorized', 'wp-data-access' );
         ?>
 									</span>
 									<span class="dashicons dashicons-editor-help wpda_tooltip"
 										  title="<?php 
-        echo __( 'User roles authorized to see sub menu item', 'wp-data-access' );
+        esc_html_e( 'User roles authorized to see sub menu item', 'wp-data-access' );
         ?>"
 										  style="cursor:pointer;"></span>
 								</th>
@@ -1291,8 +1292,9 @@ Start with high values and work down until the error disappears." style="cursor:
             foreach ( $wp_roles->roles as $role => $val ) {
                 $selected = ( false !== stripos( $table_menu['menu_role'], $role ) ? 'selected' : '' );
                 $role_label = ( isset( $val['name'] ) ? $val['name'] : $role );
+                // phpcs:disable WordPress.Security.EscapeOutput
                 echo "<option value='{$role}' {$selected}>{$role_label}</option>";
-                // phpcs:ignore WordPress.Security.EscapeOutput
+                // phpcs:enable WordPress.Security.EscapeOutput
             }
             ?>
 									</select>
@@ -1304,7 +1306,7 @@ Start with high values and work down until the error disappears." style="cursor:
 									<a href="javascript:void(0)"
 									   class="dashicons dashicons-trash"
 									   onclick="if (confirm('<?php 
-            echo __( 'Delete menu?', 'wp-data-access' );
+            esc_html_e( 'Delete menu?', 'wp-data-access' );
             ?>')) { deleteDashboardMenu(this, '<?php 
             echo esc_attr( $this->rownum );
             ?>') }"
@@ -1326,7 +1328,7 @@ Start with high values and work down until the error disappears." style="cursor:
 						>
 							<i class="fas fa-check wpda_icon_on_button"></i>
 							<?php 
-        echo __( 'Save Dashboard Menus', 'wp-data-access' );
+        esc_html_e( 'Save Dashboard Menus', 'wp-data-access' );
         ?>
 						</button>
 						<button type="button"
@@ -1383,8 +1385,9 @@ Start with high values and work down until the error disappears." style="cursor:
         global $wp_roles;
         foreach ( $wp_roles->roles as $role => $val ) {
             $role_label = ( isset( $val['name'] ) ? $val['name'] : $role );
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo "<option value='{$role}'>{$role_label}</option>";
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            // phpcs:enable WordPress.Security.EscapeOutput
         }
         ?>
 										</select>
@@ -1394,7 +1397,7 @@ Start with high values and work down until the error disappears." style="cursor:
 										<a href="javascript:void(0)"
 										   class="dashicons dashicons-trash"
 										   onclick="if (confirm('<?php 
-        echo __( 'Delete menu?', 'wp-data-access' );
+        esc_html_e( 'Delete menu?', 'wp-data-access' );
         ?>')) { deleteDashboardMenu(this, '<?php 
         echo esc_attr( $this->rownum );
         ?>') }"
@@ -1416,12 +1419,12 @@ Start with high values and work down until the error disappears." style="cursor:
 				<ul class="wpda_table_settings_nested wpda_table_dynamic_hyperlinks_settings">
 					<h2>
 						<?php 
-        echo __( 'Dynamic Hyperlinks', 'wp-data-access' );
+        esc_html_e( 'Dynamic Hyperlinks', 'wp-data-access' );
         ?>
 						<a href="https://docs.legacy.wpdataaccess.com/docs/dynamic-hyperlinks/" target="_blank">
 							<span class="dashicons dashicons-editor-help wpda_tooltip"
 								  title="<?php 
-        echo sprintf( __( 'Help opens in a new tab or window', 'wp-data-access' ), esc_attr( $this->table_name ) );
+        echo sprintf( esc_attr__( 'Help opens in a new tab or window', 'wp-data-access' ), esc_attr( $this->table_name ) );
         ?>"
 								  style="cursor:pointer"></span>
 						</a>
@@ -1432,59 +1435,61 @@ Start with high values and work down until the error disappears." style="cursor:
 								<th>
 									<span>
 										<?php 
-        echo __( 'Hyperlink Label', 'wp-data-access' );
+        esc_html_e( 'Hyperlink Label', 'wp-data-access' );
         ?>
 									</span>
 								</th>
 								<th style="text-align:center">
 									<span>
 										<?php 
-        echo __( '+List?', 'wp-data-access' );
+        esc_html_e( '+List?', 'wp-data-access' );
         ?>
 									</span>
 									<span class="dashicons dashicons-editor-help wpda_tooltip"
 										  title="<?php 
-        echo __( 'Add hyperlink to list', 'wp-data-access' );
+        esc_html_e( 'Add hyperlink to list', 'wp-data-access' );
         ?>"
 										  style="cursor:pointer;"></span>
 								</th>
 								<th style="text-align:center">
 									<span>
 										<?php 
-        echo __( '+Form?', 'wp-data-access' );
+        esc_html_e( '+Form?', 'wp-data-access' );
         ?>
 									</span>
 									<span class="dashicons dashicons-editor-help wpda_tooltip"
 										  title="<?php 
-        echo __( 'Add hyperlink to form', 'wp-data-access' );
+        esc_html_e( 'Add hyperlink to form', 'wp-data-access' );
         ?>"
 										  style="cursor:pointer;"></span>
 								</th>
 								<th style="text-align:center">
 									<span>
 										<?php 
-        echo __( '+Window?', 'wp-data-access' );
+        esc_html_e( '+Window?', 'wp-data-access' );
         ?>
 									</span>
 									<span class="dashicons dashicons-editor-help wpda_tooltip"
 										  title="<?php 
-        echo __( 'Opens URL in a new tab or window', 'wp-data-access' );
+        esc_html_e( 'Opens URL in a new tab or window', 'wp-data-access' );
         ?>"
 										  style="cursor:pointer;"></span>
 								</th>
 								<th>
 									<span>
 										<?php 
-        echo __( 'HTML', 'wp-data-access' );
+        // phpcs:disable WordPress.Security.EscapeOutput
+        esc_html_e( 'HTML', 'wp-data-access' );
         ?>
 									</span>
 									<span class="dashicons dashicons-editor-help wpda_tooltip"
 										  title="<?php 
-        echo __( 'Just the URL! For example:
+        esc_html_e( 'Just the URL! For example:
 
 	https://yoursite.com/services.php?name=$$column_name$$
 
-	Variable $$column_name$$ will be replaced with the value of column $$column_name$$ in table `' . esc_attr( $this->table_name ) . '`.', 'wp-data-access' );
+	Variable $$column_name$$ will be replaced with the value of column $$column_name$$ in table `', 'wp-data-access' ) . esc_attr( $this->table_name ) . '`.';
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>"
 										  style="cursor:pointer;"></span>
 								</th>
@@ -1550,8 +1555,9 @@ Start with high values and work down until the error disappears." style="cursor:
 												  class="wpda_action_font"
 												  style="width:100%;resize:both;"
 										><?php 
+                // phpcs:disable WordPress.Security.EscapeOutput
                 echo urldecode( $hyperlink_html );
-                // phpcs:ignore WordPress.Security.EscapeOutput
+                // phpcs:enable WordPress.Security.EscapeOutput
                 ?></textarea>
 									</td>
 									<td>
@@ -1559,7 +1565,7 @@ Start with high values and work down until the error disappears." style="cursor:
 										   class="dashicons dashicons-trash"
 										   style="margin-top:4px;"
 										   onclick="if (confirm('<?php 
-                echo __( 'Delete hyperlink?', 'wp-data-access' );
+                esc_html_e( 'Delete hyperlink?', 'wp-data-access' );
                 ?>')) { jQuery(this).closest('tr').remove() }"
 										></a>
 									</td>
@@ -1580,7 +1586,7 @@ Start with high values and work down until the error disappears." style="cursor:
 						>
 							<i class="fas fa-check wpda_icon_on_button"></i>
 							<?php 
-        echo __( 'Save Dynamic Hyperlinks', 'wp-data-access' );
+        esc_html_e( 'Save Dynamic Hyperlinks', 'wp-data-access' );
         ?>
 						</button>
 						<button type="button"
@@ -1659,7 +1665,8 @@ Start with high values and work down until the error disappears." style="cursor:
 												   class="dashicons dashicons-trash"
 												   style="margin-top:4px;"
 												   onclick="if (confirm('<?php 
-        echo __( 'Delete hyperlink %s?', 'wp-data-access' );
+        /* translators: %s = row containing the hyperlink */
+        esc_html_e( 'Delete hyperlink %s?', 'wp-data-access' );
         ?>')) { jQuery(this).closest('tr').remove() }"
 												></a>
 											</td>
@@ -1740,7 +1747,7 @@ Start with high values and work down until the error disappears." style="cursor:
 				<ul class="wpda_table_settings_nested wpda_table_rest_api_settings" style="position: relative">
 					<h2>
 						<?php 
-        echo __( 'REST API', 'wp-data-access' );
+        esc_html_e( 'REST API', 'wp-data-access' );
         ?>
 					</h2>
 					<div style="position: absolute; top: 0; right: 0; font-weight: bold">
@@ -1823,7 +1830,7 @@ Start with high values and work down until the error disappears." style="cursor:
 						>
 							<i class="fas fa-check wpda_icon_on_button"></i>
 							<?php 
-        echo __( 'Save REST API Settings', 'wp-data-access' );
+        esc_html_e( 'Save REST API Settings', 'wp-data-access' );
         ?>
 						</button>
 					</div>
@@ -1908,12 +1915,12 @@ Start with high values and work down until the error disappears." style="cursor:
         ?>_rest_api_" + action + "_copy_url" + extension);
 							copy_url.on('success', function (e) {
 								jQuery.notify('<?php 
-        echo __( 'SQL successfully copied to clipboard!' );
+        esc_html_e( 'SQL successfully copied to clipboard!', 'wp-data-access' );
         ?>', 'info');
 							});
 							copy_url.on('error', function (e) {
 								jQuery.notify('<?php 
-        echo __( 'Could not copy SQL to clipboard!' );
+        esc_html_e( 'Could not copy SQL to clipboard!', 'wp-data-access' );
         ?>', 'error');
 							});
 						}
@@ -2065,7 +2072,7 @@ Start with high values and work down until the error disappears." style="cursor:
         echo esc_attr( $tab );
         ?>_http_get"
 									<?php 
-        //phpcs:ignore - 8.1 proof
+        // phpcs:ignore -- 8.1 proof
         echo ( isset( $rest_api_settings[$tab]['methods'] ) && is_array( $rest_api_settings[$tab]['methods'] ) && in_array( 'GET', $rest_api_settings[$tab]['methods'] ) ? 'checked' : '' );
         ?>
 							/>
@@ -2079,7 +2086,7 @@ Start with high values and work down until the error disappears." style="cursor:
         echo esc_attr( $tab );
         ?>_http_post"
 									<?php 
-        //phpcs:ignore - 8.1 proof
+        // phpcs:ignore -- 8.1 proof
         echo ( isset( $rest_api_settings[$tab]['methods'] ) && is_array( $rest_api_settings[$tab]['methods'] ) && in_array( 'POST', $rest_api_settings[$tab]['methods'] ) ? 'checked' : '' );
         ?>
 							/>
@@ -2089,8 +2096,7 @@ Start with high values and work down until the error disappears." style="cursor:
 					<h4>
 						URLs and parameters
 						<a href="<?php 
-        echo site_url( '/wp-json/wpda' );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        echo esc_url( site_url( '/wp-json/wpda' ) );
         ?>" target="_blank">
 							<span class="dashicons dashicons-external wpda_tooltip"
 								  style="vertical-align: sub"
@@ -2100,7 +2106,9 @@ Start with high values and work down until the error disappears." style="cursor:
 					<p>
 						<?php 
         $select_url = esc_url( get_rest_url( null, "wpda/table/{$tab}" ) );
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $select_url;
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>
 						<a href="javascript:void(0)"
 						   id="wpda_<?php 
@@ -2112,7 +2120,10 @@ Start with high values and work down until the error disappears." style="cursor:
 						   class="wpda_tooltip"
 						   style="padding-left: 5px"
 						   data-clipboard-text="<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $select_url;
+        // phpcs:enable WordPress.Security.EscapeOutput
+        //
         ?>"
 						>
 							<i class="dashicons dashicons-clipboard wpda_tooltip"></i>
@@ -2128,7 +2139,9 @@ Start with high values and work down until the error disappears." style="cursor:
         if ( 'select' === $tab ) {
             echo '<br/>';
             $select_url = esc_url( get_rest_url( null, "wpda/table/get" ) );
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo $select_url;
+            // phpcs:enable WordPress.Security.EscapeOutput
             ?>
 							<a href="javascript:void(0)"
 							   id="wpda_<?php 
@@ -2140,7 +2153,9 @@ Start with high values and work down until the error disappears." style="cursor:
 							   class="wpda_tooltip"
 							   style="padding-left: 5px"
 							   data-clipboard-text="<?php 
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo $select_url;
+            // phpcs:enable WordPress.Security.EscapeOutput
             ?>"
 							>
 								<i class="dashicons dashicons-clipboard wpda_tooltip"></i>
@@ -2192,7 +2207,7 @@ Start with high values and work down until the error disappears." style="cursor:
         $roles = $wp_roles->roles;
         foreach ( $roles as $key => $role ) {
             $selected = ( in_array( $key, $authorized_roles ) ? 'selected' : '' );
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             ?>
 								<option value="<?php 
             echo esc_attr( $key );
@@ -2226,7 +2241,7 @@ Start with high values and work down until the error disappears." style="cursor:
         $users = get_users();
         foreach ( $users as $user ) {
             $selected = ( in_array( $user->data->user_login, $authorized_users ) ? 'selected' : '' );
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             ?>
 								<option value="<?php 
             echo esc_attr( $user->data->user_login );
@@ -2288,25 +2303,25 @@ Start with high values and work down until the error disappears." style="cursor:
 			<table class="widefat striped rows wpda-structure-table">
 				<tr>
 					<th class="nobr"><strong><?php 
-        echo __( 'Column Name', 'wp-data-access' );
+        esc_html_e( 'Column Name', 'wp-data-access' );
         ?></strong></th>
 					<th class="nobr"><strong><?php 
-        echo __( 'Data Type', 'wp-data-access' );
+        esc_html_e( 'Data Type', 'wp-data-access' );
         ?></strong></th>
 					<th><strong><?php 
-        echo __( 'Collation', 'wp-data-access' );
+        esc_html_e( 'Collation', 'wp-data-access' );
         ?></strong></th>
 					<th><strong><?php 
-        echo __( 'Null?', 'wp-data-access' );
+        esc_html_e( 'Null?', 'wp-data-access' );
         ?></strong></th>
 					<th><strong><?php 
-        echo __( 'Key?', 'wp-data-access' );
+        esc_html_e( 'Key?', 'wp-data-access' );
         ?></strong></th>
 					<th class="nobr"><strong><?php 
-        echo __( 'Default Value', 'wp-data-access' );
+        esc_html_e( 'Default Value', 'wp-data-access' );
         ?></strong></th>
 					<th style="width:80%;"><strong><?php 
-        echo __( 'Extra', 'wp-data-access' );
+        esc_html_e( 'Extra', 'wp-data-access' );
         ?></strong></th>
 				</tr>
 				<?php 
@@ -2349,29 +2364,29 @@ Start with high values and work down until the error disappears." style="cursor:
 					<tr>
 						<th class="nobr">
 							<strong><?php 
-            echo __( 'Constraint Name', 'wp-data-access' );
+            esc_html_e( 'Constraint Name', 'wp-data-access' );
             ?></strong>
 						</th>
 						<th class="nobr">
 							<strong><?php 
-            echo __( 'Column Name', 'wp-data-access' );
+            esc_html_e( 'Column Name', 'wp-data-access' );
             ?></strong>
 						</th>
 						<th class="nobr">
 							<strong><?php 
-            echo __( 'Referenced Table Name', 'wp-data-access' );
+            esc_html_e( 'Referenced Table Name', 'wp-data-access' );
             ?></strong>
 						</th>
 						<th class="nobr" style="width:80%;">
 							<strong><?php 
-            echo __( 'Referenced Column Name', 'wp-data-access' );
+            esc_html_e( 'Referenced Column Name', 'wp-data-access' );
             ?></strong>
 						</th>
 					</tr>
 					<?php 
             if ( 0 === count( $this->foreign_keys ) ) {
-                //phpcs:ignore - 8.1 proof
-                echo '<tr><td colspan="4">' . __( 'No foreign keys defined for this table', 'wp-data-access' ) . '</td></tr>';
+                // phpcs:ignore -- 8.1 proof
+                echo '<tr><td colspan="4">' . esc_attr__( 'No foreign keys defined for this table', 'wp-data-access' ) . '</td></tr>';
             }
             $constraint_name = '';
             foreach ( $this->foreign_keys as $foreign_key ) {
@@ -2416,33 +2431,33 @@ Start with high values and work down until the error disappears." style="cursor:
 			<table class="widefat striped rows wpda-structure-table">
 				<tr>
 					<th class="nobr"><strong><?php 
-        echo __( 'Index Name', 'wp-data-access' );
+        esc_html_e( 'Index Name', 'wp-data-access' );
         ?></strong></th>
 					<th><strong><?php 
-        echo __( 'Unique?', 'wp-data-access' );
+        esc_html_e( 'Unique?', 'wp-data-access' );
         ?></strong></th>
 					<th><strong>#</strong></th>
 					<th class="nobr"><strong><?php 
-        echo __( 'Column Name', 'wp-data-access' );
+        esc_html_e( 'Column Name', 'wp-data-access' );
         ?></strong></th>
 					<th><strong><?php 
-        echo __( 'Collation', 'wp-data-access' );
+        esc_html_e( 'Collation', 'wp-data-access' );
         ?></strong></th>
 					<th class="nobr"><strong><?php 
-        echo __( 'Index Prefix?', 'wp-data-access' );
+        esc_html_e( 'Index Prefix?', 'wp-data-access' );
         ?></strong></th>
 					<th><strong><?php 
-        echo __( 'Null?', 'wp-data-access' );
+        esc_html_e( 'Null?', 'wp-data-access' );
         ?></strong></th>
 					<th class="nobr" style="width:80%;">
 						<strong><?php 
-        echo __( 'Index Type', 'wp-data-access' );
+        esc_html_e( 'Index Type', 'wp-data-access' );
         ?></strong></th>
 				</tr>
 				<?php 
         if ( 0 === count( (array) $this->indexes ) ) {
-            //phpcs:ignore - 8.1 proof
-            echo '<tr><td colspan="8">' . __( 'No indexes defined for this table', 'wp-data-access' ) . '</td></tr>';
+            // phpcs:ignore -- 8.1 proof
+            echo '<tr><td colspan="8">' . esc_attr__( 'No indexes defined for this table', 'wp-data-access' ) . '</td></tr>';
         }
         $current_index_name = '';
         foreach ( $this->indexes as $index ) {
@@ -2525,13 +2540,14 @@ Start with high values and work down until the error disappears." style="cursor:
 						   href="javascript:void(0)"
 						   class="button button-primary"
 						   data-clipboard-text="<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $this->create_table_stmt_orig;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>"
 						>
 							<i class="fas fa-clipboard wpda_icon_on_button"></i>
 							<?php 
-        echo __( 'Copy to clipboard', 'wp-data-access' );
+        esc_html_e( 'Copy to clipboard', 'wp-data-access' );
         ?>
 						</a>
 					</td>
@@ -2602,19 +2618,19 @@ Start with high values and work down until the error disappears." style="cursor:
 					   style="display:block;"
 					>
 						<?php 
-        echo __( 'EXPORT', 'wp-data-access' );
+        esc_html_e( 'EXPORT', 'wp-data-access' );
         ?>
 					</a>
 				</td>
 				<td style="vertical-align:middle;">
 					<span><?php 
-        echo __( 'Export', 'wp-data-access' );
+        esc_html_e( 'Export', 'wp-data-access' );
         ?> <strong><?php 
-        echo __( 'table', 'wp-data-access' );
+        esc_html_e( 'table', 'wp-data-access' );
         ?> `<?php 
         echo esc_attr( $this->table_name );
         ?>`</strong> <?php 
-        echo __( 'to', 'wp-data-access' );
+        esc_html_e( 'to', 'wp-data-access' );
         ?>: </span>
 					<select id="format_type_<?php 
         echo esc_attr( $this->rownum );
@@ -2649,7 +2665,7 @@ Start with high values and work down until the error disappears." style="cursor:
 							   class="wpda_action_font"
 						>
 						<?php 
-        echo __( 'Include table settings (SQL only)', 'wp-data-access' );
+        esc_html_e( 'Include table settings (SQL only)', 'wp-data-access' );
         ?>&nbsp;
 					</label>
 					<script type="text/javascript">
@@ -2663,8 +2679,9 @@ Start with high values and work down until the error disappears." style="cursor:
         }
         ?>
 							if (<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $check_export_access;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>) {
 								wpda_table_export(
 									'<?php 
@@ -2705,8 +2722,9 @@ Start with high values and work down until the error disappears." style="cursor:
 				<td style="box-sizing:border-box;text-align:center;white-space:nowrap;width:150px;vertical-align:middle;">
 					<script type='text/javascript'>
 						jQuery("#wpda_invisible_container").append("<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $rename_table_form;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>");
 					</script>
 					<a href="javascript:void(0)"
@@ -2714,9 +2732,9 @@ Start with high values and work down until the error disappears." style="cursor:
 					   onclick="if (jQuery('#rename-table-from-<?php 
         echo esc_attr( $this->rownum );
         ?>').val()==='') { alert('<?php 
-        echo __( 'Please enter a valid table name', 'wp-data-access' );
+        echo esc_attr__( 'Please enter a valid table name', 'wp-data-access' );
         ?>'); return false; } if (confirm('<?php 
-        echo __( 'Rename', 'wp-data-access' ) . ' ' . esc_attr( strtolower( $this->dbo_type ) ) . '?';
+        echo esc_attr__( 'Rename', 'wp-data-access' ) . ' ' . esc_attr( strtolower( $this->dbo_type ) ) . '?';
         ?>')) { jQuery('#rename_table_name_<?php 
         echo esc_attr( $this->rownum );
         ?>').val(jQuery('#rename-table-from-<?php 
@@ -2727,13 +2745,13 @@ Start with high values and work down until the error disappears." style="cursor:
 					   style="display:block;"
 					>
 						<?php 
-        echo __( 'RENAME', 'wp-data-access' );
+        esc_html_e( 'RENAME', 'wp-data-access' );
         ?>
 					</a>
 				</td>
 				<td style="vertical-align:middle;">
 					<?php 
-        echo __( 'Rename', 'wp-data-access' );
+        esc_html_e( 'Rename', 'wp-data-access' );
         ?>
 					<strong><?php 
         echo esc_attr( strtolower( $this->dbo_type ) );
@@ -2764,8 +2782,9 @@ Start with high values and work down until the error disappears." style="cursor:
 				<td style="box-sizing:border-box;text-align:center;white-space:nowrap;width:150px;vertical-align:middle;">
 					<script type='text/javascript'>
 						jQuery("#wpda_invisible_container").append("<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $copy_table_form;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>");
 					</script>
 					<a href="javascript:void(0)"
@@ -2782,13 +2801,13 @@ Start with high values and work down until the error disappears." style="cursor:
 					   style="display:block;"
 					>
 						<?php 
-        echo __( 'COPY', 'wp-data-access' );
+        esc_html_e( 'COPY', 'wp-data-access' );
         ?>
 					</a>
 				</td>
 				<td style="vertical-align:middle;">
 					<?php 
-        echo __( 'Copy', 'wp-data-access' );
+        esc_html_e( 'Copy', 'wp-data-access' );
         ?>
 					<strong><?php 
         echo esc_attr( strtolower( $this->dbo_type ) );
@@ -2797,7 +2816,7 @@ Start with high values and work down until the error disappears." style="cursor:
         echo esc_attr( $this->table_name );
         ?>
 						`</strong> <?php 
-        echo __( 'to', 'wp-data-access' );
+        esc_html_e( 'to', 'wp-data-access' );
         ?>:
 					<select id="copy-schema-from-<?php 
         echo esc_attr( $this->rownum );
@@ -2809,7 +2828,7 @@ Start with high values and work down until the error disappears." style="cursor:
         foreach ( $schema_names as $schema_name ) {
             $selected = ( $schema_name['schema_name'] === $this->schema_name ? 'selected' : '' );
             $database = ( $schema_name['schema_name'] === $wpdb->dbname ? "WordPress database ({$schema_name['schema_name']})" : $schema_name['schema_name'] );
-            echo '<option value="' . esc_attr( $schema_name['schema_name'] ) . '" ' . $selected . '>' . esc_attr( $database ) . '</option>';
+            echo '<option value="' . esc_attr( $schema_name['schema_name'] ) . '" ' . esc_attr( $selected ) . '>' . esc_attr( $database ) . '</option>';
         }
         ?>
 					</select>
@@ -2826,7 +2845,7 @@ Start with high values and work down until the error disappears." style="cursor:
 							   class="wpda_action_font"
 						>
 						<?php 
-        echo __( 'Copy data', 'wp-data-access' );
+        esc_html_e( 'Copy data', 'wp-data-access' );
         ?>
 					</label>
 				</td>
@@ -2847,27 +2866,28 @@ Start with high values and work down until the error disappears." style="cursor:
 				<td style="box-sizing:border-box;text-align:center;white-space:nowrap;width:150px;vertical-align:middle;">
 					<script type='text/javascript'>
 						jQuery("#wpda_invisible_container").append("<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $truncate_table_form;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>");
 					</script>
 					<a href="javascript:void(0)"
 					   class="button button-primary"
 					   onclick="if (confirm('<?php 
-        echo __( 'Truncate table?', 'wp-data-access' );
+        esc_html_e( 'Truncate table?', 'wp-data-access' );
         ?>')) { jQuery('#<?php 
         echo esc_attr( $truncate_table_form_id );
         ?>').submit(); }"
 					   style="display:block;"
 					>
 						<?php 
-        echo __( 'TRUNCATE', 'wp-data-access' );
+        esc_html_e( 'TRUNCATE', 'wp-data-access' );
         ?>
 					</a>
 				</td>
 				<td style="vertical-align:middle;">
 					<?php 
-        echo __( 'Permanently delete all data from', 'wp-data-access' );
+        esc_html_e( 'Permanently delete all data from', 'wp-data-access' );
         ?>
 					<strong><?php 
         echo esc_attr( strtolower( $this->dbo_type ) );
@@ -2877,7 +2897,7 @@ Start with high values and work down until the error disappears." style="cursor:
         ?>`</strong>
 					.<br/>
 					<strong><?php 
-        echo __( 'This action cannot be undone!', 'wp-data-access' );
+        esc_html_e( 'This action cannot be undone!', 'wp-data-access' );
         ?></strong>
 				</td>
 			</tr>
@@ -2902,28 +2922,28 @@ Start with high values and work down until the error disappears." style="cursor:
 				<td style="box-sizing:border-box;text-align:center;white-space:nowrap;width:150px;vertical-align:middle;">
 					<script type='text/javascript'>
 						jQuery("#wpda_invisible_container").append("<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $drop_table_form;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>");
 					</script>
 					<a href="javascript:void(0)"
 					   class="button button-primary"
 					   onclick="if (confirm('<?php 
-        echo $msg_drop;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        echo esc_attr( $msg_drop );
         ?>')) { jQuery('#<?php 
         echo esc_attr( $drop_table_form_id );
         ?>').submit(); }"
 					   style="display:block;"
 					>
 						<?php 
-        echo __( 'DROP', 'wp-data-access' );
+        esc_html_e( 'DROP', 'wp-data-access' );
         ?>
 					</a>
 				</td>
 				<td style="vertical-align:middle;">
 					<?php 
-        echo __( 'Permanently delete', 'wp-data-access' );
+        esc_html_e( 'Permanently delete', 'wp-data-access' );
         ?>
 					<strong><?php 
         echo esc_attr( strtolower( $this->dbo_type ) );
@@ -2932,10 +2952,10 @@ Start with high values and work down until the error disappears." style="cursor:
         echo esc_attr( $this->table_name );
         ?>`</strong>
 					<?php 
-        echo __( 'and all table data from the database.', 'wp-data-access' );
+        esc_html_e( 'and all table data from the database.', 'wp-data-access' );
         ?><br/>
 					<strong><?php 
-        echo __( 'This action cannot be undone!', 'wp-data-access' );
+        esc_html_e( 'This action cannot be undone!', 'wp-data-access' );
         ?></strong>
 				</td>
 			</tr>
@@ -2952,7 +2972,8 @@ Start with high values and work down until the error disappears." style="cursor:
     protected function tab_optimize() {
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = database name */
+            wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
         }
         $table_structure = $wpdadb->get_row( $wpdadb->prepare( 'show table status like %s', $this->table_name ) );
         $query_innodb_file_per_table = $wpdadb->get_row( "show session variables like 'innodb_file_per_table'" );
@@ -2975,15 +2996,15 @@ Start with high values and work down until the error disappears." style="cursor:
 				<td style="box-sizing:border-box;text-align:center;white-space:nowrap;width:150px;vertical-align:middle;">
 					<script type='text/javascript'>
 						jQuery("#wpda_invisible_container").append("<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $optimize_table_form;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>");
 					</script>
 					<a href="javascript:void(0)"
 					   class="button button-primary"
 					   onclick="if (confirm('<?php 
-        echo $msg_optimize;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        echo esc_attr( $msg_optimize );
         ?>')) { jQuery('#<?php 
         echo esc_attr( $optimize_table_form_id );
         ?>').submit(); }"
@@ -2996,7 +3017,7 @@ Start with high values and work down until the error disappears." style="cursor:
 					   "
 					>
 						<?php 
-        echo __( 'OPTIMIZE', 'wp-data-access' );
+        esc_html_e( 'OPTIMIZE', 'wp-data-access' );
         ?>
 					</a>
 				</td>
@@ -3008,7 +3029,7 @@ Start with high values and work down until the error disappears." style="cursor:
         ?>
 				">
 					<?php 
-        echo __( 'Optimize', 'wp-data-access' );
+        esc_html_e( 'Optimize', 'wp-data-access' );
         ?>
 					<strong><?php 
         echo esc_attr( strtolower( $this->dbo_type ) );
@@ -3020,13 +3041,13 @@ Start with high values and work down until the error disappears." style="cursor:
         if ( $consider_optimize ) {
             ?>
 						<strong><?php 
-            echo __( 'MySQL locks the table during the time OPTIMIZE TABLE is running!', 'wp-data-access' );
+            esc_html_e( 'MySQL locks the table during the time OPTIMIZE TABLE is running!', 'wp-data-access' );
             ?></strong>
 						<?php 
         } else {
             ?>
 						<strong><?php 
-            echo __( 'Table optimization not considered useful! But you can...', 'wp-data-access' );
+            esc_html_e( 'Table optimization not considered useful! But you can...', 'wp-data-access' );
             ?></strong>
 						<?php 
         }
@@ -3049,27 +3070,28 @@ Start with high values and work down until the error disappears." style="cursor:
 				<td style="box-sizing:border-box;text-align:center;white-space:nowrap;width:150px;vertical-align:middle;">
 					<script type='text/javascript'>
 						jQuery("#wpda_invisible_container").append("<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $alter_table_form;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>");
 					</script>
 					<a href="javascript:void(0)"
 					   class="button button-primary"
 					   onclick="if (confirm('<?php 
-        echo __( 'Alter table?', 'wp-data-access' );
+        esc_html_e( 'Alter table?', 'wp-data-access' );
         ?>')) { jQuery('#<?php 
         echo esc_attr( $alter_table_form_id );
         ?>').submit(); }"
 					   style="display:block;"
 					>
 						<?php 
-        echo __( 'ALTER', 'wp-data-access' );
+        esc_html_e( 'ALTER', 'wp-data-access' );
         ?>
 					</a>
 				</td>
 				<td style="vertical-align:middle;">
 					<?php 
-        echo __( 'Loads', 'wp-data-access' );
+        esc_html_e( 'Loads', 'wp-data-access' );
         ?>
 					<strong><?php 
         echo esc_attr( strtolower( $this->dbo_type ) );
@@ -3078,7 +3100,7 @@ Start with high values and work down until the error disappears." style="cursor:
         echo esc_attr( $this->table_name );
         ?>`</strong>
 					<?php 
-        echo __( 'into the Data Designer.', 'wp-data-access' );
+        esc_html_e( 'into the Data Designer.', 'wp-data-access' );
         ?>
 				</td>
 			</tr>

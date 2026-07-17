@@ -20,7 +20,7 @@ namespace WPDataAccess\Simple_Form {
 	 */
 	class WPDA_Simple_Form_Item_Autocomplete extends WPDA_Simple_Form_Item {
 
-		const AUTOCOMPLE_NONCE_ACTION = 'WPDA-AUTO-COMPLETE*';
+		const AUTOCOMPLETE_NONCE_ACTION = 'WPDA-AUTO-COMPLETE*';
 
 		protected $autocomplete_def   = null;
 		protected $tableform_settings = null;
@@ -31,7 +31,7 @@ namespace WPDataAccess\Simple_Form {
 			parent::show_item();
 
 			if ( null === $this->autocomplete_def ) {
-				wp_die( '<span style="font-weight: bold">' . __( 'ERROR: Invalid autocomplete lookup usage', 'wp-data-access' ) . '</span>' );
+				wp_die( '<span style="font-weight: bold">' . esc_attr__( 'ERROR: Invalid autocomplete lookup usage', 'wp-data-access' ) . '</span>' );
 			}
 
 			$lookup_value = '';
@@ -50,7 +50,7 @@ namespace WPDataAccess\Simple_Form {
 					}
 				}
 				if ( '' === $lookup_column_name ) {
-					wp_die( '<span style="font-weight: bold">' . __( 'ERROR: Invalid autocomplete lookup usage', 'wp-data-access' ) . '</span>' );
+					wp_die( '<span style="font-weight: bold">' . esc_attr__( 'ERROR: Invalid autocomplete lookup usage', 'wp-data-access' ) . '</span>' );
 				}
 
 				$wpda_autocomplete = new WPDA_Autocomplete();
@@ -67,18 +67,18 @@ namespace WPDataAccess\Simple_Form {
 				}
 			}
 
-			$placeholder = __( 'Start typing', 'wp-data-access' ) . ' ' . strtolower( $this->get_item_label() ) . '...';
-			echo "<input type='text' id='wpda_autocomplete_{$this->get_item_name()}' class='wpda_autocomplete' placeholder='{$placeholder}' value='{$lookup_value}'/>"; // phpcs:ignore WordPress.Security.EscapeOutput
+			$placeholder = esc_attr__( 'Start typing', 'wp-data-access' ) . ' ' . esc_attr( strtolower( $this->get_item_label() ) ) . '...';
+			$item_name   = esc_attr( $this->get_item_name() );
+			echo "<input type='text' id='wpda_autocomplete_{$item_name}' class='wpda_autocomplete' placeholder='{$placeholder}' value='{$lookup_value}'/>"; // phpcs:ignore WordPress.Security.EscapeOutput
 
 			$this->add_js();
 		}
 
 		protected function add_js() {
-			$wpnonce = wp_create_nonce( self::AUTOCOMPLE_NONCE_ACTION . $this->autocomplete_def->target_table_name );
 			?>
 			<script type="text/javascript">
 				jQuery(function() {
-					let wpda_path = '<?php echo admin_url( 'admin-ajax.php' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>';
+					let wpda_path = '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>';
 					let item_name = '<?php echo esc_attr( $this->get_item_name() ); ?>';
 
 					let autocomplete_def = '<?php echo json_encode( $this->autocomplete_def ); ?>';
@@ -104,7 +104,17 @@ namespace WPDataAccess\Simple_Form {
 									method: 'POST',
 									url: wpda_path + '?action=wpda_autocomplete',
 									data: {
-										wpda_wpnonce: '<?php echo esc_attr( $wpnonce ); ?>',
+										wpda_wpnonce: '<?php 
+											echo esc_attr( 
+												wp_create_nonce( 
+													self::AUTOCOMPLETE_NONCE_ACTION . 
+													$this->autocomplete_def->target_schema_name .
+													$this->autocomplete_def->target_table_name .
+													$this->autocomplete_def->target_column_name[0] .
+													$this->autocomplete_def->source_column_name[0]
+												)
+											);
+										?>',
 										wpda_source_column_value: jQuery('#wpda_autocomplete_' + item_name).val(),
 										wpda_source_column_name: autocomplete_def_json.source_column_name[0],
 										wpda_target_schema_name: autocomplete_def_json.target_schema_name,

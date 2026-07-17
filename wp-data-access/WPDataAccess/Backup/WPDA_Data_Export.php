@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Standard.Category.SniffName.ErrorCode
+<?php 
 /**
  * Suppress "error - 0 - No summary was found for this file" on phpdoc generation
  *
@@ -55,12 +55,12 @@ namespace WPDataAccess\Backup {
 		 */
 		public function create_export( $action ) {
 			$wpda_db_options_activated = get_option( 'wpda_db_options_activated' );
-			if ( ! is_array( $wpda_db_options_activated ) || 0 === count( $wpda_db_options_activated ) ) {//phpcs:ignore - 8.1 proof
+			if ( ! is_array( $wpda_db_options_activated ) || 0 === count( $wpda_db_options_activated ) ) { // phpcs:ignore -- 8.1 proof
 				echo '<br/>';
-				echo __( 'You need to define and activate at least one storage device in Data Backup Settings to use this feature.', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput
+				esc_html_e( 'You need to define and activate at least one storage device in Data Backup Settings to use this feature.', 'wp-data-access' );
 				echo '<br/>';
 				echo '<a href="?page=wpdataaccess&tab=databackup">&raquo; ';
-				echo __( 'Define and/or activate a storage device', 'wp-data-access' ); // phpcs:ignore WordPress.Security.EscapeOutput
+				esc_html_e( 'Define and/or activate a storage device', 'wp-data-access' );
 				echo '</a>';
 				wp_die();
 			}
@@ -76,15 +76,15 @@ namespace WPDataAccess\Backup {
 				if ( isset( $_REQUEST['schedule'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 					$schedule = sanitize_text_field( wp_unslash( $_REQUEST['schedule'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
 					if ( 'wpda_data_backup' !== $schedule ) {
-						wp_die( __( 'ERROR: Wrong arguments', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+						wp_die( esc_attr__( 'ERROR: Wrong arguments', 'wp-data-access' ) );
 					}
 				} else {
-					wp_die( __( 'ERROR: Wrong arguments', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+					wp_die( esc_attr__( 'ERROR: Wrong arguments', 'wp-data-access' ) );
 				}
 				if ( isset( $_REQUEST['schedule_args'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 					$backupid = sanitize_text_field( wp_unslash( $_REQUEST['schedule_args'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
 				} else {
-					wp_die( __( 'ERROR: Wrong arguments', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+					wp_die( esc_attr__( 'ERROR: Wrong arguments', 'wp-data-access' ) );
 				}
 				$data_backups      = get_option( 'wpda_data_backup_option' );
 				$data_backup_found = false;
@@ -97,7 +97,7 @@ namespace WPDataAccess\Backup {
 					}
 				}
 				if ( ! $data_backup_found ) {
-					wp_die( __( 'ERROR: Wrong arguments', 'wp-data-access' ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+					wp_die( esc_attr__( 'ERROR: Wrong arguments', 'wp-data-access' ) );
 				}
 				if ( isset( $_REQUEST['interval'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 					$interval = sanitize_text_field( wp_unslash( $_REQUEST['interval'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -113,7 +113,7 @@ namespace WPDataAccess\Backup {
 			?>
 			<div class="wrap">
 				<h1 class="wp-heading-inline">
-					<?php echo __( 'Data Backup' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<?php esc_html_e( 'Data Backup', 'wp-data-access' ); ?>
 				</h1>
 				<div id="wpda_export_import">
 					<div class="wpda_export_import">
@@ -123,9 +123,9 @@ namespace WPDataAccess\Backup {
 								onsubmit="return pre_submit()">
 							<table>
 								<tr>
-									<td style="font-weight:bold;padding-left:10px;"><?php echo __( 'Database Tables' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
+									<td style="font-weight:bold;padding-left:10px;"><?php esc_html_e( 'Database Tables', 'wp-data-access' ); ?></td>
 									<td></td>
-									<td style="font-weight:bold;padding-left:10px"><?php echo __( 'Tables To Be Exported' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
+									<td style="font-weight:bold;padding-left:10px"><?php esc_html_e( 'Tables To Be Exported', 'wp-data-access' ); ?></td>
 								</tr>
 								<tr>
 									<td>
@@ -154,7 +154,7 @@ namespace WPDataAccess\Backup {
 									<td colspan="3" style="text-align:center;">
 										<table align="center">
 											<tr>
-												<td style="text-align:right;"><?php echo __( 'Backup Id' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
+												<td style="text-align:right;"><?php esc_html_e( 'Backup Id', 'wp-data-access' ); ?></td>
 												<td style="text-align:left;">
 													<input
 															type="text"
@@ -171,11 +171,11 @@ namespace WPDataAccess\Backup {
 												</td>
 											</tr>
 											<tr>
-												<td style="text-align:right;"><?php echo __( 'Backup Interval' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
+												<td style="text-align:right;"><?php esc_html_e( 'Backup Interval', 'wp-data-access' ); ?></td>
 												<td style="text-align:left;">
 													<select id="interval" name="interval">
 														<?php if ( 'add' === $action ) { ?>
-															<option value="runonce"><?php echo __( 'Run once (no interval)' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></option>
+															<option value="runonce"><?php esc_html_e( 'Run once (no interval)', 'wp-data-access' ); ?></option>
 														<?php } ?>
 														<?php
 														foreach ( $this->schedules as $key => $schedule ) {
@@ -188,7 +188,7 @@ namespace WPDataAccess\Backup {
 												</td>
 											</tr>
 											<tr>
-												<td style="text-align:right;"><?php echo __( 'Backup Location' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
+												<td style="text-align:right;"><?php esc_html_e( 'Backup Location', 'wp-data-access' ); ?></td>
 												<td style="text-align:left;">
 													<select id="device" name="device">
 														<?php
@@ -212,7 +212,7 @@ namespace WPDataAccess\Backup {
 												</td>
 											</tr>
 											<tr>
-												<td style="text-align:right;"><?php echo __( 'Backup Files Kept' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td>
+												<td style="text-align:right;"><?php esc_html_e( 'Backup Files Kept', 'wp-data-access' ); ?></td>
 												<td style="text-align:left;">
 													<select id="keep" name="keep">
 														<option value="1">1</option>
@@ -234,12 +234,12 @@ namespace WPDataAccess\Backup {
 												<td style="text-align:left;">
 													<button type="submit" class="button button-primary">
 														<i class="fas fa-check wpda_icon_on_button"></i>
-														<?php echo __( 'Start' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+														<?php esc_html_e( 'Start', 'wp-data-access' ); ?>
 													</button>
 													<button type="button" class="button button-secondary"
 															onclick="window.location.href=window.location.href">
 														<i class="fas fa-times-circle wpda_icon_on_button"></i>
-														<?php echo __( 'Cancel' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+														<?php esc_html_e( 'Cancel', 'wp-data-access' ); ?>
 													</button>
 												</td>
 											</tr>
@@ -287,11 +287,11 @@ namespace WPDataAccess\Backup {
 				?>
 				function pre_submit() {
 					if (0 === jQuery("#wpda_table_name_export > option").length) {
-						alert('<?php echo __( 'No tables to be exported' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>');
+						alert('<?php esc_html_e( 'No tables to be exported', 'wp-data-access' ); ?>');
 						return false;
 					}
 					if ('' === jQuery("#backupid").val().trim()) {
-						alert('<?php echo __( 'You must specify a backupid' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>');
+						alert('<?php esc_html_e( 'You must specify a backupid', 'wp-data-access' ); ?>');
 						return false;
 					}
 					jQuery("#wpda_table_name_export > option").each(function () {
@@ -395,7 +395,7 @@ namespace WPDataAccess\Backup {
 
 			echo '<div class="wrap">';
 			echo '<h1 class="wp-heading-inline">';
-			echo __( 'Data Backup' ); // phpcs:ignore WordPress.Security.EscapeOutput
+			esc_html_e( 'Data Backup', 'wp-data-access' );
 			echo '</h1>';
 
 			if ( $data_backups_found || 'all' === $show_jobs ) {
@@ -403,13 +403,13 @@ namespace WPDataAccess\Backup {
 				echo '<tr>';
 				echo '<th></th>';
 				echo '<th></th>';
-				echo '<th style="text-align:left;">' . __( 'Hook Name' ) . '</th>'; // phpcs:ignore WordPress.Security.EscapeOutput
-				echo '<th style="text-align:left;">' . __( 'Arguments' ) . '</th>'; // phpcs:ignore WordPress.Security.EscapeOutput
-				echo '<th style="text-align:left;">' . __( 'Interval' ) . '</th>'; // phpcs:ignore WordPress.Security.EscapeOutput
-				echo '<th style="text-align:left;">' . __( 'Next Execution' ) . '</th>'; // phpcs:ignore WordPress.Security.EscapeOutput
-				echo '<th style="text-align:left;">' . __( 'Backup Location' ) . '</th>'; // phpcs:ignore WordPress.Security.EscapeOutput
-				echo '<th style="text-align:left;">' . __( 'Files Kept' ) . '</th>'; // phpcs:ignore WordPress.Security.EscapeOutput
-				echo '<th colspan="2" style="text-align:left;">' . __( 'Status' ) . '</th>'; // phpcs:ignore WordPress.Security.EscapeOutput
+				echo '<th style="text-align:left;">' . esc_html__( 'Hook Name', 'wp-data-access' ) . '</th>';
+				echo '<th style="text-align:left;">' . esc_html__( 'Arguments', 'wp-data-access' ) . '</th>';
+				echo '<th style="text-align:left;">' . esc_html__( 'Interval', 'wp-data-access' ) . '</th>';
+				echo '<th style="text-align:left;">' . esc_html__( 'Next Execution', 'wp-data-access' ) . '</th>';
+				echo '<th style="text-align:left;">' . esc_html__( 'Backup Location', 'wp-data-access' ) . '</th>';
+				echo '<th style="text-align:left;">' . esc_html__( 'Files Kept', 'wp-data-access' ) . '</th>';
+				echo '<th colspan="2" style="text-align:left;">' . esc_html__( 'Status', 'wp-data-access' ) . '</th>';
 				echo '</tr>';
 				foreach ( $crons as $key => $cron ) {
 					foreach ( $cron as $key => $value ) {
@@ -445,7 +445,7 @@ namespace WPDataAccess\Backup {
 								$schedule_args = isset( $value_value['args'][0] ) ? $value_value['args'][0] : '';
 								echo '<input type="hidden" name="schedule_args" value="' . esc_attr( $schedule_args ) . '" />';
 							}
-							echo '<input type="hidden" name="wp_nonce" value="' . $this->get_wp_nonce() . '" />';
+							echo '<input type="hidden" name="wp_nonce" value="' . esc_attr( $this->get_wp_nonce() ) . '" />';
 							echo '</form>';
 							echo '</td>';
 							echo '<td>';
@@ -465,7 +465,7 @@ namespace WPDataAccess\Backup {
 							if ( isset( $data_backups_keep[ $value_value['args'][0] ] ) ) {
 								echo '<input type="hidden" name="device" value="' . esc_attr( $data_backups_device[ $value_value['args'][0] ] ) . '" />';
 							}
-							echo '<input type="hidden" name="wp_nonce" value="' . $this->get_wp_nonce() . '" />';
+							echo '<input type="hidden" name="wp_nonce" value="' . esc_attr( $this->get_wp_nonce() ) . '" />';
 							echo '</form>';
 							echo '</td>';
 						} else {
@@ -480,9 +480,9 @@ namespace WPDataAccess\Backup {
 						foreach ( $value as $value_key => $value_value ) {
 							echo '<td>';
 							if ( is_array ($value_value['args']) &&
-							     0 < count( $value_value['args'] ) ) {//phpcs:ignore - 8.1 proof
+							     0 < count( $value_value['args'] ) ) { // phpcs:ignore -- 8.1 proof
 								foreach ( $value_value['args'] as $arg ) {
-									if ( reset( $value_value['args'] ) !== $arg ) {//phpcs:ignore - 8.1 proof
+									if ( reset( $value_value['args'] ) !== $arg ) { // phpcs:ignore -- 8.1 proof
 										echo ',';
 									}
 									echo esc_attr( $arg );
@@ -528,7 +528,7 @@ namespace WPDataAccess\Backup {
 							echo '</td>';
 							echo '<td>';
 							if ( 'wpda_data_backup' === $key ) {
-								$resultset = $wpdb->get_results(
+								$resultset = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 									$wpdb->prepare(
 										"
 										SELECT `log_time`, `log_type`, `log_msg`
@@ -546,7 +546,7 @@ namespace WPDataAccess\Backup {
 										esc_attr( $resultset[0]['log_msg'] ) .
 										' (' . esc_attr( $resultset[0]['log_time'] ) . ')';
 								} else {
-									echo __( 'No logging information found' ); // phpcs:ignore WordPress.Security.EscapeOutput
+									esc_html_e( 'No logging information found', 'wp-data-access' );
 								}
 							}
 							echo '</td>';
@@ -562,15 +562,15 @@ namespace WPDataAccess\Backup {
 			} else {
 				echo '<table>';
 				echo '<tr>';
-				echo '<td><strong>' . __( 'No data backup jobs found' ) . '</strong></td>'; // phpcs:ignore WordPress.Security.EscapeOutput
+				echo '<td><strong>' . esc_html__( 'No data backup jobs found', 'wp-data-access' ) . '</strong></td>';
 			}
 			echo '<td>';
 			echo '<form method="post" action="?page=wpda&page_action=wpda_backup" style="display: inline-block; vertical-align: unset;">';
 			echo '<select name="show_jobs" onchange="jQuery(this).closest(\'form\').submit()" >';
-			echo '<option value="wpda"' . ( 'all' !== $show_jobs ? 'selected' : '' ) . '>' . __( 'Show plugin jobs only' ) . '</option>'; // phpcs:ignore WordPress.Security.EscapeOutput
-			echo '<option value="all"' . ( 'all' === $show_jobs ? 'selected' : '' ) . '>' . __( 'Show all WordPress jobs' ) . '</option>'; // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '<option value="wpda"' . ( 'all' !== $show_jobs ? 'selected' : '' ) . '>' . esc_html__( 'Show plugin jobs only', 'wp-data-access' ) . '</option>';
+			echo '<option value="all"' . ( 'all' === $show_jobs ? 'selected' : '' ) . '>' . esc_html__( 'Show all WordPress jobs', 'wp-data-access' ) . '</option>';
 			echo '</select>';
-			echo '<input type="hidden" name="wp_nonce" value="' . $this->get_wp_nonce() . '" />';
+			echo '<input type="hidden" name="wp_nonce" value="' . esc_attr( $this->get_wp_nonce() ) . '" />';
 			echo '</form>';
 			echo '</td>';
 			echo '</tr>';
@@ -604,7 +604,7 @@ namespace WPDataAccess\Backup {
 				$data_backups_new = array();
 				foreach ( $data_backups as $data_backup ) {
 					if ( $data_backup['id'] !== $backupid ) {
-						array_push( $data_backups_new, $data_backup );//phpcs:ignore - 8.1 proof
+						array_push( $data_backups_new, $data_backup ); // phpcs:ignore -- 8.1 proof
 					}
 				}
 				update_option( 'wpda_data_backup_option_runonce', $data_backups_new );
@@ -648,7 +648,7 @@ namespace WPDataAccess\Backup {
 				if ( 'local_path' === $device ) {
 					$local_path       = WPDA::get_option( WPDA::OPTION_DB_LOCAL_PATH );
 					$client_file_name = $local_path . $filename;
-					$file             = fopen( $client_file_name, 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
+					$file             = fopen( $client_file_name, 'w' ); // phpcs:ignore
 					$wpda_export      = new WPDA_Export_Sql();
 					$wpda_export->set_output_stream( $file );
 					$wpda_export->export_with_arguments(
@@ -659,17 +659,17 @@ namespace WPDataAccess\Backup {
 						$tables,
 						'table'
 					);
-					fclose( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+					fclose( $file ); // phpcs:ignore
 					$keep_counting = 0;
 					$files_sorted  = array();
 					foreach ( glob( $local_path . "wpda-data-backup-$backupid-*.sql" ) as $filename ) {
-						array_push( $files_sorted, $filename );//phpcs:ignore - 8.1 proof
+						array_push( $files_sorted, $filename ); // phpcs:ignore -- 8.1 proof
 					}
-					rsort( $files_sorted );//phpcs:ignore - 8.1 proof
+					rsort( $files_sorted ); // phpcs:ignore -- 8.1 proof
 					foreach ( $files_sorted as $file ) {
 						$keep_counting ++;
 						if ( $keep_counting > (int) $keep ) {
-							unlink( $file );
+							unlink( $file ); // phpcs:ignore
 						}
 					}
 				} elseif ( 'dropbox' === $device ) {
@@ -723,10 +723,10 @@ namespace WPDataAccess\Backup {
 						$zip->addFile( stream_get_meta_data( $temporary_file )['uri'], $filename );
 						$zip->close();
 
-						$zpf = fopen( $zipfile, 'r' );
+						$zpf = fopen( $zipfile, 'r' ); // phpcs:ignore
 						WPDA_Remote_Call::post(
 							'https://content.dropboxapi.com/2/files/upload',
-							fread( $zpf, filesize( $zipfile ) ),
+							fread( $zpf, filesize( $zipfile ) ), // phpcs:ignore
 							false,
 							array(
 								'Authorization'   => "Bearer $client_access_token",
@@ -738,7 +738,7 @@ namespace WPDataAccess\Backup {
 						fseek( $temporary_file, 0 );
 						WPDA_Remote_Call::post(
 							'https://content.dropboxapi.com/2/files/upload',
-							fread( $temporary_file, filesize( stream_get_meta_data( $temporary_file )['uri'] ) ),
+							fread( $temporary_file, filesize( stream_get_meta_data( $temporary_file )['uri'] ) ), // phpcs:ignore
 							false,
 							array(
 								'Authorization'   => "Bearer $client_access_token",
@@ -776,9 +776,9 @@ namespace WPDataAccess\Backup {
 							$keep_counting = 0;
 							$files_sorted  = array();
 							foreach ( $body_content['matches'] as $match ) {
-								array_push( $files_sorted, $match['metadata']['metadata']['name'] );//phpcs:ignore - 8.1 proof
+								array_push( $files_sorted, $match['metadata']['metadata']['name'] ); // phpcs:ignore -- 8.1 proof
 							}
-							rsort( $files_sorted );//phpcs:ignore - 8.1 proof
+							rsort( $files_sorted ); // phpcs:ignore -- 8.1 proof
 							foreach ( $files_sorted as $file ) {
 								$keep_counting++;
 								if ( $keep_counting > (int) $keep ) {
@@ -818,7 +818,7 @@ namespace WPDataAccess\Backup {
 				$this->show_wp_cron();
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'Mandatory item "backupid" not found', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'Mandatory item "backupid" not found', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -832,7 +832,7 @@ namespace WPDataAccess\Backup {
 				$this->show_wp_cron();
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'Mandatory item "interval" not found', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'Mandatory item "interval" not found', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -846,7 +846,7 @@ namespace WPDataAccess\Backup {
 				$this->show_wp_cron();
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'Mandatory item "keep" not found', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'Mandatory item "keep" not found', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -860,7 +860,7 @@ namespace WPDataAccess\Backup {
 				$this->show_wp_cron();
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'Mandatory item "device" not found', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'Mandatory item "device" not found', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -874,7 +874,7 @@ namespace WPDataAccess\Backup {
 				$this->show_wp_cron();
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'No tables defined to backup', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'No tables defined to backup', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -903,11 +903,11 @@ namespace WPDataAccess\Backup {
 					'schema_name' => $schema_name,
 					'tables'      => $request_tables,
 				);
-				array_push( $data_backups, $data_backup );//phpcs:ignore - 8.1 proof
+				array_push( $data_backups, $data_backup ); // phpcs:ignore -- 8.1 proof
 				if ( ! update_option( 'wpda_data_backup_option_runonce', $data_backups ) ) {
 					$msg = new WPDA_Message_Box(
 						array(
-							'message_text'           => __( 'Could not create data backup', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+							'message_text'           => __( 'Could not create data backup', 'wp-data-access' ),
 							'message_type'           => 'error',
 							'message_is_dismissible' => false,
 						)
@@ -922,7 +922,7 @@ namespace WPDataAccess\Backup {
 					) {
 						$msg = new WPDA_Message_Box(
 							array(
-								'message_text'           => __( 'Backup failed', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+								'message_text'           => __( 'Backup failed', 'wp-data-access' ),
 								'message_type'           => 'error',
 								'message_is_dismissible' => false,
 							)
@@ -933,13 +933,13 @@ namespace WPDataAccess\Backup {
 				?>
 				<div class="wrap">
 					<h1 class="wp-heading-inline">
-						<?php echo __( 'Data Backup' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php esc_html_e( 'Data Backup', 'wp-data-access' ); ?>
 					</h1>
-					<p><?php echo __( 'Data backup started. Please check backup location.' ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
+					<p><?php esc_html_e( 'Data backup started. Please check backup location.', 'wp-data-access' ); ?></p>
 					<p>
 						<a href="?page=wpda&page_action=wpda_backup" class="button">
 							<i class="fas fa-angle-left wpda_icon_on_button"></i>
-							<?php echo __( 'List' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+							<?php esc_html_e( 'List', 'wp-data-access' ); ?>
 						</a>
 					</p>
 				</div>
@@ -955,7 +955,7 @@ namespace WPDataAccess\Backup {
 							$this->show_wp_cron();
 							$msg = new WPDA_Message_Box(
 								array(
-									'message_text' => __( 'Backup id already exists', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+									'message_text' => __( 'Backup id already exists', 'wp-data-access' ),
 									'message_type' => 'error',
 									'message_is_dismissible' => false,
 								)
@@ -973,12 +973,12 @@ namespace WPDataAccess\Backup {
 					'schema_name' => $schema_name,
 					'tables'      => $request_tables,
 				);
-				array_push( $data_backups, $data_backup );//phpcs:ignore - 8.1 proof
+				array_push( $data_backups, $data_backup ); // phpcs:ignore -- 8.1 proof
 				if ( ! update_option( 'wpda_data_backup_option', $data_backups ) ) {
 					$this->show_wp_cron();
 					$msg = new WPDA_Message_Box(
 						array(
-							'message_text'           => __( 'Could not save data backup options', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+							'message_text'           => __( 'Could not save data backup options', 'wp-data-access' ),
 							'message_type'           => 'error',
 							'message_is_dismissible' => false,
 						)
@@ -1017,7 +1017,7 @@ namespace WPDataAccess\Backup {
 					if ( false === $unschedule ) {
 						$msg = new WPDA_Message_Box(
 							array(
-								'message_text'           => __( 'Could not delete data backup schedule', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+								'message_text'           => __( 'Could not delete data backup schedule', 'wp-data-access' ),
 								'message_type'           => 'error',
 								'message_is_dismissible' => false,
 							)
@@ -1026,7 +1026,7 @@ namespace WPDataAccess\Backup {
 					} else {
 						$msg = new WPDA_Message_Box(
 							array(
-								'message_text'           => __( 'Deleted data backup schedule', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+								'message_text'           => __( 'Deleted data backup schedule', 'wp-data-access' ),
 							)
 						);
 						$msg->box();
@@ -1035,7 +1035,7 @@ namespace WPDataAccess\Backup {
 						$data_backups_new = array();
 						foreach ( $data_backups as $data_backup ) {
 							if ( $data_backup['id'] !== $backupid ) {
-								array_push( $data_backups_new, $data_backup );//phpcs:ignore - 8.1 proof
+								array_push( $data_backups_new, $data_backup ); // phpcs:ignore -- 8.1 proof
 							}
 						}
 						update_option( 'wpda_data_backup_option', $data_backups_new );
@@ -1056,7 +1056,7 @@ namespace WPDataAccess\Backup {
 			} else {
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'Mandatory item "backupid" not found', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'Mandatory item "backupid" not found', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -1068,7 +1068,7 @@ namespace WPDataAccess\Backup {
 			} else {
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'No tables defined to backup', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'No tables defined to backup', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -1080,7 +1080,7 @@ namespace WPDataAccess\Backup {
 			} else {
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'Mandatory item "interval" not found', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'Mandatory item "interval" not found', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -1092,7 +1092,7 @@ namespace WPDataAccess\Backup {
 			} else {
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'Mandatory item "keep" not found', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'Mandatory item "keep" not found', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -1104,7 +1104,7 @@ namespace WPDataAccess\Backup {
 			} else {
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'Mandatory item "device" not found', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'Mandatory item "device" not found', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -1121,7 +1121,7 @@ namespace WPDataAccess\Backup {
 			if ( false === wp_unschedule_event( $timestamp, 'wpda_data_backup', array( $backupid ) ) ) {
 				$msg = new WPDA_Message_Box(
 					array(
-						'message_text'           => __( 'Could not delete data backup schedule', 'wp-data-access' ), // phpcs:ignore WordPress.Security.EscapeOutput
+						'message_text'           => __( 'Could not delete data backup schedule', 'wp-data-access' ),
 						'message_type'           => 'error',
 						'message_is_dismissible' => false,
 					)
@@ -1133,7 +1133,7 @@ namespace WPDataAccess\Backup {
 				$data_backups_new = array();
 				foreach ( $data_backups as $data_backup ) {
 					if ( $data_backup['id'] !== $backupid ) {
-						array_push( $data_backups_new, $data_backup );//phpcs:ignore - 8.1 proof
+						array_push( $data_backups_new, $data_backup ); // phpcs:ignore -- 8.1 proof
 					} else {
 						$data_backup_updated = array(
 							'id'          => $backupid,
@@ -1142,7 +1142,7 @@ namespace WPDataAccess\Backup {
 							'schema_name' => $schema_name,
 							'tables'      => $wpda_table_name_export,
 						);
-						array_push( $data_backups_new, $data_backup_updated );//phpcs:ignore - 8.1 proof
+						array_push( $data_backups_new, $data_backup_updated ); // phpcs:ignore -- 8.1 proof
 					}
 				}
 				update_option( 'wpda_data_backup_option', $data_backups_new );

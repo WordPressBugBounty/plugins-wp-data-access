@@ -75,20 +75,20 @@ namespace WPDataAccess\Plugin_Table_Models {
 			$this->table_name = self::get_base_table_name();
 
 			// Watch out for arrays! (array = starting export)
-			if ( isset( $_REQUEST['wpda_table_name'] ) && ! is_array( $_REQUEST['wpda_table_name'] ) ) {
-				$this->wpda_table_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) );
+			if ( isset( $_REQUEST['wpda_table_name'] ) && ! is_array( $_REQUEST['wpda_table_name'] ) ) { // phpcs:ignore
+				$this->wpda_table_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) ); // phpcs:ignore
 			}
 
-			if ( isset( $_REQUEST['wpda_table_name_original'] ) ) {
-				$this->wpda_table_name_original = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name_original'] ) );
+			if ( isset( $_REQUEST['wpda_table_name_original'] ) ) { // phpcs:ignore
+				$this->wpda_table_name_original = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name_original'] ) ); // phpcs:ignore
 			}
 
-			if ( isset( $_REQUEST['wpda_schema_name'] ) && ! is_array( $_REQUEST['wpda_schema_name'] ) ) {
-				$this->wpda_schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) );
+			if ( isset( $_REQUEST['wpda_schema_name'] ) && ! is_array( $_REQUEST['wpda_schema_name'] ) ) { // phpcs:ignore
+				$this->wpda_schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) ); // phpcs:ignore
 			}
 
-			if ( isset( $_REQUEST['wpda_schema_name_original'] ) ) {
-				$this->wpda_schema_name_original = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name_original'] ) );
+			if ( isset( $_REQUEST['wpda_schema_name_original'] ) ) { // phpcs:ignore
+				$this->wpda_schema_name_original = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name_original'] ) ); // phpcs:ignore
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 			}
 
 			global $wpdb;
-			$wpda_table_design_raw = $wpdb->get_results(
+			$wpda_table_design_raw = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'SELECT wpda_table_design FROM `%1s` WHERE wpda_table_name = %s AND wpda_schema_name = %s', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -172,7 +172,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 				foreach ( $this->wpda_table_design->table as $column ) {
 					$unique_column_names[ $column->column_name ] = true;
 				}
-				if ( count( $unique_column_names ) !== count( $this->wpda_table_design->table ) ) {//phpcs:ignore - 8.1 proof
+				if ( count( $unique_column_names ) !== count( $this->wpda_table_design->table ) ) { // phpcs:ignore -- 8.1 proof
 					$structure_messages[] = array( 'ERR', 'Column name must be unique within a table' );
 				}
 			}
@@ -183,7 +183,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 				foreach ( $this->wpda_table_design->indexes as $index ) {
 					$unique_index_names[ $index->index_name ] = true;
 				}
-				if ( count( $unique_index_names ) !== count( $this->wpda_table_design->indexes ) ) {//phpcs:ignore - 8.1 proof
+				if ( count( $unique_index_names ) !== count( $this->wpda_table_design->indexes ) ) { // phpcs:ignore -- 8.1 proof
 					$structure_messages[] = array( 'ERR', 'Index name must be unique within a table' );
 				}
 			}
@@ -199,20 +199,20 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public function prepare_insert() {
 			$this->wpda_table_design = (object) null;
 
-			if ( isset( $_REQUEST['design_mode'] ) ) {
-				$this->wpda_table_design->design_mode = sanitize_text_field( wp_unslash( $_REQUEST['design_mode'] ) );
+			if ( isset( $_REQUEST['design_mode'] ) ) { // phpcs:ignore
+				$this->wpda_table_design->design_mode = sanitize_text_field( wp_unslash( $_REQUEST['design_mode'] ) ); // phpcs:ignore
 			} else {
 				$this->wpda_table_design->design_mode = WPDA::get_option( WPDA::OPTION_BE_DESIGN_MODE );
 			}
 
-			if ( isset( $_REQUEST['engine'] ) ) {
-				$this->wpda_table_design->engine = sanitize_text_field( wp_unslash( $_REQUEST['engine'] ) );
+			if ( isset( $_REQUEST['engine'] ) ) { // phpcs:ignore
+				$this->wpda_table_design->engine = sanitize_text_field( wp_unslash( $_REQUEST['engine'] ) ); // phpcs:ignore
 			} else {
 				$this->wpda_table_design->engine = '';
 			}
 
-			if ( isset( $_REQUEST['collation'] ) ) {
-				$this->wpda_table_design->collation = sanitize_text_field( wp_unslash( $_REQUEST['collation'] ) );
+			if ( isset( $_REQUEST['collation'] ) ) { // phpcs:ignore
+				$this->wpda_table_design->collation = sanitize_text_field( wp_unslash( $_REQUEST['collation'] ) ); // phpcs:ignore
 			} else {
 				$this->wpda_table_design->collation = '';
 			}
@@ -239,7 +239,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 
 			global $wpdb;
 
-			return $wpdb->insert(
+			return $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
 				$this->table_name,
 				array(
 					'wpda_table_name'   => $this->wpda_table_name,
@@ -259,24 +259,24 @@ namespace WPDataAccess\Plugin_Table_Models {
 		protected function get_table_structure() {
 			$table_structure = array();
 
-			if ( isset( $_REQUEST['column_name'] ) &&
-				is_array( $_REQUEST['column_name'] )) {//phpcs:ignore - 8.1 proof
-				$no_columns = count( $_REQUEST['column_name'] );//phpcs:ignore - 8.1 proof
+			if ( isset( $_REQUEST['column_name'] ) && // phpcs:ignore
+				is_array( $_REQUEST['column_name'] )) { // phpcs:ignore
+				$no_columns = count( $_REQUEST['column_name'] ); // phpcs:ignore
 				for ( $i = 0; $i < $no_columns; $i ++ ) {
-					if ( isset( $_REQUEST['row_action'][ $i ] ) && 'd' === $_REQUEST['row_action'][ $i ] ) {
+					if ( isset( $_REQUEST['row_action'][ $i ] ) && 'd' === $_REQUEST['row_action'][ $i ] ) { // phpcs:ignore
 						// Do not process deleted rows.
 						continue;
 					}
 
-					$column_name    = sanitize_text_field( wp_unslash( $_REQUEST['column_name'][ $i ] ) );
-					$data_type      = sanitize_text_field( wp_unslash( $_REQUEST['data_type'][ $i ] ) );
-					$type_attribute = sanitize_text_field( wp_unslash( $_REQUEST['type_attribute'][ $i ] ) );
-					$key            = sanitize_text_field( wp_unslash( $_REQUEST['key'][ $i ] ) );
-					$mandatory      = sanitize_text_field( wp_unslash( $_REQUEST['mandatory'][ $i ] ) );
-					$max_length     = sanitize_text_field( wp_unslash( $_REQUEST['max_length'][ $i ] ) );
-					$extra          = sanitize_text_field( wp_unslash( $_REQUEST['extra'][ $i ] ) );
-					$default        = sanitize_text_field( wp_unslash( $_REQUEST['default'][ $i ] ) );
-					$list           = sanitize_text_field( wp_unslash( $_REQUEST['list'][ $i ] ) );
+					$column_name    = sanitize_text_field( wp_unslash( $_REQUEST['column_name'][ $i ] ) ); // phpcs:ignore
+					$data_type      = sanitize_text_field( wp_unslash( $_REQUEST['data_type'][ $i ] ) ); // phpcs:ignore
+					$type_attribute = sanitize_text_field( wp_unslash( $_REQUEST['type_attribute'][ $i ] ) ); // phpcs:ignore
+					$key            = sanitize_text_field( wp_unslash( $_REQUEST['key'][ $i ] ) ); // phpcs:ignore
+					$mandatory      = sanitize_text_field( wp_unslash( $_REQUEST['mandatory'][ $i ] ) ); // phpcs:ignore
+					$max_length     = sanitize_text_field( wp_unslash( $_REQUEST['max_length'][ $i ] ) ); // phpcs:ignore
+					$extra          = sanitize_text_field( wp_unslash( $_REQUEST['extra'][ $i ] ) ); // phpcs:ignore
+					$default        = sanitize_text_field( wp_unslash( $_REQUEST['default'][ $i ] ) ); // phpcs:ignore
+					$list           = sanitize_text_field( wp_unslash( $_REQUEST['list'][ $i ] ) ); // phpcs:ignore
 
 					$table_structure[ $i ]['column_name']    = $column_name;
 					$table_structure[ $i ]['data_type']      = $data_type;
@@ -302,18 +302,17 @@ namespace WPDataAccess\Plugin_Table_Models {
 		protected function get_indexes() {
 			$indexes = array();
 
-			if ( isset( $_REQUEST['column_names'] )&&
-				is_array( $_REQUEST['column_names']) ) {
-				$no_columns = count( $_REQUEST['column_names'] );//phpcs:ignore - 8.1 proof
+			if ( isset( $_REQUEST['column_names'] ) && is_array( $_REQUEST['column_names']) ) { // phpcs:ignore
+				$no_columns = count( $_REQUEST['column_names'] ); // phpcs:ignore -- 8.1 proof
 				for ( $i = 0; $i < $no_columns; $i ++ ) {
-					if ( isset( $_REQUEST['row_action'][ $i ] ) && 'd' === $_REQUEST['row_action'][ $i ] ) {
+					if ( isset( $_REQUEST['row_action'][ $i ] ) && 'd' === $_REQUEST['row_action'][ $i ] ) { // phpcs:ignore
 						// Do not process deleted rows.
 						continue;
 					}
 
-					$index_name   = sanitize_text_field( wp_unslash( $_REQUEST['index_name'][ $i ] ) );
-					$unique       = sanitize_text_field( wp_unslash( $_REQUEST['unique'][ $i ] ) );
-					$column_names = sanitize_text_field( wp_unslash( $_REQUEST['column_names'][ $i ] ) );
+					$index_name   = sanitize_text_field( wp_unslash( $_REQUEST['index_name'][ $i ] ) ); // phpcs:ignore
+					$unique       = sanitize_text_field( wp_unslash( $_REQUEST['unique'][ $i ] ) ); // phpcs:ignore
+					$column_names = sanitize_text_field( wp_unslash( $_REQUEST['column_names'][ $i ] ) ); // phpcs:ignore
 
 					$indexes[ $i ]['index_name']   = $index_name;
 					$indexes[ $i ]['unique']       = $unique;
@@ -337,30 +336,30 @@ namespace WPDataAccess\Plugin_Table_Models {
 				$this->wpda_schema_name_original === $this->wpda_schema_name ? null : $this->wpda_schema_name_original
 			);
 
-			if ( isset( $_REQUEST['design_mode'] ) ) {
-				$this->wpda_table_design->design_mode = sanitize_text_field( wp_unslash( $_REQUEST['design_mode'] ) );
+			if ( isset( $_REQUEST['design_mode'] ) ) { // phpcs:ignore
+				$this->wpda_table_design->design_mode = sanitize_text_field( wp_unslash( $_REQUEST['design_mode'] ) ); // phpcs:ignore
 			}
 
-			if ( isset( $_REQUEST['engine'] ) ) {
-				$this->wpda_table_design->engine = sanitize_text_field( wp_unslash( $_REQUEST['engine'] ) );
+			if ( isset( $_REQUEST['engine'] ) ) { // phpcs:ignore
+				$this->wpda_table_design->engine = sanitize_text_field( wp_unslash( $_REQUEST['engine'] ) ); // phpcs:ignore
 			}
 
-			if ( isset( $_REQUEST['collation'] ) ) {
-				$this->wpda_table_design->collation = sanitize_text_field( wp_unslash( $_REQUEST['collation'] ) );
+			if ( isset( $_REQUEST['collation'] ) ) { // phpcs:ignore
+				$this->wpda_table_design->collation = sanitize_text_field( wp_unslash( $_REQUEST['collation'] ) ); // phpcs:ignore
 			}
 
-			if ( isset( $_REQUEST['column_name'] ) ) {
+			if ( isset( $_REQUEST['column_name'] ) ) { // phpcs:ignore
 				$this->wpda_table_design->table = $this->get_table_structure();
 			} else {
-				if ( isset( $_REQUEST['submitted_changes'] ) && 'table' === $_REQUEST['submitted_changes'] ) {
+				if ( isset( $_REQUEST['submitted_changes'] ) && 'table' === $_REQUEST['submitted_changes'] ) { // phpcs:ignore
 					$this->wpda_table_design->table = array();
 				}
 			}
 
-			if ( isset( $_REQUEST['column_names'] ) ) {
+			if ( isset( $_REQUEST['column_names'] ) ) { // phpcs:ignore
 				$this->wpda_table_design->indexes = $this->get_indexes();
 			} else {
-				if ( isset( $_REQUEST['submitted_changes'] ) && 'indexes' === $_REQUEST['submitted_changes'] ) {
+				if ( isset( $_REQUEST['submitted_changes'] ) && 'indexes' === $_REQUEST['submitted_changes'] ) { // phpcs:ignore
 					$this->wpda_table_design->indexes = array();
 				}
 			}
@@ -381,7 +380,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 
 			global $wpdb;
 
-			return $wpdb->update(
+			return $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$this->table_name,
 				array(
 					'wpda_table_name'   => $this->wpda_table_name,
@@ -403,7 +402,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		 */
 		public static function get_designer_table_list() {
 			global $wpdb;
-			return $wpdb->get_results(
+			return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'SELECT `wpda_table_name` FROM `%1s`', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 					array(
@@ -431,7 +430,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 			$wpda_table_design['table_type'] = self::get_table_type( $wpda_table_name, $wpda_schema_name );
 
 			return (
-					1 === $wpdb->insert(
+					1 === $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
 						$table_name,
 						array(
 							'wpda_table_name'   => $wpda_table_name,
@@ -452,7 +451,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		 */
 		public static function get_table_type( $table_name, $schema_name ) {
 			global $wpdb;
-			$result = $wpdb->get_results(
+			$result = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				$wpdb->prepare(
 					'
 							SELECT table_type AS table_type
@@ -466,7 +465,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 					)
 				), // db call ok; no-cache ok.
 				'ARRAY_A'
-			); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			); 
 
 			if ( 1 !== $wpdb->num_rows ) {
 				return false;

@@ -80,16 +80,18 @@ namespace WPDataAccess\Global_Search {
 								global $wpdb;
 								foreach ( $this->databases as $database ) {
 									$dbname = $database === $wpdb->dbname ? "WordPress database ({$esc_attr( $database )})" : esc_attr( $database );
+
+									// phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
 									$dbs = <<< EOL
 										<div class="selectionFrameBodyElement"
 											 onclick="selectSchema('{$esc_attr( $database )}')"
 											 id="{$esc_attr( $database )}"
 										>
 											<input type="checkbox" id="chk_{$esc_attr( $database )}" />
-											{$dbname}
+											{$esc_attr( $dbname )}
 										</div>
 EOL;
-									echo $dbs;
+									echo $dbs; // phpcs:ignore WordPress.Security.EscapeOutput
 								}
 								?>
 							</div>
@@ -519,7 +521,7 @@ EOL;
 				function searchTable(schemaName, tableName, searchString, searchCase) {
 					jQuery.ajax({
 						method: "POST",
-						url: "<?php echo admin_url( 'admin-ajax.php?action=wpda_global_search' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>",
+						url: "<?php echo esc_url( admin_url( 'admin-ajax.php?action=wpda_global_search' ) ); ?>",
 						data: {
 							n: "<?php echo esc_attr( wp_create_nonce( self::NONCE_SEED . WPDA::get_current_user_login() ) ); ?>",
 							sn: schemaName,
@@ -542,7 +544,7 @@ EOL;
 				function replaceTable(schemaName, tableName, searchString, searchCase, replaceString) {
 					jQuery.ajax({
 						method: "POST",
-						url: "<?php echo admin_url( 'admin-ajax.php?action=wpda_global_replace' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>",
+						url: "<?php echo esc_url( admin_url( 'admin-ajax.php?action=wpda_global_replace' ) ); ?>",
 						data: {
 							n: "<?php echo esc_attr( wp_create_nonce( self::NONCE_SEED . WPDA::get_current_user_login() ) ); ?>",
 							sn: schemaName,
@@ -765,9 +767,9 @@ EOL;
 		public static function search() {
 			self::check_request();
 
-			$schema_name  = sanitize_text_field( wp_unslash( $_POST['sn'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
-			$table_name   = sanitize_text_field( wp_unslash( $_POST['tn'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
-			$search_value = sanitize_text_field( wp_unslash( $_POST['q'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
+			$schema_name  = sanitize_text_field( wp_unslash( $_POST['sn'] ) ); // phpcs:ignore
+			$table_name   = sanitize_text_field( wp_unslash( $_POST['tn'] ) ); // phpcs:ignore
+			$search_value = sanitize_text_field( wp_unslash( $_POST['q'] ) ); // phpcs:ignore
 
 			$wpdadb = WPDADB::get_db_connection( $schema_name );
 			if ( null !== $wpdadb ) {
@@ -785,13 +787,13 @@ EOL;
 			}
 
 			// Determine case-sensitive search
-			$search_case = 'true' === $_POST['c'];
+			$search_case = 'true' === $_POST['c']; // phpcs:ignore
 
 			// Perform query
 			$result = self::execute_query( $wpdadb, $schema_name, $table_name, $columns, $search_value, $search_case, true );
 
 			// Process query results
-			if ( '' === $wpdadb->last_error && is_array( $result ) && count( $result ) > 0 ) {//phpcs:ignore - 8.1 proof
+			if ( '' === $wpdadb->last_error && is_array( $result ) && count( $result ) > 0 ) { // phpcs:ignore -- 8.1 proof
 				WPDA::sent_header( 'application/json' );
 				WPDA::sent_msg( 'OK', $result[0][0] );
 				die();
@@ -849,16 +851,16 @@ EOL;
 		public static function replace() {
 			self::check_request();
 
-			if ( ! isset( $_POST['r'] ) ) {
+			if ( ! isset( $_POST['r'] ) ) { // phpcs:ignore
 				WPDA::sent_header( 'application/json' );
 				WPDA::sent_msg( 'ERROR', 'Invalid arguments' );
 				die();
 			}
 
-			$schema_name   = sanitize_text_field( wp_unslash( $_POST['sn'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
-			$table_name    = sanitize_text_field( wp_unslash( $_POST['tn'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
-			$search_value  = sanitize_text_field( wp_unslash( $_POST['q'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
-			$replace_value = sanitize_text_field( wp_unslash( $_POST['r'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
+			$schema_name   = sanitize_text_field( wp_unslash( $_POST['sn'] ) ); // phpcs:ignore
+			$table_name    = sanitize_text_field( wp_unslash( $_POST['tn'] ) ); // phpcs:ignore
+			$search_value  = sanitize_text_field( wp_unslash( $_POST['q'] ) ); // phpcs:ignore
+			$replace_value = sanitize_text_field( wp_unslash( $_POST['r'] ) ); // phpcs:ignore
 
 			$wpdadb = WPDADB::get_db_connection( $schema_name );
 			if ( null !== $wpdadb ) {
@@ -876,7 +878,7 @@ EOL;
 			}
 
 			// Determine case-sensitive search
-			if ( 'true' === $_POST['c'] ) {
+			if ( 'true' === $_POST['c'] ) { // phpcs:ignore
 				// Case-sensitive search and replace
 				// Use built-in SQL replace function
 
@@ -968,7 +970,7 @@ EOL;
 					$wpdadb->update(
 						$table_name,
 						$update_values,
-						//phpcs:ignore - 8.1 proof
+						 // phpcs:ignore -- 8.1 proof
 						( is_array( $pk ) && count( $pk ) > 0 ? $pk_values : $result ) // fall back to all cols if no pk
 					);
 					$rows_affected += $wpdadb->rows_affected;

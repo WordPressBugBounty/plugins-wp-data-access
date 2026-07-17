@@ -41,7 +41,16 @@ namespace WPDataAccess\Utilities {
 				$wpda_target_column_name  = sanitize_text_field( wp_unslash( $_POST['wpda_target_column_name'] ) ); // input var okay.
 				$wpda_lookup_label_column = sanitize_text_field( wp_unslash( $_POST['wpda_lookup_label_column'] ) ); // input var okay.
 
-				if ( ! wp_verify_nonce( $wpda_wpnonce, WPDA_Simple_Form_Item_Autocomplete::AUTOCOMPLE_NONCE_ACTION . $wpda_target_table_name ) ) {
+				if ( 
+					! wp_verify_nonce(
+						$wpda_wpnonce, 
+						WPDA_Simple_Form_Item_Autocomplete::AUTOCOMPLETE_NONCE_ACTION . 
+							$wpda_target_schema_name .
+							$wpda_target_table_name .
+							$wpda_target_column_name .
+							$wpda_source_column_name
+					) 
+				) {
 					$status  = 'error';
 					$message = __( 'Not authorized', 'wp-data-access' );
 				} else {

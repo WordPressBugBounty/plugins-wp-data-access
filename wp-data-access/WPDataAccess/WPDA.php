@@ -51,8 +51,8 @@ namespace WPDataAccess {
 		/**
 		 * Option wpda_version and it's default value
 		 */
-		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.76' );
-		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.74' );
+		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.77' );
+		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.75' );
 		const OPTION_WPDA_UPGRADED        = array( 'wpda_upgraded', false );
 		/**
 		 * Option wpda_setup_error and it's default value
@@ -355,7 +355,7 @@ namespace WPDataAccess {
 				(
 					'wpda_wpdp_' === substr( $page, 0, 10 ) ||
 					WP_Data_Access_Admin::PAGE_EXPLORER === substr( $page, 0, 13 ) ||
-					in_array( $page, self::$plugin_pages) //phpcs:ignore - 8.1 proof
+					in_array( $page, self::$plugin_pages)  // phpcs:ignore -- 8.1 proof
 				)
 			);
 		}
@@ -430,7 +430,7 @@ namespace WPDataAccess {
 
 			global $wpdb;
 
-			$wpdb->query(
+			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				"
 				DELETE FROM wp_options
 				WHERE option_name LIKE 'wpda_%'
@@ -448,7 +448,7 @@ namespace WPDataAccess {
 		 */
 		public static function load_wp_tables() {
 
-			if ( 0 === count( self::$wp_tables ) ) {//phpcs:ignore - 8.1 proof
+			if ( 0 === count( self::$wp_tables ) ) { // phpcs:ignore -- 8.1 proof
 				try {
 					global $wpdb;
 
@@ -458,9 +458,9 @@ namespace WPDataAccess {
 						}
 					} else {
 						$query = "select blog_id from {$wpdb->blogs}";
-						$blogs = $wpdb->get_results( $query, 'ARRAY_N' );
+						$blogs = $wpdb->get_results( $query, 'ARRAY_N' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 						foreach ( $blogs as $blog ) {
-							foreach ( $wpdb->tables( $blog === reset( $blogs ) ? 'all' : 'blog', true, $blog[0] ) as $table ) {//phpcs:ignore - 8.1 proof
+							foreach ( $wpdb->tables( $blog === reset( $blogs ) ? 'all' : 'blog', true, $blog[0] ) as $table ) { // phpcs:ignore -- 8.1 proof
 								self::$wp_tables[ $table ] = $table;
 							}
 						}
@@ -468,7 +468,7 @@ namespace WPDataAccess {
 
 					return true;
 				} catch ( \Exception $e ) {
-					wp_die( 'ERROR: ' . $e->getMessage() );
+					wp_die( esc_attr( 'ERROR: ' . $e->getMessage() ) );
 				}
 			}
 
@@ -487,7 +487,7 @@ namespace WPDataAccess {
 
 			self::load_wp_tables();
 
-			if ( 0 === count( self::$wp_tables ) ) {//phpcs:ignore - 8.1 proof
+			if ( 0 === count( self::$wp_tables ) ) { // phpcs:ignore -- 8.1 proof
 				return false;
 			}
 
@@ -506,8 +506,8 @@ namespace WPDataAccess {
 
 			self::load_wp_tables();
 
-			if ( 0 === count( self::$wp_tables ) ) {//phpcs:ignore - 8.1 proof
-				wp_die( __( 'ERROR: No WordPress table found', 'wp-data-access' ) );
+			if ( 0 === count( self::$wp_tables ) ) { // phpcs:ignore -- 8.1 proof
+				wp_die( esc_attr__( 'ERROR: No WordPress table found', 'wp-data-access' ) );
 			}
 
 			return self::$wp_tables;
@@ -543,7 +543,7 @@ namespace WPDataAccess {
 		 * @return bool
 		 */
 		public static function column_is_schema_name( $table_name, $column_name ) {
-			if ( 0 === count( self::$wpda_tables ) ) {//phpcs:ignore - 8.1 proof
+			if ( 0 === count( self::$wpda_tables ) ) { // phpcs:ignore -- 8.1 proof
 				// Cache schema names
 				global $wpdb;
 				self::$wpda_tables[$wpdb->prefix . 'wpda_media.media_schema_name' ] = true;
@@ -723,11 +723,11 @@ namespace WPDataAccess {
 		 * @return array
 		 */
 		public static function array_insert_after( $array, $key, $new ) {
-			$keys = array_keys( (array) $array ); //phpcs:ignore - 8.1 proof
-			$index = array_search( $key, $keys ); //phpcs:ignore - 8.1 proof
-			$pos = false === $index ? count( $array ) : $index + 1; //phpcs:ignore - 8.1 proof
+			$keys = array_keys( (array) $array );  // phpcs:ignore -- 8.1 proof
+			$index = array_search( $key, $keys );  // phpcs:ignore -- 8.1 proof
+			$pos = false === $index ? count( $array ) : $index + 1;  // phpcs:ignore -- 8.1 proof
 
-			return array_merge( array_slice( $array, 0, $pos ), $new, array_slice( $array, $pos ) ); //phpcs:ignore - 8.1 proof
+			return array_merge( array_slice( $array, 0, $pos ), $new, array_slice( $array, $pos ) );  // phpcs:ignore -- 8.1 proof
 		}
 
 		/**
@@ -755,7 +755,7 @@ namespace WPDataAccess {
 					, $log_type
 					, $log_msg
 				);
-			$wpdb->query( $sql );
+			$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		}
 
@@ -791,7 +791,7 @@ namespace WPDataAccess {
 				$user    = wp_get_current_user();
 				$allcaps = array();
 				foreach ( $user->allcaps as $key => $val ) {
-					array_push( $allcaps, $key );//phpcs:ignore - 8.1 proof
+					array_push( $allcaps, $key ); // phpcs:ignore -- 8.1 proof
 				}
 
 				return $allcaps[0];
@@ -986,20 +986,20 @@ namespace WPDataAccess {
 
 			foreach ( $columns as $column ) {
 				if ( 'string' === WPDA::get_type( $column['data_type'] ) ) {
-					$where_columns[] = $wpdb->prepare( "`" . str_replace( '`', '', $column['column_name'] ) . "` like {$case_sensitive} '%s'", '%' . esc_sql( $search ) . '%' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+					$where_columns[] = $wpdb->prepare( "`" . str_replace( '`', '', $column['column_name'] ) . "` like {$case_sensitive} '%s'", '%' . esc_sql( $search ) . '%' ); // phpcs:ignore
 				}
 
 				if ( $is_dt_request ) {
 					// Handle numeric and date queries for DataTables.
 					if ( 'number' === WPDA::get_type( $column['data_type'] ) && ( is_numeric( $search ) ) ) {
-						$where_columns[] = $wpdb->prepare( "`" . str_replace( '`', '', $column['column_name'] ) . "` = '%s'", esc_sql( $search ) ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+						$where_columns[] = $wpdb->prepare( "`" . str_replace( '`', '', $column['column_name'] ) . "` = '%s'", esc_sql( $search ) ); // phpcs:ignore
 					} elseif ( 'date' === WPDA::get_type( $column['data_type'] ) ) {
-						$where_columns[] = $wpdb->prepare( "`" . str_replace( '`', '', $column['column_name'] ) . "` like '%s'", esc_sql( $search ) . '%' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+						$where_columns[] = $wpdb->prepare( "`" . str_replace( '`', '', $column['column_name'] ) . "` like '%s'", esc_sql( $search ) . '%' ); // phpcs:ignore
 					}
 				}
 			}
 
-			if ( 0 === count( $where_columns ) ) {//phpcs:ignore - 8.1 proof
+			if ( 0 === count( $where_columns ) ) { // phpcs:ignore -- 8.1 proof
 				return '' === $where_search_args ? ' (1=2) ' : $where_search_args;
 			}
 
@@ -1015,9 +1015,9 @@ namespace WPDataAccess {
 
 			if ( is_array( $columns ) ) {
 				global $wpdb;
-				$request = array_change_key_case( $_REQUEST ); //phpcs:ignore - 8.1 proof
+				$request = array_change_key_case( $_REQUEST );  // phpcs:ignore -- 8.1 proof
 				foreach ( $columns as $column ) {
-					$column_name     = str_replace( '`', '', $column['column_name'] );
+					$column_name     = str_replace( '`', '', $column['column_name'] ?? '' );
 					$column_name_lwr = strtolower( $column_name );
 					if ( isset( $request["wpda_search_column_{$column_name_lwr}"] ) ) {
 						if ( is_array( $request["wpda_search_column_{$column_name_lwr}"] ) ) {
@@ -1028,14 +1028,14 @@ namespace WPDataAccess {
 								$column_value     = wp_strip_all_tags( wp_unslash( $value ) ); // input var okay.
 								if ( '' !== $column_value ) {
 									if ( 'string' === WPDA::get_type( $column_date_type ) ) {
-										$where_columns_arr[] = $wpdb->prepare( "`{$column_name}` like '%s'", esc_sql( $column_value ) ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+										$where_columns_arr[] = $wpdb->prepare( "`{$column_name}` like '%s'", esc_sql( $column_value ) ); // phpcs:ignore
 									} elseif ( 'number' === WPDA::get_type( $column_date_type ) ) {
-										$where_columns_arr[] = $wpdb->prepare( "`{$column_name}` = '%d'", esc_sql( $column_value ) ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+										$where_columns_arr[] = $wpdb->prepare( "`{$column_name}` = '%d'", esc_sql( $column_value ) ); // phpcs:ignore
 									}
 								}
 							}
-							if ( count( $where_columns_arr ) > 0 ) {//phpcs:ignore - 8.1 proof
-								$where_columns[] = ' (' . implode( ' or ', $where_columns_arr ) . ') ';//phpcs:ignore - 8.1 proof
+							if ( count( $where_columns_arr ) > 0 ) { // phpcs:ignore -- 8.1 proof
+								$where_columns[] = ' (' . implode( ' or ', $where_columns_arr ) . ') '; // phpcs:ignore -- 8.1 proof
 							}
 						} else {
 							// Handle single value
@@ -1043,9 +1043,9 @@ namespace WPDataAccess {
 							$column_value     = wp_strip_all_tags( wp_unslash( $request[ "wpda_search_column_{$column_name_lwr}" ] ) );
 							if ( '' !== $column_value ) {
 								if ( 'string' === WPDA::get_type( $column_date_type ) ) {
-									$where_columns[] = $wpdb->prepare( "`{$column_name}` like '%s'", esc_sql( $column_value ) ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+									$where_columns[] = $wpdb->prepare( "`{$column_name}` like '%s'", esc_sql( $column_value ) ); // phpcs:ignore
 								} elseif ( 'number' === WPDA::get_type( $column_date_type ) ) {
-									$where_columns[] = $wpdb->prepare( "`{$column_name}` = '%d'", esc_sql( $column_value ) ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+									$where_columns[] = $wpdb->prepare( "`{$column_name}` = '%d'", esc_sql( $column_value ) ); // phpcs:ignore
 								}
 							}
 						}
@@ -1053,12 +1053,11 @@ namespace WPDataAccess {
 				}
 			}
 
-			if ( 0 === count( $where_columns ) ) {//phpcs:ignore - 8.1 proof
+			if ( 0 === count( $where_columns ) ) { // phpcs:ignore -- 8.1 proof
 				return '';
 			} else {
 				$operator =
-					isset( $_REQUEST['wpda_search_column_operator'] ) &&
-					'or' === strtolower( $_REQUEST['wpda_search_column_operator'] )
+					isset( $_REQUEST['wpda_search_column_operator'] ) && 'or' === strtolower( $_REQUEST['wpda_search_column_operator'] ) // phpcs:ignore
 						? 'or' : 'and';
 				return ' (' . implode( " $operator ", $where_columns ) . ') ';
 			}
@@ -1093,13 +1092,16 @@ namespace WPDataAccess {
 			}
 			if ( method_exists( $wpdadb, 'is_connected' ) ) {
 				if ( ! $wpdadb->is_connected() ) {
+					// phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
 					$msg = new WPDA_Message_Box(
 						[
-							'message_text'           => __( "Remote database '{$schema_name}' not available [check connection: Settings > WP Data Access]", 'wp-data-access' ),
+							/* translators: %s = database name */
+							'message_text'           => sprintf( __( 'Remote database "%s" not available [check connection: Settings > WP Data Access]', 'wp-data-access' ), $schema_name ),
 							'message_type'           => 'error',
 							'message_is_dismissible' => false,
 						]
 					);
+					// phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
 					$msg->box();
 
 					return false;
@@ -1115,7 +1117,7 @@ namespace WPDataAccess {
 					]
 				)
 			); // db call ok; no-cache ok.
-			$wpdadb->get_results(); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+			$wpdadb->get_results();
 
 			return 1 === $wpdadb->num_rows;
 		}
@@ -1189,7 +1191,7 @@ namespace WPDataAccess {
 		 */
 		public static function get_post_types() {
 			global $wpdb;
-			$rows = $wpdb->get_results(
+			$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				"select distinct post_type from {$wpdb->posts}",
 				'ARRAY_N'
 			);
@@ -1204,7 +1206,7 @@ namespace WPDataAccess {
 
 		public static function get_table_engine( $schema_name, $table_name ) {
 			$table_info = WPDA::get_table_values( $schema_name, $table_name );
-			//phpcs:ignore - 8.1 proof
+			 // phpcs:ignore -- 8.1 proof
 			return (
 				1 === count( $table_info ) &&
 				'connect' === strtolower( $table_info[0]['engine'] )
@@ -1246,7 +1248,7 @@ namespace WPDataAccess {
 			$is_estimate   = null;
 			$do_real_count = null;
 			$table_info    = self::get_table_values( $schema_name, $table_name );
-			if ( 1 === count( $table_info ) ) {//phpcs:ignore - 8.1 proof
+			if ( 1 === count( $table_info ) ) { // phpcs:ignore -- 8.1 proof
 				$row_count  = $table_info[0]['table_rows'];
 
 				$system_row_count_estimate    = null;
@@ -1303,14 +1305,14 @@ namespace WPDataAccess {
 				} elseif ( 'connect' === strtolower( $table_info[0]['engine'] ) ) {
 					$getpk = WPDA_List_Columns_Cache::get_list_columns( $schema_name, $table_name );
 					$pk    = $getpk->get_table_primary_key();
-					if ( is_array( $pk ) && count( $pk ) > 0 ) {//phpcs:ignore - 8.1 proof
+					if ( is_array( $pk ) && count( $pk ) > 0 ) { // phpcs:ignore -- 8.1 proof
 						$sql_rowcount_sql =
 							'select count(*) from `' . str_replace( '`', '', $table_name ) .
 							'` where `' . $pk[0] . '` not in ' .
 								'(select null from `' . str_replace( '`', '', $table_name ) . '` where 1=2)';
 						$wpdadb = WPDADB::get_db_connection( $schema_name );
 						$sql_rowcount  = $wpdadb->get_results( $sql_rowcount_sql, 'ARRAY_N' );
-						if ( count( $sql_rowcount ) === 1 ) {//phpcs:ignore - 8.1 proof
+						if ( count( $sql_rowcount ) === 1 ) { // phpcs:ignore -- 8.1 proof
 							$row_count     = $sql_rowcount[0][0];
 							$is_estimate   = false;
 							$do_real_count = false;
@@ -1359,9 +1361,9 @@ namespace WPDataAccess {
 
 			if ( null === $column_names ) {
 				$columns      = WPDA_Dictionary_Lists::get_table_columns( $table_name, $schema_name );
-				$column_names = array_column( $columns, 'column_name' ); //phpcs:ignore - 8.1 proof
+				$column_names = array_column( $columns, 'column_name' );  // phpcs:ignore -- 8.1 proof
 			}
-			if ( count( $column_names ) === 0 ) {//phpcs:ignore - 8.1 proof
+			if ( count( $column_names ) === 0 ) { // phpcs:ignore -- 8.1 proof
 				return self::validate_name_np();
 			}
 
@@ -1464,7 +1466,20 @@ namespace WPDataAccess {
 			$key            = hash( 'sha256', WPDA::get_option( WPDA::OPTION_PLUGIN_SECRET_KEY ) );
 			$iv             = substr( hash( 'sha256', WPDA::get_option( WPDA::OPTION_PLUGIN_SECRET_IV ) ), 0, 16 );
 
-			return base64_encode( openssl_encrypt( WPDA::get_option( WPDA::OPTION_PLUGIN_SONCE_SEED ) . $_SERVER['REMOTE_ADDR'], $encrypt_method, $key, 0, $iv ) );
+			return base64_encode(
+				openssl_encrypt( WPDA::get_option( 
+					WPDA::OPTION_PLUGIN_SONCE_SEED ) . 
+					(
+						isset( $_SERVER['REMOTE_ADDR'] )
+							? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) )
+							: ''
+					), 
+					$encrypt_method, 
+					$key, 
+					0, 
+					$iv
+				)
+			);
 		}
 
 		public static function wpda_create_sonce( $action = 'undefined' ) {
@@ -1489,12 +1504,12 @@ namespace WPDataAccess {
 		public static function wpda_create_content_folder() {
 			$upload_dir = WPDA::get_plugin_upload_dir();
 			if ( ! file_exists( $upload_dir ) ) {
-				mkdir( $upload_dir, 0755, true );
-				$fw = fopen( $upload_dir . ".htaccess", 'w' );
+				mkdir( $upload_dir, 0755, true ); // phpcs:ignore
+				$fw = fopen( $upload_dir . ".htaccess", 'w' ); // phpcs:ignore
 				if ( false !== $fw ) {
-					fwrite( $fw, "IndexIgnore *" );
+					fwrite( $fw, "IndexIgnore *" ); // phpcs:ignore
 				}
-				fclose( $fw );
+				fclose( $fw ); // phpcs:ignore
 			}
 		}
 
@@ -1503,11 +1518,10 @@ namespace WPDataAccess {
 			if ( file_exists( $upload_dir ) ) {
 				$files = glob( $upload_dir . '*', GLOB_MARK );
 				foreach ( $files as $file ) {
-					unlink( $file );
+					unlink( $file ); // phpcs:ignore
 				}
-				unlink( $upload_dir . '.htaccess'  );
-
-				rmdir( $upload_dir );
+				unlink( $upload_dir . '.htaccess'  ); // phpcs:ignore
+				rmdir( $upload_dir ); // phpcs:ignore
 			}
 		}
 
@@ -1530,10 +1544,10 @@ namespace WPDataAccess {
 		public static function sent_msg( $status, $msg ) {
 			echo json_encode(
 				array(
-					'status' => $status,
-					'msg'    => $msg,
+					'status' => esc_attr( $status ),
+					'msg'    => $msg, // phpcs:ignore
 				), true
-			); // phpcs:ignore - 8.1 proof
+			); // phpcs:ignore
 		}
 
 		public static function is_post() {
@@ -1551,7 +1565,7 @@ namespace WPDataAccess {
 
 			$wpda_hide_manage_link = get_option( 'wpda_hide_manage_link' );
 			if ( is_array( $wpda_hide_manage_link ) ) {
-				$wpda_hide_manage_list = array_flip( $wpda_hide_manage_link ); //phpcs:ignore - 8.1 proof
+				$wpda_hide_manage_list = array_flip( $wpda_hide_manage_link );  // phpcs:ignore -- 8.1 proof
 			} else {
 				$wpda_hide_manage_list = array();
 			}
@@ -1599,9 +1613,9 @@ namespace WPDataAccess {
 		 */
 		public static function get_server_address() {
 			if ( isset( $_SERVER['SERVER_ADDR'] ) ) {
-				return $_SERVER['SERVER_ADDR'];
+				return sanitize_text_field( wp_unslash( $_SERVER['SERVER_ADDR'] ) );
 			} elseif ( isset( $_SERVER['LOCAL_ADDR'] ) ) {
-				return $_SERVER['LOCAL_ADDR'];
+				return sanitize_text_field( wp_unslash( $_SERVER['LOCAL_ADDR'] ) );
 			} else {
 				return 'UNKNOWN';
 			}
@@ -1618,7 +1632,7 @@ namespace WPDataAccess {
 				case '$$NOW$$':
 				case '$$NOWDT$$':
 					global $wpdb;
-					$now_db       = $wpdb->get_var( 'select now()' );
+					$now_db       = $wpdb->get_var( 'select now()' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 					$db_format    = WPDA::DB_DATETIME_FORMAT;
 					$convert_date = \DateTime::createFromFormat( $db_format, $now_db );
 					if ( false !== $convert_date ) {
@@ -1644,11 +1658,13 @@ namespace WPDataAccess {
 		 * @return void
 		 */
 		public static function wpda_log_wp_error( $errmsg ) {
-			$dbt = debug_backtrace();
-			$clr = array_shift( $dbt );//phpcs:ignore - 8.1 proof
+			$dbt = debug_backtrace(); // phpcs:ignore
+			$clr = array_shift( $dbt ); // phpcs:ignore -- 8.1 proof
 
+			// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_print_r
 			error_log( "WP Data Access error in {$clr['file']}:{$clr['line']}" );
 			error_log( print_r( $errmsg, true ) );
+			// phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		}
 
 		/**
@@ -1665,7 +1681,7 @@ namespace WPDataAccess {
 			}
 
 			$wpdadb->suppress_errors( true );
-			$table_name = 'custom' . mt_rand(0, time());
+			$table_name = 'custom' . wp_rand(0, time());
 
 			// Create temporary table.
 			$wpdadb->query(

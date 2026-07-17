@@ -185,19 +185,18 @@ class WPDA_Query_Builder {
             }
             $database_options .= '<option value="' . $database . '">' . $database_printed . '</option>';
         }
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo "wpda_databases = '{$database_options}';";
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>
 					var wpda_home_url = "<?php 
-        echo admin_url( 'admin.php' );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        echo esc_url( admin_url( 'admin.php' ) );
         ?>";
 					var wpda_wpnonce = "<?php 
         echo esc_attr( $this->wpnonce );
         ?>";
 					var wpda_loader_url = "<?php 
-        echo plugins_url( '../../assets/images/loading.gif', __FILE__ );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        echo esc_url( plugins_url( '../../assets/images/loading.gif', __FILE__ ) );
         ?>";
 					var vqbInstalled = false;
 					<?php 
@@ -266,8 +265,9 @@ class WPDA_Query_Builder {
             // input var okay.
             $wpda_schemaname = sanitize_text_field( wp_unslash( $_POST['wpda_schemaname'] ) );
             // input var okay.
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput
             $wpda_sqlquery = html_entity_decode( wp_unslash( $_POST['wpda_sqlquery'] ), ENT_QUOTES );
-            // input var okay.
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput
             $wpda_sqllimit = sanitize_text_field( wp_unslash( $_POST['wpda_sqllimit'] ) );
             // input var okay.
             $wpda_protect = sanitize_text_field( wp_unslash( $_POST['wpda_protect'] ) );
@@ -281,11 +281,11 @@ class WPDA_Query_Builder {
                         $wpdadb->suppress_errors( true );
                     }
                     $sqllines = explode( "\n", $wpda_sqlquery );
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     $sqlcmds = array();
                     $start_i = 0;
                     for ($i = 0; $i < count( $sqllines ); $i++) {
-                        //phpcs:ignore - 8.1 proof
+                        // phpcs:ignore -- 8.1 proof
                         if ( '/' === trim( $sqllines[$i] ) ) {
                             $sql = '';
                             for ($j = $start_i; $j < $i; $j++) {
@@ -298,13 +298,13 @@ class WPDA_Query_Builder {
                         }
                     }
                     if ( count( $sqlcmds ) > 0 ) {
-                        //phpcs:ignore - 8.1 proof
+                        // phpcs:ignore -- 8.1 proof
                         $tabs = array();
                         $vars = array();
                         $tmps = array();
                         // Process multiple SQL commands
                         for ($i = 0; $i < count( $sqlcmds ); $i++) {
-                            //phpcs:ignore - 8.1 proof
+                            // phpcs:ignore -- 8.1 proof
                             if ( '' !== $wpda_sqllimit && 'select' === strtolower( substr( $sqlcmds[$i], 0, 6 ) ) ) {
                                 $sqlcmds[$i] .= " limit {$wpda_sqllimit} ";
                             }
@@ -313,7 +313,7 @@ class WPDA_Query_Builder {
                             $reconnected = false;
                             if ( 'use' === substr( strtolower( trim( $sqlcmds[$i] ) ), 0, 3 ) ) {
                                 $use_cmd = explode( ' ', trim( $sqlcmds[$i] ) );
-                                //phpcs:ignore - 8.1 proof
+                                // phpcs:ignore -- 8.1 proof
                                 if ( 2 === count( $use_cmd ) && (strtolower( trim( $use_cmd[1] ) ) !== strtolower( trim( $wpda_schemaname ) ) && 'rdb:' === substr( strtolower( trim( $use_cmd[1] ) ), 0, 4 ) || 'rdb:' === substr( strtolower( trim( $wpda_schemaname ) ), 0, 4 )) ) {
                                     $wpda_schemaname = $use_cmd[1];
                                     $wpdadb = WPDADB::get_db_connection( $wpda_schemaname );
@@ -329,7 +329,7 @@ class WPDA_Query_Builder {
                             switch ( strtolower( substr( trim( $sqlcmds[$i] ), 0, 7 ) ) ) {
                                 case 'wpdavar':
                                     $use_cmd = explode( ' ', trim( $sqlcmds[$i] ) );
-                                    //phpcs:ignore - 8.1 proof
+                                    // phpcs:ignore -- 8.1 proof
                                     $var_name = ( isset( $use_cmd[1] ) ? $use_cmd[1] : null );
                                     if ( $var_name !== null ) {
                                         $vars[$var_name] = $tabs;
@@ -449,7 +449,7 @@ class WPDA_Query_Builder {
 
     public function check_query( $wpda_protect, $wpda_schemaname, $wpda_sqlquery ) {
         $sql_parts = explode( ' ', trim( $wpda_sqlquery ) );
-        //phpcs:ignore - 8.1 proof
+        // phpcs:ignore -- 8.1 proof
         if ( isset( $sql_parts[0] ) && isset( $sql_parts[2] ) && WPDA::is_wp_table( $sql_parts[2] ) && ('drop' === strtolower( $sql_parts[0] ) || 'alter' === strtolower( $sql_parts[0] ) || 'rename' === strtolower( $sql_parts[0] ) || 'truncate' === strtolower( $sql_parts[0] )) ) {
             return false;
         }
@@ -532,7 +532,7 @@ class WPDA_Query_Builder {
                 // Send list of available queries
                 $wpda_query_builder_data = $this->get_query_list( $wpda_exclude );
                 uksort( $wpda_query_builder_data, 'strnatcasecmp' );
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 $response['data'] = $wpda_query_builder_data;
             } else {
                 $response['status'] = 'Token expired, please refresh page';
@@ -573,11 +573,11 @@ class WPDA_Query_Builder {
     public function get_query_list( $exclude = '', $user_id = null ) {
         $wpda_query_builder_data = get_user_meta( ( null === $user_id ? WPDA::get_current_user_id() : $user_id ), self::QUERY_BUILDER_OPTIONS );
         if ( is_array( $wpda_query_builder_data ) && count( $wpda_query_builder_data ) > 0 ) {
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             $queries = $wpda_query_builder_data[0];
             if ( null !== $exclude && '' !== $exclude ) {
                 $exclude_array = explode( ',', $exclude );
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 foreach ( $exclude_array as $exclude_item ) {
                     unset($queries[$exclude_item]);
                 }
@@ -591,11 +591,11 @@ class WPDA_Query_Builder {
     public function get_query_list_global( $exclude = '' ) {
         $wpda_query_builder_data = get_option( self::QUERY_BUILDER_OPTIONS );
         if ( is_array( $wpda_query_builder_data ) && count( $wpda_query_builder_data ) > 0 ) {
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             $queries = $wpda_query_builder_data;
             if ( null !== $exclude && '' !== $exclude ) {
                 $exclude_array = explode( ',', $exclude );
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 foreach ( $exclude_array as $exclude_item ) {
                     unset($queries[$exclude_item]);
                 }
@@ -822,11 +822,11 @@ class WPDA_Query_Builder {
                 $wpdadb->suppress_errors( true );
             }
             $sqllines = explode( "\n", $query );
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             $sqlcmds = array();
             $start_i = 0;
             for ($i = 0; $i < count( $sqllines ); $i++) {
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 if ( '/' === trim( $sqllines[$i] ) ) {
                     $sql = '';
                     for ($j = $start_i; $j < $i; $j++) {
@@ -839,13 +839,13 @@ class WPDA_Query_Builder {
                 }
             }
             if ( count( $sqlcmds ) > 0 ) {
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 $tabs = array();
                 $vars = array();
                 $tmps = array();
                 // Process multiple SQL commands
                 for ($i = 0; $i < count( $sqlcmds ); $i++) {
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     if ( '' !== $limit && 'select' === strtolower( substr( $sqlcmds[$i], 0, 6 ) ) ) {
                         $sqlcmds[$i] .= " limit {$limit} ";
                     }
@@ -854,7 +854,7 @@ class WPDA_Query_Builder {
                     $reconnected = false;
                     if ( 'use' === substr( strtolower( trim( $sqlcmds[$i] ) ), 0, 3 ) ) {
                         $use_cmd = explode( ' ', trim( $sqlcmds[$i] ) );
-                        //phpcs:ignore - 8.1 proof
+                        // phpcs:ignore -- 8.1 proof
                         if ( 2 === count( $use_cmd ) && (strtolower( trim( $use_cmd[1] ) ) !== strtolower( trim( $dbs ) ) && 'rdb:' === substr( strtolower( trim( $use_cmd[1] ) ), 0, 4 ) || 'rdb:' === substr( strtolower( trim( $dbs ) ), 0, 4 )) ) {
                             $dbs = $use_cmd[1];
                             $wpdadb = WPDADB::get_db_connection( $dbs );
@@ -870,7 +870,7 @@ class WPDA_Query_Builder {
                     switch ( strtolower( substr( trim( $sqlcmds[$i] ), 0, 7 ) ) ) {
                         case 'wpdavar':
                             $use_cmd = explode( ' ', trim( $sqlcmds[$i] ) );
-                            //phpcs:ignore - 8.1 proof
+                            // phpcs:ignore -- 8.1 proof
                             $var_name = ( isset( $use_cmd[1] ) ? $use_cmd[1] : null );
                             if ( $var_name !== null ) {
                                 $vars[$var_name] = $tabs;

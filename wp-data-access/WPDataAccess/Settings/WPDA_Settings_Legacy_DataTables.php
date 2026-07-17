@@ -115,13 +115,14 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
             $wp_nonce = ( isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '' );
             // input var okay.
             if ( !wp_verify_nonce( $wp_nonce, 'wpda-datatables-settings-' . WPDA::get_current_user_login() ) ) {
-                wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
             }
             if ( 'save' === $action ) {
                 // Save options.
                 if ( isset( $_REQUEST['publication_roles'] ) ) {
+                    // phpcs:disable WordPress.Security.ValidatedSanitizedInput
                     $publication_roles_request = ( isset( $_REQUEST['publication_roles'] ) ? $_REQUEST['publication_roles'] : null );
-                    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+                    // phpcs:enable WordPress.Security.ValidatedSanitizedInput
                     if ( is_array( $publication_roles_request ) ) {
                         $publication_roles = sanitize_text_field( wp_unslash( implode( ',', $publication_roles_request ) ) );
                     } else {
@@ -190,7 +191,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         $lov_roles = array();
         foreach ( $wp_roles->roles as $role => $val ) {
             array_push( $lov_roles, $role );
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
         }
         $publication_roles = WPDA::get_option( WPDA::OPTION_DP_PUBLICATION_ROLES );
         $publication_style = WPDA::get_option( WPDA::OPTION_DP_STYLE );
@@ -229,7 +230,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
                 <table class="wpda-table-settings">
                     <tr style="border-top: 1px solid #ccc">
                         <th><?php 
-        echo __( 'JSON Editing', 'wp-data-access' );
+        esc_html_e( 'JSON Editing', 'wp-data-access' );
         ?></th>
                         <td>
                             <label>
@@ -238,7 +239,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         echo ( 'validate' === $json_editing ? 'checked' : '' );
         ?>
                                 ><?php 
-        echo __( 'Use code editor with JSON validation', 'wp-data-access' );
+        esc_html_e( 'Use code editor with JSON validation', 'wp-data-access' );
         ?>
                             </label>
                             <br/>
@@ -248,7 +249,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         echo ( 'text' === $json_editing ? 'checked' : '' );
         ?>
                                 ><?php 
-        echo __( 'Use textarea without JSON validation', 'wp-data-access' );
+        esc_html_e( 'Use textarea without JSON validation', 'wp-data-access' );
         ?>
                             </label>
                         </td>
@@ -259,7 +260,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
                         <th>Data Tables Tool Access</th>
                         <td><div style="padding-bottom:10px">
                                 <?php 
-        echo __( 'Select WordPress roles allowed to access Data Tables', 'wp-data-access' );
+        esc_html_e( 'Select WordPress roles allowed to access Data Tables', 'wp-data-access' );
         ?>
                             </div>
                             <select name="publication_roles[]" multiple size="6">
@@ -290,12 +291,12 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
                         <td>
                             <span class="dashicons dashicons-yes"></span>
                             <?php 
-        echo __( 'Users have readonly access to tables to which you have granted access in Front-end Settings only', 'wp-data-access' );
+        esc_html_e( 'Users have readonly access to tables to which you have granted access in Front-end Settings only', 'wp-data-access' );
         ?>
                             <br/>
                             <span class="dashicons dashicons-yes"></span>
                             <?php 
-        echo __( 'Table access is automatically granted to tables used in Data Tables', 'wp-data-access' );
+        esc_html_e( 'Table access is automatically granted to tables used in Data Tables', 'wp-data-access' );
         ?>
                         </td>
                     </tr>
@@ -304,7 +305,8 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
                         <td>
                             <label>
                                 <?php 
-        echo sprintf( __( 'Load jQuery DataTables (version %s) scripts and styles', 'wp-data-access' ), esc_attr( $datatables_version ) );
+        /* translators: %s = data tables version number */
+        echo sprintf( esc_attr__( 'Load jQuery DataTables (version %s) scripts and styles', 'wp-data-access' ), esc_attr( $datatables_version ) );
         ?>
                             </label>
                             <div style="height:10px"></div>
@@ -314,7 +316,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         echo ( 'both' === $load_datatables ? 'checked' : '' );
         ?>
                                 ><?php 
-        echo __( 'In WordPress Back-end and Front-end', 'wp-data-access' );
+        esc_html_e( 'In WordPress Back-end and Front-end', 'wp-data-access' );
         ?>
                             </labeL>
                             <br/>
@@ -324,7 +326,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         echo ( 'be' === $load_datatables ? 'checked' : '' );
         ?>
                                 ><?php 
-        echo __( 'In WordPress Back-end only ', 'wp-data-access' );
+        esc_html_e( 'In WordPress Back-end only ', 'wp-data-access' );
         ?>
                             </labeL>
                             <br/>
@@ -334,7 +336,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         echo ( 'fe' === $load_datatables ? 'checked' : '' );
         ?>
                                 ><?php 
-        echo __( 'In WordPress Front-end only', 'wp-data-access' );
+        esc_html_e( 'In WordPress Front-end only', 'wp-data-access' );
         ?>
                             </labeL>
                             <br/>
@@ -344,7 +346,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         echo ( '' === $load_datatables ? 'checked' : '' );
         ?>
                                 ><?php 
-        echo __( 'Do not load jQuery DataTables', 'wp-data-access' );
+        esc_html_e( 'Do not load jQuery DataTables', 'wp-data-access' );
         ?>
                             </labeL>
                         </td>
@@ -354,7 +356,8 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
                         <td>
                             <label>
                                 <?php 
-        echo sprintf( __( 'Load jQuery DataTables Responsive (version %s) scripts and styles', 'wp-data-access' ), esc_attr( $datatables_responsive_version ) );
+        /* translators: %s = data tables responsive version number */
+        echo sprintf( esc_attr__( 'Load jQuery DataTables Responsive (version %s) scripts and styles', 'wp-data-access' ), esc_attr( $datatables_responsive_version ) );
         ?>
                             </label>
                             <div style="height:10px"></div>
@@ -364,7 +367,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         echo ( 'both' === $load_datatables_responsive ? 'checked' : '' );
         ?>
                                 ><?php 
-        echo __( 'In WordPress Back-end and Front-end', 'wp-data-access' );
+        esc_html_e( 'In WordPress Back-end and Front-end', 'wp-data-access' );
         ?>
                             </label>
                             <br/>
@@ -374,7 +377,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         echo ( 'be' === $load_datatables_responsive ? 'checked' : '' );
         ?>
                                 ><?php 
-        echo __( 'In WordPress Back-end only ', 'wp-data-access' );
+        esc_html_e( 'In WordPress Back-end only ', 'wp-data-access' );
         ?>
                             </label>
                             <br/>
@@ -384,7 +387,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         echo ( 'fe' === $load_datatables_responsive ? 'checked' : '' );
         ?>
                                 ><?php 
-        echo __( 'In WordPress Front-end only', 'wp-data-access' );
+        esc_html_e( 'In WordPress Front-end only', 'wp-data-access' );
         ?>
                             </label>
                             <br/>
@@ -394,22 +397,23 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
         echo ( '' === $load_datatables_responsive ? 'checked' : '' );
         ?>
                                 ><?php 
-        echo __( 'Do not load jQuery DataTables Responsive', 'wp-data-access' );
+        esc_html_e( 'Do not load jQuery DataTables Responsive', 'wp-data-access' );
         ?>
                             </label>
                         </td>
                     </tr>
                     <tr>
                         <th><?php 
-        echo __( 'Front-End Language', 'wp-data-access' );
+        esc_html_e( 'Front-End Language', 'wp-data-access' );
         ?></th>
                         <td>
                             <select name="language">
                                 <?php 
         foreach ( self::FRONTEND_LANG as $language => $code ) {
             $checked = ( $current_language === $language ? ' selected' : '' );
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo "<option value='{$language}'{$checked}>{$language}</option>";
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            // phpcs:enable WordPress.Security.EscapeOutput
         }
         ?>
                             </select>
@@ -420,17 +424,17 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
                         <td>
                             <span class="dashicons dashicons-yes"></span>
                             <?php 
-        echo __( 'jQuery DataTables (+Responsive) is needed in the Front-end to support data tables on your website', 'wp-data-access' );
+        esc_html_e( 'jQuery DataTables (+Responsive) is needed in the Front-end to support data tables on your website', 'wp-data-access' );
         ?>
                             <br/>
                             <span class="dashicons dashicons-yes"></span>
                             <?php 
-        echo __( 'jQuery DataTables (+Responsive) is needed in the Back-end to test data tables in the WordPress dashboard', 'wp-data-access' );
+        esc_html_e( 'jQuery DataTables (+Responsive) is needed in the Back-end to test data tables in the WordPress dashboard', 'wp-data-access' );
         ?>
                             <br/>
                             <span class="dashicons dashicons-yes"></span>
                             <?php 
-        echo __( 'If you have already loaded jQuery DataTables for other purposes disable loading them to prevent duplication errors', 'wp-data-access' );
+        esc_html_e( 'If you have already loaded jQuery DataTables for other purposes disable loading them to prevent duplication errors', 'wp-data-access' );
         ?>
                         </td>
                     </tr>
@@ -440,12 +444,12 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
                     <button type="submit" class="button button-primary">
                         <i class="fas fa-check wpda_icon_on_button"></i>
                         <?php 
-        echo __( 'Save DataTables Settings', 'wp-data-access' );
+        esc_html_e( 'Save DataTables Settings', 'wp-data-access' );
         ?>
                     </button>
                     <a href="javascript:void(0)"
                        onclick="if (confirm('<?php 
-        echo __( 'Reset to defaults?', 'wp-data-access' );
+        esc_html_e( 'Reset to defaults?', 'wp-data-access' );
         ?>')) {
                            jQuery('input[name=&quot;action&quot;]').val('setdefaults');
                            jQuery('#wpda_settings_datatables').trigger('submit')
@@ -453,7 +457,7 @@ class WPDA_Settings_Legacy_DataTables extends WPDA_Settings_Legacy_Page {
                        class="button">
                         <i class="fas fa-times-circle wpda_icon_on_button"></i>
                         <?php 
-        echo __( 'Reset DataTables Settings To Defaults', 'wp-data-access' );
+        esc_html_e( 'Reset DataTables Settings To Defaults', 'wp-data-access' );
         ?>
                     </a>
                 </div>

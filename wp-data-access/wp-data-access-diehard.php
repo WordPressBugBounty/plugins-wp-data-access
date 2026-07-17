@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Standard.Category.SniffName.ErrorCode
+<?php
 /**
  * This file contains some code which is necessary to use class WP_List_Table in the public area. Part of the code is
  * fake (added to documentation) and is only loaded if the WordPress code needed to handle WP_List_Table is not
@@ -17,6 +17,15 @@
 /**
  * Fake class to make WPDA_List_Table available in the public area
  */
+
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class WPDADIEHARD_Screen {
 	/**
 	 * Placeholder to prevent runtime errors
@@ -68,7 +77,7 @@ if ( ! function_exists( 'get_column_headers' ) ) {
 	 *
 	 * @return array
 	 */
-	function get_column_headers() {
+	function get_column_headers() { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 		return array(); // Class WPDA_List_Table will fill this array.
 	}
 }
@@ -99,7 +108,7 @@ function wpdadiehard_submit_button( $text = null, $type = 'primary', $name = 'su
  */
 function wpdadiehard_get_submit_button( $text = '', $type = 'primary large', $name = 'submit', $wrap = true, $other_attributes = '' ) {
 	if ( ! is_array( $type ) ) {
-		$type = explode( ' ', (string) $type );//phpcs:ignore - 8.1 proof
+		$type = explode( ' ', (string) $type ); // phpcs:ignore -- 8.1 proof
 	}
 
 	$button_shorthand = array( 'primary', 'small', 'large' );
@@ -108,12 +117,12 @@ function wpdadiehard_get_submit_button( $text = '', $type = 'primary large', $na
 		if ( 'secondary' === $t || 'button-secondary' === $t ) {
 			continue;
 		}
-		$classes[] = in_array( $t, $button_shorthand, true ) ? 'button-' . $t : $t;//phpcs:ignore - 8.1 proof
+		$classes[] = in_array( $t, $button_shorthand, true ) ? 'button-' . $t : $t; // phpcs:ignore -- 8.1 proof
 	}
 	// Remove empty items, remove duplicate items, and finally build a string.
-	$class = implode( ' ', array_unique( array_filter( $classes ) ) ); //phpcs:ignore - 8.1 proof
+	$class = implode( ' ', array_unique( array_filter( $classes ) ) );  // phpcs:ignore -- 8.1 proof
 
-	$text = $text ? $text : __( 'Save Changes' );
+	$text = $text ? $text : __( 'Save Changes', 'wp-data-access' );
 
 	// Default the id attribute to $name unless an id was specifically provided in $other_attributes.
 	$id = $name;

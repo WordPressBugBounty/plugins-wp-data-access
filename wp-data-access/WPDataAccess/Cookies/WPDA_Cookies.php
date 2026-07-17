@@ -1,4 +1,4 @@
-<?php // phpcs:ignore Standard.Category.SniffName.ErrorCode
+<?php 
 /**
  * Suppress "error - 0 - No summary was found for this file" on phpdoc generation
  *

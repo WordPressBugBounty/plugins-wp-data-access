@@ -411,30 +411,18 @@ class WPDA_QB extends WPDA_API_Core {
     }
 
     public function cron_schedules( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
+        // This feature is implemented in the premium version
+        return $this->unauthorized();
     }
 
     public function cron_add( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
+        // This feature is implemented in the premium version
+        return $this->unauthorized();
     }
 
     public function cron_delete( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
+        // This feature is implemented in the premium version
+        return $this->unauthorized();
     }
 
 }

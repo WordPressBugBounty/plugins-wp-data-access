@@ -16,7 +16,7 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
             $wp_nonce = ( isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '' );
             // input var okay.
             if ( !wp_verify_nonce( $wp_nonce, 'wpda-plugin-settings-' . WPDA::get_current_user_login() ) ) {
-                wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
             }
             if ( 'save' === $action ) {
                 WPDA::set_option( WPDA::OPTION_PLUGIN_WPDATAACCESS_POST, ( isset( $_REQUEST['wpdataaccess_post'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpdataaccess_post'] ) ) : 'off' ) );
@@ -154,7 +154,7 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
                 <table class="wpda-table-settings" id="wpda_table_plugin">
                     <tr style="border-top: 1px solid #ccc">
                         <th><?php 
-        echo __( 'Shortcode [wpdataaccess]' );
+        esc_html_e( 'Shortcode [wpdataaccess]', 'wp-data-access' );
         ?></th>
                         <td>
                             <label>
@@ -174,7 +174,7 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
                     </tr>
                     <tr>
                         <th><?php 
-        echo __( 'Shortcode [wpdadiehard]' );
+        esc_html_e( 'Shortcode [wpdadiehard]', 'wp-data-access' );
         ?></th>
                         <td>
                             <label>
@@ -196,23 +196,23 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
         ?>
                     <tr>
                         <th><?php 
-        echo __( 'Date format' );
+        esc_html_e( 'Date format', 'wp-data-access' );
         ?></th>
                         <td>
                             <span class="settings_label"><?php 
-        echo __( 'Output', 'wp-data-access' );
+        esc_html_e( 'Output', 'wp-data-access' );
         ?></span>
                             <input type="text" value="<?php 
         echo esc_attr( get_option( 'date_format' ) );
         ?>" class="item_width"
                                    readonly/>
                             <?php 
-        echo __( '(WordPress format)', 'wp-data-access' );
+        esc_html_e( '(WordPress format)', 'wp-data-access' );
         ?>
                             <br/>
                             <span class="settings_line">
 								<span class="settings_label"><?php 
-        echo __( 'Input', 'wp-data-access' );
+        esc_html_e( 'Input', 'wp-data-access' );
         ?></span>
 								<label class="item_label">
 									<input type="radio" name="radio_date_format" class="radio_date_format"
@@ -228,7 +228,7 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
 								</label>
 							</span>
                             <?php 
-        echo __( '(JavaScript format)', 'wp-data-access' );
+        esc_html_e( '(JavaScript format)', 'wp-data-access' );
         ?>
                             <br/>
                             <span class="settings_line">
@@ -271,7 +271,7 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
         echo ( 'Y-m-d' !== $date_format && 'd/m/Y' !== $date_format && 'm/d/Y' !== $date_format ? 'checked="checked"' : '' );
         ?>/>
 									<span class="item_label_text"><?php 
-        echo __( 'Custom:', 'wp-data-access' );
+        esc_html_e( 'Custom:', 'wp-data-access' );
         ?></span>
 									<span class="item_label_align">
 										<input class="item_label_format" type="text" name="date_format" id="date_format"
@@ -283,36 +283,36 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
 							</span>
                             <br/>
                             <span class="settings_label"><?php 
-        echo __( 'Placeholder', 'wp-data-access' );
+        esc_html_e( 'Placeholder', 'wp-data-access' );
         ?></span>
                             <input type="text" name="date_placeholder" id="date_placeholder"
                                    value="<?php 
         echo esc_attr( $date_placeholder );
         ?>" class="item_width"/>
                             <?php 
-        echo __( '(user info)', 'wp-data-access' );
+        esc_html_e( '(user info)', 'wp-data-access' );
         ?>
                         </td>
                     </tr>
                     <tr>
                         <th><?php 
-        echo __( 'Time format' );
+        esc_html_e( 'Time format', 'wp-data-access' );
         ?></th>
                         <td>
                             <span class="settings_label"><?php 
-        echo __( 'Output', 'wp-data-access' );
+        esc_html_e( 'Output', 'wp-data-access' );
         ?></span>
                             <input type="text" value="<?php 
         echo esc_attr( get_option( 'time_format' ) );
         ?>" class="item_width"
                                    readonly/>
                             <?php 
-        echo __( '(WordPress format)', 'wp-data-access' );
+        esc_html_e( '(WordPress format)', 'wp-data-access' );
         ?>
                             <br/>
                             <span class="settings_line">
 								<span class="settings_label"><?php 
-        echo __( 'Input', 'wp-data-access' );
+        esc_html_e( 'Input', 'wp-data-access' );
         ?></span>
 								<label class="item_label">
 									<input type="radio" name="radio_time_format" class="radio_time_format"
@@ -328,7 +328,7 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
 								</label>
 							</span>
                             <?php 
-        echo __( '(JavaScript format)', 'wp-data-access' );
+        esc_html_e( '(JavaScript format)', 'wp-data-access' );
         ?>
                             <br/>
                             <span class="settings_line">
@@ -339,7 +339,7 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
         echo ( 'H:i' !== $time_format ? 'checked="checked"' : '' );
         ?>/>
 									<span class="item_label_text"><?php 
-        echo __( 'Custom:', 'wp-data-access' );
+        esc_html_e( 'Custom:', 'wp-data-access' );
         ?></span>
 									<span class="item_label_align">
 										<input class="item_label_format" type="text" name="time_format" id="time_format"
@@ -351,7 +351,7 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
 							</span>
                             <br/>
                             <span class="settings_label"><?php 
-        echo __( 'Placeholder', 'wp-data-access' );
+        esc_html_e( 'Placeholder', 'wp-data-access' );
         ?></span>
                             <input type="text" name="time_placeholder" id="time_placeholder"
                                    value="<?php 
@@ -361,7 +361,7 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
                     </tr>
                     <tr>
                         <th><?php 
-        echo __( 'Date/time test' );
+        esc_html_e( 'Date/time test', 'wp-data-access' );
         ?></th>
                         <td>
                             <input type="button" id="init_datetime" value="Test DateTimePicker" class="button item_width"/>
@@ -370,11 +370,11 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
                     </tr>
                     <tr>
                         <th><?php 
-        echo __( 'Set format' );
+        esc_html_e( 'Set format', 'wp-data-access' );
         ?></th>
                         <td>
                             <span><?php 
-        echo __( 'Show columns of data type set in list table as' );
+        esc_html_e( 'Show columns of data type set in list table as', 'wp-data-access' );
         ?></span>
                             <select name="set_format">
                                 <option value="csv" <?php 
@@ -394,18 +394,18 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
                         <td>
                             <span class="dashicons dashicons-yes"></span>
                             <?php 
-        echo __( 'The plugin uses your WordPress general settings to format your date and time output', 'wp-data-access' );
+        esc_html_e( 'The plugin uses your WordPress general settings to format your date and time output', 'wp-data-access' );
         ?>
                             <br/>
                             <span class="dashicons dashicons-yes"></span>
                             <?php 
-        echo __( 'The plugin uses the jQuery DateTimePicker plugin for data entry validation', 'wp-data-access' );
+        esc_html_e( 'The plugin uses the jQuery DateTimePicker plugin for data entry validation', 'wp-data-access' );
         ?>
                             <br/>
                             <span class="dashicons dashicons-yes"></span>
                             <a href="https://xdsoft.net/jqplugins/datetimepicker/" target="_blank">
                                 <?php 
-        echo __( 'Input formats can be found on the XDSoft DateTimePicker page', 'wp-data-access' );
+        esc_html_e( 'Input formats can be found on the XDSoft DateTimePicker page', 'wp-data-access' );
         ?>
                             </a>
                         </td>
@@ -416,12 +416,12 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
                     <button type="submit" class="button button-primary">
                         <i class="fas fa-check wpda_icon_on_button"></i>
                         <?php 
-        echo __( 'Save Plugin Settings', 'wp-data-access' );
+        esc_html_e( 'Save Plugin Settings', 'wp-data-access' );
         ?>
                     </button>
                     <a href="javascript:void(0)"
                        onclick="if (confirm('<?php 
-        echo __( 'Reset to defaults?', 'wp-data-access' );
+        esc_html_e( 'Reset to defaults?', 'wp-data-access' );
         ?>')) {
                            jQuery('input[name=&quot;action&quot;]').val('setdefaults');
                            jQuery('#wpda_settings_plugin').trigger('submit')
@@ -429,7 +429,7 @@ class WPDA_Settings_Legacy_Plugin extends WPDA_Settings_Legacy_Page {
                        class="button">
                         <i class="fas fa-times-circle wpda_icon_on_button"></i>
                         <?php 
-        echo __( 'Reset Plugin Settings To Defaults', 'wp-data-access' );
+        esc_html_e( 'Reset Plugin Settings To Defaults', 'wp-data-access' );
         ?>
                     </a>
                 </div>

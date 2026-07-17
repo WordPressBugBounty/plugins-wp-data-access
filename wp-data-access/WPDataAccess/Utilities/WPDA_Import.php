@@ -70,13 +70,13 @@ namespace WPDataAccess\Utilities {
 				// Check access rights for non WPDA tables.
 				if ( 'on' !== WPDA::get_option( WPDA::OPTION_BE_ALLOW_IMPORTS ) ) {
 					// Prevent import object being created: exception must be handled in calling method.
-					throw new \Exception( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					throw new \Exception( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 				// Disable import for views.
 				$wpda_dictionary_exists = new WPDA_Dictionary_Exist( $schema_name, $table_name );
 				if ( $wpda_dictionary_exists->is_view() ) {
 					// Prevent import object being created: exception must be handled in calling method.
-					throw new \Exception( __( 'ERROR: Import not possible on views', 'wp-data-access' ) );
+					throw new \Exception( esc_attr__( 'ERROR: Import not possible on views', 'wp-data-access' ) );
 				}
 			}
 
@@ -103,17 +103,14 @@ namespace WPDataAccess\Utilities {
 				// Security check.
 				$wp_nonce = isset( $_REQUEST['_wpnonceimport'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonceimport'] ) ) : '?'; // input var okay.
 				if ( ! wp_verify_nonce( $wp_nonce, "wpda-import-{$this->table_name}" ) ) {
-					wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
 				}
 
 				if ( isset( $_FILES['filename'] ) ) {
-					// phpcs:disable
+					// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 					$temp_file_name = sanitize_text_field( $_FILES['filename']['tmp_name'] ); // For Windows: do NOT unslash!
-					// phpcs:enable
-
-					if ( UPLOAD_ERR_OK === $_FILES['filename']['error']
-						 && is_uploaded_file( $temp_file_name )
-					) {
+					// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+					if ( UPLOAD_ERR_OK === $_FILES['filename']['error'] && is_uploaded_file( $temp_file_name ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 						// Get file content.
 						$wpda_import = new WPDA_Import_File( $temp_file_name );
 
@@ -152,14 +149,15 @@ namespace WPDataAccess\Utilities {
 				WPDA::is_wpda_table( $this->table_name ) ?
 					__( 'current respository table', 'wp-data-access' ) :
 					__( 'table', 'wp-data-access' ) . " {$this->table_name}";
-			$title        = sprintf( __( 'Allows only imports into %s', 'wp-data-access' ), $storage_type );
+			/* translators: %s = storage type */
+			$title        = sprintf( __( 'Allows only imports into %s', 'wp-data-access' ), esc_attr( $storage_type ) );
 			?>
 			<button type="button"
 					   onclick="jQuery('#upload_file_container').show()"
 					   class="wpda_tooltip <?php echo esc_attr( $class ); ?>"
 					title="<?php echo esc_attr( $title ); ?>">
 				<i class="fas fa-cloud-upload wpda_icon_on_button"></i>
-				<?php echo '' === $label ? __( 'Import', 'wp-data-access' ) : esc_attr( $label ); ?>
+				<?php echo '' === $label ? esc_attr__( 'Import', 'wp-data-access' ) : esc_attr( $label ); ?>
 			</button>
 			<?php
 		}
@@ -178,11 +176,11 @@ namespace WPDataAccess\Utilities {
 			<script type='text/javascript'>
 				function before_submit_upload() {
 					if (jQuery('#filename').val() == '') {
-						alert('<?php echo __( 'No file to import!', 'wp-data-access' ); ?>');
+						alert('<?php esc_html_e( 'No file to import!', 'wp-data-access' ); ?>');
 						return false;
 					}
 					if (!(jQuery('#filename')[0].files[0].size < <?php echo esc_attr( WPDA::convert_memory_to_decimal( @ini_get( 'upload_max_filesize' ) ) ); ?>)) {
-						alert("<?php echo __( 'File exceeds maximum size of', 'wp-data-access' ); ?> <?php echo esc_attr( @ini_get( 'upload_max_filesize' ) ); ?>!");
+						alert("<?php esc_html_e( 'File exceeds maximum size of', 'wp-data-access' ); ?> <?php echo esc_attr( @ini_get( 'upload_max_filesize' ) ); ?>!");
 						return false;
 					}
 				}
@@ -197,31 +195,31 @@ namespace WPDataAccess\Utilities {
 							<fieldset class="wpda_fieldset" style="position:relative;padding:20px;padding-top:10px;padding-bottom:10px">
 								<legend>
 								<span>
-									<?php echo __( sprintf( 'SUPPORTS ONLY DATA IMPORTS FOR TABLE `%s`', esc_attr( $this->table_name ) ), 'wp-data-access' ); ?>
+									<?php /* translators: %s = table name */ echo sprintf( esc_attr__( 'SUPPORTS ONLY DATA IMPORTS FOR TABLE `%s`', 'wp-data-access' ), esc_attr( $this->table_name ) ); ?>
 								</span>
 								</legend>
 								<p>
 									<?php
-									echo __( 'Supports only file type', 'wp-data-access' ) . ' <strong>sql</strong>. ' . __( 'Maximum supported file size is', 'wp-data-access' ) . ' <strong>' . esc_attr( @ini_get( 'upload_max_filesize' ) ) . '</strong>.';
+									esc_html_e( 'Supports only file type', 'wp-data-access' ) . ' <strong>sql</strong>. ' . __( 'Maximum supported file size is', 'wp-data-access' ) . ' <strong>' . esc_attr( @ini_get( 'upload_max_filesize' ) ) . '</strong>.';
 									?>
 								</p>
 								<input type="file" name="filename" id="filename" class="wpda_tooltip" accept=".sql">
 								<label style="vertical-align:baseline;">
 									<input type="checkbox" name="hide_errors" style="vertical-align:sub;" checked>
-									<?php echo __( 'Hide errors', 'wp-data-access' ); ?>
+									<?php esc_html_e( 'Hide errors', 'wp-data-access' ); ?>
 								</label>
 								<p>
 									<button type="submit"
 											class="button button-primary"
 											onclick="return before_submit_upload()">
 										<i class="fas fa-code wpda_icon_on_button"></i>
-										<?php echo __( 'Import file', 'wp-data-access' ); ?>
+										<?php esc_html_e( 'Import file', 'wp-data-access' ); ?>
 									</button>
 									<button type="button"
 											onclick="jQuery('#upload_file_container').hide()"
 											class="button button-secondary">
 										<i class="fas fa-times-circle wpda_icon_on_button"></i>
-										<?php echo __( 'Cancel', 'wp-data-access' ); ?>
+										<?php esc_html_e( 'Cancel', 'wp-data-access' ); ?>
 									</button>
 								</p>
 								<input type="hidden" name="wpdaschema_name" value="<?php echo esc_attr( $this->schema_name ); ?>">
@@ -232,21 +230,21 @@ namespace WPDataAccess\Utilities {
 						</form>
 					<?php } else { ?>
 						<p>
-							<strong><?php echo __( 'ERROR', 'wp-data-access' ); ?></strong>
+							<strong><?php esc_html_e( 'ERROR', 'wp-data-access' ); ?></strong>
 						</p>
 						<p class="wpda_list_indent">
 							<?php
-							echo __( 'Your configuration does not allow file uploads!', 'wp-data-access' );
+							esc_html_e( 'Your configuration does not allow file uploads!', 'wp-data-access' );
 							echo ' ';
-							echo __( 'Set', 'wp-data-access' );
+							esc_html_e( 'Set', 'wp-data-access' );
 							echo ' <strong>';
-							echo __( 'file_uploads', 'wp-data-access' );
+							esc_html_e( 'file_uploads', 'wp-data-access' );
 							echo '</strong> ';
-							echo __( 'to', 'wp-data-access' );
+							esc_html_e( 'to', 'wp-data-access' );
 							echo ' <strong>';
-							echo __( 'On', 'wp-data-access' );
+							esc_html_e( 'On', 'wp-data-access' );
 							echo '</strong> (<a href="https://docs.wpdataaccess.com/limitations.html">';
-							echo __( 'see documentation', 'wp-data-access' );
+							esc_html_e( 'see documentation', 'wp-data-access' );
 							echo '</a>).';
 							?>
 						</p>

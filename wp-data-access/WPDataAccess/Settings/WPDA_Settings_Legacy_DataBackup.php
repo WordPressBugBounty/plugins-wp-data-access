@@ -24,7 +24,7 @@ namespace WPDataAccess\Settings {
                 // Security check.
                 $wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
                 if ( ! wp_verify_nonce( $wp_nonce, 'wpda-databackup-settings-' . WPDA::get_current_user_login() ) ) {
-                    wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                    wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
                 }
 
                 if ( 'save' === $action ) {
@@ -43,11 +43,11 @@ namespace WPDataAccess\Settings {
 
                     $options_activated = array();
                     if ( isset( $_REQUEST['local_path_activated'] ) ) {
-                        $error_level = error_reporting();
-                        error_reporting( E_ALL ^ E_WARNING );
+                        $error_level = error_reporting(); // phpcs:ignore
+                        error_reporting( E_ALL ^ E_WARNING ); // phpcs:ignore
                         $local_path      = WPDA::get_option( WPDA::OPTION_DB_LOCAL_PATH );
                         $file_permission = fileperms( $local_path );
-                        error_reporting( $error_level );
+                        error_reporting( $error_level ); // phpcs:ignore
                         if ( $file_permission && '4' === substr( decoct( $file_permission ), 0, 1 ) ) {
                             $options_activated['local_path'] = true;
                         }
@@ -122,11 +122,11 @@ namespace WPDataAccess\Settings {
                 $msg->box();
             }
 
-            $error_level = error_reporting();
-            error_reporting( E_ALL ^ E_WARNING );
+            $error_level = error_reporting(); // phpcs:ignore
+            error_reporting( E_ALL ^ E_WARNING ); // phpcs:ignore
             $local_path      = WPDA::get_option( WPDA::OPTION_DB_LOCAL_PATH );
             $file_permission = fileperms( $local_path );
-            error_reporting( $error_level );
+            error_reporting( $error_level ); // phpcs:ignore
 
             $owner_info  = ( ( $file_permission & 0x0100 ) ? 'r' : '-' );
             $owner_info .= ( ( $file_permission & 0x0080 ) ? 'w' : '-' );
@@ -155,7 +155,7 @@ namespace WPDataAccess\Settings {
                 <table class="wpda-table-settings">
                     <tr style="border-top: 1px solid #ccc">
                         <th>
-                            <?php echo __( 'Local file system' ); ?>
+                            <?php esc_html_e( 'Local file system', 'wp-data-access' ); ?>
                             <br/><br/>
                             <label style="font-weight: normal">
                                 <input type="checkbox"
@@ -165,44 +165,44 @@ namespace WPDataAccess\Settings {
                                         echo 'checked';
                                     }
                                     ?>
-                                /> <?php echo __( 'Activate', 'wp-data-access' ); ?>
+                                /> <?php esc_html_e( 'Activate', 'wp-data-access' ); ?>
                             </label>
                         </th>
                         <td>
-                            <?php echo __( 'Enter the name of the folder where data backup files should be stored.' ); ?>
+                            <?php esc_html_e( 'Enter the name of the folder where data backup files should be stored.', 'wp-data-access' ); ?>
                             <br/>
                             <input type="text" name="local_path" value="<?php echo esc_attr( $local_path ); ?>"/>
-                            <span><?php echo __( 'Make sure the folder exists with permission to write files.' ); ?></span>
+                            <span><?php esc_html_e( 'Make sure the folder exists with permission to write files.', 'wp-data-access' ); ?></span>
                             <?php
                             if ( 'WIN' !== strtoupper( substr( PHP_OS, 0, 3 ) ) ) {
                                 if ( ! $file_permission ) {
                                     echo '<br/><br/>';
-                                    echo __( 'ERROR: Invalid folder', 'wp-data-access' );
+                                    esc_html_e( 'ERROR: Invalid folder', 'wp-data-access' );
                                 } else {
                                     if ( '4' !== substr( decoct( $file_permission ), 0, 1 ) ) {
                                         echo '<br/><br/>';
-                                        echo __( 'ERROR: Not a folder', 'wp-data-access' );
+                                        esc_html_e( 'ERROR: Not a folder', 'wp-data-access' );
                                     } else {
                                         $fileowner  = fileowner( $local_path );
                                         $groupowner = filegroup( $local_path );
                                         ?>
                                         <br/><br/>
                                         {
-                                        <?php echo __( '"Permission"' ); ?>:
+                                        <?php esc_html_e( '"Permission"', 'wp-data-access' ); ?>:
                                         {
-                                        <?php echo __( '"owner"' ); ?>:
+                                        <?php esc_html_e( '"owner"', 'wp-data-access' ); ?>:
                                         {
-                                        <?php echo __( '"name"' ); ?>: "<?php echo esc_attr( posix_getpwuid( $fileowner )['name'] ); ?>",
-                                        <?php echo __( '"access"' ); ?>: "<?php echo esc_attr( $owner_info ); ?>"
+                                        <?php esc_html_e( '"name"', 'wp-data-access' ); ?>: "<?php echo esc_attr( posix_getpwuid( $fileowner )['name'] ); ?>",
+                                        <?php esc_html_e( '"access"', 'wp-data-access' ); ?>: "<?php echo esc_attr( $owner_info ); ?>"
                                         },
-                                        <?php echo __( '"group"' ); ?>:
+                                        <?php esc_html_e( '"group"', 'wp-data-access' ); ?>:
                                         {
-                                        <?php echo __( '"name"' ); ?>: "<?php echo esc_attr( posix_getpwuid( $groupowner )['name'] ); ?>",
-                                        <?php echo __( '"access"' ); ?>: "<?php echo esc_attr( $group_info ); ?>"
+                                        <?php esc_html_e( '"name"', 'wp-data-access' ); ?>: "<?php echo esc_attr( posix_getpwuid( $groupowner )['name'] ); ?>",
+                                        <?php esc_html_e( '"access"', 'wp-data-access' ); ?>: "<?php echo esc_attr( $group_info ); ?>"
                                         },
-                                        <?php echo __( '"world"' ); ?>:
+                                        <?php esc_html_e( '"world"', 'wp-data-access' ); ?>:
                                         {
-                                        <?php echo __( '"access"' ); ?>: "<?php echo esc_attr( $world_info ); ?>"
+                                        <?php esc_html_e( '"access"', 'wp-data-access' ); ?>: "<?php echo esc_attr( $world_info ); ?>"
                                         }
                                         }
                                         }
@@ -215,7 +215,7 @@ namespace WPDataAccess\Settings {
                     </tr>
                     <tr>
                         <th>
-                            <?php echo __( 'Dropbox' ); ?>
+                            <?php esc_html_e( 'Dropbox', 'wp-data-access' ); ?>
                             <br/><br/>
                             <label style="font-weight: normal">
                                 <input type="checkbox"
@@ -225,32 +225,32 @@ namespace WPDataAccess\Settings {
                                         echo 'checked';
                                     }
                                     ?>
-                                /> <?php echo __( 'Activate', 'wp-data-access' ); ?>
+                                /> <?php esc_html_e( 'Activate', 'wp-data-access' ); ?>
                             </label>
                         </th>
                         <td>
                             <a href="https://www.dropbox.com/" class="button button-secondary" target="_blank">
-                                <?php echo __( 'Create a Dropbox account' ); ?>
+                                <?php esc_html_e( 'Create a Dropbox account', 'wp-data-access' ); ?>
                             </a>
                             <span style="vertical-align:-webkit-baseline-middle;">
-								<?php echo __( 'You can skip this step if you already have an account.' ); ?>
+								<?php esc_html_e( 'You can skip this step if you already have an account.', 'wp-data-access' ); ?>
 							</span>
                             <br/><br/>
-                            <?php echo __( 'Authorize the WP Data Access Dropbox app and enter the authorization code in the text box below.' ); ?>
+                            <?php esc_html_e( 'Authorize the WP Data Access Dropbox app and enter the authorization code in the text box below.', 'wp-data-access' ); ?>
                             <br/>
                             <input type="text" name="dropbox_auth" value="<?php echo esc_attr( $dropbox_auth ); ?>"/>
                             <a href="https://www.dropbox.com/oauth2/authorize?client_id=<?php echo esc_attr( self::DROPBOX_CLIENT_ID ); ?>&response_type=code&token_access_type=offline"
                                class="button button-secondary"
                                target="_blank"
                                style="vertical-align:bottom;">
-                                <?php echo __( 'Get Dropbox authorization code' ); ?>
+                                <?php esc_html_e( 'Get Dropbox authorization code', 'wp-data-access' ); ?>
                             </a>
                             <?php
                             if ( '' !== $dropbox_folder ) {
                                 // Only older versions are using this option.
                                 ?>
                                 <br/><br/>
-                                <?php echo __( 'Enter the name of the folder where data backup files should be stored. If the folder doesn\'t exists, it\'ll be created for you.' ); ?>
+                                <?php esc_html_e( 'Enter the name of the folder where data backup files should be stored. If the folder doesn\'t exists, it\'ll be created for you.', 'wp-data-access' ); ?>
                                 <br/>
                                 <input type="text" name="dropbox_folder" value="<?php echo esc_attr( $dropbox_folder ); ?>"/>
                                 <?php
@@ -263,16 +263,16 @@ namespace WPDataAccess\Settings {
                     <input type="hidden" name="action" value="save"/>
                     <button type="submit" class="button button-primary">
                         <i class="fas fa-check wpda_icon_on_button"></i>
-                        <?php echo __( 'Save Data Backup Settings', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Save Data Backup Settings', 'wp-data-access' ); ?>
                     </button>
                     <a href="javascript:void(0)"
-                       onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+                       onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
                            jQuery('input[name=&quot;action&quot;]').val('setdefaults');
                            jQuery('#wpda_settings_databackup').trigger('submit')
                            }"
                        class="button">
                         <i class="fas fa-times-circle wpda_icon_on_button"></i>
-                        <?php echo __( 'Reset Data Backup To Defaults', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Reset Data Backup To Defaults', 'wp-data-access' ); ?>
                     </a>
                 </div>
                 <?php wp_nonce_field( 'wpda-databackup-settings-' . WPDA::get_current_user_login(), '_wpnonce', false ); ?>

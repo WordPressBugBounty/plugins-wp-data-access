@@ -5,6 +5,7 @@
  *
  * @package WPDataAccess\List_Table
  */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\List_Table;
 
 use WP_Data_Access_Admin;
@@ -166,7 +167,8 @@ class WPDA_List_Table_Menu extends WPDA_List_Table {
         $this->wpda_import = new WPDA_Import_Multi("?page={$this->page}", $this->schema_name);
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = remote database name */
+            wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
         }
         $result = $wpdadb->get_row( "show session variables like 'innodb_file_per_table'" );
         if ( !empty( $result ) ) {
@@ -213,9 +215,7 @@ class WPDA_List_Table_Menu extends WPDA_List_Table {
      */
     public function single_row( $item ) {
         list( $columns, $hidden, $sortable, $primary ) = $this->get_column_info();
-        //phpcs:ignore - 8.1 proof
         $columns_not_shown = count( (array) $hidden );
-        //phpcs:ignore - 8.1 proof just to be sure
         echo '<tr id="rownum_' . esc_attr( self::$list_number ) . '">';
         $this->single_row_columns( $item );
         echo '</tr>';
@@ -360,6 +360,7 @@ class WPDA_List_Table_Menu extends WPDA_List_Table {
                 // Add manage table/view line.
                 $wp_nonce_action_table_actions = "wpda-actions-{$table_name}";
                 $wp_nonce_table_actions = wp_create_nonce( $wp_nonce_action_table_actions );
+                /* translators: %s = table name */
                 $table_actions_title = sprintf( __( 'Table %s settings', 'wp-data-access' ), $table_name );
                 $actions['wpda_manage'] = "<a href=\"javascript:void( 0 )\" class='wpda_tooltip' title='{$table_actions_title}' onclick=\"wpda_show_table_actions( '{$this->schema_name}', '{$table_name}', '" . self::$list_number . "', '{$wp_nonce_table_actions}', '{$item['table_type_db']}', '" . self::LOADING . "' ); this.blur();\">" . '<i class="fas fa-gears wpda_icon_on_button"></i> ' . __( 'Manage', 'wp-data-access' ) . '</a>';
             }
@@ -384,6 +385,7 @@ class WPDA_List_Table_Menu extends WPDA_List_Table {
             $esc_attr = 'esc_attr';
             $form_name = 'explore_' . self::$list_number;
             $url = "?page={$this->page}";
+            // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
             $form = <<<EOT
 \t\t\t\t<form id='{$esc_attr( $form_name )}' action='{$esc_attr( $url )}' method='post'>
 \t\t\t\t\t<input type='hidden' name='wpdaschema_name' value='{$esc_attr( $this->schema_name )}' />
@@ -396,13 +398,15 @@ EOT;
 
 				<script type='text/javascript'>
 					jQuery("#wpda_invisible_container").append("<?php 
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo $explore;
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            // phpcs:enable WordPress.Security.EscapeOutput
             ?>");
 				</script>
 
 				<?php 
             $action_view = ' <i class="fas fa-table-list wpda_icon_on_button"></i> ' . __( 'Explore', 'wp-data-access' );
+            /* translators: %s = tablename */
             $table_view_title = sprintf( __( 'Explore %s table', 'wp-data-access' ), $table_name );
             $actions['wpda_listtable'] = sprintf(
                 '<a href="javascript:void(0)"
@@ -431,6 +435,7 @@ EOT;
             } else {
                 $warning = '';
             }
+            /* translators: 1: warning; 2: row action; 3: admin action */
             return sprintf(
                 '%1$s %2$s %3$s',
                 $table_name . $warning,
@@ -462,7 +467,8 @@ EOT;
     protected function count_rows( $table_name ) {
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = remote database name */
+            wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
         }
         if ( '' === $this->schema_name ) {
             $query = "\n\t\t\t\t\tselect count(*)\n\t\t\t\t\tfrom `{$table_name}`\n\t\t\t\t";
@@ -471,7 +477,6 @@ EOT;
         }
         $suppress = $wpdadb->suppress_errors( true );
         $count = @$wpdadb->get_var( $query );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
         if ( !is_numeric( $count ) ) {
             $count = '<span class="dashicons dashicons-flag wpda_tooltip" style="color:red;padding-left:5px" title="' . str_replace( '"', "'", $wpdadb->last_error ) . '"></span>';
         }
@@ -495,7 +500,6 @@ EOT;
             );
         }
         return array_merge( $columns, $this->column_headers );
-        //phpcs:ignore - 8.1 proof
     }
 
     /**
@@ -620,7 +624,7 @@ EOT;
         }
         if ( !isset( $_REQUEST['database'] ) ) {
             $msg = new WPDA_Message_Box(array(
-                'message_text'           => sprintf( __( 'Cannot drop database [missing argument]', 'wp-data-access' ) ),
+                'message_text'           => __( 'Cannot drop database [missing argument]', 'wp-data-access' ),
                 'message_type'           => 'error',
                 'message_is_dismissible' => false,
             ));
@@ -629,9 +633,9 @@ EOT;
         }
         global $wpdb;
         $database = str_replace( '`', '', sanitize_text_field( wp_unslash( $_REQUEST['database'] ) ) );
-        // input var okay.
         if ( 'rdb:' === substr( $database, 0, 4 ) ) {
             // Delete remote database
+            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
             if ( false === WPDADB::get_remote_database( $database ) ) {
                 $msg = new WPDA_Message_Box(array(
                     'message_text'           => sprintf( __( 'Cannot delete remote database connection `%s` [remote database connection not found]', 'wp-data-access' ), $database ),
@@ -641,6 +645,7 @@ EOT;
                 $msg->box();
             } else {
                 if ( false === WPDADB::del_remote_database( $database ) ) {
+                    // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                     $msg = new WPDA_Message_Box(array(
                         'message_text'           => sprintf( __( 'Cannot delete remote database connection `%s`', 'wp-data-access' ), $database ),
                         'message_type'           => 'error',
@@ -655,6 +660,7 @@ EOT;
                     $this->switch_schema_name = $wpdb->dbname;
                 }
             }
+            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
         } else {
             // Drop local database
             if ( $wpdb->dbname === $database ) {
@@ -675,9 +681,11 @@ EOT;
                 $msg->box();
                 return;
             }
+            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
             if ( false === $wpdb->query( $wpdb->prepare( 
+                /* translators: %s = database name */
                 'drop database `%1s`',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
                 array(WPDA::remove_backticks( $database ))
              ) ) ) {
                 // db call ok; no-cache ok.
@@ -694,6 +702,8 @@ EOT;
                 $msg->box();
                 $this->switch_schema_name = $wpdb->dbname;
             }
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
+            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
         }
     }
 
@@ -703,7 +713,7 @@ EOT;
         }
         if ( !isset( $_REQUEST['edit_remote_database'] ) ) {
             $msg = new WPDA_Message_Box(array(
-                'message_text'           => sprintf( __( 'Cannot update remote database connection [missing argument]', 'wp-data-access' ) ),
+                'message_text'           => __( 'Cannot update remote database connection [missing argument]', 'wp-data-access' ),
                 'message_type'           => 'error',
                 'message_is_dismissible' => false,
             ));
@@ -711,25 +721,27 @@ EOT;
             return;
         }
         $database = sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_database'] ) );
-        // input var okay.
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput
         $database_old = sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_database_old'] ) );
-        // input var okay.
+        // phpcs:enable WordPress.Security.ValidatedSanitizedInput
         if ( $database !== $database_old ) {
             // Update database connection name
             if ( false === WPDADB::get_remote_database( $database_old ) ) {
+                // phpcs:disable WordPress.Security.ValidatedSanitizedInput
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot update remote database connection [remote database connection not found]', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Cannot update remote database connection [remote database connection not found]', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
                 $msg->box();
+                // phpcs:enable WordPress.Security.ValidatedSanitizedInput
                 return;
             }
         } else {
             // Update database connection information
             if ( false === WPDADB::get_remote_database( $database ) ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot update remote database connection [remote database connection not found]', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Cannot update remote database connection [remote database connection not found]', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -738,36 +750,29 @@ EOT;
             }
         }
         $host = ( isset( $_REQUEST['edit_remote_host'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_host'] ) ) : '' );
-        // input var okay.
         $user = ( isset( $_REQUEST['edit_remote_user'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_user'] ) ) : '' );
-        // input var okay.
+        // Cannot use sanitize_text_field on password field!
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput
         $passwd = ( isset( $_REQUEST['edit_remote_passwd'] ) ? wp_unslash( $_REQUEST['edit_remote_passwd'] ) : '' );
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        // phpcs:enable WordPress.Security.ValidatedSanitizedInput
         $port = ( isset( $_REQUEST['edit_remote_port'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_port'] ) ) : '' );
-        // input var okay.
         $schema = ( isset( $_REQUEST['edit_remote_schema'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_schema'] ) ) : '' );
-        // input var okay.
         $ssl = ( isset( $_REQUEST['edit_remote_ssl'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_ssl'] ) ) : 'off' );
-        // input var okay.
         $ssl_key = ( isset( $_REQUEST['edit_remote_client_key'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_client_key'] ) ) : '' );
-        // input var okay.
         $ssl_cert = ( isset( $_REQUEST['edit_remote_client_certificate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_client_certificate'] ) ) : '' );
-        // input var okay.
         $ssl_ca = ( isset( $_REQUEST['edit_remote_ca_certificate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_ca_certificate'] ) ) : '' );
-        // input var okay.
         $ssl_path = ( isset( $_REQUEST['edit_remote_certificate_path'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_certificate_path'] ) ) : '' );
-        // input var okay.
         $ssl_cipher = ( isset( $_REQUEST['edit_remote_specified_cipher'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_specified_cipher'] ) ) : '' );
-        // input var okay.
         if ( '' === $database || '' === $host || '' === $user || '' === $schema ) {
             $msg = new WPDA_Message_Box(array(
-                'message_text'           => sprintf( __( 'Cannot edit remote database connection [missing arguments]', 'wp-data-access' ) ),
+                'message_text'           => __( 'Cannot edit remote database connection [missing arguments]', 'wp-data-access' ),
                 'message_type'           => 'error',
                 'message_is_dismissible' => false,
             ));
             $msg->box();
             return;
         }
+        // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
         if ( !WPDADB::upd_remote_database(
             $database,
             $host,
@@ -799,6 +804,7 @@ EOT;
                 $this->switch_schema_name = $database;
             }
         }
+        // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
     }
 
     protected function process_bulk_action_create_db() {
@@ -809,7 +815,7 @@ EOT;
             // Add local database
             if ( !isset( $_REQUEST['local_database'] ) ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot create database [missing argument]', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Cannot create database [missing argument]', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -817,13 +823,10 @@ EOT;
                 return;
             }
             $database = str_replace( '`', '', sanitize_text_field( wp_unslash( $_REQUEST['local_database'] ) ) );
-            // input var okay.
             global $wpdb;
-            if ( false === $wpdb->query( $wpdb->prepare( 
-                'create database `%1s`',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( $database ))
-             ) ) ) {
+            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
+            if ( false === $wpdb->query( $wpdb->prepare( 'create database `%1s`', array(WPDA::remove_backticks( $database )) ) ) ) {
                 // db call ok; no-cache ok.
                 $msg = new WPDA_Message_Box(array(
                     'message_text'           => sprintf( __( 'Error creating database `%s`', 'wp-data-access' ), $database ),
@@ -838,13 +841,14 @@ EOT;
                 $msg->box();
                 $this->switch_schema_name = $database;
             }
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
+            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
         } else {
             // Add remote database
             $database = ( isset( $_REQUEST['remote_database'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_database'] ) ) : '' );
-            // input var okay.
             if ( false !== WPDADB::get_remote_database( $database ) ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Remote database connection already exists', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Remote database connection already exists', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -852,30 +856,22 @@ EOT;
                 return;
             }
             $host = ( isset( $_REQUEST['remote_host'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_host'] ) ) : '' );
-            // input var okay.
             $user = ( isset( $_REQUEST['remote_user'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_user'] ) ) : '' );
-            // input var okay.
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput
             $passwd = ( isset( $_REQUEST['remote_passwd'] ) ? wp_unslash( $_REQUEST['remote_passwd'] ) : '' );
-            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+            // Cannot use sanitize_text_field on password field!
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput
             $port = ( isset( $_REQUEST['remote_port'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_port'] ) ) : '' );
-            // input var okay.
             $schema = ( isset( $_REQUEST['remote_schema'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_schema'] ) ) : '' );
-            // input var okay.
             $ssl = ( isset( $_REQUEST['remote_ssl'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_ssl'] ) ) : 'off' );
-            // input var okay.
             $ssl_key = ( isset( $_REQUEST['remote_client_key'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_client_key'] ) ) : '' );
-            // input var okay.
             $ssl_cert = ( isset( $_REQUEST['remote_client_certificate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_client_certificate'] ) ) : '' );
-            // input var okay.
             $ssl_ca = ( isset( $_REQUEST['remote_ca_certificate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_ca_certificate'] ) ) : '' );
-            // input var okay.
             $ssl_path = ( isset( $_REQUEST['remote_certificate_path'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_certificate_path'] ) ) : '' );
-            // input var okay.
             $ssl_cipher = ( isset( $_REQUEST['remote_specified_cipher'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_specified_cipher'] ) ) : '' );
-            // input var okay.
             if ( '' === $database || '' === $host || '' === $user || '' === $schema ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot add remote database connection [missing argument]', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Cannot add remote database connection [missing argument]', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -884,7 +880,7 @@ EOT;
             }
             if ( 'rdb:' === $database ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Invalid database name [enter a valid database name, for example rdb:remotedb]', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Invalid database name [enter a valid database name, for example rdb:remotedb]', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -906,15 +902,17 @@ EOT;
                 $ssl_cipher
             ) ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot add remote database connection', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Cannot add remote database connection', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
                 $msg->box();
             } else {
+                // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg = new WPDA_Message_Box(array(
                     'message_text' => sprintf( __( 'Remote database connection `%s` added', 'wp-data-access' ), $database ),
                 ));
+                // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg->box();
                 $this->switch_schema_name = $database;
             }
@@ -927,9 +925,9 @@ EOT;
     protected function process_bulk_action_optimize_table() {
         if ( isset( $_REQUEST['optimize_table_name'] ) ) {
             $optimize_table_name = str_replace( '`', '', sanitize_text_field( wp_unslash( $_REQUEST['optimize_table_name'] ) ) );
-            // input var okay.
             if ( $this->process_bulk_action_check_wpnonce( "wpda-optimize-{$optimize_table_name}", '_wpnonce' ) ) {
                 $dbo_type = $this->get_dbo_type( $optimize_table_name );
+                // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                 if ( false === $dbo_type || 'BASE TABLE' !== $dbo_type ) {
                     $msg = new WPDA_Message_Box(array(
                         'message_text'           => sprintf( __( 'Cannot optimize `%s`', 'wp-data-access' ), $optimize_table_name ),
@@ -941,7 +939,8 @@ EOT;
                     // Optimize table.
                     $wpdadb = WPDADB::get_db_connection( $this->schema_name );
                     if ( null === $wpdadb ) {
-                        wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+                        /* translators: %s = remote database name */
+                        wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
                     }
                     $wpdadb->query( "optimize table `{$optimize_table_name}`" );
                     // db call ok; no-cache ok.
@@ -950,6 +949,7 @@ EOT;
                     ));
                     $msg->box();
                 }
+                // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
             }
         }
     }
@@ -966,10 +966,11 @@ EOT;
         }
         if ( $this->process_bulk_action_check_action( 'rename_table_name_new', __( 'Missing new table name', 'wp-data-access' ) ) ) {
             // Rename table is not allowed for WordPress tables (double check).
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput
             $rename_table_name_old = sanitize_text_field( wp_unslash( $_REQUEST['rename_table_name_old'] ) );
-            // input var okay.
             $rename_table_name_new = sanitize_text_field( wp_unslash( $_REQUEST['rename_table_name_new'] ) );
-            // input var okay.
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput
+            /* translators: %s = table name */
             $err_txt = ' ' . sprintf( __( '[cannot rename WordPress table `%s`]', 'wp-data-access' ), $rename_table_name_old );
             if ( '' === $rename_table_name_old ) {
                 $msg = new WPDA_Message_Box(array(
@@ -992,11 +993,13 @@ EOT;
                     if ( $this->process_bulk_action_check_wpnonce( "wpda-rename-{$rename_table_name_old}", '_wpnonce' ) ) {
                         $dbo_type = $this->get_dbo_type( $rename_table_name_old );
                         if ( false === $dbo_type || 'SYSTEM VIEW' === $dbo_type ) {
+                            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                             $msg = new WPDA_Message_Box(array(
                                 'message_text'           => sprintf( __( 'Cannot rename `%s`', 'wp-data-access' ), $rename_table_name_old ),
                                 'message_type'           => 'error',
                                 'message_is_dismissible' => false,
                             ));
+                            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                             $msg->box();
                         } else {
                             // Rename table/view.
@@ -1042,7 +1045,8 @@ EOT;
         }
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = remote database name */
+            wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
         }
         return $wpdadb->query( 'rename table `' . str_replace( '`', '', $rename_table_name_old ) . '` to `' . str_replace( '`', '', $rename_table_name_new ) . '`' );
         // db call ok; no-cache ok.
@@ -1060,14 +1064,12 @@ EOT;
         }
         if ( $this->process_bulk_action_check_action( 'copy_table_name_dst', __( 'Missing destination table name', 'wp-data-access' ) ) ) {
             // copy table is not allowed for WordPress tables (double check).
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput
             $copy_schema_name_src = sanitize_text_field( wp_unslash( $_REQUEST['copy_schema_name_src'] ) );
-            // input var okay.
             $copy_table_name_src = sanitize_text_field( wp_unslash( $_REQUEST['copy_table_name_src'] ) );
-            // input var okay.
             $copy_schema_name_dst = sanitize_text_field( wp_unslash( $_REQUEST['copy_schema_name_dst'] ) );
-            // input var okay.
             $copy_table_name_dst = sanitize_text_field( wp_unslash( $_REQUEST['copy_table_name_dst'] ) );
-            // input var okay.
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput
             if ( '' === $copy_schema_name_src ) {
                 $msg = new WPDA_Message_Box(array(
                     'message_text' => __( 'Missing source schema name', 'wp-data-access' ),
@@ -1102,11 +1104,13 @@ EOT;
                 if ( $this->process_bulk_action_check_wpnonce( "wpda-copy-{$copy_table_name_src}", '_wpnonce' ) ) {
                     $dbo_type = $this->get_dbo_type( $copy_table_name_src );
                     if ( false === $dbo_type || 'SYSTEM VIEW' === $dbo_type ) {
+                        // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                         $msg = new WPDA_Message_Box(array(
                             'message_text'           => sprintf( __( 'Cannot copy `%s`', 'wp-data-access' ), $copy_table_name_src ),
                             'message_type'           => 'error',
                             'message_is_dismissible' => false,
                         ));
+                        // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                         $msg->box();
                     } else {
                         $include_data = ( isset( $_REQUEST['copy-table-data'] ) ? 'on' : 'off' );
@@ -1176,7 +1180,6 @@ EOT;
         // $wpdadb_src->query( "SET sql_mode = 'NO_TABLE_OPTIONS'" );
         $query = "show create table `{$copy_table_name_src}`";
         $ctcmd = $wpdadb_src->get_results( $query, 'ARRAY_A' );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
         if ( '' !== $wpdadb_src->last_error || !isset( $ctcmd[0]['Create Table'] ) ) {
             $wpdadb_src->suppress_errors( $suppress_wpdadb_src );
             $wpdadb_dst->suppress_errors( $suppress_wpdadb_dst );
@@ -1228,7 +1231,9 @@ EOT;
         // Copy table data from $wpdadb to $wpdb
         $query = "select * from `{$copy_table_name_src}`";
         if ( is_numeric( $query_buffer_size ) && $query_buffer_size > 0 ) {
+            // phpcs:disable Squiz.PHP.DiscouragedFunctions.Discouraged
             set_time_limit( 0 );
+            // phpcs:enable Squiz.PHP.DiscouragedFunctions.Discouraged
             ?>
 				<p class="wpda_pds_msg_create">
 					Copy table `<?php 
@@ -1269,7 +1274,6 @@ EOT;
             $total = 0;
             $sql = $query . ' limit ' . $query_buffer_size;
             $rows = $wpdadb_src->get_results( $sql, 'ARRAY_A' );
-            // phpcs:ignore Standard.Category.SniffName.ErrorCode
             while ( $wpdadb_src->num_rows > 0 ) {
                 $total += $wpdadb_src->num_rows;
                 foreach ( $rows as $row ) {
@@ -1286,12 +1290,10 @@ EOT;
                 $wpdadb_src->queries = null;
                 $sql = $query . ' limit ' . $query_buffer_size . ' offset ' . $i * $query_buffer_size;
                 $rows = $wpdadb_src->get_results( $sql, 'ARRAY_A' );
-                // phpcs:ignore Standard.Category.SniffName.ErrorCode
             }
             echo '<script>jQuery("p.wpda_pds_msg_create, p.wpda_pds_msg").css("display", "none");</script>';
         } else {
             $rows = $wpdadb_src->get_results( $query, 'ARRAY_A' );
-            // phpcs:ignore Standard.Category.SniffName.ErrorCode
             foreach ( $rows as $row ) {
                 $wpdadb_dst->insert( $copy_table_name_dst, $row );
             }
@@ -1312,23 +1314,27 @@ EOT;
             // Check if export is allowed.
             if ( $this->process_bulk_action_check_wpnonce( 'wpda-export-' . json_encode( $this->table_name ), '_wpnonce' ) ) {
                 // Get arguments.
+                // phpcs:disable WordPress.Security.ValidatedSanitizedInput
                 $bulk_tabs = ( isset( $_REQUEST['bulk-selected'] ) ? $_REQUEST['bulk-selected'] : '' );
-                // input var okay; sanitization okay.
+                // phpcs:enable WordPress.Security.ValidatedSanitizedInput
                 $wp_nonce = wp_create_nonce( 'wpda-export-' . WPDA::get_current_user_login() );
                 $cnt = 0;
                 $selected_tables = array();
                 foreach ( $bulk_tabs as $table_name ) {
                     $export_table_name = sanitize_text_field( wp_unslash( $table_name ) );
                     // input var okay.
+                    /* translators: %s = table name */
                     $err_txt = ' ' . sprintf( __( '[table `%s`]', 'wp-data-access' ), $export_table_name );
                     if ( $this->process_bulk_action_check_table_exists( $export_table_name, $err_txt ) ) {
                         $dbo_type = $this->get_dbo_type( $export_table_name );
                         if ( false === $dbo_type || 'VIEW' === $dbo_type || 'SYSTEM VIEW' === $dbo_type ) {
+                            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                             $msg = new WPDA_Message_Box(array(
                                 'message_text'           => sprintf( __( 'Cannot export `%s`', 'wp-data-access' ), $export_table_name ),
                                 'message_type'           => 'error',
                                 'message_is_dismissible' => false,
                             ));
+                            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                             $msg->box();
                         } else {
                             $selected_tables[] = $export_table_name;
@@ -1448,7 +1454,6 @@ EOT;
 						', array($wpdadb->dbname, $dbo_name) );
         // db call ok; no-cache ok.
         $result = $wpdadb->get_results( $query, 'ARRAY_A' );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
         if ( 1 === $wpdadb->num_rows ) {
             return $result[0]['table_type'];
         } else {
@@ -1466,18 +1471,22 @@ EOT;
         if ( $this->process_bulk_action_check_action( 'bulk-selected', __( 'Empty bulk selected', 'wp-data-access' ) ) ) {
             // Check if drop is allowed.
             if ( $this->process_bulk_action_check_wpnonce( 'wpda-drop-' . WPDA::get_current_user_login(), '_wpnonce3' ) ) {
+                // phpcs:disable WordPress.Security.ValidatedSanitizedInput
                 $bulk_tabs = ( isset( $_REQUEST['bulk-selected'] ) ? $_REQUEST['bulk-selected'] : '' );
-                // input var okay; sanitization okay.
+                // phpcs:enable WordPress.Security.ValidatedSanitizedInput
                 foreach ( $bulk_tabs as $table_name ) {
                     // Drop table is not allowed for WordPress tables (double check).
                     $drop_table_name = sanitize_text_field( wp_unslash( $table_name ) );
                     // input var okay.
+                    /* translators: %s = table name */
                     $err_txt = ' ' . sprintf( __( '[cannot drop WordPress table `%s`]', 'wp-data-access' ), $drop_table_name );
                     if ( $this->process_bulk_action_check_is_wp_table( $drop_table_name, $err_txt ) ) {
                         // Check if table exists.
+                        /* translators: %s = table name */
                         $err_txt = ' ' . sprintf( __( '[table `%s`]', 'wp-data-access' ), $drop_table_name );
                         if ( $this->process_bulk_action_check_table_exists( $drop_table_name, $err_txt ) ) {
                             $dbo_type = $this->get_dbo_type( $drop_table_name );
+                            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                             if ( false === $dbo_type || 'SYSTEM VIEW' === $dbo_type ) {
                                 $msg = new WPDA_Message_Box(array(
                                     'message_text'           => sprintf( __( 'Cannot drop `%s`', 'wp-data-access' ), $drop_table_name ),
@@ -1505,6 +1514,7 @@ EOT;
                                     }
                                 }
                             }
+                            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                         }
                     }
                 }
@@ -1521,23 +1531,12 @@ EOT;
         global $wpdb;
         $suppress = $wpdb->suppress_errors( true );
         // Table settings...
-        $wpdb->query( $wpdb->prepare( 
-            'delete from `%1s` where wpda_schema_name = %s and wpda_table_name = %s ',
-            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-            array(WPDA::remove_backticks( WPDA_Table_Settings_Model::get_base_table_name() ), $this->schema_name, $drop_table_name)
-         ) );
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
+        $wpdb->query( $wpdb->prepare( 'delete from `%1s` where wpda_schema_name = %s and wpda_table_name = %s ', array(WPDA::remove_backticks( WPDA_Table_Settings_Model::get_base_table_name() ), $this->schema_name, $drop_table_name) ) );
         // WordPress media library columns...
-        $wpdb->query( $wpdb->prepare( 
-            'delete from `%1s` where media_schema_name = %s and media_table_name = %s ',
-            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-            array(WPDA::remove_backticks( WPDA_Media_Model::get_base_table_name() ), $this->schema_name, $drop_table_name)
-         ) );
+        $wpdb->query( $wpdb->prepare( 'delete from `%1s` where media_schema_name = %s and media_table_name = %s ', array(WPDA::remove_backticks( WPDA_Media_Model::get_base_table_name() ), $this->schema_name, $drop_table_name) ) );
         // Data menus...
-        $wpdb->query( $wpdb->prepare( 
-            'delete from `%1s` where menu_schema_name = %s and menu_table_name = %s ',
-            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-            array(WPDA::remove_backticks( WPDA_User_Menus_Model::get_base_table_name() ), $this->schema_name, $drop_table_name)
-         ) );
+        $wpdb->query( $wpdb->prepare( 'delete from `%1s` where menu_schema_name = %s and menu_table_name = %s ', array(WPDA::remove_backticks( WPDA_User_Menus_Model::get_base_table_name() ), $this->schema_name, $drop_table_name) ) );
         $wpdb->suppress_errors( $suppress );
     }
 
@@ -1574,7 +1573,8 @@ EOT;
     protected function drop_view( $view_name ) {
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = remote database name */
+            wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
         }
         return $wpdadb->query( 'drop view `' . str_replace( '`', '', $view_name ) . '`' );
         // db call ok; no-cache ok.
@@ -1591,7 +1591,8 @@ EOT;
     protected function drop_table( $table_name ) {
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = remote database name */
+            wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
         }
         if ( WPDA::is_wp_table( $table_name ) ) {
             // Never ever allow dropping a WordPress table!
@@ -1617,18 +1618,22 @@ EOT;
         if ( $this->process_bulk_action_check_action( 'bulk-selected', __( 'No table defined', 'wp-data-access' ) ) ) {
             // Check if truncate is allowed.
             if ( $this->process_bulk_action_check_wpnonce( 'wpda-truncate-' . WPDA::get_current_user_login(), '_wpnonce4' ) ) {
+                // phpcs:disable WordPress.Security.ValidatedSanitizedInput
                 $bulk_tabs = ( isset( $_REQUEST['bulk-selected'] ) ? $_REQUEST['bulk-selected'] : '' );
-                // input var okay; sanitization okay.
+                // phpcs:enable WordPress.Security.ValidatedSanitizedInput
                 foreach ( $bulk_tabs as $table_name ) {
                     // Truncate table is not allowed for WordPress tables (double check).
                     $truncate_table_name = sanitize_text_field( wp_unslash( $table_name ) );
                     // input var okay.
+                    /* translators: %s = table name */
                     $err_txt = ' ' . sprintf( __( '[cannot truncate WordPress table `%s`]', 'wp-data-access' ), $truncate_table_name );
                     if ( $this->process_bulk_action_check_is_wp_table( $truncate_table_name, $err_txt ) ) {
                         // Check if table exists.
+                        /* translators: %s = table name */
                         $err_txt = ' ' . sprintf( __( '[table `%s`]', 'wp-data-access' ), $truncate_table_name );
                         if ( $this->process_bulk_action_check_table_exists( $truncate_table_name, $err_txt ) ) {
                             $dbo_type = $this->get_dbo_type( $truncate_table_name );
+                            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                             if ( false === $dbo_type || 'VIEW' === $dbo_type || 'SYSTEM VIEW' === $dbo_type ) {
                                 $msg = new WPDA_Message_Box(array(
                                     'message_text'           => sprintf( __( 'Cannot truncate `%s`', 'wp-data-access' ), $truncate_table_name ),
@@ -1645,6 +1650,7 @@ EOT;
                                     $msg->box();
                                 }
                             }
+                            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                         }
                     }
                 }
@@ -1663,7 +1669,8 @@ EOT;
     protected function truncate_table( $table_name ) {
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = remote database name */
+            wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
         }
         if ( WPDA::is_wp_table( $table_name ) ) {
             // Never ever allow truncating a WordPress table!
@@ -1675,12 +1682,11 @@ EOT;
             $msg->box();
             return false;
         }
-        return $wpdadb->query( $wpdadb->prepare( 
-            'truncate table `%1s`',
-            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-            [WPDA::remove_backticks( $table_name )]
-         ) );
+        // phpcs:disable WordPress.DB.PreparedSQLPlaceholders
+        $qry = $wpdadb->query( $wpdadb->prepare( 'truncate table `%1s`', [WPDA::remove_backticks( $table_name )] ) );
         // db call ok; no-cache ok.
+        // phpcs:enable WordPress.DB.PreparedSQLPlaceholders
+        return $qry;
     }
 
     /**
@@ -1692,8 +1698,10 @@ EOT;
         // Check is there is anything to drop.
         if ( $this->process_bulk_action_check_action( 'drop_table_name', __( 'No table defined', 'wp-data-access' ) ) ) {
             // Drop table is not allowed for WordPress tables (double check).
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput
             $drop_table_name = sanitize_text_field( wp_unslash( $_REQUEST['drop_table_name'] ) );
-            // input var okay.
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput
+            /* translators: %s = table name */
             $err_txt = ' ' . sprintf( __( '[cannot drop WordPress table `%s`]', 'wp-data-access' ), $drop_table_name );
             if ( $this->process_bulk_action_check_is_wp_table( $drop_table_name, $err_txt ) ) {
                 // Check if table exists.
@@ -1701,6 +1709,7 @@ EOT;
                     // Check if drop is allowed.
                     if ( $this->process_bulk_action_check_wpnonce( "wpda-drop-{$drop_table_name}", '_wpnonce' ) ) {
                         $dbo_type = $this->get_dbo_type( $drop_table_name );
+                        // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                         if ( false === $dbo_type || 'SYSTEM VIEW' === $dbo_type ) {
                             $msg = new WPDA_Message_Box(array(
                                 'message_text'           => sprintf( __( 'Cannot drop `%s`', 'wp-data-access' ), $drop_table_name ),
@@ -1728,6 +1737,7 @@ EOT;
                                 }
                             }
                         }
+                        // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                     }
                 }
             }
@@ -1743,8 +1753,10 @@ EOT;
         // Check is there is anything to truncate.
         if ( $this->process_bulk_action_check_action( 'truncate_table_name', __( 'No table defined', 'wp-data-access' ) ) ) {
             // Truncate table is not allowed for WordPress tables (double check).
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput
             $truncate_table_name = sanitize_text_field( wp_unslash( $_REQUEST['truncate_table_name'] ) );
-            // input var okay.
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput
+            /* translators: %s = table name */
             $err_txt = ' ' . sprintf( __( '[cannot truncate WordPress table `%s`]', 'wp-data-access' ), $truncate_table_name );
             if ( $this->process_bulk_action_check_is_wp_table( $truncate_table_name, $err_txt ) ) {
                 // Check if table exists.
@@ -1753,9 +1765,11 @@ EOT;
                     if ( $this->process_bulk_action_check_wpnonce( "wpda-truncate-{$truncate_table_name}", '_wpnonce' ) ) {
                         // Truncate table.
                         if ( $this->truncate_table( $truncate_table_name ) ) {
+                            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                             $msg = new WPDA_Message_Box(array(
                                 'message_text' => sprintf( __( 'Table `%s` truncated', 'wp-data-access' ), $truncate_table_name ),
                             ));
+                            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                             $msg->box();
                         }
                     }
@@ -1885,7 +1899,8 @@ EOT;
     protected function construct_where_clause() {
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = remote database name */
+            wp_die( esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $this->schema_name ) ) );
         }
         global $wpdb;
         // Make sure we're selecting only tables that are in the WordPress database.
@@ -1944,7 +1959,6 @@ EOT;
                 $this->where .= " {$where_or_and} 1=2 ";
             } elseif ( is_array( $this->favourites ) ) {
                 if ( 0 < count( $this->favourites ) ) {
-                    //phpcs:ignore - 8.1 proof
                     $where_or_and = ( '' === $this->where ? ' where ' : ' and ' );
                     $in_or_not_in = ( 'show' === $this->wpda_main_favourites ? 'in' : 'not in' );
                     $this->where .= " {$where_or_and} table_name {$in_or_not_in} ('" . implode( "','", $this->favourites ) . "') ";
@@ -1983,7 +1997,7 @@ EOT;
 					>
 						<i class="fas fa-plus-circle wpda_icon_on_button"></i>
 						<?php 
-        echo __( 'Design new table', 'wp-data-access' );
+        echo esc_attr__( 'Design new table', 'wp-data-access' );
         ?>
 					</button>
 				</div>
@@ -2026,7 +2040,7 @@ EOT;
         ?>" onsubmit="return editdb_validate_form();">
 						<div style="height:10px;"></div>
 						<strong><?php 
-        echo __( 'Edit Remote Database Connection', 'wp-data-access' );
+        echo esc_attr__( 'Edit Remote Database Connection', 'wp-data-access' );
         ?></strong>
 						<div style="height:10px;"></div>
 						<div>
@@ -2116,12 +2130,12 @@ EOT;
 						</div>
 
 						<input type="submit" class="button button-primary" value="<?php 
-        echo __( 'Save', 'wp-data-access' );
+        echo esc_attr__( 'Save', 'wp-data-access' );
         ?>">
 						<a href="javascript:void(0)"
 						   onclick="jQuery('#wpda_db_edit').hide()"
 						   class="button button-secondary"><i class="fas fa-times-circle wpda_icon_on_button"></i> <?php 
-        echo __( 'Cancel', 'wp-data-access' );
+        echo esc_attr__( 'Cancel', 'wp-data-access' );
         ?></a>
 						<input type="hidden" name="action" value="edit_db">
 						<?php 
@@ -2144,10 +2158,10 @@ EOT;
 							<select name="database_location" id="database_location">
 								<option value="local"
 										selected><?php 
-            echo __( 'Create local database', 'wp-data-access' );
+            echo esc_attr__( 'Create local database', 'wp-data-access' );
             ?></option>
 								<option value="remote"><?php 
-            echo __( 'Add remote database connection', 'wp-data-access' );
+            echo esc_attr__( 'Add remote database connection', 'wp-data-access' );
             ?></option>
 							</select>
 
@@ -2164,7 +2178,7 @@ EOT;
         } else {
             ?>
 							<strong><?php 
-            echo __( 'Add remote database connection', 'wp-data-access' );
+            echo esc_attr__( 'Add remote database connection', 'wp-data-access' );
             ?></strong>
 
 							<div style="height:10px;"></div>
@@ -2234,12 +2248,12 @@ EOT;
 						<a href="javascript:void(0)"
 						   onclick="jQuery(this).closest('form').submit()"
 						   class="button button-primary"><i class="fas fa-cloud-upload wpda_icon_on_button"></i> <?php 
-        echo __( 'Save', 'wp-data-access' );
+        echo esc_attr__( 'Save', 'wp-data-access' );
         ?></a>
 						<a href="javascript:void(0)"
 						   onclick="jQuery('#wpda_db_container').hide()"
 						   class="button button-secondary"><i class="fas fa-times-circle wpda_icon_on_button"></i> <?php 
-        echo __( 'Cancel', 'wp-data-access' );
+        echo esc_attr__( 'Cancel', 'wp-data-access' );
         ?></a>
 						<input type="hidden" name="action" value="create_db">
 						<?php 
@@ -2406,7 +2420,7 @@ EOT;
         ?>
 			<div style="padding-top:10px;padding-bottom:0;">
 				<span style="font-weight: bold;"><?php 
-        echo __( 'Database', 'wp-data-access' );
+        echo esc_attr__( 'Database', 'wp-data-access' );
         ?>:</span>
 				<select id="wpda_main_db_schema_list">
 					<?php 
@@ -2447,7 +2461,7 @@ EOT;
         echo ( 'rdb:' === substr( $this->schema_name, 0, 4 ) ? '' : 'color:grey;cursor:default;' );
         ?>vertical-align:middle;"
 				   title="<?php 
-        echo ( 'rdb:' === substr( $this->schema_name, 0, 4 ) ? __( 'Edit remote database connection', 'wp-data-access' ) : __( 'Not available for local database', 'wp-data-access' ) );
+        echo ( 'rdb:' === substr( $this->schema_name, 0, 4 ) ? esc_attr__( 'Edit remote database connection', 'wp-data-access' ) : esc_attr__( 'Not available for local database', 'wp-data-access' ) );
         ?>">&nbsp;</a>
 				<a class="dashicons dashicons-plus-alt wpda_tooltip" href="javascript:void(0)"
 				   onclick="jQuery('#wpda_db_container').show(); jQuery('#local_database').focus();"
@@ -2459,14 +2473,15 @@ EOT;
 					<?php 
         if ( $this->user_can_drop_db ) {
             if ( 'rdb:' === substr( $this->schema_name, 0, 4 ) ) {
-                $msg = __( 'Delete remote database connection?\\nDoes not drop the database! Only deletes the remote database connection definition.', 'wp-data-access' );
+                $msg = esc_html__( 'Delete remote database connection?\\nDoes not drop the database! Only deletes the remote database connection definition.', 'wp-data-access' );
             } else {
-                $msg = __( 'Drop selected database?', 'wp-data-access' );
+                $msg = esc_html__( 'Drop selected database?', 'wp-data-access' );
             }
             ?>
 						onclick="if (confirm('<?php 
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo $msg;
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            // phpcs:disable WordPress.Security.EscapeOutput
             ?>')) { jQuery('#drop_database').val(jQuery('#wpda_main_db_schema_list').val()); jQuery('#wpda_form_drop_db').submit(); }"
 						<?php 
         }
@@ -2482,15 +2497,14 @@ EOT;
 				   onclick="wpda_dbinit_admin( '<?php 
         echo esc_attr( $this->schema_name );
         ?>', '<?php 
-        echo wp_create_nonce( 'wpda_dbinit_admin_' . WPDA::get_current_user_login() );
+        echo esc_attr( wp_create_nonce( 'wpda_dbinit_admin_' . WPDA::get_current_user_login() ) );
         ?>' )"
 				   style="vertical-align:middle;"
 				   title="<?php 
-        echo __( "Create function wpda_get_wp_user_id() to access the WordPress user ID from database views", 'wp-data-access' );
+        echo esc_attr__( "Create function wpda_get_wp_user_id() to access the WordPress user ID from database views", 'wp-data-access' );
         ?>">&nbsp;</a>
 				&nbsp;<span style="font-weight: bold;"><?php 
-        echo __( 'Favourites', 'wp-data-access' );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        esc_html_e( 'Favourites', 'wp-data-access' );
         ?>:</span>
 				<select id="wpda_main_favourites_list">
 					<option value="" <?php 
@@ -2573,7 +2587,6 @@ EOT;
         $wpda_main_db_schema = null;
         if ( isset( $_REQUEST['wpda_main_db_schema'] ) && '' !== $_REQUEST['wpda_main_db_schema'] ) {
             $wpda_main_db_schema = sanitize_text_field( wp_unslash( $_REQUEST['wpda_main_db_schema'] ) );
-            // input var okay.
         } elseif ( isset( $_COOKIE[$cookie_name] ) ) {
             $wpda_main_db_schema = sanitize_text_field( wp_unslash( $_COOKIE[$cookie_name] ) );
             // input var okay.
@@ -2590,7 +2603,8 @@ EOT;
             if ( WPDA::schema_exists( $wpda_main_db_schema ) ) {
                 return $wpda_main_db_schema;
             }
-            echo '<p><strong>' . sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $wpda_main_db_schema ) ) . '</strong></p>';
+            /* translators: %s = remote database name */
+            echo '<p><strong>' . esc_attr( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), $wpda_main_db_schema ) ) . '</strong></p>';
         }
         return WPDA::get_user_default_scheme();
     }
@@ -2605,7 +2619,6 @@ EOT;
         $cookie_name = $this->page . '_favourites';
         if ( isset( $_REQUEST['wpda_main_favourites'] ) ) {
             return sanitize_text_field( wp_unslash( $_REQUEST['wpda_main_favourites'] ) );
-            // input var okay.
         } elseif ( isset( $_COOKIE[$cookie_name] ) ) {
             return sanitize_text_field( wp_unslash( $_COOKIE[$cookie_name] ) );
         } else {
@@ -2638,3 +2651,5 @@ EOT;
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

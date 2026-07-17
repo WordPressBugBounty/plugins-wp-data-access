@@ -121,7 +121,7 @@ namespace WPDataProjects\Data_Dictionary {
 			// Reorder table columns according to sequence defined by user.
 			$table_columns_sorted = array();
 			if ( ! isset( $this->table_columns ) ) {
-				wp_die( __( 'ERROR: Wrong arguments [no table columns]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [no table columns]', 'wp-data-access' ) );
 			}
 
 			if ( null !== $this->column_options ) {
@@ -173,7 +173,7 @@ namespace WPDataProjects\Data_Dictionary {
 		 */
 		protected function set_table_column_headers() {
 			if ( ! isset( $this->table_columns ) ) {
-				wp_die( __( 'ERROR: Wrong arguments [no table columns]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'ERROR: Wrong arguments [no table columns]', 'wp-data-access' ) );
 			}
 
 			if ( null === $this->column_options ) {

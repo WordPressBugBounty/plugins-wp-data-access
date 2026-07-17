@@ -36,14 +36,14 @@ namespace WPDataAccess\Plugin_Table_Models {
 			global $wpdb;
 
 			try {
-				return $wpdb->get_results(
+				return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 					$wpdb->prepare(
 						'select * from `%1s` order by menu_name', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 						array(
 							WPDA::remove_backticks( self::get_base_table_name() ),
 						)
 					)
-				); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				); 
 			} catch( \Exception $e ) {
 				return array();
 			}
@@ -61,7 +61,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 			global $wpdb;
 
 			if ( self::table_exists() ) {
-				return $wpdb->get_results(
+				return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 					$wpdb->prepare(
 						'select * from   `%1s` where menu_schema_name = %s and menu_table_name = %s order by menu_name', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 						array(
@@ -71,7 +71,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 						)
 					),
 					'ARRAY_A'
-				); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				); 
 			} else {
 				return array();
 			}
@@ -92,7 +92,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 			global $wpdb;
 
 			if ( self::table_exists() ) {
-				return ( 1 === $wpdb->insert(
+				return ( 1 === $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table
 						static::get_base_table_name(),
 						array(
 							'menu_schema_name' => $menu_schema_name,
@@ -121,7 +121,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public static function update( $menu_id, $menu_table_name, $menu_name, $menu_slug, $menu_role, $menu_schema_name ) {
 			global $wpdb;
 
-			return $wpdb->update(
+			return $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				static::get_base_table_name(),
 				array(
 					'menu_schema_name' => $menu_schema_name,
@@ -146,7 +146,7 @@ namespace WPDataAccess\Plugin_Table_Models {
 		public static function delete( $menu_id ) {
 			global $wpdb;
 
-			return $wpdb->delete(
+			return $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 				static::get_base_table_name(),
 				array(
 					'menu_id' => $menu_id,

@@ -28,12 +28,14 @@ class WPDA_Apps extends WPDA_API_Core {
             }
         } else {
             // Allow HTML and onclick for computed fields
+            // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
             $value = apply_filters(
                 'wp_kses_post',
                 $value,
                 "",
                 ["onclick"]
             );
+            // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
         }
         return $value;
     }
@@ -566,6 +568,7 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_call( $request ) {
+        return $this->bad_request();
     }
 
     public function app_lang_get( $request ) {
@@ -827,6 +830,7 @@ class WPDA_Apps extends WPDA_API_Core {
         &$default_where,
         &$lookups
     ) {
+        return $this->bad_request();
     }
 
     private function build_relationships(
@@ -835,6 +839,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $tbl,
         &$default_where
     ) {
+        return $this->bad_request();
     }
 
     public function app_select( $request ) {
@@ -1081,51 +1086,7 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_update_inline( $request ) {
-        $app_id = $request->get_param( 'app_id' );
-        $cnt_id = $request->get_param( 'cnt_id' );
-        $key = $request->get_param( 'key' );
-        $val = $request->get_param( 'val' );
-        if ( $this->check_app_access(
-            $app_id,
-            $cnt_id,
-            'select',
-            $dbs,
-            $tbl,
-            $msg,
-            $settings
-        ) ) {
-            foreach ( $val as $column_name => $column ) {
-                $found = false;
-                if ( isset( $settings['table']['columns'] ) ) {
-                    foreach ( $settings['table']['columns'] as $settings_column ) {
-                        if ( isset( $settings_column['columnName'] ) && $column_name === $settings_column['columnName'] ) {
-                            $found = true;
-                        }
-                    }
-                    if ( !$found ) {
-                        return $this->unauthorized();
-                    }
-                }
-            }
-            $column_names = $this->get_app_form_columns( $settings );
-            if ( false === $column_names ) {
-                $column_names = array();
-            }
-            $table_api = new WPDA_Table();
-            return $table_api->update(
-                $dbs,
-                $tbl,
-                $key,
-                $val,
-                $column_names
-            );
-        } else {
-            if ( 'rest_cookie_invalid_nonce' === $msg ) {
-                return $this->invalid_nonce();
-            } else {
-                return $this->unauthorized();
-            }
-        }
+        return $this->bad_request();
     }
 
     public function app_delete( $request ) {
@@ -1388,7 +1349,9 @@ class WPDA_Apps extends WPDA_API_Core {
             "update `{$wpdb->prefix}wpda_app_container` set `cnt_dbs` = %s where `cnt_dbs` = %s"
         );
         foreach ( $sqls as $sql ) {
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- plugin table
             $result = $wpdb->query( $wpdb->prepare( $sql, array($dbs_destination, $dbs_source) ) );
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
             $renamed += $result;
             if ( $debug_mode ) {
                 $debug[] = array(
@@ -1405,6 +1368,7 @@ class WPDA_Apps extends WPDA_API_Core {
         }
         $sql_content = array("update `{$wpdb->prefix}wpda_app_container` set `cnt_table` = replace(`cnt_table`, '\"dbs\":\"%1s\"', '\"dbs\":\"%1s\"') where `cnt_table` like '%\"dbs\":\"%1s\"%'", "update `{$wpdb->prefix}wpda_app_container` set `cnt_form` = replace(`cnt_form`, '\"dbs\":\"%1s\"', '\"dbs\":\"%1s\"') where `cnt_form` like '%\"dbs\":\"%1s\"%'");
         foreach ( $sql_content as $sql ) {
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- plugin table
             $result = $wpdb->query( $wpdb->prepare( $sql, array($dbs_source, $dbs_destination, $dbs_source) ) );
             $renamed += $result;
             if ( $debug_mode ) {
@@ -1431,7 +1395,11 @@ class WPDA_Apps extends WPDA_API_Core {
                 'context' => $context,
             ));
         }
-        return $this->WPDA_Rest_Response( sprintf( __( 'Successfully renamed %s database occurrences', 'wp-data-access' ), $renamed ), null, $context );
+        return $this->WPDA_Rest_Response( sprintf( 
+            /* translators: %s = number of database substitutions */
+            __( 'Successfully renamed %s database occurrences', 'wp-data-access' ),
+            $renamed
+         ), null, $context );
     }
 
     public function app_chart_data( $request ) {
@@ -2106,6 +2074,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $app = WPDA_App_Model::get_by_id( $app_id );
         $app_settings = ( null === $app[0]['app_settings'] ? 'null' : "{$quotes( $app[0]['app_settings'] )}" );
         $app_theme = ( null === $app[0]['app_theme'] ? 'null' : "{$quotes( $app[0]['app_theme'] )}" );
+        // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
         $app_sql = <<<SQL
 # Import app
 insert into `{wp_prefix}wpda_app`
@@ -2148,6 +2117,7 @@ SQL;
             $cnt_dbs = ( $wpdb->dbname === $container['cnt_dbs'] ? '{wp_schema}' : "{$quotes( $container['cnt_dbs'] )}" );
             $cnt_table = str_replace( "\"dbs\":\"{$wpdb->dbname}\"", "\"dbs\":\"{wp_schema}\"", $cnt_table );
             $cnt_form = str_replace( "\"dbs\":\"{$wpdb->dbname}\"", "\"dbs\":\"{wp_schema}\"", $cnt_form );
+            // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
             $containers_sql .= <<<SQL
 # Import app container
 insert into `{wp_prefix}wpda_app_container`
@@ -2191,6 +2161,7 @@ values
 SQL;
         }
         // Post update: update master container ids
+        // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
         $containers_sql .= <<<SQL
 # Update app master container IDs
 update `{wp_prefix}wpda_app_container` as a
@@ -2215,6 +2186,7 @@ SQL;
             $apps_sql .= $this->do_app_export_app( $app['app_id_detail'], $main_app_id );
         }
         foreach ( $apps as $app ) {
+            // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
             $apps_sql .= <<<SQL
 # Import app relationships
 insert into `{wp_prefix}wpda_app_apps`
@@ -2237,6 +2209,7 @@ SQL;
     private function do_app_export( $app_id ) {
         global $wpdb;
         $sql = '';
+        // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
         $begin_sql = <<<SQL
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -2259,6 +2232,7 @@ SET @APP_ID = NULL;
 
 SQL;
         $sql .= $this->do_app_export_app( $app_id, $app_id );
+        // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
         $end_sql = <<<SQL
 # Drop temporary table
 DROP TABLE `wpda_transfer_containers_{$app_id}`;
@@ -2470,6 +2444,7 @@ SQL;
                         $arg_name = substr( $arg_name, 1, -1 );
                     }
                     // Handle GET args
+                    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
                     if ( $method === self::METHODS[0] ) {
                         if ( isset( $search_custom['get'][$arg_name] ) ) {
                             $arg_value = sanitize_text_field( wp_unslash( $search_custom['get'][$arg_name] ) );
@@ -2519,6 +2494,7 @@ SQL;
                             $where = str_replace( $filter, 'null', $where );
                         }
                     }
+                    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
                 }
                 $offset = $pos_start + 1;
                 if ( $offset > strlen( $where ) ) {
@@ -2531,20 +2507,17 @@ SQL;
             $filter_field_name = $this->sanitize_db_identifier( array_keys( $search_params )[0] );
             $filter_field_value = sanitize_text_field( $search_params[$filter_field_name] );
             $filter_field_name_array = array_map( 'trim', explode( ',', $filter_field_name ) );
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             $filter_field_value_array = array_map( 'trim', explode( ',', $filter_field_value ) );
-            //phpcs:ignore - 8.1 proof
+            // phpcs:ignore -- 8.1 proof
             if ( count( $filter_field_name_array ) === count( $filter_field_value_array ) ) {
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 // Add filter to where clause.
+                // phpcs:disable Generic.CodeAnalysis.ForLoopWithTestFunctionCall, Squiz.PHP.DisallowSizeFunctionsInLoops, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
                 for ($i = 0; $i < count( $filter_field_name_array ); $i++) {
-                    // phpcs:ignore Generic.CodeAnalysis.ForLoopWithTestFunctionCall, Squiz.PHP.DisallowSizeFunctionsInLoops
-                    $where .= (( '' === $where ? '' : ' and ' )) . $wpdb->prepare( 
-                        ' `%1s` like %s ',
-                        // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                        array($filter_field_name_array[$i], $filter_field_value_array[$i])
-                     );
+                    $where .= (( '' === $where ? '' : ' and ' )) . $wpdb->prepare( ' `%1s` like %s ', array($filter_field_name_array[$i], $filter_field_value_array[$i]) );
                 }
+                // phpcs:enable Generic.CodeAnalysis.ForLoopWithTestFunctionCall, Squiz.PHP.DisallowSizeFunctionsInLoops, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
             }
         }
         // Substitute all shortcode parameters
@@ -2556,7 +2529,9 @@ SQL;
                     for ($i = 0; $i < $occurences; $i++) {
                         $column_values[] = sanitize_text_field( $column_value );
                     }
+                    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     $where = $wpdb->prepare( str_ireplace( "shortcodeParam['{$column_name}']", '%s', $where ), $column_values );
+                    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 }
             }
         }
@@ -2576,7 +2551,9 @@ SQL;
         // Substitute all dynamic parameters
         if ( is_array( $dynamic_params ) && 0 < count( $dynamic_params ) ) {
             foreach ( $dynamic_params as $column_name => $column_value ) {
+                // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $where = $wpdb->prepare( str_ireplace( "{:{$column_name}}", '%s', $where ), $column_value );
+                // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             }
         }
         return $where;

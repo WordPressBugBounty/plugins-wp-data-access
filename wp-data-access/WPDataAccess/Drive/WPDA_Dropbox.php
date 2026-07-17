@@ -99,13 +99,13 @@ namespace WPDataAccess\Drive {
 
             if ( ! isset( $this->drive['access_token'] ) ) return false;
 
-            $file      = fopen( $local_file, 'r' );
+            $file      = fopen( $local_file, 'r' ); // phpcs:ignore
             $file_size = filesize( $local_file );
 
             fseek( $file, 0 );
             $response = WPDA_Remote_Call::post(
                 'https://content.dropboxapi.com/2/files/upload',
-                fread( $file, $file_size ),
+                fread( $file, $file_size ), // phpcs:ignore
                 false,
                 array(
                     'Authorization'   => "Bearer {$this->drive['access_token']}",

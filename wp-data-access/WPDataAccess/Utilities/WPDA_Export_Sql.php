@@ -114,7 +114,7 @@ namespace WPDataAccess\Utilities {
 				if ( false === $current_memory_limit ||
 					 WPDA::convert_memory_to_decimal( $current_memory_limit ) < WPDA::convert_memory_to_decimal( $wp_memory_limit )
 				) {
-					@ini_set( 'memory_limit', $wp_memory_limit );
+					@ini_set( 'memory_limit', $wp_memory_limit ); // phpcs:ignore
 				}
 			}
 
@@ -151,7 +151,8 @@ namespace WPDataAccess\Utilities {
 			if ( '' !== $schema_name ) {
 				$wpdadb = WPDADB::get_db_connection( $schema_name );
 				if ( null === $wpdadb ) {
-					die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				}
 
 				$this->schema_name        = $schema_name;
@@ -184,7 +185,7 @@ namespace WPDataAccess\Utilities {
 		public function export() {
 			// Check if export is allowed.
 			$table_names = isset( $_REQUEST['table_names'] ) ?
-				json_encode( WPDA::sanitize_text_field_array( $_REQUEST['table_names'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+				json_encode( WPDA::sanitize_text_field_array( $_REQUEST['table_names'] ) ) : ''; // phpcs:ignore
 			$wp_nonce    = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '?'; // input var okay.
 			if (
 				! wp_verify_nonce( $wp_nonce, "wpda-export-{$table_names}" ) &&
@@ -352,7 +353,7 @@ namespace WPDataAccess\Utilities {
 					// $wpdadb->query( "SET sql_mode = 'NO_TABLE_OPTIONS'" );
 				}
 				$query = "show create table {$this->schema_name_prefix}`" . str_replace( '`', '', (string) $table_name ) . '`';
-				$ctcmd = $wpdadb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				$ctcmd = $wpdadb->get_results( $query, 'ARRAY_A' ); 
 			}
 
 			$this->output_string = '';
@@ -441,23 +442,25 @@ namespace WPDataAccess\Utilities {
 
 			$query = "select * from {$this->schema_name_prefix}`" . str_replace( '`', '', (string) $table_name ) . "` $where";
 			if ( is_numeric( $query_buffer_size ) && $query_buffer_size > 0 ) {
+				// phpcs:disable Squiz.PHP.DiscouragedFunctions.Discouraged
 				set_time_limit(0);
+				// phpcs:enable Squiz.PHP.DiscouragedFunctions.Discouraged
 				$i    = 0;
 				$sql  = $query . ' limit ' . $query_buffer_size;
-				$rows = $wpdadb->get_results( $sql, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				$rows = $wpdadb->get_results( $sql, 'ARRAY_A' ); 
 				while ( $wpdadb->num_rows > 0 ) {
 					$this->insert_rows_buffer( $rows, $table_name, $where, $show_comments );
 
 					$i++;
 					$sql  = $query . ' limit ' . $query_buffer_size . ' offset ' . ( $i * $query_buffer_size );
-					$rows = $wpdadb->get_results( $sql, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+					$rows = $wpdadb->get_results( $sql, 'ARRAY_A' ); 
 				}
 
 				if ( 1 === $i && 0 == $wpdadb->num_rows ) {
 					$this->empty_table( $table_name, $show_comments );
 				}
 			} else {
-				$rows = $wpdadb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				$rows = $wpdadb->get_results( $query, 'ARRAY_A' ); 
 
 				if ( $wpdadb->num_rows > 0 ) {
 					$this->insert_rows_buffer( $rows, $table_name, $where, $show_comments );
@@ -564,8 +567,8 @@ namespace WPDataAccess\Utilities {
 			foreach ( $rows as $row ) {
 				$this->output_string .= $insert_statement . '(';
 
-				$keys        = array_keys( $row );//phpcs:ignore - 8.1 proof
-				$last_column = end( $keys );//phpcs:ignore - 8.1 proof
+				$keys        = array_keys( $row ); // phpcs:ignore -- 8.1 proof
+				$last_column = end( $keys ); // phpcs:ignore -- 8.1 proof
 				foreach ( $row as $column_name => $column_value ) {
 					if (
 						! (
@@ -639,7 +642,7 @@ namespace WPDataAccess\Utilities {
 
 			if ( 'on' === $this->include_table_settings ) {
 				// Export column labels
-				$rows = $wpdb->get_results(
+				$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 					$wpdb->prepare(
 						"select * from {$wpdb->prefix}wpda_table_settings where wpda_table_name = %s",
 						array(
@@ -647,7 +650,7 @@ namespace WPDataAccess\Utilities {
 						)
 					),
 					'ARRAY_A'
-				); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				); 
 				if ( 1 === $wpdb->num_rows ) {
 					$this->output_string .=
 						'DELETE FROM `{wp_prefix}wpda_table_settings` ' .
@@ -663,7 +666,7 @@ namespace WPDataAccess\Utilities {
 				}
 
 				// Export media columns
-				$rows                 = $wpdb->get_results(
+				$rows                 = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 					$wpdb->prepare(
 						"select * from {$wpdb->prefix}wpda_media where media_table_name = %s",
 						array(
@@ -671,7 +674,7 @@ namespace WPDataAccess\Utilities {
 						)
 					),
 					'ARRAY_A'
-				); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				); 
 				$this->output_string .=
 					'DELETE FROM `{wp_prefix}wpda_media` ' .
 					"WHERE `media_table_name` = '" . esc_attr( $table_name ) . "';";
@@ -688,7 +691,7 @@ namespace WPDataAccess\Utilities {
 				}
 
 				// Export table menus
-				$rows                 = $wpdb->get_results(
+				$rows                 = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 					$wpdb->prepare(
 						"select * from {$wpdb->prefix}wpda_menus where menu_table_name = %s",
 						array(
@@ -696,7 +699,7 @@ namespace WPDataAccess\Utilities {
 						)
 					),
 					'ARRAY_A'
-				); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+				); 
 				$this->output_string .=
 					'DELETE FROM `{wp_prefix}wpda_menus` ' .
 					"WHERE `menu_table_name` = '" . esc_attr( $table_name ) . "';";
@@ -820,7 +823,7 @@ namespace WPDataAccess\Utilities {
 			// Use first column of the primary key to loop through arguments. Add additional arguments in the loop.
 			// A mismatch in the number of argument is possible as long as the columns match based on the first column
 			// of the primary key. Other mismatches won't be taken into account.
-			$count_pk = count( ( array ) $_REQUEST[ $table_primary_key[0] ] );//phpcs:ignore - 8.1 proof
+			$count_pk = count( ( array ) $_REQUEST[ $table_primary_key[0] ] ); // phpcs:ignore -- 8.1 proof
 			for ( $i = 0; $i < $count_pk; $i ++ ) {
 				$and = '';
 				foreach ( $table_primary_key as $key ) {
@@ -830,17 +833,17 @@ namespace WPDataAccess\Utilities {
 							'`%1s` = %d', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 							array(
 								WPDA::remove_backticks( $key ),
-								sanitize_text_field( wp_unslash( $_REQUEST[ $key ][ $i ] ) ),
+								sanitize_text_field( wp_unslash( $_REQUEST[ $key ][ $i ] ) ), // phpcs:ignore -- nonce veryfied in export function
 							)
-						); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+						);
 					} else {
 						$and .= $wpdb->prepare(
 							'`%1s` = %s', // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
 							array(
 								WPDA::remove_backticks( $key ),
-								sanitize_text_field( wp_unslash( $_REQUEST[ $key ][ $i ] ) ),
+								sanitize_text_field( wp_unslash( $_REQUEST[ $key ][ $i ] ) ), // phpcs:ignore -- nonce veryfied in export function
 							)
-						); // phpcs:ignore Standard.Category.SniffName.ErrorCode
+						);
 					}
 				}
 
@@ -878,7 +881,7 @@ namespace WPDataAccess\Utilities {
 			if ( null === $this->output_stream ) {
 				echo $this->output_string; // phpcs:ignore WordPress.Security.EscapeOutput
 			} else {
-				fwrite( $this->output_stream, $this->output_string );
+				fwrite( $this->output_stream, $this->output_string ); // phpcs:ignore
 			}
 			$this->output_string = '';
 		}

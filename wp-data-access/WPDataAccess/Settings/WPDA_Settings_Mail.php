@@ -16,21 +16,21 @@ namespace WPDataAccess\Settings {
                 // Security check.
                 $wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
                 if ( ! wp_verify_nonce( $wp_nonce, 'wpda-mail-settings-' . WPDA::get_current_user_login() ) ) {
-                    wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                    wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
                 }
 
                 if ( 'save' === $action ) {
 
                     $mail = array(
                         'activate'     => isset( $_POST['activate'] ) ? sanitize_text_field( wp_unslash( $_POST['activate'] ) ) : '',
-                        'host'         => sanitize_text_field( wp_unslash( $_POST['host'] ) ),
-                        'port'         => sanitize_text_field( wp_unslash( $_POST['port'] ) ),
+                        'host'         => sanitize_text_field( wp_unslash( $_POST['host'] ) ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+                        'port'         => sanitize_text_field( wp_unslash( $_POST['port'] ) ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
                         'authenticate' => isset( $_POST['authenticate'] ) ? sanitize_text_field( wp_unslash( $_POST['authenticate'] ) ) : '',
-                        'encryption'   => sanitize_text_field( wp_unslash( $_POST['encryption'] ) ),
+                        'encryption'   => sanitize_text_field( wp_unslash( $_POST['encryption'] ) ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
                         'skip_verify'  => isset( $_POST['skip_verify'] ) ? sanitize_text_field( wp_unslash( $_POST['skip_verify'] ) ) : '',
-                        'username'     => sanitize_text_field( wp_unslash( $_POST['username'] ) ),
-                        'password'     => sanitize_text_field( wp_unslash( $_POST['password'] ) ),
-                        'debug'        => sanitize_text_field( wp_unslash( $_POST['debug'] ) ),
+                        'username'     => sanitize_text_field( wp_unslash( $_POST['username'] ) ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+                        'password'     => sanitize_text_field( wp_unslash( $_POST['password'] ) ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+                        'debug'        => sanitize_text_field( wp_unslash( $_POST['debug'] ) ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
                     );
 
                     WPDA_Mail::update_option( $mail );
@@ -77,7 +77,7 @@ namespace WPDataAccess\Settings {
                                     type="checkbox"
                                     name="activate"
                                     <?php echo 'on' === $activate ? 'checked' : ''; ?>
-                                /> <?php echo __( 'Activate', 'wp-data-access' ); ?>
+                                /> <?php esc_html_e( 'Activate', 'wp-data-access' ); ?>
                             </label>
                         </th>
                         <td>
@@ -231,16 +231,16 @@ namespace WPDataAccess\Settings {
                     <input type="hidden" name="action" value="save"/>
                     <button type="submit" class="button button-primary">
                         <i class="fas fa-check wpda_icon_on_button"></i>
-                        <?php echo __( 'Save Mail Settings', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Save Mail Settings', 'wp-data-access' ); ?>
                     </button>
                     <a href="javascript:void(0)"
-                       onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+                       onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
                            jQuery('input[name=\'action\']').val('setdefaults');
                            jQuery('#wpda_settings_mail').trigger('submit');
                            }"
                        class="button button-secondary">
                         <i class="fas fa-times-circle wpda_icon_on_button"></i>
-                        <?php echo __( 'Reset Mail Settings To Defaults', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Reset Mail Settings To Defaults', 'wp-data-access' ); ?>
                     </a>
                 </div>
 

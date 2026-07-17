@@ -56,7 +56,7 @@ namespace WPDataAccess\Settings {
 			$table_settings_table_exists = WPDA_Table_Settings_Model::table_exists();
 
 			// Check table characteristics.
-			$table_chararteristics_results   = $wpdb->get_results(
+			$table_chararteristics_results   = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin tables
 				$wpdb->prepare(
 					'
 					select table_name AS table_name, engine AS engine, table_collation AS table_collation
@@ -120,20 +120,20 @@ namespace WPDataAccess\Settings {
 						}
 					});
 					text_to_clipboard.on('success', function (e) {
-						jQuery.notify('<?php echo __( 'System info successfully copied to clipboard!' ); ?>','info');
+						jQuery.notify('<?php esc_html_e( 'System info successfully copied to clipboard!', 'wp-data-access' ); ?>','info');
 					});
 					text_to_clipboard.on('error', function (e) {
-						jQuery.notify('<?php echo __( 'Could not copy system info to clipboard!' ); ?>','error');
+						jQuery.notify('<?php esc_html_e( 'Could not copy system info to clipboard!', 'wp-data-access' ); ?>','error');
 					});
 				});
 			</script>
 			<table class="wpda-table-settings" id="wpda_table_info">
 				<tr>
-					<th class="wpda_system_info_title"><?php echo __( 'Operating System' ); ?></th>
+					<th class="wpda_system_info_title"><?php esc_html_e( 'Operating System', 'wp-data-access' ); ?></th>
 					<td>
 						<table class="wpda-table-system-info" style="width:100%">
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Type' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Type', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value">
 									<?php echo esc_attr( php_uname( 's' ) ); ?>
 								</td>
@@ -141,30 +141,30 @@ namespace WPDataAccess\Settings {
 									<a id="button-copy-to-clipboard" href="javascript:void(0)"
 									   class="button button-primary">
 										<i class="fas fa-clipboard wpda_icon_on_button"></i>
-										<?php echo __( 'Copy to clipboard' ); ?>
+										<?php esc_html_e( 'Copy to clipboard', 'wp-data-access' ); ?>
 									</a>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Release' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Release', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( php_uname( 'r' ) ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Version' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Version', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( php_uname( 'v' ) ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Machine Type' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Machine Type', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( php_uname( 'm' ) ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Host Name' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Host Name', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( php_uname( 'n' ) ); ?>
 								</td>
@@ -173,14 +173,14 @@ namespace WPDataAccess\Settings {
 					</td>
 				</tr>
 				<tr>
-					<th class="wpda_system_info_title"><?php echo __( 'Database Management System' ); ?></th>
+					<th class="wpda_system_info_title"><?php esc_html_e( 'Database Management System', 'wp-data-access' ); ?></th>
 					<td>
 						<table class="wpda-table-system-info" style="width:100%">
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Version' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Version', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php
-									$db_version = $wpdb->get_results( "SHOW VARIABLES LIKE 'version'", 'ARRAY_N' );
+									$db_version = $wpdb->get_results( "SHOW VARIABLES LIKE 'version'", 'ARRAY_N' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 									if ( is_array( $db_version ) && isset( $db_version[0][1] ) ) {
 										echo esc_attr( $db_version[0][1] );
 									} else {
@@ -190,10 +190,10 @@ namespace WPDataAccess\Settings {
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Pivileges' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Pivileges', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php
-									$db_privileges = $wpdb->get_results( 'SHOW PRIVILEGES', 'ARRAY_N' );
+									$db_privileges = $wpdb->get_results( 'SHOW PRIVILEGES', 'ARRAY_N' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 									if ( is_array( $db_privileges ) ) {
 										$db_privileges_output = '';
 										foreach ( $db_privileges as $db_privilege ) {
@@ -205,10 +205,10 @@ namespace WPDataAccess\Settings {
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Grants' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Grants', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php
-									$db_grants = $wpdb->get_results( 'SHOW GRANTS', 'ARRAY_N' );
+									$db_grants = $wpdb->get_results( 'SHOW GRANTS', 'ARRAY_N' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 									if ( is_array( $db_grants ) ) {
 										$db_grants_output = '';
 										foreach ( $db_grants as $db_grant ) {
@@ -225,10 +225,10 @@ namespace WPDataAccess\Settings {
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'SQL Mode' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'SQL Mode', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php
-									$db_sql_mode = $wpdb->get_results( 'SHOW VARIABLES LIKE \'sql_mode\'', 'ARRAY_N' );
+									$db_sql_mode = $wpdb->get_results( 'SHOW VARIABLES LIKE \'sql_mode\'', 'ARRAY_N' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 									if ( isset( $db_sql_mode[0][1] ) ) {
 										echo esc_attr( $db_sql_mode[0][1] );
 									}
@@ -239,89 +239,89 @@ namespace WPDataAccess\Settings {
 					</td>
 				</tr>
 				<tr>
-					<th class="wpda_system_info_title"><?php echo __( 'Web Server' ); ?></th>
+					<th class="wpda_system_info_title"><?php esc_html_e( 'Web Server', 'wp-data-access' ); ?></th>
 					<td>
 						<table class="wpda-table-system-info" style="width:100%">
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Software' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Software', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
-									<?php echo esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) ); ?>
+									<?php echo esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'PHP Version' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'PHP Version', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( phpversion() ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Protocol' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Protocol', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
-									<?php echo esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_PROTOCOL'] ) ) ); ?>
+									<?php echo esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_PROTOCOL'] ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Name' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Name', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
-									<?php echo esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ); ?>
+									<?php echo esc_attr( sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Address' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Address', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( sanitize_text_field( wp_unslash( WPDA::get_server_address() ) ) ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Root DIR' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Root DIR', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
-									<?php echo esc_attr( sanitize_text_field( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) ); ?>
+									<?php echo esc_attr( sanitize_text_field( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Temp DIR' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Temp DIR', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( sys_get_temp_dir() ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'HTTP Upload' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'HTTP Upload', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo @ini_get( 'file_uploads' ) ? 'Enabled' : 'Disabled'; ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Max Upload File Size' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Max Upload File Size', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( @ini_get( 'upload_max_filesize' ) ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Post Max Size' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Post Max Size', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( @ini_get( 'post_max_size' ) ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Max Execution Time' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Max Execution Time', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( @ini_get( 'max_execution_time' ) ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Max Input Time' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Max Input Time', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( @ini_get( 'max_input_time' ) ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Memory Limit' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Memory Limit', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( @ini_get( 'memory_limit' ) ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Output Buffering' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Output Buffering', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( @ini_get( 'output_buffering' ) ); ?>
 								</td>
@@ -330,63 +330,63 @@ namespace WPDataAccess\Settings {
 					</td>
 				</tr>
 				<tr>
-					<th class="wpda_system_info_title"><?php echo __( 'WordPress' ); ?></th>
+					<th class="wpda_system_info_title"><?php esc_html_e( 'WordPress', 'wp-data-access' ); ?></th>
 					<td>
 						<table class="wpda-table-system-info" style="width:100%">
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Version' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Version', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( $wp_version ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Home DIR' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Home DIR', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php
 									echo esc_attr( get_home_path() );
 
-									$error_level = error_reporting();
-									error_reporting( E_ALL ^ E_WARNING );
+									$error_level = error_reporting(); // phpcs:ignore
+									error_reporting( E_ALL ^ E_WARNING ); // phpcs:ignore
 									$file_permission = fileperms( get_home_path() );
-									error_reporting( $error_level );
+									error_reporting( $error_level ); // phpcs:ignore
 									echo '&nbsp;&nbsp;&nbsp;>&nbsp;&nbsp;&nbsp;' . esc_attr( decoct( $file_permission & 0777 ) );
 									?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Uploads DIR' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Uploads DIR', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php
 									echo esc_attr( $uploads['basedir'] );
 
-									$error_level = error_reporting();
-									error_reporting( E_ALL ^ E_WARNING );
+									$error_level = error_reporting(); // phpcs:ignore
+									error_reporting( E_ALL ^ E_WARNING ); // phpcs:ignore
 									$file_permission = fileperms( $uploads['basedir'] );
-									error_reporting( $error_level );
+									error_reporting( $error_level ); // phpcs:ignore
 									echo '&nbsp;&nbsp;&nbsp;>&nbsp;&nbsp;&nbsp;' . esc_attr( decoct( $file_permission & 0777 ) );
 									?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Home URL' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Home URL', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( home_url() ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Site URL' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Site URL', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( site_url() ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Upload URL' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Upload URL', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( $uploads['baseurl'] ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Use MySQLi' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Use MySQLi', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php
 									// Taken from wp-db class
@@ -401,37 +401,37 @@ namespace WPDataAccess\Settings {
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Database Host' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Database Host', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( DB_HOST ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Database Name' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Database Name', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( DB_NAME ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Database User' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Database User', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( DB_USER ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Database Character Set' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Database Character Set', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( DB_CHARSET ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Database Collate' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Database Collate', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( DB_COLLATE ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'WP Debugging Mode' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'WP Debugging Mode', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo ! defined( 'WP_DEBUG' ) ? 'undefined' : ( true === WP_DEBUG ? 'true' : 'false' ); ?>
 								</td>
@@ -444,13 +444,13 @@ namespace WPDataAccess\Settings {
 					<td>
 						<table class="wpda-table-system-info" style="width:100%">
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Version' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Version', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php echo esc_attr( WPDA::get_option( WPDA::OPTION_WPDA_VERSION ) ); ?>
 								</td>
 							</tr>
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Repository' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Repository', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
 									<?php
 									echo $menus_table_name_exists ? '+' : '-';
@@ -531,13 +531,13 @@ namespace WPDataAccess\Settings {
 					</td>
 				</tr>
 				<tr>
-					<th class="wpda_system_info_title"><?php echo __( 'Browser' ); ?></th>
+					<th class="wpda_system_info_title"><?php esc_html_e( 'Browser', 'wp-data-access' ); ?></th>
 					<td>
 						<table id="wpda_system_info_browser" class="wpda-table-system-info" style="width:100%">
 							<tr>
-								<th class="wpda_system_info_subtitle"><?php echo __( 'Agent' ); ?></th>
+								<th class="wpda_system_info_subtitle"><?php esc_html_e( 'Agent', 'wp-data-access' ); ?></th>
 								<td class="wpda_system_info_value" colspan="2">
-									<?php echo esc_attr( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) ); ?>
+									<?php echo esc_attr( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated ?>
 								</td>
 							</tr>
 							<script type='text/javascript'>

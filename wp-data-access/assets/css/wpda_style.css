@@ -778,3 +778,12 @@ h1.wp-heading-inline a {
     min-height: 30px;
     line-height: 2;
 }
+
+/* Adjust Visual Query Builder style in WP dashboard */
+.pp-vqb-table-body table tr td.pp-vqb-checkbox div {
+    display: block;
+}
+
+.pp-vqb-table-body table tr td.pp-vqb-icon div {
+    padding-top: 2px;
+}

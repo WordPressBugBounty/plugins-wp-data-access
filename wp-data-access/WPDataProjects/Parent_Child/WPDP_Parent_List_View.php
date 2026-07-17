@@ -123,7 +123,7 @@ namespace WPDataProjects\Parent_Child {
 		public function __construct( $args = array() ) {
 			if ( isset( $args['project_id'] ) ) {
 				$this->project_id = sanitize_text_field( wp_unslash( $args['project_id'] ) );
-			} elseif ( isset( $_REQUEST['tab'] ) && 'tables' === $_REQUEST['tab'] ) {
+			} elseif ( isset( $_REQUEST['tab'] ) && 'tables' === $_REQUEST['tab'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
 				$this->project_id = 'wpda_sys_tables';
 			}
 			if ( isset( $args['page_id'] ) ) {
@@ -137,13 +137,12 @@ namespace WPDataProjects\Parent_Child {
 
 			parent::__construct( $args );
 
-			$this->child_request = (
-				isset( $_REQUEST['child_request'] ) &&
-				'TRUE' === sanitize_text_field( wp_unslash( $_REQUEST['child_request'] ) )
+			$this->child_request = ( 
+				isset( $_REQUEST['child_request'] ) && 'TRUE' === sanitize_text_field( wp_unslash( $_REQUEST['child_request'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
 			);
 
-			if ( isset( $_REQUEST['mode'] ) ) {
-				$this->mode = sanitize_text_field( wp_unslash( $_REQUEST['mode'] ) ); // input var okay.
+			if ( isset( $_REQUEST['mode'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
+				$this->mode = sanitize_text_field( wp_unslash( $_REQUEST['mode'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
 			}
 
 			if ( isset( $args['parent_edit_form_class'] ) ) {
@@ -169,7 +168,7 @@ namespace WPDataProjects\Parent_Child {
 
 			$this->project = new WPDP_Project( $this->project_id, $this->page_id );
 			if ( null === $this->project->get_project() ) {
-				wp_die( __( 'Data Project page not found [need a valid project_id and page_id]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'Data Project page not found [need a valid project_id and page_id]', 'wp-data-access' ) );
 			}
 			if ( null === $this->title ) {
 				$this->title = $this->project->get_title();
@@ -187,8 +186,7 @@ namespace WPDataProjects\Parent_Child {
 			// DO NOT REMOVE!!!
 			// Yes, this is double code! But for some completely unclear reason this member seems to lose this value...
 			$this->child_request = (
-				isset( $_REQUEST['child_request'] ) &&
-				'TRUE' === sanitize_text_field( wp_unslash( $_REQUEST['child_request'] ) )
+				isset( $_REQUEST['child_request'] ) && 'TRUE' === sanitize_text_field( wp_unslash( $_REQUEST['child_request'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified in parent class
 			);
 
 			if ( $this->child_request ) {
@@ -254,7 +252,7 @@ namespace WPDataProjects\Parent_Child {
 
 			$form->prepare_form();
 
-			if ( isset( $_POST['postaction'] ) && 'list' === $_POST['postaction'] ) {
+			if ( isset( $_POST['postaction'] ) && 'list' === $_POST['postaction'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified in parent class
 				$this->display_list_table();
 			} else {
 				$form->show();

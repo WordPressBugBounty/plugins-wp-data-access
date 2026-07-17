@@ -120,6 +120,7 @@ class WPDA_Publisher_List_Table extends WPDA_List_Table {
         $esc_attr = 'esc_attr';
         $input_fields = $this->get_key_input_fields( $item );
         $page_field = $this->page_number_item;
+        // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
         $copy_form = <<<EOT
 \t\t\t\t<form id='copy_form{$esc_attr( $form_id )}' method='post'
 \t\t\t\t\t  action='?page={$esc_attr( $this->page )}'
@@ -135,8 +136,9 @@ EOT;
 
 			<script type='text/javascript'>
 				jQuery("#wpda_invisible_container").append("<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo str_replace( array("\n", "\r"), '', $copy_form );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>");
 			</script>
 
@@ -165,7 +167,7 @@ EOT;
         echo esc_attr( $item['pub_id'] );
         ?>"
 				 title="<?php 
-        echo __( 'Shortcode', 'wp-data-access' );
+        echo esc_attr__( 'Shortcode', 'wp-data-access' );
         ?>"
 				 style="display:none"
 			>
@@ -186,11 +188,11 @@ EOT;
         echo esc_attr( $item['pub_id'] );
         ?>"]'
 							onclick="jQuery.notify('<?php 
-        echo __( 'Shortcode successfully copied to clipboard!' );
+        echo esc_attr__( 'Shortcode successfully copied to clipboard!', 'wp-data-access' );
         ?>','info')"
 					>
 						<?php 
-        echo __( 'Copy', 'wp-data-access' );
+        echo esc_attr__( 'Copy', 'wp-data-access' );
         ?>
 					</button>
 					<button class="button button-primary wpda_shortcode_button"
@@ -198,7 +200,7 @@ EOT;
 							onclick="jQuery('.ui-dialog-content').dialog('close')"
 					>
 						<?php 
-        echo __( 'Close', 'wp-data-access' );
+        echo esc_attr__( 'Close', 'wp-data-access' );
         ?>
 					</button>
 				</p>
@@ -208,8 +210,7 @@ EOT;
 					<p>
 						Shortcode wpdataaccess is not enabled for all output types.
 						<a href="<?php 
-            echo admin_url( 'options-general.php' );
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            echo esc_url( admin_url( 'options-general.php' ) );
             ?>?page=wpdataaccess" class="wpda_shortcode_link">&raquo; Manage settings</a>
 					</p>
 					<?php 
@@ -256,7 +257,7 @@ EOT;
             $wp_nonce = ( isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '' );
             // input var okay.
             if ( !wp_verify_nonce( $wp_nonce, $wp_nonce_action ) ) {
-                die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
             }
             if ( isset( $_REQUEST['pub_id'] ) ) {
                 $pub_id = sanitize_text_field( wp_unslash( $_REQUEST['pub_id'] ) );
@@ -264,15 +265,15 @@ EOT;
             }
             $unique_pu_name = $this->get_unique_pub_name( $pub_id );
             global $wpdb;
-            $pub_raw = $wpdb->get_results( $wpdb->prepare( 
-                'SELECT * FROM `%1s` WHERE pub_id = %d',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( $this->table_name ), $pub_id)
-             ), 'ARRAY_A' );
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
+            $pub_raw = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM `%1s` WHERE pub_id = %d', array(WPDA::remove_backticks( $this->table_name ), $pub_id) ), 'ARRAY_A' );
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
             if ( $wpdb->num_rows > 0 ) {
                 $pub_raw[0]['pub_name'] = $unique_pu_name;
                 unset($pub_raw[0]['pub_id']);
+                // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery
                 $rows_inserted = $wpdb->insert( $this->table_name, $pub_raw[0] );
+                // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery
                 switch ( $rows_inserted ) {
                     case 0:
                         $msg = new WPDA_Message_Box(array(
@@ -304,32 +305,22 @@ EOT;
 
     protected function get_unique_pub_name( $pub_id ) {
         global $wpdb;
-        $db_pub_name = $wpdb->get_results( $wpdb->prepare( 
-            'select pub_name from `%1s` where pub_id = %d',
-            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-            array(WPDA::remove_backticks( WPDA_Publisher_Model::get_base_table_name() ), $pub_id)
-         ), 'ARRAY_A' );
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
+        $db_pub_name = $wpdb->get_results( $wpdb->prepare( 'select pub_name from `%1s` where pub_id = %d', array(WPDA::remove_backticks( WPDA_Publisher_Model::get_base_table_name() ), $pub_id) ), 'ARRAY_A' );
         if ( $wpdb->num_rows !== 1 ) {
-            wp_die( __( 'ERROR: Data table not found', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Data table not found', 'wp-data-access' ) );
         }
         $i = 2;
         $pub_name = $db_pub_name[0]['pub_name'];
         $unique_pub_name = "{$pub_name}_{$i}";
-        $wpdb->get_results( $wpdb->prepare( 
-            "select 'x' from `%1s` where pub_name = %s",
-            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-            array(WPDA::remove_backticks( WPDA_Publisher_Model::get_base_table_name() ), $unique_pub_name)
-         ) );
+        $wpdb->get_results( $wpdb->prepare( "select 'x' from `%1s` where pub_name = %s", array(WPDA::remove_backticks( WPDA_Publisher_Model::get_base_table_name() ), $unique_pub_name) ) );
         while ( $wpdb->num_rows > 0 ) {
             // Search until a free options set is found
             $i++;
             $unique_pub_name = "{$pub_name}_{$i}";
-            $wpdb->get_results( $wpdb->prepare( 
-                "select 'x' from `%1s` where pub_name = %s",
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( WPDA_Publisher_Model::get_base_table_name() ), $unique_pub_name)
-             ) );
+            $wpdb->get_results( $wpdb->prepare( "select 'x' from `%1s` where pub_name = %s", array(WPDA::remove_backticks( WPDA_Publisher_Model::get_base_table_name() ), $unique_pub_name) ) );
         }
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders
         return $unique_pub_name;
     }
 
@@ -387,8 +378,7 @@ EOT;
 						jQuery.ajax({
 							type: "POST",
 							url: "<?php 
-        echo admin_url( 'admin-ajax.php?action=wpda_test_publication' );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        echo esc_url( admin_url( 'admin-ajax.php?action=wpda_test_publication' ) );
         ?>",
 							data: {
 								wpnonce: wpnonce,

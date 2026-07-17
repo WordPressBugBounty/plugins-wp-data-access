@@ -5,6 +5,7 @@
  *
  * @package WPDataAccess\Simple_Form
  */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\Simple_Form;
 
 use WPDataAccess\Connection\WPDADB;
@@ -103,7 +104,7 @@ class WPDA_Simple_Form_Data {
         // Table must exist and user must be authorized.
         $this->wpda_data_dictionary = new WPDA_Dictionary_Exist($this->schema_name, $this->table_name);
         if ( !$this->wpda_data_dictionary->table_exists() ) {
-            wp_die( __( 'ERROR: Invalid table name or not authorized' ) );
+            wp_die( esc_attr__( 'ERROR: Invalid table name or not authorized', 'wp-data-access' ) );
         }
         $this->calling_form = $calling_form;
         $this->wpda_list_columns = $wpda_list_columns;
@@ -151,7 +152,8 @@ class WPDA_Simple_Form_Data {
         }
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = database name */
+            wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
         }
         $result = $wpdadb->insert( $this->table_name, $column_values_to_be_inserted );
         // db call ok; no-cache ok.
@@ -208,14 +210,15 @@ class WPDA_Simple_Form_Data {
                     $wp_nonce = ( isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '' );
                     // input var okay.
                     if ( !wp_verify_nonce( $wp_nonce, $this->calling_form->get_nonce_action() ) ) {
-                        wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                        wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
                     }
                 }
             }
         }
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = database name */
+            wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
         }
         $table_columns = array();
         // Get all table columns.
@@ -263,13 +266,13 @@ class WPDA_Simple_Form_Data {
                     if ( 0 === $wpda_err ) {
                         // No errors: use new value.
                         if ( $this->calling_form->get_new_value( $pk_column ) === '' ) {
-                            wp_die( __( 'ERROR: Wrong arguments [missing primary key value]', 'wp-data-access' ) );
+                            wp_die( esc_attr__( 'ERROR: Wrong arguments [missing primary key value]', 'wp-data-access' ) );
                         }
                         $pkvalue = $this->calling_form->get_new_value( $pk_column );
                     } else {
                         // There are errors: use old values (in case a key value was changed).
                         if ( $this->calling_form->get_old_value( $pk_column ) === '' ) {
-                            wp_die( __( 'ERROR: Wrong arguments [missing primary key value]', 'wp-data-access' ) );
+                            wp_die( esc_attr__( 'ERROR: Wrong arguments [missing primary key value]', 'wp-data-access' ) );
                         }
                         $pkvalue = $this->calling_form->get_old_value( $pk_column );
                     }
@@ -279,7 +282,6 @@ class WPDA_Simple_Form_Data {
                     $pkvalue = self::convert_datetime( $table_columns[$pk_column], $pkvalue, $pkvalue );
                 }
                 $where .= $wpdadb->prepare( $where_current, $pkvalue );
-                // phpcs:ignore Standard.Category.SniffName.ErrorCode
             }
         } else {
             $alternative_key_found = false;
@@ -299,15 +301,14 @@ class WPDA_Simple_Form_Data {
                     }
                 }
                 if ( $alternative_keys_found === count( $alternative_keys ) ) {
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     $alternative_key_found = true;
                 }
             }
             if ( !$alternative_key_found ) {
-                wp_die( __( 'ERROR: Wrong arguments [missing key value]', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Wrong arguments [missing key value]', 'wp-data-access' ) );
             }
             $where .= $wpdadb->prepare( $where_current, $pkvalue );
-            // phpcs:ignore Standard.Category.SniffName.ErrorCode
         }
         if ( '' === $this->schema_name ) {
             $query = "\n\t\t\t\t\tselect *\n\t\t\t\t\tfrom `{$this->table_name}`\n\t\t\t\t\t{$where}\n\t\t\t\t";
@@ -315,11 +316,10 @@ class WPDA_Simple_Form_Data {
             $query = "\n\t\t\t\t\tselect *\n\t\t\t\t\tfrom `{$wpdadb->dbname}`.`{$this->table_name}`\n\t\t\t\t\t{$where}\n\t\t\t\t";
         }
         $result = $wpdadb->get_results( $query, 'ARRAY_A' );
-        // phpcs:ignore Standard.Category.SniffName.ErrorCode
         if ( 1 === $wpdadb->num_rows ) {
             return $result;
         } else {
-            wp_die( __( 'ERROR: Wrong arguments [no data found]', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Wrong arguments [no data found]', 'wp-data-access' ) );
         }
     }
 
@@ -331,7 +331,8 @@ class WPDA_Simple_Form_Data {
     public function set_row() {
         $wpdadb = WPDADB::get_db_connection( $this->schema_name );
         if ( null === $wpdadb ) {
-            wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+            /* translators: %s = database name */
+            wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
         }
         $column_values_to_be_updated = null;
         foreach ( $this->wpda_list_columns->get_table_columns() as $column ) {
@@ -364,14 +365,14 @@ class WPDA_Simple_Form_Data {
         }
         if ( null === $column_values_to_be_updated ) {
             // Nothing to update.
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             if ( $_REQUEST['wpda_message'] && '' !== $_REQUEST['wpda_message'] ) {
-                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
                 // Happens when inserting new row on parent child page
                 $msgtxt = sanitize_text_field( wp_unslash( $_REQUEST['wpda_message'] ) );
-                // input var okay.
             } else {
                 $msgtxt = __( 'Nothing to save', 'wp-data-access' );
             }
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             $msg = new WPDA_Message_Box(array(
                 'message_text' => $msgtxt,
             ));
@@ -385,7 +386,7 @@ class WPDA_Simple_Form_Data {
                 if ( 'edit' === $action && 'save' === $action2 ) {
                     // Form was submitted after update: use old key value to build where clause.
                     if ( '' === $this->calling_form->get_old_value( $pk_column ) ) {
-                        wp_die( __( 'ERROR: Wrong arguments [missing primary key value]', 'wp-data-access' ) );
+                        wp_die( esc_attr__( 'ERROR: Wrong arguments [missing primary key value]', 'wp-data-access' ) );
                     }
                     $where[$pk_column] = $this->calling_form->get_old_value( $pk_column );
                     // Set primary keys value(s).
@@ -397,7 +398,7 @@ class WPDA_Simple_Form_Data {
                 } else {
                     // Form submitted a new record: use new value (no old value available).
                     if ( $this->calling_form->get_new_value( $pk_column ) === '' ) {
-                        wp_die( __( 'ERROR: Wrong arguments [missing primary key value]', 'wp-data-access' ) );
+                        wp_die( esc_attr__( 'ERROR: Wrong arguments [missing primary key value]', 'wp-data-access' ) );
                     }
                     $where[$pk_column] = $this->calling_form->get_new_value( $pk_column );
                     // Set primary keys value(s).
@@ -416,7 +417,7 @@ class WPDA_Simple_Form_Data {
                 if ( 0 === $result && '' === $wpdadb->last_error ) {
                     $table_info = WPDA::get_table_values( $this->schema_name, $this->table_name );
                     if ( 1 === count( $table_info ) && 'connect' === strtolower( $table_info[0]['engine'] ) ) {
-                        //phpcs:ignore - 8.1 proof
+                        // phpcs:ignore -- 8.1 proof
                         // Connect engine does not return number of rows updated
                         // Presuming update was successful when no error message was returned
                         $msg = new WPDA_Message_Box(array(
@@ -470,3 +471,5 @@ class WPDA_Simple_Form_Data {
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

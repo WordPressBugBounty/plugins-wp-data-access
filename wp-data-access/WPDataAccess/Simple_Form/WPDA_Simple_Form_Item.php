@@ -334,22 +334,22 @@ namespace WPDataAccess\Simple_Form {
 
 				if ( '' === $args['item_name'] ) {
 					// Without an item name it makes no sense to continue
-					wp_die( __( 'ERROR: Wrong arguments [missing item name]', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Wrong arguments [missing item name]', 'wp-data-access' ) );
 				}
 
 				if ( '' === $args['data_type'] ) {
 					// Without a data type it makes no sense to continue
-					wp_die( __( 'ERROR: Wrong arguments [missing data type]', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'ERROR: Wrong arguments [missing data type]', 'wp-data-access' ) );
 				}
 
 				$this->item_name      = $args['item_name'];
 				$this->data_type      = WPDA::get_type( $args['data_type'] );
 				$this->item_icon_type = $this->data_type;
-				$this->item_label     = (string) $args['item_label']; //phpcs:ignore - 8.1 proof
+				$this->item_label     = (string) $args['item_label'];  // phpcs:ignore -- 8.1 proof
 				if ( null === $args['item_value'] ) {
 					$this->item_value = null;
 				} else {
-					$this->item_value = (string) $args['item_value']; //phpcs:ignore - 8.1 proof
+					$this->item_value = (string) $args['item_value'];  // phpcs:ignore -- 8.1 proof
 				}
 				if (
                     'current_timestamp()' !== strtolower( (string) $args['item_default_value'] ) &&
@@ -372,7 +372,7 @@ namespace WPDataAccess\Simple_Form {
 							'',
 							substr( substr( ( string ) $args['item_enum'], 5 ), 0, - 1 )
 						)
-					);//phpcs:ignore - 8.1 proof
+					); // phpcs:ignore -- 8.1 proof
 				}
 				if ( 'set' === $this->data_type ) {
 					$this->item_enum = explode(
@@ -382,7 +382,7 @@ namespace WPDataAccess\Simple_Form {
 							'',
 							substr( substr( ( string ) $args['item_enum'], 4 ), 0, - 1 )
 						)
-					);//phpcs:ignore - 8.1 proof
+					); // phpcs:ignore -- 8.1 proof
 				}
 				$this->column_type    = $args['column_type'];
 				$this->item_event     = $args['item_event'];
@@ -404,10 +404,10 @@ namespace WPDataAccess\Simple_Form {
 						$this->$property = $value;
 					}
 				} else {
-					wp_die( __( 'Class must be of (sub)type WPDA_Simple_Form_Item', 'wp-data-access' ) );
+					wp_die( esc_attr__( 'Class must be of (sub)type WPDA_Simple_Form_Item', 'wp-data-access' ) );
 				}
 			} else {
-				wp_die( __( 'Could not create form item instance [argument must be array or object]', 'wp-data-access' ) );
+				wp_die( esc_attr__( 'Could not create form item instance [argument must be array or object]', 'wp-data-access' ) );
 			}
 		}
 
@@ -449,7 +449,7 @@ namespace WPDataAccess\Simple_Form {
 				<?php
 			}
 
-			$label        = explode( '|', esc_attr( $this->item_label ) );//phpcs:ignore - 8.1 proof
+			$label        = explode( '|', esc_attr( $this->item_label ) ); // phpcs:ignore -- 8.1 proof
 			$label_before = $label[0];
 			$label_after  = '';
 			if ( isset( $label[1] ) ) {
@@ -975,10 +975,7 @@ namespace WPDataAccess\Simple_Form {
 			if ( 'NO' === $this->is_nullable ) {
 				// Empty values are not allowed for this column: check value.
 				if ( '' === $this->item_value ) {
-					if (
-						isset( $_REQUEST[ "{$this->item_name}_db_is_null" ] ) &&
-						'false' === strtolower( $_REQUEST[ "{$this->item_name}_db_is_null" ] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-					) {
+					if ( isset( $_REQUEST[ "{$this->item_name}_db_is_null" ] ) && 'false' === strtolower( $_REQUEST[ "{$this->item_name}_db_is_null" ] ) ) { // phpcs:ignore
 						// Allow update if original column already was an empty string
 						return true;
 					}

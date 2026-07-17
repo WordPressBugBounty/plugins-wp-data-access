@@ -64,7 +64,7 @@ namespace WPDataProjects\Parent_Child {
 						   onclick="javascript:window.location.href='<?php echo $url; // phpcs:ignore WordPress.Security.EscapeOutput ?>'"
 						   class="button button-secondary">
 					<i class="fas fa-angle-left wpda_icon_on_button"></i>
-					<?php echo __( 'Child List', 'wp-data-access' ); ?>
+					<?php esc_html_e( 'Child List', 'wp-data-access' ); ?>
 				</button>
 			</div>
 			<?php
@@ -86,8 +86,8 @@ namespace WPDataProjects\Parent_Child {
 		 * @return string
 		 */
 		protected function add_parent_args_to_back_button() {
-			if ( isset( $_REQUEST['child_tab'] ) ) {
-				$child_tab = sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) ); // input var okay.
+			if ( isset( $_REQUEST['child_tab'] ) ) {// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
+				$child_tab = sanitize_text_field( wp_unslash( $_REQUEST['child_tab'] ) );// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
 			} else {
 				$child_tab = '';
 			}
@@ -117,7 +117,7 @@ namespace WPDataProjects\Parent_Child {
 		 */
 		public function process_bulk_action() {
 			if ( 'bulk-add' === $this->current_action() ) {
-				if ( ! isset( $_REQUEST['bulk-selected'] ) ) { // input var okay.
+				if ( ! isset( $_REQUEST['bulk-selected'] ) ) {// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- already verified
 					$msg = new WPDA_Message_Box(
 						array(
 							'message_text' => __( 'Nothing selected', 'wp-data-access' ),
@@ -128,8 +128,8 @@ namespace WPDataProjects\Parent_Child {
 					return;
 				}
 
-				$bulk_rows = (array) $_REQUEST['bulk-selected']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-				//phpcs:ignore - 8.1 proof
+				$bulk_rows = (array) $_REQUEST['bulk-selected']; // phpcs:ignore
+				 // phpcs:ignore -- 8.1 proof
 				$no_rows   = count( $bulk_rows ); // # rows to be added.
 
 				$rows_to_be_added = array(); // Gonna hold rows to be added.
@@ -145,7 +145,7 @@ namespace WPDataProjects\Parent_Child {
 						foreach ( $this->wpda_list_columns->get_table_primary_key() as $key ) {
 							// Check if key is available.
 							if ( ! isset( $row_object[ $key ] ) ) {
-								wp_die( __( 'ERROR: Invalid URL', 'wp-data-access' ) );
+								wp_die( esc_attr__( 'ERROR: Invalid URL', 'wp-data-access' ) );
 							}
 
 							// Write key value pair to array.
@@ -158,7 +158,7 @@ namespace WPDataProjects\Parent_Child {
 				}
 
 				// Looks like everything is there. Add relationship.
-				$no_key_cols            = count( $this->wpda_list_columns->get_table_primary_key() );//phpcs:ignore - 8.1 proof
+				$no_key_cols            = count( $this->wpda_list_columns->get_table_primary_key() ); // phpcs:ignore -- 8.1 proof
 				$rows_successfully_added = 0; // Number of rows successfully added.
 				$rows_with_errors       = 0; // Number of rows that could not be added.
 				for ( $i = 0; $i < $no_rows; $i ++ ) {
@@ -237,9 +237,11 @@ namespace WPDataProjects\Parent_Child {
 			$wpdadb = WPDADB::get_db_connection( $this->schema_name );
 			if ( null === $wpdadb ) {
 				if ( is_admin() ) {
-					wp_die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					wp_die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				} else {
-					die( sprintf( __( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
+					/* translators: %s = database name */
+					die( sprintf( esc_attr__( 'ERROR - Remote database %s not available', 'wp-data-access' ), esc_attr( $this->schema_name ) ) );
 				}
 			}
 

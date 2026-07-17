@@ -25,8 +25,8 @@ namespace WPDataAccess\Utilities {
 		 */
 		public static function export() {
 			$export_class = 'WPDataAccess\\Utilities\\WPDA_Export_Sql'; // Default export class exports to SQL.
-			if ( isset( $_REQUEST['format_type'] ) ) {
-				$format_type = sanitize_text_field( wp_unslash( $_REQUEST['format_type'] ) ); // input var okay.
+			if ( isset( $_REQUEST['format_type'] ) ) { // phpcs:ignore
+				$format_type = sanitize_text_field( wp_unslash( $_REQUEST['format_type'] ) ); // phpcs:ignore
 				switch ( $format_type ) {
 					case 'excel':
 						$export_class = 'WPDataAccess\\Utilities\\WPDA_Export_Excel';

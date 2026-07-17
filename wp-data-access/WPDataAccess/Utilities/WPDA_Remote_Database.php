@@ -1,5 +1,6 @@
 <?php
 
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\Utilities;
 
 use WPDataAccess\API\WPDA_Tree;
@@ -26,7 +27,6 @@ class WPDA_Remote_Database {
         wp_enqueue_script( 'jquery-ui-autocomplete' );
         if ( isset( $_REQUEST['page'] ) ) {
             $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) );
-            // input var okay.
         }
         $this->user_can_create_db = WPDA_Dictionary_Access::can_create_db();
         if ( WPDA::current_user_is_admin() ) {
@@ -53,7 +53,7 @@ class WPDA_Remote_Database {
             // Add local database
             if ( !isset( $_REQUEST['local_database'] ) ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot create database [missing argument]', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Cannot create database [missing argument]', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -61,65 +61,61 @@ class WPDA_Remote_Database {
                 return;
             }
             $database = str_replace( '`', '', sanitize_text_field( wp_unslash( $_REQUEST['local_database'] ) ) );
-            // input var okay.
             global $wpdb;
-            if ( false === $wpdb->query( $wpdb->prepare( 
-                'create database `%1s`',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( $database ))
-             ) ) ) {
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
+            if ( false === $wpdb->query( $wpdb->prepare( 'create database `%1s`', array(WPDA::remove_backticks( $database )) ) ) ) {
                 // db call ok; no-cache ok.
+                // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Error creating database `%s`', 'wp-data-access' ), $database ),
+                    'message_text'           => sprintf( __( 'Error creating database `%s`', 'wp-data-access' ), esc_attr( $database ) ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
+                // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg->box();
             } else {
+                // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
+                // phpcs:disable WordPress.Security.ValidatedSanitizedInput
                 $msg = new WPDA_Message_Box(array(
-                    'message_text' => sprintf( __( 'Database `%s` created', 'wp-data-access' ), $database ),
+                    'message_text' => sprintf( __( 'Database `%s` created', 'wp-data-access' ), esc_attr( $database ) ),
                 ));
+                // phpcs:enable WordPress.Security.ValidatedSanitizedInput
+                // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg->box();
                 $this->switch_schema_name = $database;
             }
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange
         } else {
             // Add remote database
             $database = ( isset( $_REQUEST['remote_database'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_database'] ) ) : '' );
-            // input var okay.
             if ( false !== WPDADB::get_remote_database( $database ) ) {
+                // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Remote database connection already exists', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Remote database connection already exists', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
+                // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg->box();
                 return;
             }
             $host = ( isset( $_REQUEST['remote_host'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_host'] ) ) : '' );
-            // input var okay.
             $user = ( isset( $_REQUEST['remote_user'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_user'] ) ) : '' );
-            // input var okay.
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput
             $passwd = ( isset( $_REQUEST['remote_passwd'] ) ? wp_unslash( $_REQUEST['remote_passwd'] ) : '' );
-            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+            // Cannot use sanitize_text_field on password field!
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput
             $port = ( isset( $_REQUEST['remote_port'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_port'] ) ) : '' );
-            // input var okay.
             $schema = ( isset( $_REQUEST['remote_schema'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_schema'] ) ) : '' );
-            // input var okay.
             $ssl = ( isset( $_REQUEST['remote_ssl'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_ssl'] ) ) : 'off' );
-            // input var okay.
             $ssl_key = ( isset( $_REQUEST['remote_client_key'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_client_key'] ) ) : '' );
-            // input var okay.
             $ssl_cert = ( isset( $_REQUEST['remote_client_certificate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_client_certificate'] ) ) : '' );
-            // input var okay.
             $ssl_ca = ( isset( $_REQUEST['remote_ca_certificate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_ca_certificate'] ) ) : '' );
-            // input var okay.
             $ssl_path = ( isset( $_REQUEST['remote_certificate_path'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_certificate_path'] ) ) : '' );
-            // input var okay.
             $ssl_cipher = ( isset( $_REQUEST['remote_specified_cipher'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['remote_specified_cipher'] ) ) : '' );
-            // input var okay.
             if ( '' === $database || '' === $host || '' === $user || '' === $schema ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot add remote database connection [missing argument]', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Cannot add remote database connection [missing argument]', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -128,7 +124,7 @@ class WPDA_Remote_Database {
             }
             if ( 'rdb:' === $database ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Invalid database name [enter a valid database name, for example rdb:remotedb]', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Invalid database name [enter a valid database name, for example rdb:remotedb]', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -150,15 +146,17 @@ class WPDA_Remote_Database {
                 $ssl_cipher
             ) ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot add remote database connection', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Cannot add remote database connection', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
                 $msg->box();
             } else {
+                // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg = new WPDA_Message_Box(array(
-                    'message_text' => sprintf( __( 'Remote database connection `%s` added', 'wp-data-access' ), $database ),
+                    'message_text' => sprintf( __( 'Remote database connection `%s` added', 'wp-data-access' ), esc_attr( $database ) ),
                 ));
+                // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg->box();
                 $this->switch_schema_name = $database;
             }
@@ -171,7 +169,7 @@ class WPDA_Remote_Database {
         }
         if ( !isset( $_REQUEST['database'], $_REQUEST['disabled'] ) ) {
             $msg = new WPDA_Message_Box(array(
-                'message_text'           => sprintf( __( 'Cannot drop database [missing argument]', 'wp-data-access' ) ),
+                'message_text'           => __( 'Cannot drop database [missing argument]', 'wp-data-access' ),
                 'message_type'           => 'error',
                 'message_is_dismissible' => false,
             ));
@@ -180,14 +178,13 @@ class WPDA_Remote_Database {
         }
         global $wpdb;
         $database = str_replace( '`', '', sanitize_text_field( wp_unslash( $_REQUEST['database'] ) ) );
-        // input var okay.
         $disabled = $_REQUEST['disabled'] === 'true';
-        // input var okay.
         if ( 'rdb:' === substr( $database, 0, 4 ) ) {
             // Toogle remote database
+            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
             if ( false === WPDADB::get_remote_database( $database, true ) ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot disable remote database connection `%s` [remote database connection not found]', 'wp-data-access' ), $database ),
+                    'message_text'           => sprintf( __( 'Cannot disable remote database connection `%s` [remote database connection not found]', 'wp-data-access' ), esc_attr( $database ) ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -195,19 +192,20 @@ class WPDA_Remote_Database {
             } else {
                 if ( false === WPDADB::dis_remote_database( $database, $disabled ) ) {
                     $msg = new WPDA_Message_Box(array(
-                        'message_text'           => sprintf( __( 'Cannot disable remote database connection `%s`', 'wp-data-access' ), $database ),
+                        'message_text'           => sprintf( __( 'Cannot disable remote database connection `%s`', 'wp-data-access' ), esc_attr( $database ) ),
                         'message_type'           => 'error',
                         'message_is_dismissible' => false,
                     ));
                     $msg->box();
                 } else {
                     $msg = new WPDA_Message_Box(array(
-                        'message_text' => sprintf( __( 'Remote database connection `%s` disabled', 'wp-data-access' ), $database ),
+                        'message_text' => sprintf( __( 'Remote database connection `%s` disabled', 'wp-data-access' ), esc_attr( $database ) ),
                     ));
                     $msg->box();
                     $this->switch_schema_name = $wpdb->dbname;
                 }
             }
+            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
         }
     }
 
@@ -217,7 +215,7 @@ class WPDA_Remote_Database {
         }
         if ( !isset( $_REQUEST['database'] ) ) {
             $msg = new WPDA_Message_Box(array(
-                'message_text'           => sprintf( __( 'Cannot drop database [missing argument]', 'wp-data-access' ) ),
+                'message_text'           => __( 'Cannot drop database [missing argument]', 'wp-data-access' ),
                 'message_type'           => 'error',
                 'message_is_dismissible' => false,
             ));
@@ -226,12 +224,12 @@ class WPDA_Remote_Database {
         }
         global $wpdb;
         $database = str_replace( '`', '', sanitize_text_field( wp_unslash( $_REQUEST['database'] ) ) );
-        // input var okay.
         if ( 'rdb:' === substr( $database, 0, 4 ) ) {
             // Delete remote database
+            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
             if ( false === WPDADB::get_remote_database( $database ) ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot delete remote database connection `%s` [remote database connection not found]', 'wp-data-access' ), $database ),
+                    'message_text'           => sprintf( __( 'Cannot delete remote database connection `%s` [remote database connection not found]', 'wp-data-access' ), esc_attr( $database ) ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -239,19 +237,20 @@ class WPDA_Remote_Database {
             } else {
                 if ( false === WPDADB::del_remote_database( $database ) ) {
                     $msg = new WPDA_Message_Box(array(
-                        'message_text'           => sprintf( __( 'Cannot delete remote database connection `%s`', 'wp-data-access' ), $database ),
+                        'message_text'           => sprintf( __( 'Cannot delete remote database connection `%s`', 'wp-data-access' ), esc_attr( $database ) ),
                         'message_type'           => 'error',
                         'message_is_dismissible' => false,
                     ));
                     $msg->box();
                 } else {
                     $msg = new WPDA_Message_Box(array(
-                        'message_text' => sprintf( __( 'Remote database connection `%s` deleted', 'wp-data-access' ), $database ),
+                        'message_text' => sprintf( __( 'Remote database connection `%s` deleted', 'wp-data-access' ), esc_attr( $database ) ),
                     ));
                     $msg->box();
                     $this->switch_schema_name = $wpdb->dbname;
                 }
             }
+            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
         } else {
             // Drop local database
             if ( $wpdb->dbname === $database ) {
@@ -272,25 +271,25 @@ class WPDA_Remote_Database {
                 $msg->box();
                 return;
             }
-            if ( false === $wpdb->query( $wpdb->prepare( 
-                'drop database `%1s`',
-                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-                array(WPDA::remove_backticks( $database ))
-             ) ) ) {
+            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
+            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+            if ( false === $wpdb->query( $wpdb->prepare( 'drop database `%1s`', array(WPDA::remove_backticks( $database )) ) ) ) {
                 // db call ok; no-cache ok.
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Error dropping database `%s`', 'wp-data-access' ), $database ),
+                    'message_text'           => sprintf( __( 'Error dropping database `%s`', 'wp-data-access' ), esc_attr( $database ) ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
                 $msg->box();
             } else {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text' => sprintf( __( 'Database `%s` dropped', 'wp-data-access' ), $database ),
+                    'message_text' => sprintf( __( 'Database `%s` dropped', 'wp-data-access' ), esc_attr( $database ) ),
                 ));
                 $msg->box();
                 $this->switch_schema_name = $wpdb->dbname;
             }
+            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
         }
     }
 
@@ -300,7 +299,7 @@ class WPDA_Remote_Database {
         }
         if ( !isset( $_REQUEST['edit_remote_database'] ) ) {
             $msg = new WPDA_Message_Box(array(
-                'message_text'           => sprintf( __( 'Cannot update remote database connection [missing argument]', 'wp-data-access' ) ),
+                'message_text'           => __( 'Cannot update remote database connection [missing argument]', 'wp-data-access' ),
                 'message_type'           => 'error',
                 'message_is_dismissible' => false,
             ));
@@ -308,14 +307,14 @@ class WPDA_Remote_Database {
             return;
         }
         $database = sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_database'] ) );
-        // input var okay.
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput
         $database_old = sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_database_old'] ) );
-        // input var okay.
+        // phpcs:enable WordPress.Security.ValidatedSanitizedInput
         if ( $database !== $database_old ) {
             // Update database connection name
             if ( false === WPDADB::get_remote_database( $database_old ) ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot update remote database connection [remote database connection not found]', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Cannot update remote database connection [remote database connection not found]', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -326,7 +325,7 @@ class WPDA_Remote_Database {
             // Update database connection information
             if ( false === WPDADB::get_remote_database( $database ) ) {
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => sprintf( __( 'Cannot update remote database connection [remote database connection not found]', 'wp-data-access' ) ),
+                    'message_text'           => __( 'Cannot update remote database connection [remote database connection not found]', 'wp-data-access' ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
@@ -335,30 +334,22 @@ class WPDA_Remote_Database {
             }
         }
         $host = ( isset( $_REQUEST['edit_remote_host'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_host'] ) ) : '' );
-        // input var okay.
         $user = ( isset( $_REQUEST['edit_remote_user'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_user'] ) ) : '' );
-        // input var okay.
+        // Cannot use sanitize_text_field on password field!
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput
         $passwd = ( isset( $_REQUEST['edit_remote_passwd'] ) ? wp_unslash( $_REQUEST['edit_remote_passwd'] ) : '' );
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        // phpcs:enable WordPress.Security.ValidatedSanitizedInput
         $port = ( isset( $_REQUEST['edit_remote_port'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_port'] ) ) : '' );
-        // input var okay.
         $schema = ( isset( $_REQUEST['edit_remote_schema'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_schema'] ) ) : '' );
-        // input var okay.
         $ssl = ( isset( $_REQUEST['edit_remote_ssl'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_ssl'] ) ) : 'off' );
-        // input var okay.
         $ssl_key = ( isset( $_REQUEST['edit_remote_client_key'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_client_key'] ) ) : '' );
-        // input var okay.
         $ssl_cert = ( isset( $_REQUEST['edit_remote_client_certificate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_client_certificate'] ) ) : '' );
-        // input var okay.
         $ssl_ca = ( isset( $_REQUEST['edit_remote_ca_certificate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_ca_certificate'] ) ) : '' );
-        // input var okay.
         $ssl_path = ( isset( $_REQUEST['edit_remote_certificate_path'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_certificate_path'] ) ) : '' );
-        // input var okay.
         $ssl_cipher = ( isset( $_REQUEST['edit_remote_specified_cipher'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['edit_remote_specified_cipher'] ) ) : '' );
-        // input var okay.
         if ( '' === $database || '' === $host || '' === $user || '' === $schema ) {
             $msg = new WPDA_Message_Box(array(
-                'message_text'           => sprintf( __( 'Cannot edit remote database connection [missing arguments]', 'wp-data-access' ) ),
+                'message_text'           => __( 'Cannot edit remote database connection [missing arguments]', 'wp-data-access' ),
                 'message_type'           => 'error',
                 'message_is_dismissible' => false,
             ));
@@ -381,16 +372,20 @@ class WPDA_Remote_Database {
             $ssl_path,
             $ssl_cipher
         ) ) {
+            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
             $msg = new WPDA_Message_Box(array(
-                'message_text'           => sprintf( __( 'Cannot update remote database connection `%s`', 'wp-data-access' ), $database ),
+                'message_text'           => sprintf( __( 'Cannot update remote database connection `%s`', 'wp-data-access' ), esc_attr( $database ) ),
                 'message_type'           => 'error',
                 'message_is_dismissible' => false,
             ));
+            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
             $msg->box();
         } else {
+            // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
             $msg = new WPDA_Message_Box(array(
-                'message_text' => sprintf( __( 'Remote database connection `%s` updated', 'wp-data-access' ), $database ),
+                'message_text' => sprintf( __( 'Remote database connection `%s` updated', 'wp-data-access' ), esc_attr( $database ) ),
             ));
+            // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
             $msg->box();
             if ( $database !== $database_old ) {
                 $this->switch_schema_name = $database;
@@ -493,7 +488,7 @@ class WPDA_Remote_Database {
 
 			<h3 class="wpda_db_title">
 				<?php 
-        echo __( 'Manage Databases', 'wp-data-access' );
+        esc_html_e( 'Manage Databases', 'wp-data-access' );
         ?>
 			</h3>
 
@@ -516,7 +511,7 @@ class WPDA_Remote_Database {
     }
 
     private function no_database() {
-        echo __( 'No manageable local databases or remote database connections found', 'wp-data-access' );
+        esc_html_e( 'No manageable local databases or remote database connections found', 'wp-data-access' );
     }
 
     private function list_databases( $dbs ) {
@@ -528,7 +523,7 @@ class WPDA_Remote_Database {
 				<select id="manage_db_selection">
 					<?php 
         foreach ( $dbs as $db => $db_type ) {
-            echo "<option value='{$db}' data-type='{$db_type}'>{$db}</option>";
+            echo '<option value="' . esc_attr( $db ) . '" data-type="' . esc_attr( $db_type ) . '">{$db}</option>';
         }
         ?>
 				</select>
@@ -539,7 +534,7 @@ class WPDA_Remote_Database {
                    href="javascript:void(0)"
                    style="vertical-align:middle;"
                    title="<?php 
-        echo __( "Create function wpda_get_wp_user_id() to access the WordPress user ID from database views", 'wp-data-access' );
+        esc_html_e( "Create function wpda_get_wp_user_id() to access the WordPress user ID from database views", 'wp-data-access' );
         ?>"></a>
 
             </div>
@@ -736,13 +731,13 @@ class WPDA_Remote_Database {
 
 			<h3 class="wpda_db_title">
 				<?php 
-        echo __( 'Create local database', 'wp-data-access' );
+        esc_html_e( 'Create local database', 'wp-data-access' );
         ?>
 			</h3>
 
 			<?php 
         if ( !$this->user_can_create_db ) {
-            echo __( 'You are not authorized to create local databases', 'wp-data-access' );
+            esc_html_e( 'You are not authorized to create local databases', 'wp-data-access' );
         } else {
             ?>
 
@@ -784,7 +779,7 @@ class WPDA_Remote_Database {
 
 				<h3 class="wpda_db_title">
 					<?php 
-        echo __( 'Create remote database connection', 'wp-data-access' );
+        esc_html_e( 'Create remote database connection', 'wp-data-access' );
         ?>
 				</h3>
 
@@ -891,14 +886,14 @@ class WPDA_Remote_Database {
 				   onclick="jQuery(this).closest('form').submit()"
 				   class="button button-primary"><i
 							class="fas fa-cloud-upload wpda_icon_on_button"></i> <?php 
-        echo __( 'Save', 'wp-data-access' );
+        esc_html_e( 'Save', 'wp-data-access' );
         ?>
 				</a>
 				<a href="javascript:void(0)"
 				   onclick="jQuery('#wpda_manage_databases').hide()"
 				   class="button button-secondary"><i
 							class="fas fa-times-circle wpda_icon_on_button"></i> <?php 
-        echo __( 'Cancel', 'wp-data-access' );
+        esc_html_e( 'Cancel', 'wp-data-access' );
         ?>
 				</a>
 			</div>
@@ -1151,7 +1146,7 @@ class WPDA_Remote_Database {
                     jQuery("#manage_db_create_wp_user_access").on('click', function() {
                         const selectedDatabase = jQuery("#manage_db_selection").val()
                         wpda_dbinit_admin( selectedDatabase, '<?php 
-        echo wp_create_nonce( 'wpda_dbinit_admin_' . WPDA::get_current_user_login() );
+        echo esc_attr( wp_create_nonce( 'wpda_dbinit_admin_' . WPDA::get_current_user_login() ) );
         ?>' )
                     })
 
@@ -1285,3 +1280,5 @@ class WPDA_Remote_Database {
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

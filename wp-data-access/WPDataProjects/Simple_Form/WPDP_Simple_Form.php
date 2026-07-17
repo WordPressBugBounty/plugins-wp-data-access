@@ -113,8 +113,8 @@ namespace WPDataProjects\Simple_Form {
 						if ( isset( $tableform_item->item_type, $this->form_items[ $i ] ) ) {
 							// Process images
 							if ( 'image' === $tableform_item->item_type ) {
-								$class_path = explode( '\\', get_class( $this->form_items[ $i ] ) );//phpcs:ignore - 8.1 proof
-								$class_name = array_pop( $class_path );//phpcs:ignore - 8.1 proof
+								$class_path = explode( '\\', get_class( $this->form_items[ $i ] ) ); // phpcs:ignore -- 8.1 proof
+								$class_name = array_pop( $class_path ); // phpcs:ignore -- 8.1 proof
 								if ( 'WPDA_Simple_Form_Item_Image' !== $class_name ) {
 									$this->form_items[ $i ] = new WPDA_Simple_Form_Item_Image( $this->form_items[ $i ] );
 								}
@@ -122,8 +122,8 @@ namespace WPDataProjects\Simple_Form {
 
 							// Process attachments
 							if ( 'attachment' === $tableform_item->item_type ) {
-								$class_path = explode( '\\', get_class( $this->form_items[ $i ] ) );//phpcs:ignore - 8.1 proof
-								$class_name = array_pop( $class_path );//phpcs:ignore - 8.1 proof
+								$class_path = explode( '\\', get_class( $this->form_items[ $i ] ) ); // phpcs:ignore -- 8.1 proof
+								$class_name = array_pop( $class_path ); // phpcs:ignore -- 8.1 proof
 								if ( 'WPDA_Simple_Form_Item_Media' !== $class_name ) {
 									$this->form_items[ $i ] = new WPDA_Simple_Form_Item_Media( $this->form_items[ $i ] );
 								}
@@ -134,7 +134,7 @@ namespace WPDataProjects\Simple_Form {
 					$i ++;
 				}
 			}
-			if ( count( $lookup_column_name ) > 0 ) {//phpcs:ignore - 8.1 proof
+			if ( count( $lookup_column_name ) > 0 ) { // phpcs:ignore -- 8.1 proof
 				// Process lookup items and create listboxes.
 				$lookups       = array();
 				$autocompletes = array();
@@ -147,7 +147,7 @@ namespace WPDataProjects\Simple_Form {
 								if ( 'lookup' === $relationship->relation_type ) {
 									array_push( $lookups, $relationship );
 								} elseif ( 'autocomplete' === $relationship->relation_type ) {
-									array_push( $autocompletes, $relationship );//phpcs:ignore - 8.1 proof
+									array_push( $autocompletes, $relationship ); // phpcs:ignore -- 8.1 proof
 								}
 							}
 						}
@@ -183,7 +183,7 @@ namespace WPDataProjects\Simple_Form {
 									$wpdadb = WPDADB::get_db_connection( $target_schema_name );
 									if ( null !== $wpdadb ) {
 										$where = '';
-										for ( $j = 1; $j < count( $lookup->source_column_name ); $j++ ) {//phpcs:ignore - 8.1 proof
+										for ( $j = 1; $j < count( $lookup->source_column_name ); $j++ ) { // phpcs:ignore -- 8.1 proof
 											$item_index = $this->get_item_index( $lookup->source_column_name[ $j ] );
 											if ( false !== $item_index ) {
 												$item_value = $this->parent['parent_key_value'][ $this->parent['parent_key'][ $j - 1 ] ];
@@ -221,8 +221,8 @@ namespace WPDataProjects\Simple_Form {
 											foreach ( $relationships['table'] as $table_column ) {
 												if ( isset( $table_column->column_name ) && isset( $table_column->mandatory ) ) {
 													if ( $table_column->column_name === $source_column_name && 'No' === $table_column->mandatory ) {
-														array_push( $lov_values, '' );//phpcs:ignore - 8.1 proof
-														array_push( $lov_options, '' );//phpcs:ignore - 8.1 proof
+														array_push( $lov_values, '' ); // phpcs:ignore -- 8.1 proof
+														array_push( $lov_options, '' ); // phpcs:ignore -- 8.1 proof
 													}
 												}
 											}
@@ -244,8 +244,8 @@ namespace WPDataProjects\Simple_Form {
 											} else {
 												$lov_value = $row[ $lookup_column_name[ $source_column_name ] ] . ' (' . $row[ $target_column_name ] . ')';
 											}
-											array_push( $lov_values, $lov_value );//phpcs:ignore - 8.1 proof
-											array_push( $lov_options, $row[ $target_column_name ] );//phpcs:ignore - 8.1 proof
+											array_push( $lov_values, $lov_value ); // phpcs:ignore -- 8.1 proof
+											array_push( $lov_options, $row[ $target_column_name ] ); // phpcs:ignore -- 8.1 proof
 										}
 
 										$item->set_enum( $lov_values );

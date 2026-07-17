@@ -15,7 +15,7 @@ namespace WPDataAccess\Settings {
                 // Security check.
                 $wp_nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // input var okay.
                 if ( ! wp_verify_nonce( $wp_nonce, 'wpda-back-end-settings' ) ) {
-                    wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+                    wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
                 }
 
                 if ( 'save' === $action ) {
@@ -156,75 +156,75 @@ namespace WPDataAccess\Settings {
                   action="?page=<?php echo esc_attr( $this->page ); ?>&tab=legacy&vtab=backend">
                 <table class="wpda-table-settings">
                     <tr style="border-top: 1px solid #ccc">
-                        <th><?php echo __( 'Row access', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Row access', 'wp-data-access' ); ?></th>
                         <td>
                             <label>
                                 <input
                                     type="checkbox"
                                     name="view_link"
                                     <?php echo 'on' === $view_link ? 'checked' : ''; ?>
-                                ><?php echo __( 'Add view link to list table', 'wp-data-access' ); ?>
+                                ><?php esc_html_e( 'Add view link to list table', 'wp-data-access' ); ?>
                             </label>
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><?php echo __( 'Allow transactions?', 'wp-data-access' ); ?></th>
+                        <th scope="row"><?php esc_html_e( 'Allow transactions?', 'wp-data-access' ); ?></th>
                         <td>
                             <label>
                                 <input type="checkbox" name="allow_insert"
-                                    <?php echo 'on' === $allow_insert ? 'checked' : ''; ?> /><?php echo __( 'Allow insert', 'wp-data-access' ); ?>
+                                    <?php echo 'on' === $allow_insert ? 'checked' : ''; ?> /><?php esc_html_e( 'Allow insert', 'wp-data-access' ); ?>
                             </label>
                             <br/>
                             <label>
                                 <input type="checkbox" name="allow_update"
-                                    <?php echo 'on' === $allow_update ? 'checked' : ''; ?> /><?php echo __( 'Allow update', 'wp-data-access' ); ?>
+                                    <?php echo 'on' === $allow_update ? 'checked' : ''; ?> /><?php esc_html_e( 'Allow update', 'wp-data-access' ); ?>
                             </label>
                             <br/>
                             <label>
                                 <input type="checkbox" name="allow_delete"
-                                    <?php echo 'on' === $allow_delete ? 'checked' : ''; ?> /><?php echo __( 'Allow delete', 'wp-data-access' ); ?>
+                                    <?php echo 'on' === $allow_delete ? 'checked' : ''; ?> /><?php esc_html_e( 'Allow delete', 'wp-data-access' ); ?>
                             </label>
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><?php echo __( 'Allow exports?', 'wp-data-access' ); ?></th>
+                        <th scope="row"><?php esc_html_e( 'Allow exports?', 'wp-data-access' ); ?></th>
                         <td>
                             <label>
                                 <input type="checkbox" name="export_rows"
-                                    <?php echo 'on' === $export_rows ? 'checked' : ''; ?> /><?php echo __( 'Allow row export', 'wp-data-access' ); ?>
+                                    <?php echo 'on' === $export_rows ? 'checked' : ''; ?> /><?php esc_html_e( 'Allow row export', 'wp-data-access' ); ?>
                             </label>
                             <br/>
                             <label>
                                 <input type="checkbox" name="export_variable_rows"
-                                    <?php echo 'on' === $export_variable_rows ? 'checked' : ''; ?> /><?php echo __( 'Export with variable WP prefix', 'wp-data-access' ); ?>
+                                    <?php echo 'on' === $export_variable_rows ? 'checked' : ''; ?> /><?php esc_html_e( 'Export with variable WP prefix', 'wp-data-access' ); ?>
                             </label>
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><?php echo __( 'Allow imports?', 'wp-data-access' ); ?></th>
+                        <th scope="row"><?php esc_html_e( 'Allow imports?', 'wp-data-access' ); ?></th>
                         <td>
                             <label>
                                 <input type="checkbox" name="allow_imports"
-                                    <?php echo 'on' === $allow_imports ? 'checked' : ''; ?> /><?php echo __( 'Allow to import scripts from Data Explorer table pages', 'wp-data-access' ); ?>
+                                    <?php echo 'on' === $allow_imports ? 'checked' : ''; ?> /><?php esc_html_e( 'Allow to import scripts from Data Explorer table pages', 'wp-data-access' ); ?>
                             </label>
                         </td>
                     </tr>
                     <tr>
-                        <th><?php echo __( 'Ask for confirmation?', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Ask for confirmation?', 'wp-data-access' ); ?></th>
                         <td>
                             <label>
                                 <input type="checkbox" name="confirm_export"
-                                    <?php echo 'on' === $confirm_export ? 'checked' : ''; ?> /><?php echo __( 'When starting export', 'wp-data-access' ); ?>
+                                    <?php echo 'on' === $confirm_export ? 'checked' : ''; ?> /><?php esc_html_e( 'When starting export', 'wp-data-access' ); ?>
                             </label>
                             <br/>
                             <label>
                                 <input type="checkbox" name="confirm_view"
-                                    <?php echo 'on' === $confirm_view ? 'checked' : ''; ?> /><?php echo __( 'When viewing non WPDA table', 'wp-data-access' ); ?>
+                                    <?php echo 'on' === $confirm_view ? 'checked' : ''; ?> /><?php esc_html_e( 'When viewing non WPDA table', 'wp-data-access' ); ?>
                             </label>
                         </td>
                     </tr>
                     <tr>
-                        <th><?php echo __( 'Default pagination value', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Default pagination value', 'wp-data-access' ); ?></th>
                         <td>
                             <input
                                 type="number" step="1" min="1" max="999" name="pagination" maxlength="3"
@@ -232,18 +232,18 @@ namespace WPDataAccess\Settings {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php echo __( 'Search box', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Search box', 'wp-data-access' ); ?></th>
                         <td>
                             <label>
                                 <input
                                     type="checkbox"
                                     name="remember_search" <?php echo 'on' === $remember_search ? 'checked' : ''; ?>
-                                ><?php echo __( 'Remember last search', 'wp-data-access' ); ?>
+                                ><?php esc_html_e( 'Remember last search', 'wp-data-access' ); ?>
                             </label>
                         </td>
                     </tr>
                     <tr>
-                        <th><?php echo __( 'Max row count', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Max row count', 'wp-data-access' ); ?></th>
                         <td>
                             <input
                                 type="number" step="1" min="1" max="999999" name="innodb_count" maxlength="3"
@@ -273,7 +273,7 @@ namespace WPDataAccess\Settings {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php echo __( 'Default designer mode', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Default designer mode', 'wp-data-access' ); ?></th>
                         <td>
                             <select name="design_mode">
                                 <option value="basic" <?php echo 'basic' === $design_mode ? 'selected' : ''; ?>>Basic
@@ -285,13 +285,13 @@ namespace WPDataAccess\Settings {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php echo __( 'Content wrap', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Content wrap', 'wp-data-access' ); ?></th>
                         <td>
                             <label>
                                 <input
                                     type="checkbox"
                                     name="text_wrap_switch" <?php echo 'on' === $text_wrap_switch ? 'checked' : ''; ?>
-                                ><?php echo __( 'No content wrap', 'wp-data-access' ); ?>
+                                ><?php esc_html_e( 'No content wrap', 'wp-data-access' ); ?>
                             </label>
                             <br/>
                             <input
@@ -300,13 +300,13 @@ namespace WPDataAccess\Settings {
                         </td>
                     </tr>
                     <tr>
-                        <th><?php echo __( 'Hide button icons', 'wp-data-access' ); ?></th>
+                        <th><?php esc_html_e( 'Hide button icons', 'wp-data-access' ); ?></th>
                         <td>
                             <label>
                                 <input
                                     type="checkbox"
                                     name="hide_button_icons" <?php echo 'on' === $hide_button_icons ? 'checked' : ''; ?>
-                                ><?php echo __( 'Hide icons on admin buttons', 'wp-data-access' ); ?>
+                                ><?php esc_html_e( 'Hide icons on admin buttons', 'wp-data-access' ); ?>
                             </label>
                         </td>
                     </tr>
@@ -315,16 +315,16 @@ namespace WPDataAccess\Settings {
                     <input type="hidden" name="action" value="save"/>
                     <button type="submit" class="button button-primary">
                         <i class="fas fa-check wpda_icon_on_button"></i>
-                        <?php echo __( 'Save Back-end Settings', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Save Back-end Settings', 'wp-data-access' ); ?>
                     </button>
                     <a href="javascript:void(0)"
-                       onclick="if (confirm('<?php echo __( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
+                       onclick="if (confirm('<?php esc_html_e( 'Reset to defaults?', 'wp-data-access' ); ?>')) {
                            jQuery('input[name=&quot;action&quot;]').val('setdefaults');
                            jQuery('#wpda_settings_backend').trigger('submit')
                            }"
                        class="button">
                         <i class="fas fa-times-circle wpda_icon_on_button"></i>
-                        <?php echo __( 'Reset Back-end Settings To Defaults', 'wp-data-access' ); ?>
+                        <?php esc_html_e( 'Reset Back-end Settings To Defaults', 'wp-data-access' ); ?>
                     </a>
                 </div>
                 <?php wp_nonce_field( 'wpda-back-end-settings', '_wpnonce', false ); ?>

@@ -139,7 +139,7 @@ namespace WPDataProjects\Project {
 				)
 			);
 
-			$project_page = $wpdb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore WordPress.DB.PreparedSQL
+			$project_page = $wpdb->get_results( $query, 'ARRAY_A' ); // phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin table
 			if ( 0 === $wpdb->num_rows ) {
 				return;
 			}
@@ -172,7 +172,7 @@ namespace WPDataProjects\Project {
 				if ( isset( $relationships['table'] ) && null !== $relationships['table'] ) {
 					foreach ( $relationships['table'] as $column ) {
 						if ( $column->column_name === $pk ) {
-							array_push( $parent_primary_key_data_type, WPDA::get_type( $column->data_type ) );//phpcs:ignore - 8.1 proof
+							array_push( $parent_primary_key_data_type, WPDA::get_type( $column->data_type ) ); // phpcs:ignore -- 8.1 proof
 							break;
 						}
 					}
@@ -194,10 +194,10 @@ namespace WPDataProjects\Project {
 
 					foreach ( $relationship->source_column_name as $source_column_name ) {
 						if ( ! in_array( $source_column_name, $parent_primary_key ) ) {
-							array_push( $parent_primary_key, $source_column_name );//phpcs:ignore - 8.1 proof
+							array_push( $parent_primary_key, $source_column_name ); // phpcs:ignore -- 8.1 proof
 							foreach ( $relationships['table'] as $column ) {
 								if ( $column->column_name === $source_column_name ) {
-									array_push( $parent_primary_key_data_type, WPDA::get_type( $column->data_type ) );//phpcs:ignore - 8.1 proof
+									array_push( $parent_primary_key_data_type, WPDA::get_type( $column->data_type ) ); // phpcs:ignore -- 8.1 proof
 									break;
 								}
 							}
@@ -207,7 +207,7 @@ namespace WPDataProjects\Project {
 					foreach ( $relationship->target_column_name as $target_column_name ) {
 						foreach ( $relationships['table'] as $column ) {
 							if ( $column->column_name === $target_column_name ) {
-								array_push( $child_key_data_type, WPDA::get_type( $column->data_type ) );//phpcs:ignore - 8.1 proof
+								array_push( $child_key_data_type, WPDA::get_type( $column->data_type ) ); // phpcs:ignore -- 8.1 proof
 								break;
 							}
 						}
@@ -224,7 +224,7 @@ namespace WPDataProjects\Project {
 							'data_type'  => $child_key_data_type,
 						),
 					);
-					array_push( $children, $child );//phpcs:ignore - 8.1 proof
+					array_push( $children, $child ); // phpcs:ignore -- 8.1 proof
 				} elseif ( 'nm' === $relationship->relation_type ) {
 					$nm_relationships = WPDP_Project_Design_Table_Model::get_column_options( $relationship->relation_table_name, 'relationships', $page_setname, $schema_name );
 
@@ -247,10 +247,10 @@ namespace WPDataProjects\Project {
 							foreach ( $nm_relationship_found->source_column_name as $source_column_name ) {
 								foreach ( $nm_relationships['table'] as $column ) {
 									if ( $column->column_name === $source_column_name ) {
-										array_push( $child_key_data_type, WPDA::get_type( $column->data_type ) );//phpcs:ignore - 8.1 proof
-										if ( ! in_array( $source_column_name, $parent_primary_key ) ) {//phpcs:ignore - 8.1 proof
-											array_push( $parent_primary_key, $source_column_name );//phpcs:ignore - 8.1 proof
-											array_push( $parent_primary_key_data_type, WPDA::get_type( $column->data_type ) );//phpcs:ignore - 8.1 proof
+										array_push( $child_key_data_type, WPDA::get_type( $column->data_type ) ); // phpcs:ignore -- 8.1 proof
+										if ( ! in_array( $source_column_name, $parent_primary_key ) ) { // phpcs:ignore -- 8.1 proof
+											array_push( $parent_primary_key, $source_column_name ); // phpcs:ignore -- 8.1 proof
+											array_push( $parent_primary_key_data_type, WPDA::get_type( $column->data_type ) ); // phpcs:ignore -- 8.1 proof
 										}
 										break;
 									}
@@ -270,7 +270,7 @@ namespace WPDataProjects\Project {
 									'data_type'          => $child_key_data_type,
 								),
 							);
-							array_push( $children, $child );//phpcs:ignore - 8.1 proof
+							array_push( $children, $child ); // phpcs:ignore -- 8.1 proof
 						}
 					}
 				}

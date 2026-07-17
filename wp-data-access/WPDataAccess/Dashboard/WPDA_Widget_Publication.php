@@ -1,5 +1,6 @@
 <?php
 
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\Dashboard;
 
 use WPDataAccess\Data_Tables\WPDA_Data_Tables;
@@ -97,26 +98,21 @@ class WPDA_Widget_Publication extends WPDA_Widget {
 
     protected function container() {
         ob_start();
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo parent::container();
-        // phpcs:ignore WordPress.Security.EscapeOutput
         $post_publication = ( $this->search_header ? "post_publication_widget('{$this->table_name}', '{$this->pub_id}');" : '' );
         $post_content = "\n\t\t\t\t<div id='wpda-panel-pub-id-{$this->pub_id}' style='display: block'>\n\t\t\t\t\t{$this->pub_content}\n\t\t\t\t</div>\n\t\t\t\t<script type='application/javascript'>\n\t\t\t\tjQuery(function() {\n\t\t\t\t\tsetTimeout(waitUntilWidgetIsLoaded_{$this->pub_id}, 1000);\n\t\t\t\t\tfunction waitUntilWidgetIsLoaded_{$this->pub_id}() {\n\t\t\t\t\t\tif (jQuery('#wpda-widget-{$this->widget_id} div.ui-widget-content').length>0) {\n\t\t\t\t\t\t\tjQuery('#wpda-widget-{$this->widget_id} div.ui-widget-content').html('');\n\t\t\t\t\t\t\tjQuery('#wpda-panel-pub-id-{$this->pub_id}').appendTo(jQuery('#wpda-widget-{$this->widget_id} div.ui-widget-content'));\n\t\t\t\t\t\t\tjQuery('#{$this->table_name}{$this->pub_id}').DataTable().responsive.recalc();\n\t\t\t\t\t\t\tjQuery('#{$this->table_name}{$this->pub_id}').DataTable().columns.adjust();\n\t\t\t\t\t\t\t{$post_publication}\n\t\t\t\t\t\t\t// console.log('WP Data Access data table libraries loaded...');\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tsetTimeout(waitUntilWidgetIsLoaded_{$this->pub_id}, 1000);\n\t\t\t\t\t\t\tconsole.log('Waiting for WP Data Access data table libraries to be loaded...');\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t\t</script>\n\t\t\t";
         echo $post_content;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         return ob_get_clean();
     }
 
     public static function widget() {
         $panel_name = ( isset( $_REQUEST['wpda_panel_name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_panel_name'] ) ) : '' );
-        // input var okay.;
         $panel_pub_id = ( isset( $_REQUEST['wpda_panel_pub_id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_panel_pub_id'] ) ) : '' );
-        // input var okay.;
         $panel_column = ( isset( $_REQUEST['wpda_panel_column'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_panel_column'] ) ) : '1' );
-        // input var okay.;
         $column_position = ( isset( $_REQUEST['wpda_column_position'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_column_position'] ) ) : 'prepend' );
-        // input var okay.;
         $widget_sequence_nr = ( isset( $_REQUEST['wpda_widget_sequence_nr'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_widget_sequence_nr'] ) ) : '1' );
-        // input var okay.;
         $wdg = new WPDA_Widget_Publication(array(
             'name'      => $panel_name,
             'pub_id'    => $panel_pub_id,
@@ -125,15 +121,19 @@ class WPDA_Widget_Publication extends WPDA_Widget {
             'widget_id' => $widget_sequence_nr,
         ));
         WPDA::sent_header( 'text/html; charset=UTF-8' );
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $wdg->container();
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         wp_die();
     }
 
     public static function refresh() {
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo static::msg( 'ERROR', 'Method not available for this panel type' );
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         wp_die();
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

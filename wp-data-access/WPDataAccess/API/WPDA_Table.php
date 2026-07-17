@@ -1326,7 +1326,7 @@ class WPDA_Table extends WPDA_API_Core {
             return false;
         } else {
             if ( !in_array( $request->get_method(), $tables[$dbs][$tbl][$action]['methods'] ) ) {
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 $msg = __( 'Unauthorized', 'wp-data-access' );
                 return false;
             }

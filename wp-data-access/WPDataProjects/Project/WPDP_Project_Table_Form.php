@@ -5,6 +5,7 @@
  *
  * @package WPDataProjects\Project
  */
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified in function is_authorized
 namespace WPDataProjects\Project;
 
 use WPDataAccess\Data_Dictionary\WPDA_Dictionary_Exist;
@@ -139,7 +140,7 @@ class WPDP_Project_Table_Form {
             $this->page = sanitize_text_field( wp_unslash( $_REQUEST['page'] ) );
             // input var okay.
         } else {
-            wp_die( __( 'ERROR: Wrong arguments [missing page]', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Wrong arguments [missing page]', 'wp-data-access' ) );
         }
         if ( isset( $_REQUEST['action'] ) ) {
             $this->action = sanitize_text_field( wp_unslash( $_REQUEST['action'] ) );
@@ -157,21 +158,17 @@ class WPDP_Project_Table_Form {
         $this->current_tab = 'tableinfo';
         if ( isset( $_REQUEST['tab'] ) ) {
             $tab = sanitize_text_field( wp_unslash( $_REQUEST['tab'] ) );
-            // input var okay.
             if ( isset( $this->tabs[$tab] ) ) {
                 $this->current_tab = $tab;
             }
         }
         $this->wpnonce_requested = ( isset( $_POST['wpnonce'] ) ? sanitize_text_field( wp_unslash( $_POST['wpnonce'] ) ) : null );
-        // input var okay.
         if ( isset( $_REQUEST['wpda_table_name'] ) && !is_array( $_REQUEST['wpda_table_name'] ) ) {
             $wpda_project_design_table_model = new WPDP_Project_Design_Table_Model();
             if ( 'reconcile' === $this->action ) {
                 $wpda_table_name_re = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) );
-                // input var okay.
                 $this->is_authorized( $wpda_table_name_re );
                 $wpda_schema_name_re = ( isset( $_REQUEST['wpda_schema_name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) ) : '' );
-                // input var okay.
                 $wpda_reverse_engineering = new WPDA_Reverse_Engineering($wpda_table_name_re, $wpda_schema_name_re);
                 $table_structure = $wpda_reverse_engineering->get_designer_format( 'advanced' );
                 if ( isset( $_REQUEST['keep_options'] ) ) {
@@ -202,20 +199,18 @@ class WPDP_Project_Table_Form {
             } elseif ( 'reverse_engineering' === $this->action ) {
                 if ( isset( $_REQUEST['wpda_table_name'] ) ) {
                     $wpda_table_name_re = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) );
-                    // input var okay.
                     $this->is_authorized( WPDP_Project_Design_Table_Model::get_base_table_name() );
                     $wpda_schema_name_re = ( isset( $_REQUEST['wpda_schema_name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) ) : '' );
-                    // input var okay.
                     $wpda_reverse_engineering = new WPDA_Reverse_Engineering($wpda_table_name_re, $wpda_schema_name_re);
                     $table_structure = $wpda_reverse_engineering->get_designer_format( 'advanced' );
                     if ( count( $table_structure ) > 0 ) {
-                        //phpcs:ignore - 8.1 proof
+                        // phpcs:ignore -- 8.1 proof
                         $this->wpda_schema_name = $wpda_schema_name_re;
                         $this->wpda_table_name = $wpda_table_name_re;
                         $this->get_unique_setname();
                         $this->wpda_table_design = $table_structure;
                     } else {
-                        wp_die( __( 'ERROR: Reverse engineering table failed [invalid structure]', 'wp-data-access' ) );
+                        wp_die( esc_attr__( 'ERROR: Reverse engineering table failed [invalid structure]', 'wp-data-access' ) );
                     }
                     if ( !WPDP_Project_Design_Table_Model::insert_reverse_engineered(
                         $this->wpda_table_name,
@@ -224,7 +219,7 @@ class WPDP_Project_Table_Form {
                         $this->wpda_schema_name
                     ) ) {
                         $db_error = ( '' === $wpdb->last_error ? '' : ' [' . $wpdb->last_error . ']' );
-                        wp_die( __( 'ERROR: Reverse engineering table failed' . $db_error, 'wp-data-access' ) );
+                        wp_die( esc_attr__( 'ERROR: Reverse engineering table failed', 'wp-data-access' ) . esc_html( $db_error ) );
                     } else {
                         // Convert named array to object (needed to display structure).
                         $this->wpda_table_design = json_decode( json_encode( $table_structure ) );
@@ -236,12 +231,11 @@ class WPDP_Project_Table_Form {
                     ));
                     $msg->box();
                 } else {
-                    wp_die( __( 'ERROR: Wrong arguments', 'wp-data-access' ) );
+                    wp_die( esc_attr__( 'ERROR: Wrong arguments', 'wp-data-access' ) );
                 }
             } elseif ( null !== $this->action2 ) {
                 // Check authorization
                 $table_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_table_name'] ) );
-                // input var okay.
                 $this->is_authorized( $table_name );
                 $result_update = $wpda_project_design_table_model->update();
                 if ( false === $result_update ) {
@@ -285,7 +279,6 @@ class WPDP_Project_Table_Form {
             $this->table_structure = $wpda_project_design_table_model->get_table_design();
             $this->wpda_table_setname = $wpda_project_design_table_model->get_table_setname();
             $this->wpda_schema_name = ( isset( $_REQUEST['wpda_schema_name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_schema_name'] ) ) : '' );
-            // input var okay.
             $this->wpda_schema_name_db = $this->wpda_schema_name;
             if ( '' === $this->wpda_schema_name ) {
                 $this->wpda_schema_name = $wpdb->dbname;
@@ -300,16 +293,16 @@ class WPDP_Project_Table_Form {
                     $this->wpda_table_setname
                 );
                 if ( 0 === count( $this->wpda_list_columns->get_table_primary_key() ) ) {
-                    //phpcs:ignore - 8.1 proof
+                    // phpcs:ignore -- 8.1 proof
                     $this->has_primary_key = false;
                 } else {
                     $this->has_primary_key = true;
                 }
             } else {
-                wp_die( __( 'ERROR: Invalid table name or not authorized', 'wp-data-access' ) );
+                wp_die( esc_attr__( 'ERROR: Invalid table name or not authorized', 'wp-data-access' ) );
             }
         } else {
-            wp_die( __( 'ERROR: Argument wpda_table_name not found', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Argument wpda_table_name not found', 'wp-data-access' ) );
         }
         $this->wpnonce = wp_create_nonce( self::WPNONCE_SEED . $this->wpda_table_name );
     }
@@ -319,7 +312,7 @@ class WPDP_Project_Table_Form {
 
     protected function is_authorized( $table_name ) {
         if ( !wp_verify_nonce( $this->wpnonce_requested, self::WPNONCE_SEED . $table_name ) ) {
-            wp_die( __( 'ERROR: Not authorized', 'wp-data-access' ) );
+            wp_die( esc_attr__( 'ERROR: Not authorized', 'wp-data-access' ) );
         }
     }
 
@@ -331,6 +324,7 @@ class WPDP_Project_Table_Form {
         // Default for first options set
         global $wpdb;
         $query = "select 'x' from `%1s` where wpda_table_name = %s";
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL -- plugin table
         $wpdb->get_results( $wpdb->prepare( 
             $query,
             // phpcs:ignore WordPress.DB.PreparedSQL
@@ -340,32 +334,25 @@ class WPDP_Project_Table_Form {
             $query = "select 'x' from `%1s` where wpda_schema_name = %s and wpda_table_name = %s and wpda_table_setname = %s";
             $i = $wpdb->num_rows + 1;
             $this->wpda_table_setname = "options_set_{$i}";
-            $wpdb->get_results( $wpdb->prepare( 
-                $query,
-                // phpcs:ignore WordPress.DB.PreparedSQL
-                array(
+            $wpdb->get_results( $wpdb->prepare( $query, array(
+                WPDA::remove_backticks( WPDP_Project_Design_Table_Model::get_base_table_name() ),
+                $this->wpda_schema_name,
+                $this->wpda_table_name,
+                $this->wpda_table_setname
+            ) ) );
+            while ( $wpdb->num_rows > 0 ) {
+                // Search until a free options set is found
+                $this->wpda_table_setname = "options_set_{$i}";
+                $wpdb->get_results( $wpdb->prepare( $query, array(
                     WPDA::remove_backticks( WPDP_Project_Design_Table_Model::get_base_table_name() ),
                     $this->wpda_schema_name,
                     $this->wpda_table_name,
                     $this->wpda_table_setname
-                )
-             ) );
-            while ( $wpdb->num_rows > 0 ) {
-                // Search until a free options set is found
-                $this->wpda_table_setname = "options_set_{$i}";
-                $wpdb->get_results( $wpdb->prepare( 
-                    $query,
-                    // phpcs:ignore WordPress.DB.PreparedSQL
-                    array(
-                        WPDA::remove_backticks( WPDP_Project_Design_Table_Model::get_base_table_name() ),
-                        $this->wpda_schema_name,
-                        $this->wpda_table_name,
-                        $this->wpda_table_setname
-                    )
-                 ) );
+                ) ) );
                 $i++;
             }
         }
+        // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL
     }
 
     /**
@@ -383,8 +370,9 @@ class WPDP_Project_Table_Form {
             $set_name = esc_attr( $this->wpda_table_setname );
             $tab_value = esc_attr( $tab );
             $tab_form = "\n\t\t\t\t\t\t<form id='{$form_id}' method='post' action='?page={$page}&tab={$tab_value}'>\n\t\t\t\t\t\t\t<input type='hidden' name='wpda_schema_name' value='{$schema_name}'/>\n\t\t\t\t\t\t\t<input type='hidden' name='wpda_table_name' value='{$table_name}'/>\n\t\t\t\t\t\t\t<input type='hidden' name='wpda_table_setname' value='{$set_name}'/>\n\t\t\t\t\t\t\t<input type='hidden' name='wpda_table_setname_old' value='{$set_name}'/>\n\t\t\t\t\t\t\t<input type='hidden' name='action' value='edit'/>\n\t\t\t\t\t\t</form>\n\t\t\t\t\t";
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo $tab_form;
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            // phpcs:enable WordPress.Security.EscapeOutput
         }
         ?>
 			</div>
@@ -488,7 +476,7 @@ class WPDP_Project_Table_Form {
         ?>"
 					class="dashicons dashicons-arrow-left-alt2"
 					title="<?php 
-        echo __( 'Template list', 'wp-data-access' );
+        esc_html_e( 'Template list', 'wp-data-access' );
         ?>"
 				></a>
 				<?php 
@@ -569,7 +557,7 @@ class WPDP_Project_Table_Form {
 					<legend>
 						<label style="font-weight: normal;">
 							<?php 
-        echo __( 'Manage table settings for table ', 'wp-data-access' );
+        esc_html_e( 'Manage table settings for table ', 'wp-data-access' );
         ?>
 						</label>
 						<label>
@@ -584,7 +572,7 @@ class WPDP_Project_Table_Form {
 							<td style="text-align: right; padding-right: 5px; width: 140px;" class="wpdp-label-column">
 								<label>
 									<?php 
-        echo __( 'Template set name', 'wp-data-access' );
+        esc_html_e( 'Template set name', 'wp-data-access' );
         ?>
 								</label>
 							</td>
@@ -605,7 +593,7 @@ class WPDP_Project_Table_Form {
 							<td style="text-align: right; padding-right: 5px;">
 								<label>
 									<?php 
-        echo __( 'Tab label', 'wp-data-access' );
+        esc_html_e( 'Tab label', 'wp-data-access' );
         ?>
 								</label>
 							</td>
@@ -639,14 +627,15 @@ class WPDP_Project_Table_Form {
 							<td style="text-align: right; padding-right: 5px; padding-top: 10px;" class="wpdp-label-column">
 								<label>
 									<?php 
-        echo __( 'Hyperlinks parent', 'wp-data-access' );
+        esc_html_e( 'Hyperlinks parent', 'wp-data-access' );
         ?>
 								</label>
 							</td>
 							<td style="padding-top: 10px;">
 								<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $html;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>
 							</td>
 						</tr>
@@ -654,14 +643,15 @@ class WPDP_Project_Table_Form {
 							<td style="text-align: right; padding-right: 5px;" class="wpdp-label-column">
 								<label>
 									<?php 
-        echo __( 'Hyperlinks child', 'wp-data-access' );
+        esc_html_e( 'Hyperlinks child', 'wp-data-access' );
         ?>
 								</label>
 							</td>
 							<td>
 								<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $html_child;
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>
 							</td>
 						</tr>
@@ -679,7 +669,7 @@ class WPDP_Project_Table_Form {
 					<legend>
 						<label style="font-weight: normal;">
 							<?php 
-        echo __( 'Child table setting only', 'wp-data-access' );
+        esc_html_e( 'Child table setting only', 'wp-data-access' );
         ?>
 							<span class="dashicons dashicons-editor-help wpda_tooltip" title="These settings only affect child tables! Parent table settings are available on Data Projects page."></span>
 						</label>
@@ -690,7 +680,7 @@ class WPDP_Project_Table_Form {
 							<td style="text-align: right; padding-right: 5px;" class="wpdp-label-column">
 								<label>
 									<?php 
-        echo __( 'Default WHERE', 'wp-data-access' );
+        esc_html_e( 'Default WHERE', 'wp-data-access' );
         ?>
 								</label>
 							</td>
@@ -708,7 +698,7 @@ class WPDP_Project_Table_Form {
 							<td style="text-align: right; padding-right: 5px;" class="wpdp-label-column">
 								<label>
 									<?php 
-        echo __( 'Default ORDER BY', 'wp-data-access' );
+        esc_html_e( 'Default ORDER BY', 'wp-data-access' );
         ?>
 								</label>
 							</td>
@@ -743,7 +733,7 @@ class WPDP_Project_Table_Form {
 					<button type="submit" class="button button-primary">
 						<i class="fas fa-check wpda_icon_on_button"></i>
 						<?php 
-        echo __( 'Save table info', 'wp-data-access' );
+        esc_html_e( 'Save table info', 'wp-data-access' );
         ?>
 					</button>
 					<a href="?page=<?php 
@@ -751,7 +741,7 @@ class WPDP_Project_Table_Form {
         ?>" class="button button-secondary">
 						<i class="fas fa-times-circle wpda_icon_on_button"></i>
 						<?php 
-        echo __( 'Back to list', 'wp-data-access' );
+        esc_html_e( 'Back to list', 'wp-data-access' );
         ?>
 					</a>
 				</div>
@@ -977,8 +967,9 @@ class WPDP_Project_Table_Form {
             $option = "<option value='" . esc_attr( $target_table_name['table_name'] ) . "'>" . esc_attr( $target_table_name['table_name'] ) . '</option>';
             ?>
 					jQuery('#relation_table_name_' + row_num).append("<?php 
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo $option;
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            // phpcs:enable WordPress.Security.EscapeOutput
             ?>");
 					jQuery('#relation_table_name_' + row_num).val(relation_table_name);
 						<?php 
@@ -1083,7 +1074,7 @@ class WPDP_Project_Table_Form {
 					<legend>
 						<label style="font-weight: normal;">
 							<?php 
-        echo __( 'Manage relationships for table', 'wp-data-access' );
+        esc_html_e( 'Manage relationships for table', 'wp-data-access' );
         ?>
 						</label>
 						<label>
@@ -1099,35 +1090,35 @@ class WPDP_Project_Table_Form {
 							<th class="wpda-table-structure-first-column-move"></th>
 							<th>
 								<?php 
-        echo __( 'Type', 'wp-data-access' );
+        esc_html_e( 'Type', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Source column name', 'wp-data-access' );
+        esc_html_e( 'Source column name', 'wp-data-access' );
         ?>
 							</th>
 							<th style="width:20px;"></th>
 							<th>
 								<?php 
-        echo __( 'Target table name', 'wp-data-access' );
+        esc_html_e( 'Target table name', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Target column name', 'wp-data-access' );
+        esc_html_e( 'Target column name', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<span style="vertical-align:inherit">
 									<?php 
-        echo __( 'Relation table name (only n:m)', 'wp-data-access' );
+        esc_html_e( 'Relation table name (only n:m)', 'wp-data-access' );
         ?>
 								</span>
 								<span
 										class="dashicons dashicons-info wpda_tooltip"
 										title="<?php 
-        echo __( 'Table shown on the other end of the n:m relationship (instead of target table shown for 1:n relationships). Not available for 1:n relationships.', 'wp-data-access' );
+        esc_html_e( 'Table shown on the other end of the n:m relationship (instead of target table shown for 1:n relationships). Not available for 1:n relationships.', 'wp-data-access' );
         ?>"
 										style="cursor:pointer;"
 								></span>
@@ -1172,7 +1163,7 @@ class WPDP_Project_Table_Form {
 					<button type="submit" class="button button-primary">
 						<i class="fas fa-check wpda_icon_on_button"></i>
 						<?php 
-        echo __( 'Save relationships', 'wp-data-access' );
+        esc_html_e( 'Save relationships', 'wp-data-access' );
         ?>
 					</button>
 					<a href="?page=<?php 
@@ -1180,7 +1171,7 @@ class WPDP_Project_Table_Form {
         ?>" class="button button-secondary">
 						<i class="fas fa-times-circle wpda_icon_on_button"></i>
 						<?php 
-        echo __( 'Back to list', 'wp-data-access' );
+        esc_html_e( 'Back to list', 'wp-data-access' );
         ?>
 					</a>
 				</div>
@@ -1190,7 +1181,7 @@ class WPDP_Project_Table_Form {
         if ( isset( $this->table_structure->relationships ) ) {
             $relationships = $this->table_structure->relationships;
             if ( 0 < count( $relationships ) ) {
-                //phpcs:ignore - 8.1 proof
+                // phpcs:ignore -- 8.1 proof
                 foreach ( $relationships as $relationship ) {
                     ?>
 						<script type='text/javascript'>
@@ -1200,15 +1191,17 @@ class WPDP_Project_Table_Form {
                     } else {
                         $source_column_name_array = wp_json_encode( $relationship->source_column_name );
                     }
+                    // phpcs:disable WordPress.Security.EscapeOutput
                     echo 'var source_column_name_array = ' . $source_column_name_array . ";\n";
-                    // phpcs:ignore WordPress.Security.EscapeOutput
+                    // phpcs:enable WordPress.Security.EscapeOutput
                     if ( !is_array( $relationship->target_column_name ) ) {
                         $target_column_name_array = '[""]';
                     } else {
                         $target_column_name_array = wp_json_encode( $relationship->target_column_name );
                     }
+                    // phpcs:disable WordPress.Security.EscapeOutput
                     echo 'var target_column_name_array = ' . $target_column_name_array . ";\n";
-                    // phpcs:ignore WordPress.Security.EscapeOutput
+                    // phpcs:enable WordPress.Security.EscapeOutput
                     if ( isset( $relationship->relation_table_name ) ) {
                         $relation_table_name = $relationship->relation_table_name;
                     } else {
@@ -1274,7 +1267,7 @@ class WPDP_Project_Table_Form {
 					<legend>
 						<label style="font-weight: normal;">
 							<?php 
-        echo __( 'Manage columns for list table of table', 'wp-data-access' );
+        esc_html_e( 'Manage columns for list table of table', 'wp-data-access' );
         ?>
 						</label>
 						<label>
@@ -1290,38 +1283,38 @@ class WPDP_Project_Table_Form {
 							<th class="wpda-table-structure-first-column-move"></th>
 							<th>
 								<?php 
-        echo __( 'Column name', 'wp-data-access' );
+        esc_html_e( 'Column name', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Data type', 'wp-data-access' );
+        esc_html_e( 'Data type', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Key', 'wp-data-access' );
+        esc_html_e( 'Key', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Mandatory', 'wp-data-access' );
+        esc_html_e( 'Mandatory', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Visible', 'wp-data-access' );
+        esc_html_e( 'Visible', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Label', 'wp-data-access' );
+        esc_html_e( 'Label', 'wp-data-access' );
         ?>
 							</th>
 							<th></th>
 							<th>
 								<?php 
-        echo __( 'Lookup', 'wp-data-access' );
+        esc_html_e( 'Lookup', 'wp-data-access' );
         ?>
 							</th>
 						</tr>
@@ -1347,11 +1340,13 @@ class WPDP_Project_Table_Form {
                 $mandatory = $table_structure[$column_name]->mandatory;
                 $max_length = $table_structure[$column_name]->max_length;
             } else {
+                // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => __( "Column {$column_name} not found for list table", 'wp-data-access' ),
+                    'message_text'           => sprintf( __( 'Column %s not found for list table', 'wp-data-access' ), esc_attr( $column_name ) ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
+                // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg->box();
                 break;
             }
@@ -1504,7 +1499,7 @@ class WPDP_Project_Table_Form {
 					<button type="submit" class="button button-primary">
 						<i class="fas fa-check wpda_icon_on_button"></i>
 						<?php 
-        echo __( 'Save list table columns', 'wp-data-access' );
+        esc_html_e( 'Save list table columns', 'wp-data-access' );
         ?>
 					</button>
 					<a href="?page=<?php 
@@ -1512,7 +1507,7 @@ class WPDP_Project_Table_Form {
         ?>" class="button button-secondary">
 						<i class="fas fa-times-circle wpda_icon_on_button"></i>
 						<?php 
-        echo __( 'Back to list', 'wp-data-access' );
+        esc_html_e( 'Back to list', 'wp-data-access' );
         ?>
 					</a>
 				</div>
@@ -1540,7 +1535,7 @@ class WPDP_Project_Table_Form {
 					<legend>
 						<label style="font-weight: normal;">
 							<?php 
-        echo __( 'Manage columns for data entry form for table', 'wp-data-access' );
+        esc_html_e( 'Manage columns for data entry form for table', 'wp-data-access' );
         ?>
 						</label>
 						<label>
@@ -1556,66 +1551,66 @@ class WPDP_Project_Table_Form {
 							<th class="wpda-table-structure-first-column-move"></th>
 							<th>
 								<?php 
-        echo __( 'Column name', 'wp-data-access' );
+        esc_html_e( 'Column name', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Data type', 'wp-data-access' );
+        esc_html_e( 'Data type', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Key', 'wp-data-access' );
+        esc_html_e( 'Key', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Mandatory', 'wp-data-access' );
+        esc_html_e( 'Mandatory', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Visible', 'wp-data-access' );
+        esc_html_e( 'Visible', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Read only', 'wp-data-access' );
+        esc_html_e( 'Read only', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Less', 'wp-data-access' );
+        esc_html_e( 'Less', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<?php 
-        echo __( 'Label', 'wp-data-access' );
-        ?>
-							</th>
-							<th></th>
-							<th>
-								<?php 
-        echo __( 'Default value', 'wp-data-access' );
+        esc_html_e( 'Label', 'wp-data-access' );
         ?>
 							</th>
 							<th></th>
 							<th>
 								<?php 
-        echo __( 'Lookup', 'wp-data-access' );
+        esc_html_e( 'Default value', 'wp-data-access' );
+        ?>
+							</th>
+							<th></th>
+							<th>
+								<?php 
+        esc_html_e( 'Lookup', 'wp-data-access' );
         ?>
 							</th>
 							<th>
 								<span style="vertical-align:inherit">
 									<?php 
-        echo __( 'ID?', 'wp-data-access' );
+        esc_html_e( 'ID?', 'wp-data-access' );
         ?>
 								</span>
 								<span
 										class="dashicons dashicons-info wpda_tooltip"
 										title="<?php 
-        echo __( 'Enable to hide ID in lookup', 'wp-data-access' );
+        esc_html_e( 'Enable to hide ID in lookup', 'wp-data-access' );
         ?>"
 										style="cursor:pointer;"
 								></span>
@@ -1644,11 +1639,13 @@ class WPDP_Project_Table_Form {
                 $mandatory = $table_structure[$column_name]->mandatory;
                 $max_length = $table_structure[$column_name]->max_length;
             } else {
+                // phpcs:disable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg = new WPDA_Message_Box(array(
-                    'message_text'           => __( "Column {$column_name} not found for data entry form", 'wp-data-access' ),
+                    'message_text'           => sprintf( __( 'Column %s not found for data entry form', 'wp-data-access' ), esc_attr( $column_name ) ),
                     'message_type'           => 'error',
                     'message_is_dismissible' => false,
                 ));
+                // phpcs:enable WordPress.WP.I18n.MissingTranslatorsComment
                 $msg->box();
                 break;
             }
@@ -1899,7 +1896,7 @@ class WPDP_Project_Table_Form {
 					<button type="submit" class="button button-primary">
 						<i class="fas fa-check wpda_icon_on_button"></i>
 						<?php 
-        echo __( 'Save data entry form columns', 'wp-data-access' );
+        esc_html_e( 'Save data entry form columns', 'wp-data-access' );
         ?>
 					</button>
 					<a href="?page=<?php 
@@ -1907,7 +1904,7 @@ class WPDP_Project_Table_Form {
         ?>" class="button button-secondary">
 						<i class="fas fa-times-circle wpda_icon_on_button"></i>
 						<?php 
-        echo __( 'Back to list', 'wp-data-access' );
+        esc_html_e( 'Back to list', 'wp-data-access' );
         ?>
 					</a>
 				</div>
@@ -1924,7 +1921,7 @@ class WPDP_Project_Table_Form {
 						<legend>
 							<label style="font-weight: normal;">
 								<?php 
-        echo __( 'Reconcile columns for table', 'wp-data-access' );
+        esc_html_e( 'Reconcile columns for table', 'wp-data-access' );
         ?>
 							</label>
 							<label>
@@ -1972,12 +1969,12 @@ class WPDP_Project_Table_Form {
         ?>"/>
 						<button type="submit" class="button button-primary wpda_tooltip"
 								onclick="return (confirm('<?php 
-        echo __( 'Reconcile table? Your current modifications will be lost!' );
+        esc_html_e( 'Reconcile table? Your current modifications will be lost!', 'wp-data-access' );
         ?>'));"
 						>
 							<i class="fas fa-check wpda_icon_on_button"></i>
 							<?php 
-        echo __( 'Reconcile Table', 'wp-data-access' );
+        esc_html_e( 'Reconcile Table', 'wp-data-access' );
         ?>
 						</button>
 						<a href="?page=<?php 
@@ -1985,7 +1982,7 @@ class WPDP_Project_Table_Form {
         ?>" class="button button-secondary">
 							<i class="fas fa-times-circle wpda_icon_on_button"></i>
 							<?php 
-        echo __( 'Back to list', 'wp-data-access' );
+        esc_html_e( 'Back to list', 'wp-data-access' );
         ?>
 						</a>
 					</div>
@@ -1995,3 +1992,5 @@ class WPDP_Project_Table_Form {
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

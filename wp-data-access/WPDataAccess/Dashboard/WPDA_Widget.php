@@ -1,6 +1,6 @@
 <?php
 
-// phpcs:ignore Standard.Category.SniffName.ErrorCode
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\Dashboard;
 
 use WPDataAccess\WPDA;
@@ -194,8 +194,9 @@ abstract class WPDA_Widget {
         ?>">
 				jQuery(function() {
 					var widget = `<?php 
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $this->html();
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>`;
 
 					jQuery("#wpda-dashboard-column-<?php 
@@ -232,6 +233,7 @@ abstract class WPDA_Widget {
         $setting = '';
         $refresh = ( $this->can_refresh ? "<i class='fas fa-sync-alt wpda-widget-refresh wpda_tooltip' title='Refresh'></i> &nbsp;" : '' );
         $close = ( !$this->is_locked ? '<i class="fas fa-window-close wpda-widget-close wpda_tooltip" title="Close"></i>' : '' );
+        // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
         $widget = <<<EOF
                 <div id="wpda-widget-{$this->widget_id}" data-id="{$this->widget_id}" class="wpda-widget ui-widget">
                     <div class="wpda-widget-content">
@@ -262,12 +264,12 @@ EOF;
      */
     protected static function check_cors( $widget ) {
         if ( isset( $_POST['wpda_caller'] ) && 'embedded' === $_POST['wpda_caller'] ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             $share = ( isset( $widget['widgetShare'] ) ? $widget['widgetShare'] : null );
             if ( 'block' === $share['embed'] ) {
                 WPDA::sent_header( 'application/json', '*' );
+                // phpcs:disable WordPress.Security.EscapeOutput
                 echo static::msg( 'ERROR', 'No access' );
-                // phpcs:ignore WordPress.Security.EscapeOutput
+                // phpcs:enable WordPress.Security.EscapeOutput
                 wp_die();
             } else {
                 if ( '*' === $share['embed'] ) {
@@ -297,8 +299,9 @@ EOF;
      * @return void
      */
     public function add() {
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $this->container();
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         ?>
 			<script type="application/javascript">
 				jQuery(function() {
@@ -324,8 +327,9 @@ EOF;
         $wp_nonce = ( isset( $_POST['wp_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['wp_nonce'] ) ) : '' );
         if ( !wp_verify_nonce( $wp_nonce, static::WIDGET_ADD . WPDA::get_current_user_login() ) ) {
             WPDA::sent_header( 'application/json' );
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo static::msg( 'ERROR', 'Token expired, please refresh page' );
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            // phpcs:enable WordPress.Security.EscapeOutput
             wp_die();
         }
         static::widget();
@@ -347,8 +351,9 @@ EOF;
         $wp_nonce = ( isset( $_POST['wp_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['wp_nonce'] ) ) : '' );
         if ( !wp_verify_nonce( $wp_nonce, static::WIDGET_REFRESH . WPDA::get_current_user_login() ) ) {
             WPDA::sent_header( 'application/json' );
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo static::msg( 'ERROR', 'Token expired, please refresh page' );
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            // phpcs:enable WordPress.Security.EscapeOutput
             wp_die();
         }
         static::refresh();
@@ -363,10 +368,12 @@ EOF;
      */
     protected static function msg( $status, $msg ) {
         $error = array(
-            'status' => $status,
+            'status' => esc_attr( $status ),
             'msg'    => $msg,
         );
         return wp_json_encode( $error );
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing

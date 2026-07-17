@@ -1,6 +1,6 @@
 <?php
 
-// phpcs:ignore Standard.Category.SniffName.ErrorCode
+// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- verified on page
 namespace WPDataAccess\Dashboard;
 
 use WPDataAccess\WPDA;
@@ -235,15 +235,10 @@ class WPDA_Widget_Dbms extends WPDA_Widget {
      */
     public static function widget() {
         $panel_name = ( isset( $_REQUEST['wpda_panel_name'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_panel_name'] ) ) : '' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $panel_dbms = ( isset( $_REQUEST['wpda_panel_dbms'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_panel_dbms'] ) ) : '' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $panel_column = ( isset( $_REQUEST['wpda_panel_column'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_panel_column'] ) ) : '1' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $column_position = ( isset( $_REQUEST['wpda_column_position'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_column_position'] ) ) : 'prepend' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $widget_sequence_nr = ( isset( $_REQUEST['wpda_widget_sequence_nr'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['wpda_widget_sequence_nr'] ) ) : '1' );
-        // phpcs:ignore WordPress.Security.NonceVerification
         $wdg = new WPDA_Widget_Dbms(array(
             'name'        => $panel_name,
             'schema_name' => $panel_dbms,
@@ -252,8 +247,9 @@ class WPDA_Widget_Dbms extends WPDA_Widget {
             'widget_id'   => $widget_sequence_nr,
         ));
         WPDA::sent_header( 'text/html; charset=UTF-8' );
+        // phpcs:disable WordPress.Security.EscapeOutput
         echo $wdg->container();
-        // phpcs:ignore WordPress.Security.EscapeOutput
+        // phpcs:enable WordPress.Security.EscapeOutput
         wp_die();
     }
 
@@ -270,9 +266,9 @@ class WPDA_Widget_Dbms extends WPDA_Widget {
             WPDA::sent_header( 'application/json' );
         }
         if ( !isset( $_REQUEST['wpda_action'] ) ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
+            // phpcs:disable WordPress.Security.EscapeOutput
             echo static::msg( 'ERROR', 'Invalid arguments' );
-            // phpcs:ignore WordPress.Security.EscapeOutput
+            // phpcs:enable WordPress.Security.EscapeOutput
             wp_die();
         }
         if ( null === $schema_name ) {
@@ -285,13 +281,13 @@ class WPDA_Widget_Dbms extends WPDA_Widget {
                 }
             }
             if ( !$widget_found ) {
+                // phpcs:disable WordPress.Security.EscapeOutput
                 echo static::msg( 'ERROR', 'Invalid arguments' );
-                // phpcs:ignore WordPress.Security.EscapeOutput
+                // phpcs:enable WordPress.Security.EscapeOutput
                 wp_die();
             }
         }
         switch ( $_REQUEST['wpda_action'] ) {
-            // phpcs:ignore WordPress.Security.NonceVerification
             case 'vars':
                 static::get_vars( $schema_name );
                 break;
@@ -302,8 +298,9 @@ class WPDA_Widget_Dbms extends WPDA_Widget {
                 static::get_info( $schema_name );
                 break;
             default:
+                // phpcs:disable WordPress.Security.EscapeOutput
                 echo static::msg( 'ERROR', 'Invalid arguments' );
-                // phpcs:ignore WordPress.Security.EscapeOutput
+                // phpcs:enable WordPress.Security.EscapeOutput
                 wp_die();
         }
     }
@@ -349,7 +346,7 @@ class WPDA_Widget_Dbms extends WPDA_Widget {
             $json[$var[0]] = $var[1];
         }
         echo json_encode( $json );
-        // phpcs:ignore - 8.1 proof
+        // phpcs:ignore
         wp_die();
     }
 
@@ -366,7 +363,7 @@ class WPDA_Widget_Dbms extends WPDA_Widget {
             $json[$var[0]] = $var[1];
         }
         echo json_encode( $json );
-        // phpcs:ignore - 8.1 proof
+        // phpcs:ignore
         wp_die();
     }
 
@@ -377,11 +374,13 @@ class WPDA_Widget_Dbms extends WPDA_Widget {
      * @return void
      */
     protected static function get_info( $schema_name ) {
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
         $schema_name = sanitize_text_field( wp_unslash( $_REQUEST['wpda_schemaname'] ) );
-        // phpcs:ignore - 8.1 proof
         echo json_encode( static::get_data( $schema_name ) );
-        // phpcs:ignore - 8.1 proof
+        // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
         wp_die();
     }
 
 }
+
+// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
