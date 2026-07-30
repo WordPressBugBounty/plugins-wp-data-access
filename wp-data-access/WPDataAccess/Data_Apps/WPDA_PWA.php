@@ -2,6 +2,8 @@
 
 namespace WPDataAccess\Data_Apps;
 
+use WPDataAccess\Plugin_Table_Models\WPDA_App_Model;
+use WPDataAccess\WPDA;
 class WPDA_PWA {
     public static function enable() {
     }

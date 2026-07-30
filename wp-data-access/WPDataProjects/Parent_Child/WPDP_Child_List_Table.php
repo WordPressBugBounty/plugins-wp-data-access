@@ -361,7 +361,27 @@ namespace WPDataProjects\Parent_Child {
 				null !== $this->child['default_orderby'] &&
 				'' !== trim( $this->child['default_orderby'] )
 			) {
-				$default_orderby = " order by {$this->child['default_orderby']} ";
+                $columns         = $this->get_sortable_columns();
+                $orderby_columns = explode( ',', $this->child['default_orderby'] );
+
+                $valid = false;
+                for ( $i = 0; $i < count( $orderby_columns ); $i++ ) {
+                    foreach( $columns as $column_name => $column ) {
+                        if (
+                            $column_name === trim("{$orderby_columns[ $i ]}") ||
+                            $column_name === trim("{$orderby_columns[ $i ]}asc") ||
+                            $column_name === trim("{$orderby_columns[ $i ]}desc") ||
+                            $column_name === trim("`{$orderby_columns[ $i ]}`asc") ||
+                            $column_name === trim("`{$orderby_columns[ $i ]}`desc")
+                        ) {
+                            $valid = true;
+                        }
+                    }
+                }
+
+				$default_orderby = $valid
+                    ? " order by {$this->child['default_orderby']} "
+                    : '';
 			} else {
 				$default_orderby = '';
 			}

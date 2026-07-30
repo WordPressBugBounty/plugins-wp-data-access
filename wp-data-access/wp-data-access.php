@@ -4,7 +4,7 @@
  * Plugin Name:       WP Data Access
  * Plugin URI:        https://wpdataaccess.com/
  * Description:       A powerful data-driven App Builder with an intuitive Table Builder, a highly customizable Form Builder and interactive Chart support in 35 languages
- * Version:           5.5.77
+ * Version:           5.5.79
  * Author:            Passionate Programmers B.V.
  * Author URI:        https://wpdataaccess.com/
  * Text Domain:       wp-data-access
@@ -68,19 +68,65 @@ if ( !function_exists( 'wpda_freemius' ) ) {
     // Signal that SDK was initiated.
     do_action( 'wpda_freemius_loaded' );
     /**
-     * Change plugin settings info
-     *
+     * Check if legacy tools are currently used on this server.
+     * @return bool
+     */
+    function wpda_has_legacy_tools_inuse() {
+        $option_legacy_tools = WPDA::get_option( WPDA::OPTION_PLUGIN_LEGACY_TOOLS );
+        $has_legacy_tools = false;
+        if ( !empty( $option_legacy_tools ) && is_array( $option_legacy_tools ) ) {
+            foreach ( $option_legacy_tools as $tool ) {
+                if ( isset( $tool[0] ) && $tool[0] === true && isset( $tool[1] ) && $tool[1] > 0 ) {
+                    $has_legacy_tools = true;
+                    break;
+                }
+            }
+        }
+        return $has_legacy_tools;
+    }
+
+    /**
+     * Hook into the plugin_row_meta filter.
      * @param mixed $links Links.
      * @param mixed $file File.
+     * @param mixed $data Data.
      * @return mixed
      */
-    function wpda_row_meta(  $links, $file  ) {
-        if ( strpos( $file, plugin_basename( __FILE__ ) ) !== false ) {
+    function wpda_row_meta(  $links, $file, $data  ) {
+        if ( plugin_basename( __FILE__ ) == $file ) {
             // Add settings link.
             $settings_url = admin_url( 'options-general.php' ) . '?page=wpdataaccess';
-            $settings_link = "<a href='{$settings_url}'>Settings</a>";
+            $settings_link = '<a href="' . esc_url( $settings_url ) . '">Settings</a>';
             array_push( $links, $settings_link );
             // phpcs:ignore -- 8.1 proof
+            // Add comment for legacy users only
+            if ( wpda_has_legacy_tools_inuse() ) {
+                if ( isset( $data['new_version'] ) ) {
+                    $new_version = $data['new_version'];
+                    if ( version_compare( $new_version, '6.0', '>=' ) ) {
+                        $notice = '
+							<p style="margin-top: 10px; margin-bottom: 0; padding: 6px 10px; border-radius: 2px;"
+								class="update-message notice inline notice-warning notice-alt"
+							>
+								<span class="dashicons dashicons-warning" style="color: #f0b849;"></span>
+								<strong>Warning for legacy users:</strong> Version ' . esc_html( $new_version ) . ' (available now) removes legacy tools. 
+								<strong style="color: #cc1818;">Stay on Version 5.x</strong> to keep using them. 
+								<a href="https://docs.legacy.wpdataaccess.com/docs/deprecating/" target="_blank">Read more →</a>
+							</p>';
+                    } else {
+                        $notice = '
+							<p style="margin-top: 10px; margin-bottom: 0; padding: 6px 10px; border-radius: 2px;"
+								class="update-message notice inline notice-info notice-alt"
+							>
+								<span class="dashicons dashicons-info" style="color: #3858e9;"></span>
+								<strong>Info for legacy users:</strong> Version 6 is coming soon and removes legacy tools. 
+								<strong>Stay on Version 5.x</strong> to keep using them. 
+								<a href="https://docs.legacy.wpdataaccess.com/docs/deprecating/" target="_blank">Read more →</a>
+							</p>';
+                    }
+                    $links[] = $notice;
+                }
+            }
         }
         return $links;
     }
@@ -89,8 +135,60 @@ if ( !function_exists( 'wpda_freemius' ) ) {
         'plugin_row_meta',
         'wpda_row_meta',
         10,
-        2
+        3
     );
+    /**
+     * Remove last | character from plugin links.
+     * @return void
+     */
+    function wpda_clean_plugin_row_script() {
+        if ( !wpda_has_legacy_tools_inuse() ) {
+            return;
+        }
+        ?>
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				var $row = $('tr[data-slug="wp-data-access"] .plugin-version-author-uri');
+				if ($row.length) {
+					$row.contents().each(function(index) {
+						if (this.nodeType === 3 && index === 6) {
+							this.nodeValue = this.nodeValue.replace(/\|/g, '');
+						}
+					});
+				}
+			});
+		</script>
+		<?php 
+    }
+
+    add_action( 'admin_footer-plugins.php', 'wpda_clean_plugin_row_script' );
+    /**
+     * Show legacy tools info widget.
+     * @return void
+     */
+    function wpda_legacy_tools_notice_widget() {
+        // Add widget for legacy users only
+        if ( wpda_has_legacy_tools_inuse() ) {
+            wp_add_dashboard_widget( 'wporg_dashboard_widget', 'WP Data Access - Info for legacy tools users', function () {
+                ?>
+						<p>
+							Version 6 is coming soon and removes legacy tools.
+						</p>
+						<p>
+                            <strong>To keep using the legacy tools:</strong><br>
+							✓ Stay on the latest Version 5.x<br>
+							✓ Disable auto-updates<br>
+							✓ Do not update manually to Version 6
+						</p>
+						<p>
+							<a href="https://docs.legacy.wpdataaccess.com/docs/deprecating/" target="_blank">Read more →</a>
+						</p>
+					<?php 
+            } );
+        }
+    }
+
+    add_action( 'wp_dashboard_setup', 'wpda_legacy_tools_notice_widget' );
     /**
      * Activate plugin
      *
@@ -103,7 +201,7 @@ if ( !function_exists( 'wpda_freemius' ) ) {
         WP_Data_Access_Switch::activate();
     }
 
-    register_activation_hook( __FILE__, 'activate_wp_wpda_activatedata_access' );
+    register_activation_hook( __FILE__, 'wpda_activate' );
     /**
      * Deactivate plugin
      *
@@ -125,7 +223,7 @@ if ( !function_exists( 'wpda_freemius' ) ) {
      */
     function wpda_update_db_check() {
         if ( get_option( WPDataAccess\WPDA::OPTION_WPDA_VERSION[0] ) !== WPDataAccess\WPDA::OPTION_WPDA_VERSION[1] ) {
-            activate_wp_data_access();
+            wpda_activate();
         }
     }
 

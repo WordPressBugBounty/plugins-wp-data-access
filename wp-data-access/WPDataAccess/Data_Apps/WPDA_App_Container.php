@@ -66,6 +66,11 @@ namespace WPDataAccess\Data_Apps {
 			}
 
 			if ( ! $this->user_can_access( $app ) ) {
+                if ( $this->pwa ) {
+                    echo __( 'Not authorized', 'wp-data-access' );
+                    return;
+                }
+
 				if ( ! $this->send_feedback() ) {
 					return;
 				}
@@ -222,7 +227,7 @@ namespace WPDataAccess\Data_Apps {
 					// Check user login
 					$user_login = WPDA::get_current_user_login();
 					if ( ! in_array( $user_login, $app_settings['rest_api']['authorized_users'] ) ) {
-						return false;
+                        return false;
 					}
 				}
 			}

@@ -20,12 +20,14 @@ namespace WPDataAccess\Simple_Form {
 	 */
 	class WPDA_Simple_Form_Item_Autocomplete extends WPDA_Simple_Form_Item {
 
-		const AUTOCOMPLETE_NONCE_ACTION = 'WPDA-AUTO-COMPLETE*';
+		const AUTOCOMPLETE_NONCE_ACTION = 'WPDA-AUTO-COMPLETE-';
 
 		protected $autocomplete_def   = null;
 		protected $tableform_settings = null;
+        private $lookup_column_name  = '';
 
-		protected function show_item() {
+
+        protected function show_item() {
 			$this->set_item_class( 'wpda_autocomplete_key' );
 
 			parent::show_item();
@@ -35,21 +37,20 @@ namespace WPDataAccess\Simple_Form {
 			}
 
 			$lookup_value = '';
+            foreach ( $this->tableform_settings as $tableform_setting ) {
+                if ( $tableform_setting->column_name === $this->autocomplete_def->source_column_name[0] ) {
+                    $this->lookup_column_name = $tableform_setting->lookup;
+                }
+            }
 
 			if ( null !== $this->item_value && '' !== $this->item_value ) {
 				// Get lookup value
 				$schema_name         = $this->autocomplete_def->target_schema_name;
 				$table_name          = $this->autocomplete_def->target_table_name;
 				$column_name         = $this->autocomplete_def->target_column_name[0];
-				$lookup_column_name  = '';
 				$lookup_column_value = $this->item_value;
 
-				foreach ( $this->tableform_settings as $tableform_setting ) {
-					if ( $tableform_setting->column_name === $this->autocomplete_def->source_column_name[0] ) {
-						$lookup_column_name = $tableform_setting->lookup;
-					}
-				}
-				if ( '' === $lookup_column_name ) {
+				if ( '' === $this->lookup_column_name ) {
 					wp_die( '<span style="font-weight: bold">' . esc_attr__( 'ERROR: Invalid autocomplete lookup usage', 'wp-data-access' ) . '</span>' );
 				}
 
@@ -58,14 +59,14 @@ namespace WPDataAccess\Simple_Form {
 					$schema_name,
 					$table_name,
 					$column_name,
-					$lookup_column_name,
+					$this->lookup_column_name,
 					$lookup_column_value
 				);
 
 				if ( false === $lookup_value ) {
 					echo '<div>Lookup value not found!</div>';
 				}
-			}
+            }
 
 			$placeholder = esc_attr__( 'Start typing', 'wp-data-access' ) . ' ' . esc_attr( strtolower( $this->get_item_label() ) ) . '...';
 			$item_name   = esc_attr( $this->get_item_name() );
@@ -86,69 +87,59 @@ namespace WPDataAccess\Simple_Form {
 
 					let autocomplete_def_json = jQuery.parseJSON(autocomplete_def);
 					let tableform_settings_json = jQuery.parseJSON(tableform_settings);
-					let lookup_label_column = '';
 
-					for (i=0; i<tableform_settings_json.length; i++) {
-						if (tableform_settings_json[i]['column_name']===item_name) {
-							lookup_label_column = tableform_settings_json[i].lookup;
-						}
-					}
-
-					if (lookup_label_column==='') {
-						alert('ERROR: Cannot call autocomplete service [error in definition]');
-					} else {
-						jQuery('#wpda_autocomplete_' + item_name).autocomplete({
-							autoFocus: true,
-							source: function (name, response) {
-								jQuery.ajax({
-									method: 'POST',
-									url: wpda_path + '?action=wpda_autocomplete',
-									data: {
-										wpda_wpnonce: '<?php 
-											echo esc_attr( 
-												wp_create_nonce( 
-													self::AUTOCOMPLETE_NONCE_ACTION . 
-													$this->autocomplete_def->target_schema_name .
-													$this->autocomplete_def->target_table_name .
-													$this->autocomplete_def->target_column_name[0] .
-													$this->autocomplete_def->source_column_name[0]
-												)
-											);
-										?>',
-										wpda_source_column_value: jQuery('#wpda_autocomplete_' + item_name).val(),
-										wpda_source_column_name: autocomplete_def_json.source_column_name[0],
-										wpda_target_schema_name: autocomplete_def_json.target_schema_name,
-										wpda_target_table_name: autocomplete_def_json.target_table_name,
-										wpda_target_column_name: autocomplete_def_json.target_column_name[0],
-										wpda_lookup_label_column: lookup_label_column
-									}
-								}).done(
-									function (msg) {
-										if (msg.status === "error") {
-											alert(msg.message);
-										} else {
-											response(msg.rows);
-										}
-									}
-								).error(
-									function (msg) {
-										alert('ERROR: Autocomplete service call return an invalid response');
-									}
-								);
-							},
-							select: function(e,ui) {
-								jQuery('#' + item_name).val(ui.item.lookup);
-							},
-							change: function(event){
-								if (jQuery('#wpda_autocomplete_' + item_name).val()=='') {
-									jQuery('#' + item_name).val('');
-								}
-							},
-							classes: {
-								"ui-autocomplete": "wpda-autocomplete",
-							}
-						});
-					}
+                    jQuery('#wpda_autocomplete_' + item_name).autocomplete({
+                        autoFocus: true,
+                        source: function (name, response) {
+                            jQuery.ajax({
+                                method: 'POST',
+                                url: wpda_path + '?action=wpda_autocomplete',
+                                data: {
+                                    wpda_wpnonce: '<?php
+                                        echo esc_attr(
+                                            wp_create_nonce(
+                                                self::AUTOCOMPLETE_NONCE_ACTION .
+                                                $this->autocomplete_def->target_schema_name . '-' .
+                                                $this->autocomplete_def->target_table_name . '-' .
+                                                $this->autocomplete_def->target_column_name[0] . '-' .
+                                                $this->autocomplete_def->source_column_name[0] . '-' .
+                                                $this->lookup_column_name
+                                            )
+                                        );
+                                    ?>',
+                                    wpda_source_column_value: jQuery('#wpda_autocomplete_' + item_name).val(),
+                                    wpda_source_column_name: autocomplete_def_json.source_column_name[0],
+                                    wpda_target_schema_name: autocomplete_def_json.target_schema_name,
+                                    wpda_target_table_name: autocomplete_def_json.target_table_name,
+                                    wpda_target_column_name: autocomplete_def_json.target_column_name[0],
+                                    wpda_lookup_label_column: "<?php echo esc_attr( $this->lookup_column_name ); ?>"
+                                }
+                            }).done(
+                                function (msg) {
+                                    if (msg.status === "error") {
+                                        alert(msg.message);
+                                    } else {
+                                        response(msg.rows);
+                                    }
+                                }
+                            ).error(
+                                function (msg) {
+                                    alert('ERROR: Autocomplete service call return an invalid response');
+                                }
+                            );
+                        },
+                        select: function(e,ui) {
+                            jQuery('#' + item_name).val(ui.item.lookup);
+                        },
+                        change: function(event){
+                            if (jQuery('#wpda_autocomplete_' + item_name).val()=='') {
+                                jQuery('#' + item_name).val('');
+                            }
+                        },
+                        classes: {
+                            "ui-autocomplete": "wpda-autocomplete",
+                        }
+                    });
 				});
 			</script>
 			<style type="text/css">

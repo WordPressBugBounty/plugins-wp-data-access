@@ -978,12 +978,12 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
                         if ( false !== $url ) {
                             $title = get_the_title( esc_attr( $image_id ) );
                             $image_src .= ( '' !== $image_src ? '<br/>' : '' );
-                            $image_src .= sprintf( '<img src="%s" class="wpda_tooltip" title="%s" width="100%%">', $url, $title );
+                            $image_src .= sprintf( '<img src="%s" class="wpda_tooltip" title="%s" width="100%%">', esc_url( $url ), esc_attr( $title ) );
                         }
                     }
                     return $image_src;
                 } elseif ( 'ImageURL' === $media_type ) {
-                    return sprintf( '<img src="%s" class="wpda_tooltip" width="100%%">', $item[$column_name] );
+                    return sprintf( '<img src="%s" class="wpda_tooltip" width="100%%">', esc_url( $item[$column_name] ) );
                 } elseif ( 'Attachment' === $media_type ) {
                     $media_ids = explode( ',', (string) $item[$column_name] );
                     // phpcs:ignore -- 8.1 proof
@@ -1154,9 +1154,9 @@ EOT;
         }
         return sprintf(
             '<a href="%s" title="%s" target="_blank"><span class="dashicons %s wpda_attachment_icon"></span></a>',
-            $url,
-            $title,
-            $class
+            esc_url( $url ),
+            esc_attr( $title ),
+            esc_attr( $class )
         );
     }
 
@@ -2214,7 +2214,7 @@ EOT;
             // Check column name for SQL injection.
             if ( isset( $columns[$orderby_arg] ) || $this->wpda_data_dictionary->column_exists( $orderby_arg ) ) {
                 // Column name exists in current table, safely continue...
-                $orderby = " order by {$orderby_arg}";
+                $orderby = ' order by `' . WPDA::remove_backticks( $orderby_arg ) . '`';
                 // Prevent SQL injection for order. If 'desc' is found result will be ordered desc. In all other
                 // cases we'll order asc.
                 $orderby .= ( strtolower( trim( $order_arg ) ) === 'desc' ? ' desc' : ' asc' );

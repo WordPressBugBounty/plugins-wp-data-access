@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 5.5.77
+Stable tag: 5.5.79
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,7 +102,6 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 == Legacy Tools ==
 > Will be replaced by the **App Builder**.
 
-* Available until at least december 2026 🕝
 * Featuring
   * Data Tables 🔍 - Replace with Data Table app.
   * Data Forms ✅ - Replace with Data Management app or Registration Form.
@@ -111,6 +110,7 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
   * Dashboards 🎛️ - Replace with Dashboard app.
 * Use to maintain old solutions 🙏
 * Use App Builder for new projects 🚀
+* You can continue to use the legacy tools by staying on the latest Version 5.x ([Read more →](https://docs.legacy.wpdataaccess.com/docs/deprecating/))
 
 == Useful Links ==
 - [Plugin Website](https://wpdataaccess.com/)
@@ -131,6 +131,18 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.79 =
+* Released 2026-07-30
+* Added: Legacy tools message (widget and notice)
+* Added: Network errors to app messages for improved troubleshooting
+* Fixed: Cannot disable global filter for columns with client-site processing
+* Fixed: Client-side cascading column filter count
+* Fixed: Styling issues with column filter popup
+* Fixed: Client-side drop-down column filters not showing alternative values
+* Fixed: Clicking the create table design icon returns unauthorized
+* Fixed: Button style overwritten by theme CSS
+* Extended nonce action (Farid)
 
 = 5.5.77 =
 * Released 2026-07-17

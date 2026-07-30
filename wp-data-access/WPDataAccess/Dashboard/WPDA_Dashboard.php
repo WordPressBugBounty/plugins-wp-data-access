@@ -894,6 +894,9 @@ Customize forms using templates"
         ?>">
 				<input type="hidden" name="action" value="create_table">
 				<input type="hidden" name="caller" value="dataexplorer">
+                <input type="hidden" name="_wpnonce" value="<?php 
+        echo esc_attr( wp_create_nonce( "wpda-query-" . WPDA_Design_Table_Model::get_base_table_name() . "--" ) );
+        ?>">
 			</form>
 			<form id="wpda_goto_backup" style="display: none" method="post" action="?page=<?php 
         echo esc_attr( WP_Data_Access_Admin::PAGE_MAIN );
@@ -1446,6 +1449,9 @@ Customize forms using templates"
 				<input type="hidden" name="action" value="edit">
 				<input type="hidden" name="table_name" value="<?php 
         echo esc_attr( WPDA_Design_Table_Model::get_base_table_name() );
+        ?>">
+                <input type="hidden" name="_wpnonce" value="<?php 
+        echo esc_attr( wp_create_nonce( "wpda-query-" . WPDA_Design_Table_Model::get_base_table_name() . "--" ) );
         ?>">
 			</form>
 			<div id="wpda-dashboard-toolbar" class="wpda-dashboard-toolbar" style="display:none">

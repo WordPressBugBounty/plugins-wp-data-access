@@ -45,10 +45,11 @@ namespace WPDataAccess\Utilities {
 					! wp_verify_nonce(
 						$wpda_wpnonce, 
 						WPDA_Simple_Form_Item_Autocomplete::AUTOCOMPLETE_NONCE_ACTION . 
-							$wpda_target_schema_name .
-							$wpda_target_table_name .
-							$wpda_target_column_name .
-							$wpda_source_column_name
+							$wpda_target_schema_name . '-' .
+							$wpda_target_table_name . '-' .
+							$wpda_target_column_name . '-' .
+							$wpda_source_column_name . '-' .
+                            $wpda_lookup_label_column
 					) 
 				) {
 					$status  = 'error';

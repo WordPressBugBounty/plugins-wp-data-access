@@ -9,7 +9,7 @@ abstract class WPDA_Container {
 
     private $fullscreen = false;
 
-    private $pwa = false;
+    protected $pwa = false;
 
     private $hideTitleBar = false;
 

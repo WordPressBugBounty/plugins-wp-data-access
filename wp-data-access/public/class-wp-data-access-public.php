@@ -308,7 +308,6 @@ class WP_Data_Access_Public {
             'builders'           => true,
             'hidetitlebar'       => false,
             'fullscreen'         => false,
-            'pwa'                => false,
             'filter_field_name'  => null,
             'filter_field_value' => null,
         ), $atts );
@@ -318,6 +317,8 @@ class WP_Data_Access_Public {
                 $shortcode_params[$key] = $value;
             }
         }
+        $shortcode_params['pwa'] = false;
+        // Shortcode not allowed to use parameter pwa
         ob_start();
         $app = new WPDataAccess\Data_Apps\WPDA_App_Container($wp_atts, $shortcode_params);
         $app->show();

@@ -23,12 +23,6 @@ class WPDA_Google_Drive extends WPDA_Drive {
 
     public function authorize( $authorization, $enabled = true ) {
 
-        // Link to authorization application (does not return a authorization code):
-        // Template
-        // https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=GOOGLE_REDIRECT_URI&response_type=code&scope=https://www.googleapis.com/auth/drive.file%20https://www.googleapis.com/auth/drive.readonly&access_type=offline&prompt=consent
-        // Actual
-        // https://accounts.google.com/o/oauth2/v2/auth?client_id=400971594152-30c2ro61ohe4jbb2jt09n9q86itnkjvm.apps.googleusercontent.com&redirect_uri=http://localhost&response_type=code&scope=https://www.googleapis.com/auth/drive.file%20https://www.googleapis.com/auth/drive.readonly&access_type=offline&prompt=consent
-
         // TODO: Get authorization code from reply
 
         $response = WPDA_Remote_Call::post(

@@ -4,6 +4,7 @@ namespace WPDataAccess\API;
 
 use stdClass;
 use WPDataAccess\Connection\WPDADB;
+use WPDataAccess\Data_Apps\WPDA_PWA;
 use WPDataAccess\Data_Dictionary\WPDA_List_Columns_Cache;
 use WPDataAccess\Plugin_Table_Models\WPDA_App_Container_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_App_Apps_Model;
@@ -565,6 +566,64 @@ class WPDA_Apps extends WPDA_API_Core {
                 ),
             ),
         ) );
+        // PWA
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/pwa/get', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'app_wpa_get'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'app_id' => $this->get_param( 'app_id' ),
+            ),
+        ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/pwa/activate', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'app_wpa_activate'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'app_id' => $this->get_param( 'app_id' ),
+            ),
+        ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/pwa/deactivate', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'app_wpa_deactivate'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'app_id' => $this->get_param( 'app_id' ),
+            ),
+        ) );
+    }
+
+    public function app_wpa_deactivate( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            // Only admins
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        return $this->WPDA_Rest_Response( 'OK' );
+    }
+
+    public function app_wpa_activate( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            // Only admins
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        return $this->WPDA_Rest_Response( 'OK' );
+    }
+
+    public function app_wpa_get( $request ) {
+        if ( !$this->current_user_can_access() ) {
+            // Only admins
+            return $this->unauthorized();
+        }
+        if ( !$this->current_user_token_valid( $request ) ) {
+            return $this->invalid_nonce();
+        }
+        return $this->WPDA_Rest_Response( 'NOT FOUND' );
     }
 
     public function app_call( $request ) {
@@ -1962,6 +2021,7 @@ class WPDA_Apps extends WPDA_API_Core {
             'roles'         => $this->get_wp_roles(),
             'users'         => $this->get_wp_users(),
             'home'          => admin_url( 'admin.php' ),
+            'siteurl'       => site_url(),
             'tables'        => array_values( $wpdb->tables() ),
             'date_format'   => get_option( 'date_format' ),
             'time_format'   => get_option( 'time_format' ),

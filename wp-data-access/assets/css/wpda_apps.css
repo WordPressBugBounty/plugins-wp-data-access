@@ -280,3 +280,8 @@ div[role=presentation].MuiDialog-root.MuiModal-root input[type=checkbox]:disable
 #wpwrap .pp-container-query-builder input[type=text] {
     min-height: unset;
 }
+
+.pp-table .MuiPagination-ul {
+    list-style-type: none !important;
+    padding: 0 !important;
+}
