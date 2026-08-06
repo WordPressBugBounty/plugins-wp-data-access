@@ -67,7 +67,7 @@ namespace WPDataAccess\Data_Apps {
 
 			if ( ! $this->user_can_access( $app ) ) {
                 if ( $this->pwa ) {
-                    echo __( 'Not authorized', 'wp-data-access' );
+                    esc_html_e( 'Not authorized', 'wp-data-access' );
                     return;
                 }
 

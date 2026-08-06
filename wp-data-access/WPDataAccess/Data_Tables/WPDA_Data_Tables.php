@@ -1066,17 +1066,17 @@ class WPDA_Data_Tables {
                         $hyperlink = json_decode( (string) $row[$hyperlinks_array[$i]], true );
                         if ( is_array( $hyperlink ) && isset( $hyperlink['label'] ) && isset( $hyperlink['url'] ) && isset( $hyperlink['target'] ) ) {
                             if ( '' === $hyperlink['url'] ) {
-                                $row[$hyperlinks_array[$i]] = $hyperlink['label'];
+                                $row[$hyperlinks_array[$i]] = esc_attr( $hyperlink['label'] );
                             } else {
-                                $row[$hyperlinks_array[$i]] = "<a href='{$hyperlink['url']}' target='{$hyperlink['target']}'>{$hyperlink['label']}</a>";
+                                $row[$hyperlinks_array[$i]] = "<a href='" . esc_url_raw( $hyperlink['url'] ) . "' target='" . esc_attr( $hyperlink['target'] ) . "'>" . esc_attr( $hyperlink['label'] ) . "</a>";
                             }
                         } else {
                             $row[$hyperlinks_array[$i]] = '';
                         }
                     } else {
                         if ( null !== $row[$hyperlinks_array[$i]] && '' !== $row[$hyperlinks_array[$i]] ) {
-                            $hyperlink_label = $this->wpda_list_columns->get_column_label( $hyperlinks_array_col[$i] );
-                            $row[$hyperlinks_array[$i]] = "<a href='{$row[$hyperlinks_array[$i]]}' target='_blank'>{$hyperlink_label}</a>";
+                            $hyperlink_label = esc_attr( $this->wpda_list_columns->get_column_label( $hyperlinks_array_col[$i] ) );
+                            $row[$hyperlinks_array[$i]] = "<a href='" . esc_url_raw( $row[$hyperlinks_array[$i]] ) . "' target='_blank'>" . esc_attr( $hyperlink_label ) . "</a>";
                         } else {
                             $row[$hyperlinks_array[$i]] = '';
                         }
@@ -1092,7 +1092,7 @@ class WPDA_Data_Tables {
                         if ( false !== $url ) {
                             $title = get_the_title( esc_attr( $media_id ) );
                             if ( false !== $url ) {
-                                $media_links .= '<div class="wpda_tooltip" title="' . $title . '">' . do_shortcode( '[audio src="' . $url . '"]' ) . '</div>';
+                                $media_links .= '<div class="wpda_tooltip" title="' . esc_attr( $title ) . '">' . do_shortcode( '[audio src="' . esc_url_raw( $url ) . '"]' ) . '</div>';
                             }
                         }
                     }
@@ -1107,7 +1107,7 @@ class WPDA_Data_Tables {
                         $url = wp_get_attachment_url( esc_attr( $media_id ) );
                         if ( false !== $url ) {
                             if ( false !== $url ) {
-                                $media_links .= do_shortcode( '[video src="' . $url . '"]' );
+                                $media_links .= do_shortcode( '[video src="' . esc_url_raw( $url ) . '"]' );
                             }
                         }
                     }

@@ -487,7 +487,8 @@ class WPDA_Table extends WPDA_API_Core {
         $primary_key,
         $media_columns = array(),
         $column_names = array(),
-        $default_where = ''
+        $default_where = '',
+        $docs = array()
     ) {
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
@@ -552,6 +553,7 @@ class WPDA_Table extends WPDA_API_Core {
                 }
             }
             $context = array();
+            // Add media
             $context['media'] = $media;
             if ( isset( $debug['debug'] ) && 'on' === WPDA::get_option( WPDA::OPTION_PLUGIN_DEBUG ) ) {
                 $context['debug'] = $debug['debug'];
@@ -935,7 +937,8 @@ class WPDA_Table extends WPDA_API_Core {
         $m2m_relationship = array(),
         $search_data_types = array(),
         $client_side = false,
-        $geo_radius = array()
+        $geo_radius = array(),
+        $docs = array()
     ) {
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
@@ -1213,6 +1216,7 @@ class WPDA_Table extends WPDA_API_Core {
                 'connect'        => $connect,
                 'copyinprogress' => WPDA_Actions::copy_in_progress(),
                 'scroll_offset'  => WPDA::get_option( WPDA::OPTION_APPS_SCROLL_OFFSET ),
+                'upload'         => @ini_get( 'upload_max_filesize' ),
             ];
             if ( true === $waa ) {
                 $settings->wp['aonce'] = implode( '-', array(

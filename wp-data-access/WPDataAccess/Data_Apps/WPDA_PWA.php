@@ -16,4 +16,7 @@ class WPDA_PWA {
     private static function render_pwa( $route ) {
     }
 
+    private static function get_icon_url( $route, $px ) {
+    }
+
 }

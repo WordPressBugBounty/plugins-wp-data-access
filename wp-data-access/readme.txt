@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.0
 Requires PHP: 7.0
-Stable tag: 5.5.79
+Stable tag: 5.5.80
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -132,11 +132,18 @@ And you're all set! 🚀
 
 == Changelog ==
 
+= 5.5.80 =
+* Released 2026-08-06
+* Added: Progressive web apps
+* Fixed: Escaped titles and links in table output and shortcode
+* Fixed: Hide inline editing feature when update is not allowed
+* Fixed: Table incorrectly styled after abandoning card view
+
 = 5.5.79 =
-* Released 2026-07-30
+* Released 2026-07-29
 * Added: Legacy tools message (widget and notice)
 * Added: Network errors to app messages for improved troubleshooting
-* Fixed: Cannot disable global filter for columns with client-site processing
+* Fixed: Cannot disable global filter for columns with client-side processing
 * Fixed: Client-side cascading column filter count
 * Fixed: Styling issues with column filter popup
 * Fixed: Client-side drop-down column filters not showing alternative values

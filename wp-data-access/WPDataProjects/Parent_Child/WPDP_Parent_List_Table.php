@@ -113,7 +113,7 @@ namespace WPDataProjects\Parent_Child {
 					$actions['delete'] = sprintf(
 						'
 					    <a  href="javascript:void(0)" class="wpda_tooltip"
-					    	title="' . $title . '"
+					    	title="' . esc_attr( $title ) . '"
 					        onclick="if (confirm(\'%s\')) jQuery(\'%s\').submit()"
 					        >
 							<span style="white-space:nowrap">

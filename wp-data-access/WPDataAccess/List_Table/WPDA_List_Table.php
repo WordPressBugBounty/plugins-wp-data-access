@@ -547,12 +547,12 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
         if ( 'page_number' !== $this->page_number_item_name ) {
             if ( isset( $_REQUEST['page_number'] ) ) {
                 $requested_page_number = sanitize_text_field( wp_unslash( $_REQUEST['page_number'] ) );
-                $this->page_number_link = '&page_number=' . $requested_page_number;
-                $this->page_number_item = "<input type='hidden' name='page_number' value='" . $requested_page_number . "' />";
+                $this->page_number_link = '&page_number=' . esc_attr( $requested_page_number );
+                $this->page_number_item = "<input type='hidden' name='page_number' value='" . esc_attr( $requested_page_number ) . "' />";
             }
         }
-        $this->page_number_link .= '&paged=' . $this->get_pagenum();
-        $this->page_number_item .= "<input type='hidden' name='" . esc_attr( $this->page_number_item_name ) . "' value='" . $this->get_pagenum() . "' />";
+        $this->page_number_link .= '&paged=' . esc_attr( $this->get_pagenum() );
+        $this->page_number_item .= "<input type='hidden' name='" . esc_attr( $this->page_number_item_name ) . "' value='" . esc_attr( $this->get_pagenum() ) . "' />";
         // Add search arguments to link to return to same page.
         foreach ( $_REQUEST as $key => $value ) {
             if ( substr( $key, 0, 19 ) === 'wpda_search_column_' && count( array_filter( $this->wpda_list_columns->get_table_columns(), function ( $column ) use($key) {
@@ -959,7 +959,13 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
                             $hyperlink_label = ( isset( $hyperlink->hyperlink_label ) ? $hyperlink->hyperlink_label : '' );
                             $hyperlink_target = ( isset( $hyperlink->hyperlink_target ) ? $hyperlink->hyperlink_target : false );
                             $target = ( true === $hyperlink_target ? "target='_blank'" : '' );
-                            return "<a href='" . str_replace( ' ', '+', trim( $hyperlink_html ) ) . "' {$target}>{$hyperlink_label}</a>";
+                            if ( false === $hyperlink_target ) {
+                                $json = json_decode( $hyperlink_html, true );
+                                if ( isset( $json['url'] ) ) {
+                                    $hyperlink_target = $json['url'];
+                                }
+                            }
+                            return "<a href='" . esc_url_raw( $hyperlink_target ) . "' {$target}>" . esc_attr( $hyperlink_label ) . "</a>";
                         }
                     } else {
                         return '';
@@ -1009,14 +1015,14 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
                                 if ( '' === $hyperlink['url'] ) {
                                     return '';
                                 } else {
-                                    return "<a href='{$hyperlink['url']}' target='{$hyperlink['target']}'>{$hyperlink['label']}</a>";
+                                    return "<a href='" . esc_url_raw( $hyperlink['url'] ) . "' target='" . esc_attr( $hyperlink['target'] ) . "'>" . esc_attr( $hyperlink['label'] ) . "</a>";
                                 }
                             } else {
                                 return '';
                             }
                         } else {
                             $hyperlink_label = $this->wpda_list_columns->get_column_label( $column_name );
-                            return "<a href='{$item[$column_name]}' target='_blank'>{$hyperlink_label}</a>";
+                            return "<a href='" . esc_url_raw( $item[$column_name] ) . "' target='_blank'>" . esc_attr( $hyperlink_label ) . "</a>";
                         }
                     }
                 } elseif ( 'Audio' === $media_type ) {
@@ -1029,7 +1035,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
                             if ( false !== $url ) {
                                 $title = get_the_title( esc_attr( $audio_id ) );
                                 if ( false !== $url ) {
-                                    $audio_src .= '<div title="' . $title . '" class="wpda_tooltip">' . do_shortcode( '[audio src="' . $url . '"]' ) . '</div>';
+                                    $audio_src .= '<div title="' . esc_attr( $title ) . '" class="wpda_tooltip">' . do_shortcode( '[audio src="' . esc_url_raw( $url ) . '"]' ) . '</div>';
                                 }
                             }
                         }
@@ -1044,7 +1050,7 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
                             $url = wp_get_attachment_url( esc_attr( $video_id ) );
                             if ( false !== $url ) {
                                 if ( false !== $url ) {
-                                    $video_src .= do_shortcode( '[video src="' . $url . '"]' );
+                                    $video_src .= do_shortcode( '[video src="' . esc_url_raw( $url ) . '"]' );
                                 }
                             }
                         }
@@ -1123,9 +1129,9 @@ class WPDA_List_Table extends Wordpress_Original\WP_List_Table {
 \t\t\t\t\t{$add_schema_and_table_name}
 \t\t\t\t\t<input type='hidden' name='action' value='{$esc_attr( $action )}' />
 \t\t\t\t\t<input type='hidden' name='_wpnonce' value='{$esc_attr( $wp_nonce )}'>
-\t\t\t\t\t{$row_security_nonce_field}
-\t\t\t\t\t{$page_number_item}
-\t\t\t\t\t{$case_sensitive_search}
+\t\t\t\t\t{$esc_attr( $row_security_nonce_field )}
+\t\t\t\t\t{$esc_attr( $page_number_item )}
+\t\t\t\t\t{$esc_attr( $case_sensitive_search )}
 \t\t\t\t</form>
 EOT;
         return str_replace( array("\n", "\r"), '', $form );
@@ -1192,9 +1198,9 @@ EOT;
                 WPDA::get_option( WPDA::OPTION_BE_TEXT_WRAP )
              );
             if ( $substitute_newlines ) {
-                return str_replace( "\n", '<br/>', substr( esc_html( str_replace( '&', '&amp;', (string) $column_content ) ), 0, WPDA::get_option( WPDA::OPTION_BE_TEXT_WRAP ) ) . ' <a href="javascript:void(0)" title="' . $title . '">&bull;&bull;&bull;</a>' );
+                return str_replace( "\n", '<br/>', substr( esc_html( str_replace( '&', '&amp;', (string) $column_content ) ), 0, WPDA::get_option( WPDA::OPTION_BE_TEXT_WRAP ) ) . ' <a href="javascript:void(0)" title="' . esc_attr( $title ) . '">&bull;&bull;&bull;</a>' );
             } else {
-                return substr( esc_html( str_replace( '&', '&amp;', (string) $column_content ) ), 0, WPDA::get_option( WPDA::OPTION_BE_TEXT_WRAP ) ) . ' <a href="javascript:void(0)" title="' . $title . '">&bull;&bull;&bull;</a>';
+                return substr( esc_html( str_replace( '&', '&amp;', (string) $column_content ) ), 0, WPDA::get_option( WPDA::OPTION_BE_TEXT_WRAP ) ) . ' <a href="javascript:void(0)" title="' . esc_attr( $title ) . '">&bull;&bull;&bull;</a>';
             }
         } else {
             $column_data_type = $this->wpda_list_columns->get_column_data_type( $column_name );

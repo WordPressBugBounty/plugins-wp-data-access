@@ -131,7 +131,7 @@ namespace WPDataAccess\Simple_Form {
 
 			<input type="hidden"
 				   name="<?php echo esc_attr( $this->item_name ); ?>"
-				   value="<?php echo $this->show_context_column_value; // phpcs:ignore WordPress.Security.EscapeOutput ?>"
+				   value="<?php echo esc_html( $this->show_context_column_value ); ?>"
 				   class="wpda_hyperlink"
 			/>
 			<?php

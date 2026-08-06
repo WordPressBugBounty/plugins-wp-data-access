@@ -591,6 +591,48 @@ class WPDA_Apps extends WPDA_API_Core {
                 'app_id' => $this->get_param( 'app_id' ),
             ),
         ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/upload', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'app_upload'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'app_id' => $this->get_param( 'app_id' ),
+                'cnt_id' => $this->get_param( 'cnt_id' ),
+                'pk'     => array(
+                    'required'          => true,
+                    'type'              => 'string',
+                    'description'       => __( 'Primary key in JSON format', 'wp-data-access' ),
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'validate_callback' => 'rest_validate_request_arg',
+                ),
+                'col'    => $this->get_param( 'col' ),
+            ),
+        ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/download', array(
+            'methods'             => array('POST'),
+            'callback'            => array($this, 'app_download'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'app_id' => $this->get_param( 'app_id' ),
+                'cnt_id' => $this->get_param( 'cnt_id' ),
+                'pk'     => array(
+                    'required'          => true,
+                    'type'              => 'string',
+                    'description'       => __( 'Primary key in JSON format', 'wp-data-access' ),
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'validate_callback' => 'rest_validate_request_arg',
+                ),
+                'col'    => $this->get_param( 'col' ),
+            ),
+        ) );
+    }
+
+    public function app_download( $request ) {
+        return $this->WPDA_Rest_Response( 'OK' );
+    }
+
+    public function app_upload( $request ) {
+        return $this->WPDA_Rest_Response( 'OK' );
     }
 
     public function app_wpa_deactivate( $request ) {
@@ -923,6 +965,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $rel_tab = $request->get_param( 'rel_tab' );
         $client_side = '1' === $request->get_param( 'client_side' );
         $geo_radius = $request->get_param( 'geo_radius' );
+        $docs = array();
         $default_where = '';
         $default_orderby = '';
         $lookups = array();
@@ -998,7 +1041,8 @@ class WPDA_Apps extends WPDA_API_Core {
                 $m2m_relationship,
                 $search_data_types,
                 $client_side,
-                $geo_radius
+                $geo_radius,
+                $docs
             );
         } else {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {
@@ -1033,6 +1077,7 @@ class WPDA_Apps extends WPDA_API_Core {
         $key = $request->get_param( 'key' );
         $media = $request->get_param( 'media' );
         $rel_tab = $request->get_param( 'rel_tab' );
+        $docs = array();
         if ( $this->check_app_access(
             $app_id,
             $cnt_id,
@@ -1054,7 +1099,8 @@ class WPDA_Apps extends WPDA_API_Core {
                 $key,
                 $media,
                 $column_names,
-                $default_where
+                $default_where,
+                $docs
             );
         } else {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {
@@ -2026,6 +2072,7 @@ class WPDA_Apps extends WPDA_API_Core {
             'date_format'   => get_option( 'date_format' ),
             'time_format'   => get_option( 'time_format' ),
             'scroll_offset' => WPDA::get_option( WPDA::OPTION_APPS_SCROLL_OFFSET ),
+            'upload'        => @ini_get( 'upload_max_filesize' ),
         ];
         return $settings;
     }

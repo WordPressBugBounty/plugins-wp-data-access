@@ -193,14 +193,14 @@ class WPDA_Publisher_Form extends WPDA_Simple_Form {
             if ( $form_item->get_item_name() === 'pub_column_names' ) {
                 $title = __( 'Select columns shown in data table', 'wp-data-access' );
                 $form_item->set_item_hide_icon( true );
-                $form_item->set_item_js( 'jQuery("#pub_column_names").parent().parent().find("td.icon").append("<a id=\'select_columns\' class=\'button wpda_tooltip\' href=\'javascript:void(0)\' title=\'' . $title . '\' onclick=\'select_columns()\'>' . '<i class=\'fas fa-list wpda_icon_on_button\'></i> ' . __( 'Select', 'wp-data-access' ) . '</a>");' );
+                $form_item->set_item_js( 'jQuery("#pub_column_names").parent().parent().find("td.icon").append("<a id=\'select_columns\' class=\'button wpda_tooltip\' href=\'javascript:void(0)\' title=\'' . esc_attr( $title ) . '\' onclick=\'select_columns()\'>' . '<i class=\'fas fa-list wpda_icon_on_button\'></i> ' . __( 'Select', 'wp-data-access' ) . '</a>");' );
             }
             // Prepare column label settings.
             if ( $form_item->get_item_name() === 'pub_format' ) {
                 $title = __( 'Define columns for data table (not necessary if already defined in Data Explorer table settings)', 'wp-data-access' );
                 $form_item->set_item_hide_icon( true );
                 $form_item->set_item_class( 'hide_item' );
-                $form_item->set_item_js( 'jQuery("#pub_format").parent().parent().find("td.data").append("<a id=\'format_columns\' class=\'button wpda_tooltip\' href=\'javascript:void(0)\' title=\'' . $title . '\' onclick=\'format_columns()\'>' . '<i class=\'fas fa-tag wpda_icon_on_button\'></i> ' . __( 'Click to define column labels', 'wp-data-access' ) . '</a>");' );
+                $form_item->set_item_js( 'jQuery("#pub_format").parent().parent().find("td.data").append("<a id=\'format_columns\' class=\'button wpda_tooltip\' href=\'javascript:void(0)\' title=\'' . esc_attr( $title ) . '\' onclick=\'format_columns()\'>' . '<i class=\'fas fa-tag wpda_icon_on_button\'></i> ' . __( 'Click to define column labels', 'wp-data-access' ) . '</a>");' );
             }
             if ( 'pub_responsive_popup_title' === $form_item->get_item_name() || 'pub_responsive_cols' === $form_item->get_item_name() || 'pub_responsive_type' === $form_item->get_item_name() || 'pub_responsive_modal_hyperlinks' === $form_item->get_item_name() || 'pub_responsive_icon' === $form_item->get_item_name() || 'pub_flat_scrollx' === $form_item->get_item_name() ) {
                 $form_item->set_hide_item_init( true );

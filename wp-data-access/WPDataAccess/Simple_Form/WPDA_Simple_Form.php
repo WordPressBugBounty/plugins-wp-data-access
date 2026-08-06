@@ -465,8 +465,9 @@ class WPDA_Simple_Form {
         // Add search arguments to link to return to same page
         foreach ( $_REQUEST as $key => $value ) {
             if ( substr( $key, 0, 19 ) === 'wpda_search_column_' ) {
-                $this->page_number_link .= "&{$key}={$value}";
-                $this->page_number_item .= "<input type='hidden' name='{$key}' value='{$value}' />";
+                $esc_attr = 'esc_attr';
+                $this->page_number_link .= "&{$esc_attr( $key )}={$esc_attr( $value )}";
+                $this->page_number_item .= "<input type='hidden' name='{$esc_attr( $key )}' value='{$esc_attr( $value )}' />";
             }
         }
         // Check if button text "back to list" should be changed

@@ -628,7 +628,7 @@ class WP_List_Table {
 				foreach ( $value as $name => $title ) {
 					$class = ( 'edit' === $name ) ? ' class="hide-if-no-js"' : '';
 
-					echo "\t\t" . '<option value="' . esc_attr( $name ) . '"' . $class . '>' . $title . "</option>\n";
+					echo "\t\t" . '<option value="' . esc_attr( $name ) . '"' . $class . '>' . esc_attr( $title ) . "</option>\n";
 				}
 				echo "\t" . "</optgroup>\n";
 			} else {
