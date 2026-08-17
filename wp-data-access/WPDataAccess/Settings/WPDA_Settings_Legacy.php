@@ -18,6 +18,7 @@ class WPDA_Settings_Legacy extends WPDA_Settings {
         );
         $this->legacy_tabs['databackup'] = 'Data Backup';
         $this->legacy_tabs['roles'] = 'Roles';
+        $this->legacy_tabs['legacy'] = 'Legacy Table Setttings';
         ?>
 
             <div class="wpda-legacy-container">
@@ -44,6 +45,10 @@ class WPDA_Settings_Legacy extends WPDA_Settings {
                 break;
             case 'roles':
                 $legacy_settings = new WPDA_Settings_Legacy_ManageRoles();
+                $legacy_settings->show();
+                break;
+            case 'legacy':
+                $legacy_settings = new WPDA_Settings_Legacy_TableSettings();
                 $legacy_settings->show();
                 break;
             default:

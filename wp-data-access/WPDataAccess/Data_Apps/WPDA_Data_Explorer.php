@@ -11,8 +11,8 @@ class WPDA_Data_Explorer extends WPDA_Container {
 
     private $pds = null;
 
-    public function __construct( $args = array(), $shortcode_args = array() ) {
-        parent::__construct( $args, $shortcode_args );
+    public function __construct( $args = array() ) {
+        parent::__construct( $args );
         $this->dbs = new WPDA_Remote_Database();
     }
 

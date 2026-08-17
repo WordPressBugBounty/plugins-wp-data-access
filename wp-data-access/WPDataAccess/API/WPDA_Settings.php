@@ -301,6 +301,8 @@ namespace WPDataAccess\API {
 				}
 				unset( $settings['unused'] );
 			}
+            WPDA::wpda_log_wp_error($settings);
+            WPDA::wpda_log_wp_error($settings_unused);
 
 			if ( null === $sql_dml ) {
 				return new \WP_Error(

@@ -112,8 +112,6 @@ namespace WPDataAccess\List_Table {
 
 		/**
 		 * Reference to list table
-		 *
-		 * @var WPDA_List_Table|WPDA_List_Table_Menu
 		 */
 		protected $wpda_list_table;
 
@@ -510,31 +508,13 @@ namespace WPDataAccess\List_Table {
 		/**
 		 * Display list table
 		 *
-		 * There are two type of list tables here:
-		 * + List of tables in the WordPress database schema
-		 * + List of rows in a specific table
-		 *
 		 * A list of tables in the WordPress database schema is in fact a list of rows as well. The MySQL base table
 		 * (which is in fact a view) used to show this information is 'information_schema.tables'. The list of tables
 		 * contains a link to a list table for every table.
 		 *
-		 * The list of rows is provided by class {@see WPDA_List_Table}. WPDA_List_Table extends WordPress class
-		 * WP_List_Table.
-		 *
-		 * The list of tables is provided by class {@see WPDA_List_Table_Menu}. WPDA_List_Table_Menu extends class
-		 * WPDA_List_Table.
-		 *
 		 * @since   1.0.0
-		 *
-		 * @see WPDA_List_Table
-		 * @see WPDA_List_Table_Menu
 		 */
 		protected function display_list_table() {
-			if ( '' === $this->table_name ) {
-				// List all tables in the database.
-				$this->list_table_class = 'WPDataAccess\\List_Table\\WPDA_List_Table_Menu';
-			}
-
 			$args = array(
 				'wpdaschema_name'   => $this->schema_name,
 				'table_name'        => $this->table_name,
@@ -604,165 +584,140 @@ namespace WPDataAccess\List_Table {
 			$screen = get_current_screen();
 
 			if ( is_object( $screen ) && $screen->id === $this->page_hook_suffix ) {
-				if ( '' === $this->table_name ) {
-					// The WordPress Database Table List doesn't have a table_name at this stage. Use the base table
-					// defined in WPDA_List_Table_Menu instead.
-					$table_name = str_replace( '.', '_', WPDA_List_Table::LIST_BASE_TABLE );
-					// Set default column display values for repository tables if screen options is activated
-					// for the first time
-					if ( is_admin() &&
-						 false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
-					) {
-						$hidden = array(
-							'create_time',
-							'data_size',
-							'index_size',
-							'overhead',
-							'table_collation',
-						);
+                // Set default column display values for repository tables if screen options is activated
+                // for the first time
+                if ( WPDA_Design_Table_Model::get_base_table_name() === $this->table_name ) {
+                    if ( is_admin() &&
+                         false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
+                    ) {
+                        $hidden = array(
+                            'wpda_table_design',
+                        );
 
-						update_user_meta(
-							get_current_user_id(),
-							self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
-							$hidden
-						);
-					}
-				} else {
-					// Set default column display values for repository tables if screen options is activated
-					// for the first time
-					if ( WPDA_Design_Table_Model::get_base_table_name() === $this->table_name ) {
-						if ( is_admin() &&
-							 false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
-						) {
-							$hidden = array(
-								'wpda_table_design',
-							);
+                        update_user_meta(
+                            get_current_user_id(),
+                            self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
+                            $hidden
+                        );
+                    }
+                } elseif ( WPDA_Publisher_Model::get_base_table_name() === $this->table_name ) {
+                    if ( is_admin() &&
+                         false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
+                    ) {
+                        $hidden = array(
+                            'pub_table_name',
+                            'pub_column_names',
+                            'pub_sort_icons',
+                            'pub_styles',
+                            'pub_style_premium',
+                            'pub_style_user',
+                            'pub_style_color',
+                            'pub_style_space',
+                            'pub_style_corner',
+                            'pub_style_modal_width',
+                            'pub_responsive_popup_title',
+                            'pub_responsive_cols',
+                            'pub_responsive_type',
+                            'pub_responsive_modal_hyperlinks',
+                            'pub_responsive_icon',
+                            'pub_flat_scrollx',
+                            'pub_format',
+                            'pub_default_where',
+                            'pub_default_orderby',
+                            'pub_table_options_searching',
+                            'pub_table_options_ordering',
+                            'pub_table_options_paging',
+                            'pub_table_options_advanced',
+                            'pub_table_options_serverside',
+                            'pub_table_options_nl2br',
+                            'pub_show_advanced_settings',
+                            'pub_extentions',
+                            'pub_query',
+                            'pub_cpt',
+                            'pub_cpt_fields',
+                            'pub_cpt_query',
+                            'pub_cpt_format',
+                        );
 
-							update_user_meta(
-								get_current_user_id(),
-								self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
-								$hidden
-							);
-						}
-					} elseif ( WPDA_Publisher_Model::get_base_table_name() === $this->table_name ) {
-						if ( is_admin() &&
-							 false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
-						) {
-							$hidden = array(
-								'pub_table_name',
-								'pub_column_names',
-								'pub_sort_icons',
-								'pub_styles',
-								'pub_style_premium',
-								'pub_style_user',
-								'pub_style_color',
-								'pub_style_space',
-								'pub_style_corner',
-								'pub_style_modal_width',
-								'pub_responsive_popup_title',
-								'pub_responsive_cols',
-								'pub_responsive_type',
-								'pub_responsive_modal_hyperlinks',
-								'pub_responsive_icon',
-								'pub_flat_scrollx',
-								'pub_format',
-								'pub_default_where',
-								'pub_default_orderby',
-								'pub_table_options_searching',
-								'pub_table_options_ordering',
-								'pub_table_options_paging',
-								'pub_table_options_advanced',
-								'pub_table_options_serverside',
-								'pub_table_options_nl2br',
-								'pub_show_advanced_settings',
-								'pub_extentions',
-								'pub_query',
-								'pub_cpt',
-								'pub_cpt_fields',
-								'pub_cpt_query',
-								'pub_cpt_format',
-							);
+                        update_user_meta(
+                            get_current_user_id(),
+                            self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
+                            $hidden
+                        );
+                    }
+                } elseif ( WPDP_Project_Model::get_base_table_name() === $this->table_name ) {
+                    if ( is_admin() &&
+                         false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
+                    ) {
+                        $hidden = array(
+                            'project_description',
+                            'project_sequence',
+                        );
 
-							update_user_meta(
-								get_current_user_id(),
-								self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
-								$hidden
-							);
-						}
-					} elseif ( WPDP_Project_Model::get_base_table_name() === $this->table_name ) {
-						if ( is_admin() &&
-							 false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
-						) {
-							$hidden = array(
-								'project_description',
-								'project_sequence',
-							);
+                        update_user_meta(
+                            get_current_user_id(),
+                            self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
+                            $hidden
+                        );
 
-							update_user_meta(
-								get_current_user_id(),
-								self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
-								$hidden
-							);
+                        // Set default columns for project pages
+                        if ( false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . WPDP_Page_Model::get_base_table_name() ) ) {
+                            $hidden = array(
+                                'project_id',
+                                'page_schema_name',
+                                'page_setname',
+                                'page_allow_insert',
+                                'page_allow_delete',
+                                'page_allow_import',
+                                'page_allow_bulk',
+                                'page_allow_full_export',
+                                'page_content',
+                                'page_title',
+                                'page_subtitle',
+                                'page_where',
+                                'page_orderby',
+                                'page_sequence',
+                            );
 
-							// Set default columns for project pages
-							if ( false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . WPDP_Page_Model::get_base_table_name() ) ) {
-								$hidden = array(
-									'project_id',
-									'page_schema_name',
-									'page_setname',
-									'page_allow_insert',
-									'page_allow_delete',
-									'page_allow_import',
-									'page_allow_bulk',
-									'page_allow_full_export',
-									'page_content',
-									'page_title',
-									'page_subtitle',
-									'page_where',
-									'page_orderby',
-									'page_sequence',
-								);
+                            update_user_meta(
+                                get_current_user_id(),
+                                self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . WPDP_Page_Model::get_base_table_name(),
+                                $hidden
+                            );
+                        }
+                    }
+                } elseif ( WPDP_Project_Design_Table_Model::get_base_table_name() === $this->table_name ) {
+                    if ( is_admin() &&
+                         false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
+                    ) {
+                        $hidden = array();
 
-								update_user_meta(
-									get_current_user_id(),
-									self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . WPDP_Page_Model::get_base_table_name(),
-									$hidden
-								);
-							}
-						}
-					} elseif ( WPDP_Project_Design_Table_Model::get_base_table_name() === $this->table_name ) {
-						if ( is_admin() &&
-							 false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
-						) {
-							$hidden = array();
+                        update_user_meta(
+                            get_current_user_id(),
+                            self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
+                            $hidden
+                        );
+                    }
+                } elseif ( WPDA_CSV_Uploads_Model::get_base_table_name() === $this->table_name ) {
+                    if ( is_admin() &&
+                        false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
+                    ) {
+                        $hidden = array(
+                            'csv_real_file_name',
+                            'csv_mapping',
+                            'csv_encoding',
+                        );
 
-							update_user_meta(
-								get_current_user_id(),
-								self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
-								$hidden
-							);
-						}
-					} elseif ( WPDA_CSV_Uploads_Model::get_base_table_name() === $this->table_name ) {
-						if ( is_admin() &&
-							false === get_user_option( self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name )
-						) {
-							$hidden = array(
-								'csv_real_file_name',
-								'csv_mapping',
-                                'csv_encoding',
-							);
+                        update_user_meta(
+                            get_current_user_id(),
+                            self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
+                            $hidden
+                        );
+                    }
+                }
 
-							update_user_meta(
-								get_current_user_id(),
-								self::HIDDENCOLUMNS_PREFIX . get_current_screen()->id . $table_name,
-								$hidden
-							);
-						}
-					}
-
-					// Allow external user to store defaults through action hook wpda_default_screen_option.
-					do_action( 'wpda_default_screen_option', $this->table_name, $table_name );
-				}
+                // Allow external user to store defaults through action hook wpda_default_screen_option.
+                do_action( 'wpda_default_screen_option', $this->table_name, $table_name );
 
 				// Add column selection
 				if ( false !== $this->child_request ) {
@@ -832,9 +787,7 @@ namespace WPDataAccess\List_Table {
 		 * @since   1.0.0
 		 */
 		public function get_column_headers() {
-			if ( '' === $this->table_name ) {
-				return WPDA_List_Table_Menu::column_headers_labels();
-			} elseif ( WPDA_Design_Table_Model::get_base_table_name() === $this->table_name ) {
+			if ( WPDA_Design_Table_Model::get_base_table_name() === $this->table_name ) {
 				return WPDA_Design_Table_List_Table::column_headers_labels();
 			} elseif ( WPDA_Publisher_Model::get_base_table_name() === $this->table_name ) {
 				return WPDA_Publisher_List_Table::column_headers_labels();

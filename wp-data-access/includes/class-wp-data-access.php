@@ -153,12 +153,6 @@ class WP_Data_Access {
         }
         // Admin menu.
         $this->loader->add_action( 'admin_menu', $plugin_admin, 'add_menu_items' );
-        $this->loader->add_action(
-            'admin_menu',
-            $plugin_admin,
-            'add_menu_my_tables',
-            11
-        );
         $this->loader->add_filter( 'submenu_file', $plugin_admin, 'wpda_submenu_filter' );
         // Admin scripts.
         $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
@@ -236,12 +230,10 @@ class WP_Data_Access {
         $this->loader->add_action( 'wp_ajax_wpda_widget_chart_add', WPDA_Widget_Google_Chart::class, 'ajax_widget' );
         $this->loader->add_action( 'wp_ajax_wpda_widget_chart_refresh', WPDA_Widget_Google_Chart::class, 'ajax_refresh' );
         // Add/remove favourites.
+        // ???
         $plugin_favourites = new WPDA_Favourites();
         $this->loader->add_action( 'admin_action_wpda_add_favourite', $plugin_favourites, 'add' );
         $this->loader->add_action( 'admin_action_wpda_rem_favourite', $plugin_favourites, 'rem' );
-        // Show tables actions.
-        $plugin_table_actions = new WPDA_Table_Actions();
-        $this->loader->add_action( 'admin_action_wpda_show_table_actions', $plugin_table_actions, 'show' );
         $plugin_dictionary_list = new WPDA_Dictionary_Lists();
         // Get tables for a specific database.
         $this->loader->add_action( 'admin_action_wpda_get_tables', $plugin_dictionary_list, 'get_tables_ajax' );

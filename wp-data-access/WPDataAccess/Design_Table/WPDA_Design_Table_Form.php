@@ -480,13 +480,18 @@ namespace WPDataAccess\Design_Table {
 				wp_die( esc_attr__( 'Not authorized', 'wp-data-access' ) );
 			} else {
 				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], "wpda-design-table-form-{$this->wpda_table_name}" ) ) { // direct form access
-					if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], "wpda-alter-{$this->wpda_table_name}" ) ) { // access from alter table button
-						$dsg_tbl = 'wpda-query-' . WPDA_Design_Table_Model::get_base_table_name() . '-' . $_POST['wpda_schema_name'] . '-' . $_POST['wpda_table_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
-						if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], $dsg_tbl ) ) { // access from list table
-							wp_die( esc_attr__( 'Not authorized', 'wp-data-access' ) );
-						}
-					}
+				if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], "wpda-design-table-form-{$this->wpda_table_name}" )) { // direct form access
+                    if (
+                        '' === $this->wpda_table_name &&
+                        ! wp_verify_nonce( $_REQUEST['_wpnonce'], "wpda-design-table-form-" . WPDA_Design_Table_Model::get_base_table_name() )
+                    ) { // insert new table
+                        if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], "wpda-alter-{$this->wpda_table_name}" ) ) { // access from alter table button
+                            $dsg_tbl = 'wpda-query-' . WPDA_Design_Table_Model::get_base_table_name() . '-' . $_POST['wpda_schema_name'] . '-' . $_POST['wpda_table_name']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+                            if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], $dsg_tbl ) ) { // access from list table
+                                wp_die( esc_attr__( 'Not authorized', 'wp-data-access' ) );
+                            }
+                        }
+                    }
 				}
 				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			}
@@ -1570,7 +1575,7 @@ namespace WPDataAccess\Design_Table {
 						<input type="hidden" name="wpda_schema_name"
 							   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
-						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+						<?php $this->create_nonce(); ?>
 					</form>
 					<form id="wpda_alter_table_form"
 						  action="?page=<?php echo esc_attr( $this->page ); ?>"
@@ -1582,7 +1587,7 @@ namespace WPDataAccess\Design_Table {
 						<input type="hidden" name="wpda_schema_name"
 							   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
-						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+						<?php $this->create_nonce(); ?>
 					</form>
 					<form id="wpda_drop_table_form"
 						  action="?page=<?php echo esc_attr( $this->page ); ?>"
@@ -1594,7 +1599,7 @@ namespace WPDataAccess\Design_Table {
 						<input type="hidden" name="wpda_schema_name"
 							   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
-						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+						<?php $this->create_nonce(); ?>
 					</form>
 					<form id="wpda_create_index_form"
 						  action="?page=<?php echo esc_attr( $this->page ); ?>"
@@ -1606,7 +1611,7 @@ namespace WPDataAccess\Design_Table {
 						<input type="hidden" name="wpda_schema_name"
 							   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
-						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+						<?php $this->create_nonce(); ?>
 					</form>
 					<form id="wpda_drop_index_form"
 						  action="?page=<?php echo esc_attr( $this->page ); ?>"
@@ -1618,7 +1623,7 @@ namespace WPDataAccess\Design_Table {
 						<input type="hidden" name="wpda_schema_name"
 							   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
-						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+						<?php $this->create_nonce(); ?>
 					</form>
 				</div>
 				<style>
@@ -1744,7 +1749,7 @@ namespace WPDataAccess\Design_Table {
 								>
 								<a href="javascript:void(0)" onclick="jQuery('#wpda_reverse_engineering').hide()"
 								   class="button"><?php echo esc_attr__( 'Dismiss', 'wp-data-access' ); ?></a>
-								<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+								<?php $this->create_nonce(); ?>
 							</form>
 						</div>
 					</div>
@@ -1764,7 +1769,7 @@ namespace WPDataAccess\Design_Table {
 							<input type="hidden" name="wpda_schema_name_re"
 								   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 							<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
-							<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+							<?php $this->create_nonce(); ?>
 						</form>
 					</div>
 					<?php
@@ -1787,7 +1792,7 @@ namespace WPDataAccess\Design_Table {
 							<input type="hidden" name="wpda_schema_name"
 								   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 							<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
-							<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+							<?php $this->create_nonce(); ?>
 						</form>
 						<form id="show_alter_table_form" action="?page=<?php echo esc_attr( $this->page ); ?>"
 							  method="post">
@@ -1798,7 +1803,7 @@ namespace WPDataAccess\Design_Table {
 							<input type="hidden" name="wpda_schema_name"
 								   value="<?php echo esc_attr( $this->wpda_schema_name ); ?>"/>
 							<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
-							<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+							<?php $this->create_nonce(); ?>
 						</form>
 					</div>
 					<form id="design_table_form"
@@ -2191,7 +2196,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 							</tfoot>
 						</table>
 						</fieldset>
-						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+						<?php $this->create_nonce(); ?>
 					</form>
 					<form id="wpda_reset_form" action="?page=<?php echo esc_attr( $this->page ); ?>" method="post">
 						<input type="hidden" name="action" value="edit"/>
@@ -2206,7 +2211,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 						}
 						?>
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
-						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+						<?php $this->create_nonce(); ?>
 					</form>
 					<form id="switch_mode_form" method="post"
 						  action="?page=<?php echo esc_attr( $this->page ); ?>">
@@ -2214,7 +2219,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 							   value="<?php echo 'basic' === $this->design_mode ? 'advanced' : 'basic'; ?>">
 						<input type="hidden" name="action" value="edit">
 						<input type='hidden' name='caller' value='<?php echo esc_attr( $this->caller ); ?>'/>
-						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+						<?php $this->create_nonce(); ?>
 					</form>
 				</div>
 				<br/>
@@ -2296,7 +2301,7 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 							</tfoot>
 						</table>
 						</fieldset>
-						<?php wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" ) ?>
+						<?php $this->create_nonce(); ?>
 					</form>
 				</div>
 				<?php
@@ -2635,6 +2640,13 @@ default_generated on update current_timestamp" class="fas fa-circle-question poi
 			</script>
 			<?php
 		}
+
+        private function create_nonce() {
+            if ( '' === $this->wpda_table_name ) {
+                return wp_nonce_field( "wpda-design-table-form-" . WPDA_Design_Table_Model::get_base_table_name() );
+            }
+            return wp_nonce_field( "wpda-design-table-form-{$this->wpda_table_name}" );
+        }
 
 		/**
 		 * Drop all indexes from database

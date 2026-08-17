@@ -15,6 +15,7 @@ namespace WPDataAccess\Settings {
     class WPDA_Settings_Drives extends WPDA_Settings {
 
         private $drives = null;
+        private $canSftp = false;
 
         private function get_drive( $drive_type ) {
 
@@ -226,6 +227,10 @@ namespace WPDataAccess\Settings {
         }
 
         protected function add_content() {
+
+            if ( function_exists('ftp_ssl_connect') ) {
+                $this->canSftp = true;
+            }
 
             if ( isset( $_POST['action'] ) ) {
                 $action = sanitize_text_field( wp_unslash( $_POST['action'] ) ); // input var okay.
@@ -822,6 +827,39 @@ namespace WPDataAccess\Settings {
                     }
                 }
 
+                function ftpOnClick(event) {
+                    if (
+                        jQuery(event.target)
+                            .closest('fieldset')
+                            .find('.form-control-details:visible')
+                            .length === 0
+                    ) {
+                        jQuery(event.target)
+                            .attr('title', 'Hide FTP Server details');
+                        jQuery(event.target)
+                            .removeClass('dashicons-visibility')
+                            .addClass('dashicons-hidden');
+                        jQuery(event.target)
+                            .closest('fieldset')
+                            .find('.form-control-details')
+                            .css('display', 'block');
+                        jQuery(event.target)
+                            .closest('fieldset')
+                            .find('a.form-control-details')
+                            .css('display', 'flex');
+                    } else {
+                        jQuery(event.target)
+                            .attr('title', 'Show FTP Server details');
+                        jQuery(event.target)
+                            .removeClass('dashicons-hidden')
+                            .addClass('dashicons-visibility');
+                        jQuery(event.target)
+                            .closest('fieldset')
+                            .find('.form-control-details')
+                            .hide();
+                    }
+                }
+
                 function ftpContainer(
                     isNew,
                     driveName = '',
@@ -835,6 +873,19 @@ namespace WPDataAccess\Settings {
                     timeout = 90,
                     directory = '/'
                 ) {
+                    const canSftp = <?php echo $this->canSftp ? 'true' : 'false'; ?>;
+                    if (!canSftp) {
+                        ssl = false;
+                    }
+                    const sftpMessage = !canSftp
+                        ? `<div class="form-control form-control-details">
+                            <label></label>
+                            <span style="line-height:1.6;margin-bottom:10px;">
+                                <span class="dashicons dashicons-warning"></span> This server does not support SSL, ftp_ssl_connect is currently not available. (<a href="https://www.php.net/manual/en/function.ftp-ssl-connect.php" target="_blank">Read More...</a>)
+                            </span>
+                        </div>`
+                        : "";
+
                     jQuery("#ftp_container").append(`
                         <fieldset class="wpda_fieldset${isNew ? ' wpda-is-new' : ''}">
 
@@ -854,19 +905,11 @@ namespace WPDataAccess\Settings {
 
                                     <div>
                                         <a href="javascript:void(0)"
-                                           onclick="jQuery(this).closest('fieldset').find('.form-control-details').show(); jQuery(this).closest('fieldset').find('.form-control-details').css('display', 'block'); jQuery(this).closest('fieldset').find('a.form-control-details').css('display', 'flex'); jQuery(this).closest('fieldset').find('.form-control-icons').hide();"
+                                           onclick="ftpOnClick(event)"
                                            style="text-decoration:none;${isNew ? 'display:none;' : ''}"
                                            class="wpda_tooltip form-control-icons"
                                            title="Show FTP Server details">
                                             <span class="dashicons dashicons-visibility" style="font-size:18px;"></span>
-                                        </a>
-
-                                        <a href="javascript:void(0)"
-                                           onclick="jQuery(this).closest('fieldset').find('.form-control-details').hide(); jQuery(this).closest('fieldset').find('.form-control-icons').show();"
-                                           style="text-decoration:none;${isNew ? 'display:none;' : ''}"
-                                           class="wpda_tooltip form-control-details"
-                                           title="Show FTP Server details">
-                                            <span class="dashicons dashicons-hidden" style="font-size:18px;"></span>
                                         </a>
 
                                         <a href="javascript:void(0)"
@@ -904,7 +947,7 @@ namespace WPDataAccess\Settings {
                                 <div></div>
                                 <div>
                                     <label>
-                                        <input type="checkbox" name="ftp_ssl[]" ${ssl ? 'checked' : ''} />
+                                        <input type="checkbox" name="ftp_ssl[]" ${ssl ? 'checked' : ''} <?php echo $this->canSftp ? '' : 'disabled="disabled"'; ?> />
                                         SSL
                                     </label>
                                     &nbsp;
@@ -914,6 +957,7 @@ namespace WPDataAccess\Settings {
                                     </label>
                                 </div>
                             </div>
+                            ${sftpMessage}
 
                             <div class="form-control form-control-details">
                                 <label>Timeout</label>
@@ -924,7 +968,6 @@ namespace WPDataAccess\Settings {
                                 <label>Directory</label>
                                 <input type="text" name="ftp_directory[]" value="${directory}" />
                             </div>
-
                         </fieldset>
                     `);
                 }
@@ -959,19 +1002,11 @@ namespace WPDataAccess\Settings {
 
                                     <div>
                                         <a href="javascript:void(0)"
-                                           onclick="jQuery(this).closest('fieldset').find('.form-control-details').show(); jQuery(this).closest('fieldset').find('.form-control-details').css('display', 'block'); jQuery(this).closest('fieldset').find('a.form-control-details').css('display', 'flex'); jQuery(this).closest('fieldset').find('.form-control-icons').hide();"
+                                           onclick="ftpOnClick(event)"
                                            style="text-decoration:none;${isNew ? 'display:none;' : ''}"
                                            class="wpda_tooltip form-control-icons"
                                            title="Show FTP Server details">
                                             <span class="dashicons dashicons-visibility" style="font-size:18px;"></span>
-                                        </a>
-
-                                        <a href="javascript:void(0)"
-                                           onclick="jQuery(this).closest('fieldset').find('.form-control-details').hide(); jQuery(this).closest('fieldset').find('.form-control-icons').show();"
-                                           style="text-decoration:none;${isNew ? 'display:none;' : ''}"
-                                           class="wpda_tooltip form-control-details"
-                                           title="Show FTP Server details">
-                                            <span class="dashicons dashicons-hidden" style="font-size:18px;"></span>
                                         </a>
 
                                         <a href="javascript:void(0)"

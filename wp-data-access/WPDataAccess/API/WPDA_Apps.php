@@ -4,7 +4,6 @@ namespace WPDataAccess\API;
 
 use stdClass;
 use WPDataAccess\Connection\WPDADB;
-use WPDataAccess\Data_Apps\WPDA_PWA;
 use WPDataAccess\Data_Dictionary\WPDA_List_Columns_Cache;
 use WPDataAccess\Plugin_Table_Models\WPDA_App_Container_Model;
 use WPDataAccess\Plugin_Table_Models\WPDA_App_Apps_Model;
@@ -1343,6 +1342,10 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_lookup_dbs( $request ) {
+        // Only admins are allowed to configre lookups
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
         $app_id = $request->get_param( 'app_id' );
         $cnt_id = $request->get_param( 'cnt_id' );
         if ( $this->check_app_access(
@@ -1367,6 +1370,10 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_lookup_tbl( $request ) {
+        // Only admins are allowed to configre lookups
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
         $app_id = $request->get_param( 'app_id' );
         $cnt_id = $request->get_param( 'cnt_id' );
         $dbs = $request->get_param( 'dbs' );
@@ -1392,6 +1399,10 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_lookup_cls( $request ) {
+        // Only admins are allowed to configre lookups
+        if ( !$this->current_user_can_access() ) {
+            return $this->unauthorized();
+        }
         $app_id = $request->get_param( 'app_id' );
         $cnt_id = $request->get_param( 'cnt_id' );
         $dbs = $request->get_param( 'dbs' );
@@ -2073,8 +2084,32 @@ class WPDA_Apps extends WPDA_API_Core {
             'time_format'   => get_option( 'time_format' ),
             'scroll_offset' => WPDA::get_option( WPDA::OPTION_APPS_SCROLL_OFFSET ),
             'upload'        => @ini_get( 'upload_max_filesize' ),
+            'uploadBytes'   => $this->uploadToBytes( @ini_get( 'upload_max_filesize' ) ),
         ];
         return $settings;
+    }
+
+    /**
+     * Convert a PHP shorthand notation (e.g., "2M", "512K", "1G") to bytes.
+     *
+     * @param string $val The shorthand size string.
+     *
+     * @return int The size in bytes.
+     */
+    private function uploadToBytes( $val ) : int {
+        $val = trim( $val );
+        $lastChar = strtolower( $val[strlen( $val ) - 1] );
+        $num = (float) $val;
+        switch ( $lastChar ) {
+            case 'g':
+                $num *= 1024;
+            case 'm':
+                $num *= 1024;
+            case 'k':
+                $num *= 1024;
+                break;
+        }
+        return (int) round( $num );
     }
 
     private function get_app_container_meta( $app_id, $container, $rel_tab = false ) {
@@ -2533,12 +2568,13 @@ SQL;
     ) {
         // Process $search_custom > URL parameters
         global $wpdb;
+        $replacements = array();
         foreach ( self::METHODS as $method ) {
             $offset = 0;
             $search = $method . '[';
+            // Get filter
             while ( ($pos_start = stripos( $where, $search, $offset )) !== false ) {
                 if ( ($pos_end = stripos( $where, ']', $pos_start )) !== false ) {
-                    // Get filter
                     $filter = substr( $where, $pos_start, $pos_end - $pos_start + 1 );
                     // Get name
                     $arg_name = substr( $where, $pos_start + strlen( $search ), $pos_end - $pos_start - strlen( $search ) );
@@ -2546,62 +2582,32 @@ SQL;
                     if ( substr( $arg_name, 0, 1 ) === "'" && substr( $arg_name, -1 ) === "'" ) {
                         $arg_name = substr( $arg_name, 1, -1 );
                     }
-                    // Remove double quotes from name
+                    // Remove quotes from name
                     if ( substr( $arg_name, 0, 1 ) === '"' && substr( $arg_name, -1 ) === '"' ) {
                         $arg_name = substr( $arg_name, 1, -1 );
                     }
+                    $arg_value = null;
                     // Handle GET args
-                    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
-                    if ( $method === self::METHODS[0] ) {
+                    if ( $method === self::METHODS[0] && isset( $search_custom['get'][$arg_name] ) ) {
+                        $arg_value = sanitize_text_field( wp_unslash( $search_custom['get'][$arg_name] ) );
+                    } elseif ( $method === self::METHODS[1] && isset( $search_custom['post'][$arg_name] ) ) {
+                        $arg_value = sanitize_text_field( wp_unslash( $search_custom['post'][$arg_name] ) );
+                    } elseif ( $method === self::METHODS[2] ) {
                         if ( isset( $search_custom['get'][$arg_name] ) ) {
                             $arg_value = sanitize_text_field( wp_unslash( $search_custom['get'][$arg_name] ) );
-                            $where = $wpdb->prepare( substr_replace(
-                                $where,
-                                '%s',
-                                $pos_start,
-                                $pos_end - $pos_start + 1
-                            ), $arg_value );
-                        } else {
-                            $where = str_replace( $filter, 'null', $where );
+                        } elseif ( isset( $search_custom['post'][$arg_name] ) ) {
+                            $arg_value = sanitize_text_field( wp_unslash( $search_custom['post'][$arg_name] ) );
                         }
                     }
                     // Handle POST args
-                    if ( $method === self::METHODS[1] ) {
-                        if ( isset( $search_custom['post'][$arg_name] ) ) {
-                            $arg_value = sanitize_text_field( wp_unslash( $search_custom['post'][$arg_name] ) );
-                            $where = $wpdb->prepare( substr_replace(
-                                $where,
-                                '%s',
-                                $pos_start,
-                                $pos_end - $pos_start + 1
-                            ), $arg_value );
-                        } else {
-                            $where = str_replace( $filter, 'null', $where );
-                        }
-                    }
+                    $placeholder = '###URL_PLACEHOLDER_' . md5( $filter ) . '###';
+                    $where = str_replace( $filter, $placeholder, $where );
                     // Handle REQUEST args
-                    if ( $method === self::METHODS[2] ) {
-                        if ( isset( $search_custom['get'][$arg_name] ) ) {
-                            $arg_value = sanitize_text_field( wp_unslash( $search_custom['get'][$arg_name] ) );
-                            $where = $wpdb->prepare( substr_replace(
-                                $where,
-                                '%s',
-                                $pos_start,
-                                $pos_end - $pos_start + 1
-                            ), $arg_value );
-                        } elseif ( isset( $search_custom['post'][$arg_name] ) ) {
-                            $arg_value = sanitize_text_field( wp_unslash( $search_custom['post'][$arg_name] ) );
-                            $where = $wpdb->prepare( substr_replace(
-                                $where,
-                                '%s',
-                                $pos_start,
-                                $pos_end - $pos_start + 1
-                            ), $arg_value );
-                        } else {
-                            $where = str_replace( $filter, 'null', $where );
-                        }
+                    if ( $arg_value !== null ) {
+                        $replacements[$placeholder] = $wpdb->prepare( '%s', $arg_value );
+                    } else {
+                        $replacements[$placeholder] = 'null';
                     }
-                    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
                 }
                 $offset = $pos_start + 1;
                 if ( $offset > strlen( $where ) ) {
@@ -2614,17 +2620,15 @@ SQL;
             $filter_field_name = $this->sanitize_db_identifier( array_keys( $search_params )[0] );
             $filter_field_value = sanitize_text_field( $search_params[$filter_field_name] );
             $filter_field_name_array = array_map( 'trim', explode( ',', $filter_field_name ) );
-            // phpcs:ignore -- 8.1 proof
             $filter_field_value_array = array_map( 'trim', explode( ',', $filter_field_value ) );
-            // phpcs:ignore -- 8.1 proof
             if ( count( $filter_field_name_array ) === count( $filter_field_value_array ) ) {
-                // phpcs:ignore -- 8.1 proof
                 // Add filter to where clause.
-                // phpcs:disable Generic.CodeAnalysis.ForLoopWithTestFunctionCall, Squiz.PHP.DisallowSizeFunctionsInLoops, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
                 for ($i = 0; $i < count( $filter_field_name_array ); $i++) {
-                    $where .= (( '' === $where ? '' : ' and ' )) . $wpdb->prepare( ' `%1s` like %s ', array($filter_field_name_array[$i], $filter_field_value_array[$i]) );
+                    $where .= ( '' === $where ? '' : ' and ' );
+                    $placeholder = '###SHORTCODE_PARAM_' . md5( $filter_field_name_array[$i] ) . '###';
+                    $where .= ' `' . $filter_field_name_array[$i] . '` like ' . $placeholder;
+                    $replacements[$placeholder] = $wpdb->prepare( '%s', $filter_field_value_array[$i] );
                 }
-                // phpcs:enable Generic.CodeAnalysis.ForLoopWithTestFunctionCall, Squiz.PHP.DisallowSizeFunctionsInLoops, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
             }
         }
         // Substitute all shortcode parameters
@@ -2632,13 +2636,9 @@ SQL;
             foreach ( $shortcode_params as $column_name => $column_value ) {
                 $occurences = substr_count( strtolower( $where ), strtolower( "shortcodeParam['{$column_name}']" ) );
                 if ( 0 < $occurences ) {
-                    $column_values = array();
-                    for ($i = 0; $i < $occurences; $i++) {
-                        $column_values[] = sanitize_text_field( $column_value );
-                    }
-                    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                    $where = $wpdb->prepare( str_ireplace( "shortcodeParam['{$column_name}']", '%s', $where ), $column_values );
-                    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                    $placeholder = '###SHORTCODE_PARAM_' . md5( $column_name ) . '###';
+                    $where = str_ireplace( "shortcodeParam['{$column_name}']", $placeholder, $where );
+                    $replacements[$placeholder] = $wpdb->prepare( '%s', sanitize_text_field( $column_value ) );
                 }
             }
         }
@@ -2658,10 +2658,13 @@ SQL;
         // Substitute all dynamic parameters
         if ( is_array( $dynamic_params ) && 0 < count( $dynamic_params ) ) {
             foreach ( $dynamic_params as $column_name => $column_value ) {
-                // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                $where = $wpdb->prepare( str_ireplace( "{:{$column_name}}", '%s', $where ), $column_value );
-                // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                $placeholder = '###DYNAMIC_PARAM_' . md5( $column_name ) . '###';
+                $where = str_ireplace( "{:{$column_name}}", $placeholder, $where );
+                $replacements[$placeholder] = $wpdb->prepare( '%s', $column_value );
             }
+        }
+        foreach ( $replacements as $placeholder => $value ) {
+            $where = str_replace( $placeholder, $value, $where );
         }
         return $where;
     }

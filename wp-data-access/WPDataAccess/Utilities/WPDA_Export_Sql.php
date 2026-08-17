@@ -189,7 +189,10 @@ namespace WPDataAccess\Utilities {
 			$wp_nonce    = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : '?'; // input var okay.
 			if (
 				! wp_verify_nonce( $wp_nonce, "wpda-export-{$table_names}" ) &&
-				! wp_verify_nonce( $wp_nonce, 'wpda-export-' . WPDA::get_current_user_login() )
+				! (
+                    WPDA::current_user_is_admin() && // Admins are allowed to export all tables
+                    wp_verify_nonce( $wp_nonce, 'wpda-export-' . WPDA::get_current_user_login() )
+                )
 			) {
 				wp_die();
 			}

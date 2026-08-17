@@ -13,6 +13,7 @@ class WPDA_Query_Builder_Scheduler {
     }
 
     private static function queryDecode( $sql ) {
+        return '';
     }
 
     public static function run_scheduled_sql( $args ) {
@@ -22,12 +23,15 @@ class WPDA_Query_Builder_Scheduler {
     }
 
     private static function attach_csv( $response ) {
+        return '';
     }
 
     private static function attach_json( $response ) {
+        return '';
     }
 
     private static function attach_xml( $response ) {
+        return '';
     }
 
     private static function notify_single_query( $response, $params ) {

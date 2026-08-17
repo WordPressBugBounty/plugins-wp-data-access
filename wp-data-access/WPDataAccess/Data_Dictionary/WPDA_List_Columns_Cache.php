@@ -33,8 +33,8 @@ namespace WPDataAccess\Data_Dictionary {
 		 * $table_name is already in cache. If an instance was found, a handle to it is returned. If not, a new
 		 * instance is created, added to the cache and a handle to it is returned.
 		 *
-		 * @param $schema_name Database schema name (= MySQL database)
-		 * @param $table_name Datable table name
+		 * @param $schema_name string Database schema name (= MySQL database)
+		 * @param $table_name string Datable table name
 		 *
 		 * @return object Handle to instance of {@see WPDA_List_Columns} for supplied $schema_name and $table_name
 		 */

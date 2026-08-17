@@ -176,8 +176,6 @@ class WPDA_Dashboard {
      */
     protected $message_type = null;
 
-    private $current_version;
-
     private $option_legacy_tools;
 
     /**
@@ -193,7 +191,6 @@ class WPDA_Dashboard {
             // Load Data Tables resources.
             \WPDataAccess\Data_Tables\WPDA_Data_Tables::enqueue_styles_and_script();
         }
-        $this->current_version = get_user_meta( WPDA::get_current_user_id(), 'wpda_data_explorer', true );
         // Start with empty array.
         if ( $widget_mode ) {
             update_user_meta( WPDA::get_current_user_id(), self::USER_DASHBOARD, array() );
@@ -333,7 +330,7 @@ class WPDA_Dashboard {
         if ( isset( $_REQUEST['page'] ) ) {
             switch ( $_REQUEST['page'] ) {
                 case \WP_Data_Access_Admin::PAGE_MAIN:
-                    $help_url = 'https://docs.legacy.wpdataaccess.com/docs/data-explorer-getting-started/';
+                    $help_url = 'https://docs.explorer.wpdataaccess.com/';
                     break;
                 case \WP_Data_Access_Admin::PAGE_APPS:
                     $help_url = 'https://docs.rad.wpdataaccess.com/';
@@ -935,35 +932,16 @@ Customize forms using templates"
 						</div>
 					</div><div>
 						<div>
-							<?php 
-        if ( 'new' !== $this->current_version && '' !== $this->current_version ) {
-            ?>
-								<a onclick="jQuery('#upload_file_container_multi').show();"
-								   href="javascript:void(0)"
-								   class="wpda-dashboard-item wpda_tooltip"
-								   title="Import and execute SQL script files"
-								>
-									<i class="fas fa-file-code"></i>
-									<div>
-										Import SQL files
-									</div>
-								</a>
-								<?php 
-        } else {
-            ?>
-								<a onClick="window.ppActionEnableImport();"
-								   href="javascript:void(0)"
-								   class="wpda-dashboard-item wpda_tooltip"
-								   title="Import and execute SQL script files"
-								>
-									<i class="fas fa-file-code"></i>
-									<div>
-										Import SQL files
-									</div>
-								</a>
-								<?php 
-        }
-        ?>
+                            <a onClick="window.ppActionEnableImport();"
+                               href="javascript:void(0)"
+                               class="wpda-dashboard-item wpda_tooltip"
+                               title="Import and execute SQL script files"
+                            >
+                                <i class="fas fa-file-code"></i>
+                                <div>
+                                    Import SQL files
+                                </div>
+                            </a>
 						</div><div>
 							<a href="<?php 
         echo esc_url( admin_url( 'admin.php' ) );
@@ -1008,72 +986,23 @@ Customize forms using templates"
         }
         ?>
 					</div><div>
-						<?php 
-        if ( 'new' !== $this->current_version && '' !== $this->current_version ) {
-            ?>
-							<div>
-								<a onclick="jQuery('#wpda_db_container').show(); jQuery('#local_database').focus();"
-								   href="javascript:void(0)"
-								   class="wpda-dashboard-item wpda_tooltip"
-								   title="Add remote database or create local database"
-								>
-									<i id="wpda_toolbar_icon_add_database" class="fas fa-database"></i>
-									<div>
-										Add database
-									</div>
-								</a>
-							</div>
-							<?php 
-        } else {
-            ?>
-							<div>
-								<a onclick="jQuery('#wpda_manage_databases').show(); jQuery('#local_database').focus();"
-								   href="javascript:void(0)"
-								   class="wpda-dashboard-item wpda_tooltip"
-								   title="Manage remote database connections and local databases"
-								>
-									<i id="wpda_toolbar_icon_add_database" class="fas fa-server"></i>
-									<div>
-										Databases
-									</div>
-								</a>
-							</div><?php 
-        }
-        ?>
-						<?php 
+                        <div>
+                            <a onclick="jQuery('#wpda_manage_databases').show(); jQuery('#local_database').focus();"
+                               href="javascript:void(0)"
+                               class="wpda-dashboard-item wpda_tooltip"
+                               title="Manage remote database connections and local databases"
+                            >
+                                <i id="wpda_toolbar_icon_add_database" class="fas fa-server"></i>
+                                <div>
+                                    Databases
+                                </div>
+                            </a>
+                        </div><?php 
         ?>
 					</div>
 				</div>
 				<div class="wpda-promotion" style="font-size: 16px">
-					<?php 
-        if ( 'new' !== $this->current_version && '' !== $this->current_version ) {
-            ?>
-						<a href="?page=<?php 
-            echo esc_attr( WP_Data_Access_Admin::PAGE_MAIN );
-            ?>&de=new"
-						   style="display: flex; align-items: center; gap: 5px;"
-						>
-							<i class="fas fa-toggle-off"></i>
-							<span>Switch to new Data Explorer</span>
-						</a>
-						<?php 
-        } else {
-            ?>
-						<span
-							style="display: flex; align-items: center; gap: 5px; white-space: nowrap;"
-						>
-							<a href="?page=<?php 
-            echo esc_attr( WP_Data_Access_Admin::PAGE_MAIN );
-            ?>&de=old"
-							   style="display: flex; align-items: center; gap: 5px; white-space: nowrap;"
-							>
-								<i class="fas fa-toggle-on"></i>
-								<span>Switch to old Data Explorer</span>
-							</a>
-						</span>
-						<?php 
-        }
-        ?>
+                    The old Data Explorer is no longer available. <a href="https://wpdataaccess.com/contact/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Please contact us if you need any help.</a>
 				</div>
 				<?php 
         //$this->get_promotions('wpda');

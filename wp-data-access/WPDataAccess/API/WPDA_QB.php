@@ -265,7 +265,6 @@ class WPDA_QB extends WPDA_API_Core {
         $query = $request->get_param( 'query' );
         $is_visual = '1' === $request->get_param( 'is_visual' );
         $vqb = $request->get_param( 'vqb' );
-        WPDA::wpda_log_wp_error( $vqb );
         $old_name = $request->get_param( 'old_name' ) ?? '';
         $insert = '1' === $request->get_param( 'insert' );
         $params = $request->get_param( 'params' );

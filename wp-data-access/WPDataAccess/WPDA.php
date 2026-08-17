@@ -51,8 +51,8 @@ namespace WPDataAccess {
 		/**
 		 * Option wpda_version and it's default value
 		 */
-		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.80' );
-		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.78' );
+		const OPTION_WPDA_VERSION         = array( 'wpda_version', '5.5.81' );
+		const OPTION_WPDA_CLIENT_VERSION  = array( 'wpda_client_version', '1.0.79' );
 		const OPTION_WPDA_UPGRADED        = array( 'wpda_upgraded', false );
 		/**
 		 * Option wpda_setup_error and it's default value
@@ -345,6 +345,7 @@ namespace WPDataAccess {
 			WP_Data_Access_Admin::PAGE_DESIGNER,
 			WP_Data_Access_Admin::PAGE_MY_TABLES,
 			WP_Data_Access_Admin::PAGE_CHARTS,
+            WP_Data_Access_Admin::PAGE_TABLE,
 			WPDP::PAGE_MAIN,
 			WPDP::PAGE_TEMPLATES,
 		);
@@ -1146,7 +1147,7 @@ namespace WPDataAccess {
 					var clipboard = new ClipboardJS('.wpda_shortcode_clipboard');
 				});
 			</script>
-			<style type="text/css">
+			<style>
 				.wpda_shortcode_content {
 					padding: 0 20px;
 				}
@@ -1237,9 +1238,9 @@ namespace WPDataAccess {
 		/**
 		 * Get estimated number of rows in a table
 		 *
-		 * @param $schema_name Schema name
-		 * @param $table_name Table name
-			 * @param $wpda_table_settings Table settings (query WPDA_Table_Settings_Model)
+		 * @param $schema_name string Schema name
+		 * @param $table_name string Table name
+         * @param $wpda_table_settings string Table settings (query WPDA_Table_Settings_Model)
 		 *
 		 * @return int row count estimate or -1 if no estimate available
 		 */
@@ -1670,8 +1671,8 @@ namespace WPDataAccess {
 		/**
 		 * Get the column data types from a custom query
 		 *
-		 * @param $database Database (schema) name
-		 * @param $query Custom query
+		 * @param $database string Database (schema) name
+		 * @param $query string Custom query
 		 * @return array|null Column data type array or null if the query does not return any columns
 		 */
 		public static function get_columns_from_query( $database, $query ) {

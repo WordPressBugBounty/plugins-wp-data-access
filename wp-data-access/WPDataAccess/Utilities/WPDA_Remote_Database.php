@@ -523,7 +523,7 @@ class WPDA_Remote_Database {
 				<select id="manage_db_selection">
 					<?php 
         foreach ( $dbs as $db => $db_type ) {
-            echo '<option value="' . esc_attr( $db ) . '" data-type="' . esc_attr( $db_type ) . '">{$db}</option>';
+            echo '<option value="' . esc_attr( $db ) . '" data-type="' . esc_attr( $db_type ) . '">' . esc_attr( $db ) . '</option>';
         }
         ?>
 				</select>

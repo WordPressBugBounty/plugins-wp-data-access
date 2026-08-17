@@ -6,11 +6,13 @@
  * @package plugin\admin
  */
 use WPDataAccess\API\WPDA_API;
+use WPDataAccess\API\WPDA_API_Core;
 use WPDataAccess\Backup\WPDA_Data_Export;
 use WPDataAccess\CSV_Files\WPDA_CSV_Import;
 use WPDataAccess\Dashboard\WPDA_Dashboard;
 use WPDataAccess\Data_Apps\WPDA_App_Builder;
 use WPDataAccess\Data_Apps\WPDA_Data_Explorer;
+use WPDataAccess\Data_Apps\WPDA_Table_Container;
 use WPDataAccess\Global_Search\WPDA_Global_Search;
 use WPDataAccess\List_Table\WPDA_List_View;
 use WPDataAccess\Plugin_Table_Models\WPDA_App_Model;
@@ -89,6 +91,8 @@ class WP_Data_Access_Admin {
      */
     const MAIN_PAGE_SLUG = self::PAGE_NAVI;
 
+    const PAGE_TABLE = 'wpda_table';
+
     /**
      * Menu slug for my tables page
      */
@@ -100,6 +104,8 @@ class WP_Data_Access_Admin {
      * @var string|false
      */
     protected $wpda_data_explorer_menu;
+
+    protected $wpda_table;
 
     /**
      * Page hook suffix to Data Designer page or false
@@ -656,8 +662,6 @@ class WP_Data_Access_Admin {
                     update_user_meta( WPDA::get_current_user_id(), 'wpda_query_builder_version', 'old' );
                 }
             }
-            // Specific list tables (and forms) can be made available for specific capabilities:
-            // managed in method add_menu_my_tables.
             // Main menu and items are only available to admin users (set capability to 'manage_options').
             add_menu_page(
                 'WP Data Access',
@@ -687,26 +691,23 @@ class WP_Data_Access_Admin {
                 array($this, 'data_apps')
             );
             // Add data explorer to WPDA menu.
-            $current_data_explorer_version = get_user_meta( WPDA::get_current_user_id(), 'wpda_data_explorer', true );
-            if ( isset( $_POST['explorer'] ) && 'OLD' === $_POST['explorer'] ) {
-                $current_data_explorer_version = true;
-            }
             $this->wpda_data_explorer_menu = add_submenu_page(
                 self::MAIN_PAGE_SLUG,
                 'WP Data Access',
                 'Data Explorer',
                 'manage_options',
                 self::PAGE_MAIN,
-                array($this, ( 'new' !== $current_data_explorer_version && '' !== $current_data_explorer_version ? 'data_explorer_page' : 'data_explorer_page_new' ))
+                array($this, 'data_explorer_page')
             );
-            if ( self::PAGE_MAIN === $this->page ) {
-                if ( 'new' !== $current_data_explorer_version && '' !== $current_data_explorer_version ) {
-                    $args = array(
-                        'page_hook_suffix' => $this->wpda_data_explorer_menu,
-                    );
-                    $this->wpda_data_explorer_view = new WPDA_List_View($args);
-                }
-            }
+            // Add data explorer to WPDA menu.
+            $this->wpda_table = add_submenu_page(
+                self::PAGE_TABLE,
+                'WP Data Access',
+                'Data Explorer',
+                'manage_options',
+                self::PAGE_TABLE,
+                array($this, 'data_explorer_table_page')
+            );
             // Add submenu for Query Builder.
             $current_query_builder_version = get_user_meta( WPDA::get_current_user_id(), 'wpda_query_builder_version', true );
             $this->wpda_data_publisher_menu = add_submenu_page(
@@ -911,31 +912,7 @@ class WP_Data_Access_Admin {
         WPDA_Dashboard::add_dashboard( true );
     }
 
-    /**
-     * Show data explorer main page
-     *
-     * Initialization of $this->wpda_data_explorer_view is done earlier in
-     * {@see WP_Data_Access_Admin::add_menu_items()} to support screen options. This method just shows the page
-     * containing the list table.
-     *
-     * @since   1.0.0
-     *
-     * @see WP_Data_Access_Admin::add_menu_items()
-     */
     public function data_explorer_page() {
-        WPDA_Dashboard::add_dashboard();
-        if ( isset( $_REQUEST['page_action'] ) && 'wpda_backup' === $_REQUEST['page_action'] ) {
-            $this->backup_page();
-        } elseif ( isset( $_REQUEST['page_action'] ) && 'wpda_import_csv' === $_REQUEST['page_action'] ) {
-            $this->import_csv();
-        } elseif ( isset( $_REQUEST['page_action'] ) && 'wpda_global_search' === $_REQUEST['page_action'] ) {
-            $this->advanced_search();
-        } else {
-            $this->wpda_data_explorer_view->show();
-        }
-    }
-
-    public function data_explorer_page_new() {
         WPDA_Dashboard::add_dashboard();
         if ( isset( $_REQUEST['page_action'] ) && 'wpda_backup' === $_REQUEST['page_action'] ) {
             $this->backup_page();
@@ -947,6 +924,29 @@ class WP_Data_Access_Admin {
             $explorer = new WPDA_Data_Explorer();
             $explorer->show();
         }
+    }
+
+    public function data_explorer_table_page() {
+        WPDA_Dashboard::add_dashboard();
+        if ( !isset( 
+            $_POST['dbs'],
+            $_POST['tbl'],
+            $_POST['s'],
+            $_POST['c']
+         ) ) {
+            wp_die( esc_attr__( 'ERROR: Invalid usage', 'wp-data-access' ) );
+        }
+        $dbs = WPDA_API_Core::sanitize_db_identifier( sanitize_text_field( wp_unslash( $_POST['dbs'] ) ) );
+        $tbl = WPDA_API_Core::sanitize_db_identifier( sanitize_text_field( wp_unslash( $_POST['tbl'] ) ) );
+        $s = WPDA_API_Core::sanitize_db_identifier( sanitize_text_field( wp_unslash( $_POST['s'] ) ) );
+        $c = WPDA_API_Core::sanitize_db_identifier( sanitize_text_field( wp_unslash( $_POST['c'] ) ) );
+        $explorer = new WPDA_Table_Container(array(
+            'dbs' => $dbs,
+            'tbl' => $tbl,
+            's'   => $s,
+            'c'   => $c,
+        ));
+        $explorer->show();
     }
 
     public function data_navi() {
@@ -1148,94 +1148,6 @@ class WP_Data_Access_Admin {
             }
         } else {
             $wpda_backup->show_wp_cron();
-        }
-    }
-
-    /**
-     * Add user defined sub menu
-     *
-     * WPDA allows users to create sub menu for table lists and simple forms. Sub menus can be added to the WPDA
-     * menu or any other (external) menu. A sub menu is added to an external menu via the menu slug. Sub menus are
-     * taken from {@see WPDA_User_Menus_Model}.
-     *
-     * This method is called from the admin_menu action with a lower priority to make sure other menus are available.
-     * User defined menu items are added to available menus in this method. These can be WPDA menus or external menus
-     * as mentioned in the according list table and edit form. WPDA menus are added to menu WP Data Tables. External
-     * menus are added to the menu having the menu slug defined by the user.
-     *
-     * This method does not actually show the list tables! It just creates the menu items. When the user clicks on such
-     * a dynamically defined menu item, method {@see WP_Data_Access_Admin::my_tables_page()} is called, which takes
-     * care of showing the list table.
-     *
-     * @since   1.0.0
-     *
-     * @see WP_Data_Access_Admin::my_tables_page()
-     * @see WPDA_User_Menus_Model
-     */
-    public function add_menu_my_tables() {
-        $menus_shown_to_current_user = array();
-        // Add list tables to external menus.
-        foreach ( WPDA_User_Menus_Model::list_external_menus() as $menu ) {
-            $user_roles = WPDA::get_current_user_roles();
-            $user_has_role = false;
-            if ( '' === $menu->menu_role || null === $menu->menu_role ) {
-                $user_has_role = in_array( 'administrator', $user_roles, true );
-            } else {
-                $user_role_array = explode( ',', (string) $menu->menu_role );
-                // phpcs:ignore -- 8.1 proof
-                foreach ( $user_role_array as $user_role_array_item ) {
-                    $user_has_role = in_array( $user_role_array_item, $user_roles, true );
-                    // phpcs:ignore -- 8.1 proof
-                    if ( $user_has_role ) {
-                        break;
-                    }
-                }
-            }
-            if ( $user_has_role ) {
-                if ( !isset( $menus_shown_to_current_user[$menu->menu_slug . '/' . $menu->menu_name . '/' . $menu->menu_table_name . '/' . $menu->menu_schema_name] ) ) {
-                    $menu_slug = self::PAGE_EXPLORER . '_' . $menu->menu_table_name;
-                    $menu_index = $menu->menu_table_name;
-                    $this->create_non_admin_menu( $menu_slug );
-                    $this->wpda_my_table_list_menu[$menu_index] = add_submenu_page(
-                        $this->first_page,
-                        'WP Data Access : ' . strtoupper( $menu->menu_table_name ),
-                        $menu->menu_name,
-                        WPDA::get_current_user_capability(),
-                        $menu_slug,
-                        array($this, 'my_tables_page')
-                    );
-                    $this->wpda_my_table_list_view[$menu_index] = new WPDA_List_View(array(
-                        'page_hook_suffix' => $this->wpda_my_table_list_menu[$menu_index],
-                        'wpdaschema_name'  => $menu->menu_schema_name,
-                        'table_name'       => $menu->menu_table_name,
-                    ));
-                    $menus_shown_to_current_user[$menu->menu_slug . '/' . $menu->menu_name . '/' . $menu_index . '/' . $menu->menu_schema_name] = true;
-                }
-            }
-        }
-    }
-
-    /**
-     * Show user defined menus
-     *
-     * A user defined menu that are added to the plugin menu in {@see WP_Data_Access_Admin::add_menu_my_tables()} is
-     * shown here. This method is called when the user clicks on the menu item generated in
-     * {@see WP_Data_Access_Admin::add_menu_my_tables()}.
-     *
-     * @since   1.0.0
-     *
-     * @see WP_Data_Access_Admin::add_menu_my_tables()
-     */
-    public function my_tables_page() {
-        // Grab table name from menu slug.
-        if ( null !== $this->page ) {
-            if ( strpos( $this->page, self::PAGE_EXPLORER ) !== false ) {
-                $table = substr( $this->page, strlen( self::PAGE_EXPLORER . '_' ) );
-            } else {
-                $table = substr( $this->page, strlen( self::PAGE_MY_TABLES . '_' ) );
-            }
-            // Show list table.
-            $this->wpda_my_table_list_view[$table]->show();
         }
     }
 

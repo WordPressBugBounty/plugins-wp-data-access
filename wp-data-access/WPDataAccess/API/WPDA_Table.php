@@ -61,6 +61,23 @@ class WPDA_Table extends WPDA_API_Core {
                 'row_count_estimate' => $this->get_param( 'row_count_estimate' ),
                 'media'              => $this->get_param( 'media' ),
                 'client_side'        => $this->get_param( 'client_side' ),
+                'global_search'      => array(
+                    'required'          => false,
+                    'type'              => 'mixed',
+                    'description'       => __( 'Global search', 'wp-data-access' ),
+                    'sanitize_callback' => function ( $param ) {
+                        $global_search = array();
+                        foreach ( $param as $key => $value ) {
+                            if ( $key === 's' || $key === 'c' ) {
+                                $global_search[sanitize_text_field( wp_unslash( $key ) )] = sanitize_text_field( wp_unslash( $value ) );
+                            }
+                        }
+                        return $global_search;
+                    },
+                    'validate_callback' => function ( $param ) {
+                        return is_array( $param ) && isset( $param['s'], $param['c'] );
+                    },
+                ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'table/get', array(
@@ -306,6 +323,7 @@ class WPDA_Table extends WPDA_API_Core {
         $row_count_estimate = $request->get_param( 'row_count_estimate' );
         $media = $request->get_param( 'media' );
         $client_side = '1' === $request->get_param( 'client_side' );
+        $global_search = $request->get_param( 'global_search' );
         if ( $this->check_table_access(
             $dbs,
             $tbl,
@@ -332,7 +350,10 @@ class WPDA_Table extends WPDA_API_Core {
                 array(),
                 array(),
                 $search_data_types,
-                $client_side
+                $client_side,
+                array(),
+                array(),
+                $global_search
             );
         } else {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {
@@ -938,7 +959,8 @@ class WPDA_Table extends WPDA_API_Core {
         $search_data_types = array(),
         $client_side = false,
         $geo_radius = array(),
-        $docs = array()
+        $docs = array(),
+        $search_global = null
     ) {
         $wpdadb = WPDADB::get_db_connection( $dbs );
         if ( null === $wpdadb ) {
@@ -960,8 +982,29 @@ class WPDA_Table extends WPDA_API_Core {
                 $search_columns,
                 $search_column_fns,
                 $search_data_types,
-                $geo_radius
+                $geo_radius,
+                'and'
             );
+            if ( $this->current_user_can_access() && isset( $search_global['s'], $search_global['c'] ) ) {
+                // Perform global search (admins only)
+                // ???
+                $wpda_list_columns = WPDA_List_Columns_Cache::get_list_columns( $dbs, $tbl );
+                $table_columns = $wpda_list_columns->get_table_columns();
+                $where_global = WPDA::construct_where_clause(
+                    $dbs,
+                    $tbl,
+                    $table_columns,
+                    $search_global['s'],
+                    'false' !== $search_global['c']
+                );
+                if ( trim( $where_global ) !== '' ) {
+                    if ( '' !== trim( $where ) && 'where' !== strtolower( substr( trim( $where ), 0, 5 ) ) ) {
+                        $where .= " and {$where_global} ";
+                    } else {
+                        $where .= " where {$where_global} ";
+                    }
+                }
+            }
             // Build order by.
             $sqlorder = '';
             if ( is_array( $sorting ) && 0 < count( $sorting ) ) {

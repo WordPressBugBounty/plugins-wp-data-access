@@ -2,9 +2,9 @@
 Plugin URI: https://wpdataaccess.com/
 Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
-Tested up to: 7.0
-Requires PHP: 7.0
-Stable tag: 5.5.80
+Tested up to: 7.1
+Requires PHP: 7.4
+Stable tag: 5.5.81
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -131,6 +131,23 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.81 =
+* Released 2026-08-18
+* Removed old Data Explorer
+* Changed global search & replace
+* Changed tool guide page
+* Added: Secure document storage
+* Added: Form separators with title feature
+* Added: CSS Form Editor
+* Added: Data Explorer documentation
+* Fixed: Allow admins only to configure lookups
+* Fixed: Check authorization for wildcard exports
+* Fixed: Database administration page shows invalid database list
+* Fixed: Missing scale in hint
+* Fixed: Reevaluation of already substituted placeholders
+* Fixed: Cannot add new table design
+* Fixed: Scheduled query not correctly returning rows affected
 
 = 5.5.80 =
 * Released 2026-08-06

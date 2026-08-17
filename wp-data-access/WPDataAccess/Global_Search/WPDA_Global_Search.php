@@ -438,12 +438,11 @@ EOL;
 								${tableName}
 							</span>
 							<span>
-								<form id="view_${schemaName}_${tableName}" action="?page=wpda" method="post" style="display:none">
-									<input type="hidden" name="wpdaschema_name" value="${schemaName}" />
-									<input type="hidden" name="table_name" value="${tableName}" />
-									<input type="hidden" name="wpda_s" value="${searchString}" />
-									<input type="hidden" name="wpda_c" value="${searchCase}" />
-                                    <input type="hidden" name="explorer" value="OLD" />
+								<form id="view_${schemaName}_${tableName}" action="?page=wpda_table" method="post" style="display:none">
+									<input type="hidden" name="dbs" value="${schemaName}" />
+									<input type="hidden" name="tbl" value="${tableName}" />
+									<input type="hidden" name="s" value="${searchString}" />
+									<input type="hidden" name="c" value="${searchCase}" />
 								</form>
 								<a href="javascript:submitForm('${schemaName}', '${tableName}')" class="disableLink">
 									<span class="linkSpinner">

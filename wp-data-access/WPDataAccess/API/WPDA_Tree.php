@@ -220,11 +220,13 @@ class WPDA_Tree extends WPDA_API_Core {
                 'users'  => $this->get_wp_users(),
                 'home'   => admin_url( 'admin.php' ),
                 'tables' => array_values( $wpdb->tables() ),
-                'nonce'  => implode( '-', array(wp_create_nonce( 'wpda-export-' . WPDA::get_current_user_login() )) ),
                 'zip'    => class_exists( '\\ZipArchive' ),
                 'upload' => @ini_get( 'upload_max_filesize' ),
             ],
         );
+        if ( 'anonymous' !== WPDA::get_current_user_login() ) {
+            $context['wp']['nonce'] = implode( '-', array(wp_create_nonce( 'wpda-export-' . WPDA::get_current_user_login() )) );
+        }
         return $this->WPDA_Rest_Response( 
             '',
             array_merge( $local, $remote ),
