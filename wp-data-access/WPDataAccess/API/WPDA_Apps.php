@@ -2221,6 +2221,15 @@ class WPDA_Apps extends WPDA_API_Core {
         }
     }
 
+    private function escapeUnicodeForExport( $str ) {
+        if ( empty( $str ) ) {
+            return $str;
+        }
+        return preg_replace_callback( '/\\\\(u[0-9a-fA-F]{4})/', function ( $matches ) {
+            return '\\\\' . $matches[1];
+        }, $str );
+    }
+
     private function do_app_export_app( $app_id, $main_app_id ) {
         global $wpdb;
         $quotes = function ( $value ) {
@@ -2232,7 +2241,8 @@ class WPDA_Apps extends WPDA_API_Core {
                 "\\\\n",
                 "\\n",
                 "\\r\\n",
-                "\\r"
+                "\\r",
+                "\\d"
             ), array(
                 "''",
                 '\\\\"',
@@ -2241,7 +2251,8 @@ class WPDA_Apps extends WPDA_API_Core {
                 "\\\\\\n",
                 "\\\\n",
                 "\\\\r\\\\n",
-                "\\\\r"
+                "\\\\r",
+                "\\\\\\\\\\d"
             ), $value );
         };
         $app = WPDA_App_Model::get_by_id( $app_id );
@@ -2290,6 +2301,9 @@ SQL;
             $cnt_dbs = ( $wpdb->dbname === $container['cnt_dbs'] ? '{wp_schema}' : "{$quotes( $container['cnt_dbs'] )}" );
             $cnt_table = str_replace( "\"dbs\":\"{$wpdb->dbname}\"", "\"dbs\":\"{wp_schema}\"", $cnt_table );
             $cnt_form = str_replace( "\"dbs\":\"{$wpdb->dbname}\"", "\"dbs\":\"{wp_schema}\"", $cnt_form );
+            // Replace Unicode characters
+            $cnt_table = $this->escapeUnicodeForExport( $cnt_table );
+            $cnt_form = $this->escapeUnicodeForExport( $cnt_form );
             // phpcs:ignore PluginCheck.CodeAnalysis.Heredoc.NotAllowed
             $containers_sql .= <<<SQL
 # Import app container
