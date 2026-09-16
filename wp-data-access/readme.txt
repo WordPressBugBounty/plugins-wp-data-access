@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 5.5.83
+Stable tag: 5.5.84
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -131,6 +131,19 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.84 =
+* Released 2026-09-17
+* Restructured table column renderer
+* Removed unsed code
+* Added: Column pinning to data tables
+* Added: Rename database to app menu
+* Added: Class name to lookup popup
+* Added: Data label to lookup items
+* Added: Show hidden columns on tablets and mobiles
+* Fixed: setColumnStyle on lookup columns
+* Fixed: Map markers not working in Data Table and Data Admin apps
+* Fixed: Scheduled tasks deleted on version update
 
 = 5.5.83 =
 * Released 2026-09-09

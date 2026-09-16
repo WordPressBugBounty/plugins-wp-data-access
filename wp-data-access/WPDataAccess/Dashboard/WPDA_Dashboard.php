@@ -234,15 +234,7 @@ class WPDA_Dashboard {
                     break;
                 case WP_Data_Access_Admin::PAGE_MAIN:
                     if ( !isset( $_REQUEST['page_action'] ) ) {
-                        if ( !isset( $_REQUEST['table_name'] ) ) {
-                            $this->toolbar_wpda();
-                        } else {
-                            if ( !isset( $_REQUEST['action'] ) || 'new' !== $_REQUEST['action'] && 'edit' !== $_REQUEST['action'] ) {
-                                $this->toolbar_wpda_table();
-                            } else {
-                                $this->toolbar_wpda_row();
-                            }
-                        }
+                        $this->toolbar_wpda();
                     } elseif ( 'wpda_backup' === $_REQUEST['page_action'] && (!isset( $_REQUEST['action'] ) || 'remove' === $_REQUEST['action'] || 'update' === $_REQUEST['action'] || 'add' === $_REQUEST['action']) ) {
                         $this->toolbar_backup();
                     } elseif ( 'wpda_import_csv' === $_REQUEST['page_action'] ) {
@@ -1007,107 +999,6 @@ Customize forms using templates"
     }
 
     /**
-     * Data Explorer table page toolbar
-     *
-     * @return void
-     */
-    protected function toolbar_wpda_table() {
-        ?>
-			<form id="wpda_new_row" style="display: none" method="post" action="?page=<?php 
-        echo esc_attr( WP_Data_Access_Admin::PAGE_MAIN );
-        ?>">
-				<?php 
-        if ( isset( $_REQUEST['wpdaschema_name'] ) ) {
-            $schema_name = esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['wpdaschema_name'] ) ) );
-            // phpcs:disable WordPress.Security.EscapeOutput
-            echo "<input type='hidden' name='wpdaschema_name' value='{$schema_name}'>";
-            // phpcs:enable WordPress.Security.EscapeOutput
-        }
-        ?>
-				<input type="hidden" id="wpda_new_row_table_name" name="table_name" value="">
-				<input type="hidden" name="action" value="new">
-			</form>
-			<div id="wpda-dashboard-toolbar" class="wpda-dashboard-toolbar" style="display:none">
-				<div class="wpda-nowrap">
-					<div>
-						<div>
-							<a href="javascript:void(0)"
-							   id="wpda_toolbar_icon_add_row"
-							   class="wpda-dashboard-item wpda_tooltip"
-							   title="Add new row to table"
-							>
-								<i class="fas fa-plus-circle"></i>
-								<div>
-									Add row
-								</div>
-							</a>
-						</div><div>
-							<a onclick="jQuery('#upload_file_container').show()"
-							   href="javascript:void(0)"
-							   class="wpda-dashboard-item wpda_tooltip"
-							   title="Allows only imports into table authors"
-							>
-								<i class="fas fa-code"></i>
-								<div>
-									Import rows
-								</div>
-							</a>
-						</div>
-					</div>
-				</div>
-				<?php 
-        $this->get_promotions( 'table' );
-        ?>
-			</div>
-			<?php 
-    }
-
-    /**
-     * Data Explorer data entry form toolbar
-     *
-     * @return void
-     */
-    protected function toolbar_wpda_row() {
-        ?>
-			<form id="wpda_new_row" style="display: none" method="post" action="?page=<?php 
-        echo esc_attr( WP_Data_Access_Admin::PAGE_MAIN );
-        ?>">
-				<?php 
-        if ( isset( $_REQUEST['wpdaschema_name'] ) ) {
-            $schema_name = esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['wpdaschema_name'] ) ) );
-            // phpcs:disable WordPress.Security.EscapeOutput
-            echo "<input type='hidden' name='wpdaschema_name' value='{$schema_name}'>";
-            // phpcs:enable WordPress.Security.EscapeOutput
-        }
-        ?>
-				<input type="hidden" id="wpda_new_row_table_name" name="table_name" value="">
-				<input type="hidden" name="action" value="new">
-			</form>
-			<div id="wpda-dashboard-toolbar" class="wpda-dashboard-toolbar" style="display:none">
-				<div class="wpda-nowrap">
-					<div>
-						<div>
-							<a href="javascript:void(0)"
-							   id="wpda_toolbar_icon_add_row"
-							   class="wpda-dashboard-item wpda_tooltip"
-							   title="Add new row to table"
-							>
-								<i class="fas fa-plus-circle"></i>
-								<div>
-									Add row
-								</div>
-							</a>
-						</div>
-					</div>
-				</div>
-				<?php 
-        $this->get_promotions( 'row' );
-        ?>
-			</div>
-			<?php 
-    }
-
-    /**
      * Data Backup toolbar
      *
      * @return void
@@ -1291,7 +1182,7 @@ Customize forms using templates"
 								</div>
 							</a>
 						</div><div>
-							<a onclick="jQuery('#upload_file_container').show()"
+							<a onclick="alert('This feature has been removed. Please use the Data Explorer import feature.')"
 							   href="javascript:void(0)"
 							   class="wpda-dashboard-item wpda_tooltip"
 							   title="Import table designs"
@@ -1339,7 +1230,7 @@ Customize forms using templates"
 								</div>
 							</a>
 						</div><div>
-							<a onclick="jQuery('#upload_file_container').show()"
+							<a onclick="alert('This feature has been removed. Please use the Data Explorer import feature.')"
 							   href="javascript:void(0)"
 							   class="wpda-dashboard-item wpda_tooltip"
 							   title="Import data tables"
@@ -1398,7 +1289,7 @@ Customize forms using templates"
 								</div>
 							</a>
 						</div><div>
-							<a onclick="jQuery('#upload_file_container_multi').show()"
+							<a onclick="jQuery(alert('This feature has been removed. Please use the Data Explorer import feature.')).show()"
 							   href="javascript:void(0)"
 							   class="wpda-dashboard-item wpda_tooltip"
 							   title="Import projects"

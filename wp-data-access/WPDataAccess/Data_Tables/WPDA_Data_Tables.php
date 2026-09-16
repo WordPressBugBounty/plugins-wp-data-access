@@ -731,8 +731,10 @@ class WPDA_Data_Tables {
         $filter_field_name = '';
         $filter_field_value = '';
         if ( isset( $_REQUEST['filter_field_name'], $_REQUEST['filter_field_value'] ) ) {
+            // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             $filter_field_name_raw = wp_unslash( $_REQUEST['filter_field_name'] );
             $filter_field_value_raw = wp_unslash( $_REQUEST['filter_field_value'] );
+            // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             if ( is_string( $filter_field_name_raw ) && is_string( $filter_field_value_raw ) ) {
                 $filter_field_name = sanitize_text_field( $filter_field_name_raw );
                 $filter_field_value = sanitize_text_field( $filter_field_value_raw );

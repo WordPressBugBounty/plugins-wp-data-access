@@ -2587,6 +2587,9 @@ EOT;
      * Needs to be granted in project page configuration
      */
     protected function add_full_table_downloads() {
+        if ( !WPDA::current_user_is_admin() ) {
+            return;
+        }
     }
 
     // Override to add arguments to CSV and JSON full table exports.
