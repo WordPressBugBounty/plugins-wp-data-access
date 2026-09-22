@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 5.5.84
+Stable tag: 5.5.85
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -131,6 +131,17 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.85 =
+* Released 2026-09-23
+* Removed unsed code
+* Added: Exclude columns from export
+* Added: Aggregation translations
+* Fixed: Default values not applied to M:M relationships
+* Fixed: Enum and set drop-down height
+* Fixed: Removed column still available for export
+* Fixed: Access parameter validation
+* Fixed: Cannot open hooks menu for relation table
 
 = 5.5.84 =
 * Released 2026-09-17

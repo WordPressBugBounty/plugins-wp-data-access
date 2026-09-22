@@ -453,18 +453,8 @@ class WP_Data_Access_Public {
         $atts = array_change_key_case( (array) $atts, CASE_LOWER );
         //phpcs:ignore - 8.1 proof
         $wp_atts = shortcode_atts( array(
-            'project_id'           => '',
-            'page_id'              => '',
-            'title'                => '',
-            'subtitle'             => '',
-            'bulk_actions_enabled' => false,
-            'search_box_enabled'   => false,
-            'bulk_export_enabled'  => false,
-            'show_view_link'       => 'on',
-            'allow_insert'         => 'off',
-            'allow_update'         => 'off',
-            'allow_delete'         => 'off',
-            'allow_import'         => 'off',
+            'project_id' => '',
+            'page_id'    => '',
         ), $atts );
         if ( '' === $wp_atts['project_id'] && '' === $wp_atts['page_id'] ) {
             // Dashboard menu feature was removed. Parameter table_name no longer valid.
@@ -475,40 +465,6 @@ class WP_Data_Access_Public {
         // input var okay.
         $wp_atts['page_id'] = sanitize_text_field( wp_unslash( $wp_atts['page_id'] ) );
         // input var okay.
-        // Set default parameter values.
-        $bulk_actions_enabled = false;
-        $search_box_enabled = false;
-        $bulk_export_enabled = false;
-        $show_view_link = 'on';
-        $allow_insert = 'off';
-        $allow_update = 'off';
-        $allow_delete = 'off';
-        $allow_import = 'off';
-        // Check arguments.
-        if ( 'true' === $wp_atts['bulk_actions_enabled'] ) {
-            $bulk_actions_enabled = true;
-        }
-        if ( 'true' === $wp_atts['search_box_enabled'] ) {
-            $search_box_enabled = true;
-        }
-        if ( 'true' === $wp_atts['bulk_export_enabled'] ) {
-            $bulk_export_enabled = true;
-        }
-        if ( 'false' === $wp_atts['show_view_link'] ) {
-            $show_view_link = 'off';
-        }
-        if ( 'true' === $wp_atts['allow_insert'] ) {
-            $allow_insert = 'on';
-        }
-        if ( 'true' === $wp_atts['allow_update'] ) {
-            $allow_update = 'on';
-        }
-        if ( 'true' === $wp_atts['allow_delete'] ) {
-            $allow_delete = 'on';
-        }
-        if ( 'true' === $wp_atts['allow_import'] ) {
-            $allow_import = 'on';
-        }
         $default_where = '';
         if ( isset( $atts['filter_field_name'] ) && isset( $atts['filter_field_value'] ) ) {
             $filter_field_name = str_replace( '`', '', sanitize_text_field( wp_unslash( $atts['filter_field_name'] ) ) );

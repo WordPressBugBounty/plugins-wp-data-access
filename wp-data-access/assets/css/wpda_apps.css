@@ -320,3 +320,11 @@ div[role=presentation].MuiDialog-root.MuiModal-root input[type=checkbox]:disable
     border: none;
     outline: none;
 }
+
+.wrap.wpda-explorer-backend .MuiSelect-select {
+    padding: 22px 14px;
+}
+
+.wrap.wpda-apps-backend .MuiSelect-select {
+    padding: 20px 14px;
+}
