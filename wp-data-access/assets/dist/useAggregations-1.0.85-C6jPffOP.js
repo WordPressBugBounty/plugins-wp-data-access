@@ -1,0 +1,1 @@
+import{r as g}from"./redux-1.0.85-Dmo2uXKS.js";import{u as a}from"./TableContainer-1.0.85-DcmtWuZp.js";import{l as u}from"./lib-1.0.85-QGQKx6qN.js";import"./utils-1.0.85-DUEsnkBB.js";const k=(s,n,r,p,l,m,t)=>{const e=a(s),o=g.useMemo(()=>null,[r,e,t]);return u.debug("aggregates",o),o};export{k as u};

@@ -321,7 +321,7 @@ div[role=presentation].MuiDialog-root.MuiModal-root input[type=checkbox]:disable
     outline: none;
 }
 
-.wrap.wpda-explorer-backend .MuiSelect-select {
+.wrap.wpda-explorer-backend .pp-form .MuiSelect-select {
     padding: 22px 14px;
 }
 

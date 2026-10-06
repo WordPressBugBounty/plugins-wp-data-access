@@ -712,7 +712,8 @@ class WP_Data_Access_Admin {
                 self::PAGE_DESIGNER,
                 WPDP::PAGE_TEMPLATES,
                 self::MAIN_PAGE_SLUG . '-account',
-                self::MAIN_PAGE_SLUG . '-wp-support-forum'
+                self::MAIN_PAGE_SLUG . '-wp-support-forum',
+                self::MAIN_PAGE_SLUG . '-affiliation'
             );
             foreach ( $hidden_submenus as $submenu ) {
                 remove_submenu_page( self::MAIN_PAGE_SLUG, $submenu );
@@ -720,7 +721,6 @@ class WP_Data_Access_Admin {
         } else {
             global $submenu;
             $submenu[self::PAGE_MAIN][0][2] = self::PAGE_DASHBOARD;
-            // phpcs:ignore WordPress.WP.GlobalVariablesOverride
         }
         return $submenu_file;
     }

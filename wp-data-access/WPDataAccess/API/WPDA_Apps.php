@@ -576,6 +576,22 @@ class WPDA_Apps extends WPDA_API_Core {
                 ),
             ),
         ) );
+        register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/proxy', array(
+            'methods'             => array('GET'),
+            'callback'            => array($this, 'app_proxy'),
+            'permission_callback' => '__return_true',
+            'args'                => array(
+                'app_id' => $this->get_param( 'app_id' ),
+                'cnt_id' => $this->get_param( 'cnt_id' ),
+                'url'    => array(
+                    'required'          => true,
+                    'type'              => 'string',
+                    'description'       => __( 'URL', 'wp-data-access' ),
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'validate_callback' => 'rest_validate_request_arg',
+                ),
+            ),
+        ) );
         // PWA
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/pwa/get', array(
             'methods'             => array('POST'),
@@ -635,6 +651,22 @@ class WPDA_Apps extends WPDA_API_Core {
                 'col'    => $this->get_param( 'col' ),
             ),
         ) );
+    }
+
+    public function app_proxy( $request ) {
+        wp_die();
+    }
+
+    private function detect_image_mime( $body ) {
+        return null;
+    }
+
+    private function is_safe_remote_url( $url, $allowed_hosts ) {
+        return false;
+    }
+
+    private function is_public_ip( $ip ) {
+        return false;
     }
 
     public function app_download( $request ) {

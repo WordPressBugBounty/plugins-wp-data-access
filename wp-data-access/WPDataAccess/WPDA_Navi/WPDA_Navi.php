@@ -275,6 +275,14 @@ namespace WPDataAccess\WPDA_Navi {
                                 <li>Global search and replace.</li>
 							</ul>
 						</div>
+
+                        <div class="wpda-navi-container-content-item-facts">
+                            <ul>
+                                <li>
+                                    Old Data Explorer no longer available.
+                                </li>
+                            </ul>
+                        </div>
 					</div>
 
 					<div class="wpda-navi-container-content-item">
@@ -314,6 +322,14 @@ namespace WPDataAccess\WPDA_Navi {
                                 <li>Build SQL queries visually with our Visual Query Builder.</li>
                             </ul>
 						</div>
+
+                        <div class="wpda-navi-container-content-item-facts">
+                            <ul>
+                                <li>
+                                    Old SQL Query Builder no longer available.
+                                </li>
+                            </ul>
+                        </div>
 					</div>
 
 					<div class="wpda-navi-container-content-item wpda-featured"
@@ -336,6 +352,11 @@ namespace WPDataAccess\WPDA_Navi {
 
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
+                                <li>
+                                    <a href="?page=wpda_navi-affiliation" class="whatsnew">
+                                        ⭐⭐⭐ Affiliates Program ⭐⭐⭐<br/>Become our ambassador and earn on every referral.
+                                    </a>
+                                </li>
                                 <li>
                                     <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/columns/column-settings.html#%E2%9A%99%EF%B8%8F-pin-column-to" target="_blank" class="whatsnew">
                                         Added column pinning to Table Builder.
@@ -365,17 +386,6 @@ namespace WPDataAccess\WPDA_Navi {
 						</div>
 
                         <div class="wpda-navi-container-content-item-facts whats-new">
-                            <ul>
-                                <li style="font-weight:bold">
-                                    Old Query Builder no longer available.
-                                </li>
-                                <li style="font-weight:bold">
-                                    Old Data Explorer no longer available.
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="wpda-navi-container-content-item-facts whats-new">
                             <h4 style="margin-top:0;margin-bottom:5px;font-weight:bold;">Now available to FREE USERS</h4>
                             <ul>
                                 <li>
@@ -400,7 +410,7 @@ namespace WPDataAccess\WPDA_Navi {
                                 </li>
                             </ul>
                         </div>
-					</div>
+                    </div>
 				</div>
 			</div>
 			<?php

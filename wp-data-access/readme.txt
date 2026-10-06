@@ -1,14 +1,14 @@
-=== WP Data Access – App Builder for Tables, Forms, Charts, Maps & Dashboards ===
+=== WP Data Access – App Builder for Tables, Forms, Dashboards, Charts & Maps ===
 Plugin URI: https://wpdataaccess.com/
 Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 5.5.85
+Stable tag: 5.5.87
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Turn your data into WordPress apps with tables, forms, charts & maps — no code required, with optional hooks for developers. Supports 35+ languages.
+Turn your data into WordPress apps. No code required. Tables, forms, dashboards, charts, maps, optional hooks for developers, 35+ languages.
 
 == Description ==
 **WP Data Access** transforms your WordPress site into a platform for building **data-driven applications** — without writing a single line of code.
@@ -17,7 +17,7 @@ With the **intuitive App Builder**, you can create:
 
 * **Interactive Data Tables** – manage and display data with ease
 * **Custom Data Forms** – collect and process input seamlessly
-* **Charts, Maps & Dashboards** – visualize data beautifully
+* **Dashboards, Charts & Maps** – visualize data beautifully
 * **Role-Based Access** – control who can view or manage your data
 * **Multilingual Support** – 35+ languages ready to use
 
@@ -132,9 +132,25 @@ And you're all set! 🚀
 
 == Changelog ==
 
+= 5.5.87 =
+* Released 2026-10-08
+* Added: Images and hyperlinks to PDF export
+* Fixed: Wrong hover column after disabling card view
+* Fixed: Aggregation label translations in PDF export
+
+= 5.5.86 =
+* Released 2026-10-01
+* Restructured tool guide page
+* Removed unused code
+* Added: Affiliates program
+* Fixed: Bulk actions drow-down height
+* Fixed: Mobile dashboard menu
+* Fixed: Export to PDF and Excel missing values
+* Fixed: Rendered value missing in detail panel hook
+
 = 5.5.85 =
 * Released 2026-09-23
-* Removed unsed code
+* Removed unused code
 * Added: Exclude columns from export
 * Added: Aggregation translations
 * Fixed: Default values not applied to M:M relationships
