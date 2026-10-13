@@ -1028,6 +1028,7 @@ class WPDA_Apps extends WPDA_API_Core {
         ) ) {
             $container = WPDA_App_Container_Model::get_container( $app_id, $cnt_id );
             $app = WPDA_App_Model::get_by_id( $app_id );
+            $table_settings = $settings['table'] ?? array();
             if ( isset( $app[0]['app_type'], $container[0]['cnt_map'] ) && '2' == $app[0]['app_type'] && null !== $container[0]['cnt_map'] ) {
                 // App = Map
                 // Get default where map
@@ -1039,48 +1040,46 @@ class WPDA_Apps extends WPDA_API_Core {
                 // All other apps (not being a map)
                 if ( '1' === $rel_tab ) {
                 } else {
-                    $table_settings = $settings['table'] ?? array();
-                    // Get default where clause
-                    if ( isset( $table_settings['table']['defaultWhere'] ) ) {
-                        $default_where = $table_settings['table']['defaultWhere'];
-                    }
-                    // Get default order by
-                    if ( isset( $table_settings['table']['defaultOrderBy'] ) ) {
-                        $default_orderby_db = $table_settings['table']['defaultOrderBy'];
-                        if ( is_array( $default_orderby_db ) ) {
-                            foreach ( $default_orderby_db as $orderby ) {
-                                if ( isset( $orderby['columnName'], $orderby['order'] ) && '' !== trim( $orderby['columnName'] ) ) {
-                                    $default_orderby .= (( '' === $default_orderby ? 'order by ' : ',' )) . '`' . WPDA::remove_backticks( $orderby['columnName'] ) . '` ' . (( 'desc' === $orderby['order'] ? 'desc' : 'asc' ));
-                                }
+                }
+            }
+            if ( '' === $default_where ) {
+                // Get default where clause
+                if ( isset( $table_settings['table']['defaultWhere'] ) ) {
+                    $default_where = $table_settings['table']['defaultWhere'];
+                }
+            }
+            if ( '' === $default_orderby ) {
+                // Get default order by
+                if ( isset( $table_settings['table']['defaultOrderBy'] ) ) {
+                    $default_orderby_db = $table_settings['table']['defaultOrderBy'];
+                    if ( is_array( $default_orderby_db ) ) {
+                        foreach ( $default_orderby_db as $orderby ) {
+                            if ( isset( $orderby['columnName'], $orderby['order'] ) && '' !== trim( $orderby['columnName'] ) ) {
+                                $default_orderby .= (( '' === $default_orderby ? 'order by ' : ',' )) . '`' . WPDA::remove_backticks( $orderby['columnName'] ) . '` ' . (( 'desc' === $orderby['order'] ? 'desc' : 'asc' ));
                             }
                         }
                     }
                 }
             }
-            if ( isset( $settings['columns'] ) && is_array( $settings['columns'] ) && '1' !== $rel_tab ) {
-                $queryable_columns = array();
-                if ( isset( $settings['table']['columns'] ) && is_array( $settings['table']['columns'] ) ) {
-                    foreach ( $settings['table']['columns'] as $column ) {
-                        if ( isset( $column['queryable'] ) && $column['queryable'] ) {
-                            $queryable_columns[] = $column['columnName'];
-                        }
+            $queryable_columns = array();
+            if ( isset( $settings['table']['columns'] ) && is_array( $settings['table']['columns'] ) ) {
+                foreach ( $settings['table']['columns'] as $column ) {
+                    if ( isset( $column['queryable'] ) && $column['queryable'] ) {
+                        $queryable_columns[] = $column['columnName'];
                     }
                 }
-                $app_columns = array();
-                foreach ( $settings['columns'] as $column ) {
-                    if ( isset( $column['columnName'], $column['isSelected'] ) && $column['isSelected'] ) {
-                        $app_columns[$column['columnName']] = in_array( $column['columnName'], $queryable_columns );
-                    }
-                }
-                if ( 0 < count( $app_columns ) ) {
-                    $col = $app_columns;
+            }
+            $app_columns = array();
+            foreach ( $settings['columns'] as $column ) {
+                if ( isset( $column['columnName'], $column['isSelected'] ) && $column['isSelected'] ) {
+                    $app_columns[$column['columnName']] = in_array( $column['columnName'], $queryable_columns );
                 }
             }
             $table_api = new WPDA_Table();
             return $table_api->select(
                 $dbs,
                 $tbl,
-                $col,
+                $app_columns,
                 $page_index,
                 $page_size,
                 $search,

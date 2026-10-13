@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 5.5.87
+Stable tag: 5.5.88
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -131,6 +131,12 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.88 =
+* Released 2026-10-14
+* Fixed: Map no longer scrolls
+* Fixed: Unauthorized remote database test usage
+* Updated freemius SDK
 
 = 5.5.87 =
 * Released 2026-10-08

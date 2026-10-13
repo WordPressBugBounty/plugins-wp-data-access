@@ -945,7 +945,7 @@ class WPDA_Table extends WPDA_API_Core {
      *
      * @param string  $dbs Schema name (database).
      * @param string  $tbl Table Name.
-     * @param string  $column_names Column Names.
+     * @param array  $column_names Column Names.
      * @param string  $page_index Page number.
      * @param string  $page_size Rows per page.
      * @param string  $search Filter.
