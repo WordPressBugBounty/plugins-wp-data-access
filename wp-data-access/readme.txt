@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 5.5.88
+Stable tag: 5.5.89
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -131,6 +131,20 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.89 =
+* Released 2026-10-21
+* Replaced secure documents alert with standard notification
+* Removed old restrict table management options
+* Added: Predefined PDF configuration for data tables
+* Added: Warning shown in App Manager for anonymous data entry configuration
+* Added: Allow order by in lookup
+* Added: Custom events to charts
+* Fixed: Cannot save relation table lookup
+* Fixed: Default where clause overruled
+* Fixed: Button label CSS
+* Fixed: Missing column ID
+* Fixed: Download file link displayed if document is null
 
 = 5.5.88 =
 * Released 2026-10-14

@@ -358,13 +358,8 @@ namespace WPDataAccess\WPDA_Navi {
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/columns/column-settings.html#%E2%9A%99%EF%B8%8F-pin-column-to" target="_blank" class="whatsnew">
-                                        Added column pinning to Table Builder.
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/columns/column-settings.html#%F0%9F%93%8C-notes" target="_blank" class="whatsnew">
-                                        Show hidden columns on tablets and mobiles.
+                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/bulk-actions.html#predefined-pdf-export" target="_blank" class="whatsnew">
+                                        Creating predefined PDF table exports.
                                     </a>
                                 </li>
                                 <li>

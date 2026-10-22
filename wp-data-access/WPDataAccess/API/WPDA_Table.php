@@ -473,7 +473,11 @@ class WPDA_Table extends WPDA_API_Core {
                     $tbl
                 ) );
             }
-            $orderby = ' order by 2 ';
+            if ( strpos( strtolower( $where ), 'order by' ) === false ) {
+                $orderby = ' order by 2 ';
+            } else {
+                $orderby = '';
+            }
             $sql .= " {$where} {$orderby} ";
             // $where and $orderby already sanitized and prepared
             $dataset = $wpdadb->get_results( $sql, 'OBJECT' );
@@ -542,7 +546,7 @@ class WPDA_Table extends WPDA_API_Core {
                 if ( '' === $where ) {
                     $where = $default_where;
                 } else {
-                    $where .= " and {$default_where} ";
+                    $where .= " and ( {$default_where} ) ";
                 }
             }
             // Get table column data types

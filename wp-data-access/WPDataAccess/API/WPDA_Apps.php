@@ -312,7 +312,6 @@ class WPDA_Apps extends WPDA_API_Core {
             'args'                => array(
                 'app_id'             => $this->get_param( 'app_id' ),
                 'cnt_id'             => $this->get_param( 'cnt_id' ),
-                'col'                => $this->get_param( 'cols' ),
                 'page_index'         => $this->get_param( 'page_index' ),
                 'page_size'          => $this->get_param( 'page_size' ),
                 'search'             => $this->get_param( 'search' ),
@@ -988,7 +987,6 @@ class WPDA_Apps extends WPDA_API_Core {
     public function app_select( $request ) {
         $app_id = $request->get_param( 'app_id' );
         $cnt_id = $request->get_param( 'cnt_id' );
-        $col = $request->get_param( 'col' );
         $page_index = $request->get_param( 'page_index' );
         $page_size = $request->get_param( 'page_size' );
         $search = $request->get_param( 'search' );
@@ -1037,24 +1035,16 @@ class WPDA_Apps extends WPDA_API_Core {
                     $default_where = $map_json['setup']['defaultWhere'];
                 }
             } else {
-                // All other apps (not being a map)
-                if ( '1' === $rel_tab ) {
-                } else {
-                }
-            }
-            if ( '' === $default_where ) {
                 // Get default where clause
                 if ( isset( $table_settings['table']['defaultWhere'] ) ) {
                     $default_where = $table_settings['table']['defaultWhere'];
                 }
-            }
-            if ( '' === $default_orderby ) {
                 // Get default order by
                 if ( isset( $table_settings['table']['defaultOrderBy'] ) ) {
                     $default_orderby_db = $table_settings['table']['defaultOrderBy'];
                     if ( is_array( $default_orderby_db ) ) {
                         foreach ( $default_orderby_db as $orderby ) {
-                            if ( isset( $orderby['columnName'], $orderby['order'] ) && '' !== trim( $orderby['columnName'] ) ) {
+                            if ( isset( $orderby['columnName'], $orderby['order'] ) && '' !== trim( $orderby['columnName'] ) && !str_starts_with( $orderby['columnName'], 'relationTableColumn___' ) ) {
                                 $default_orderby .= (( '' === $default_orderby ? 'order by ' : ',' )) . '`' . WPDA::remove_backticks( $orderby['columnName'] ) . '` ' . (( 'desc' === $orderby['order'] ? 'desc' : 'asc' ));
                             }
                         }
@@ -1153,6 +1143,19 @@ class WPDA_Apps extends WPDA_API_Core {
                 return $this->invalid_app_settings();
             }
             $default_where = '';
+            // Get default where clause
+            if ( isset( $settings['table']['table']['defaultWhere'] ) ) {
+                $default_where = $settings['table']['table']['defaultWhere'];
+            }
+            // Remove WHERE from where clause
+            if ( stripos( trim( $default_where ), 'where' ) === 0 ) {
+                $default_where = preg_replace(
+                    '/^\\s*where\\s*/i',
+                    '',
+                    $default_where,
+                    1
+                );
+            }
             $table_api = new WPDA_Table();
             return $table_api->get(
                 $dbs,
@@ -1160,7 +1163,13 @@ class WPDA_Apps extends WPDA_API_Core {
                 $key,
                 $media,
                 $column_names,
-                $default_where,
+                $this->process_params(
+                    $default_where,
+                    array(),
+                    array(),
+                    array()
+                ),
+                // No verification on dynamic values
                 $docs
             );
         } else {
