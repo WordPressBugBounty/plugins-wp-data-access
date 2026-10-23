@@ -145,6 +145,7 @@ And you're all set! 🚀
 * Fixed: Button label CSS
 * Fixed: Missing column ID
 * Fixed: Download file link displayed if document is null
+* Patch: Global filter in Data Explorer not working
 
 = 5.5.88 =
 * Released 2026-10-14

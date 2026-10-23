@@ -50,7 +50,6 @@ class WPDA_Table extends WPDA_API_Core {
             'args'                => array(
                 'dbs'                => $this->get_param( 'dbs' ),
                 'tbl'                => $this->get_param( 'tbl' ),
-                'col'                => $this->get_param( 'cols' ),
                 'page_index'         => $this->get_param( 'page_index' ),
                 'page_size'          => $this->get_param( 'page_size' ),
                 'search'             => $this->get_param( 'search' ),
@@ -312,7 +311,6 @@ class WPDA_Table extends WPDA_API_Core {
     public function table_select( $request ) {
         $dbs = $request->get_param( 'dbs' );
         $tbl = $request->get_param( 'tbl' );
-        $col = $request->get_param( 'col' );
         $page_index = $request->get_param( 'page_index' );
         $page_size = $request->get_param( 'page_size' );
         $search = $request->get_param( 'search' );
@@ -332,10 +330,19 @@ class WPDA_Table extends WPDA_API_Core {
             'select',
             $msg
         ) ) {
+            // Get searchable table columns (for Data Explorer = all)
+            $wpda_list_columns = WPDA_List_Columns_Cache::get_list_columns( $dbs, $tbl );
+            $table_columns = $wpda_list_columns->get_table_columns();
+            $searchable_columns = array();
+            foreach ( $table_columns as $column ) {
+                if ( isset( $column['column_name'] ) ) {
+                    $searchable_columns[$column['column_name']] = true;
+                }
+            }
             return $this->select(
                 $dbs,
                 $tbl,
-                $col,
+                $searchable_columns,
                 $page_index,
                 $page_size,
                 $search,
