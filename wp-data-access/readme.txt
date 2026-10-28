@@ -4,7 +4,7 @@ Contributors: wpdataaccess, peterschulznl, maxxschulz, kimmyx, freemius
 Tags: table builder, data table, datatable, app builder, dashboard
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 5.5.89
+Stable tag: 5.5.90
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -131,6 +131,19 @@ WP Data Access is designed as a **true no-code builder**: everything works out o
 And you're all set! 🚀
 
 == Changelog ==
+
+= 5.5.90 =
+* Released 2026-10-28
+* Added: Custom logo to PDF table export
+* Fixed: Checkbox clickable area too small
+* Fixed: Invalid row count with row count estimation enabled
+* Fixed: Column filter state not restored correctly
+* Fixed: Function wp_get_schedules() loaded too early
+* Fixed: Numeric values exported as string in export to Excel
+* Fixed: Make wpdadiehard compatible with WordPress 7.2
+* Fixed: Generated values not properly escaped
+* Fixed: Enforce default WHERE clause on transactions
+* Removed legacy tool activation and deactivation
 
 = 5.5.89 =
 * Released 2026-10-21

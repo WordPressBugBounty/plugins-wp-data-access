@@ -44,12 +44,12 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/init', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_init'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/list', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_list'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/meta', array(
             'methods'             => array('POST'),
@@ -62,7 +62,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/lang', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_lang'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'lang' => array(
                     'required'          => true,
@@ -76,7 +76,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/table/meta', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_table_meta'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'dbs' => $this->get_param( 'dbs' ),
                 'tbl' => $this->get_param( 'tbl' ),
@@ -90,7 +90,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/create', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_create'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_name'     => $this->get_param( 'app_name' ),
                 'app_title'    => $this->get_param( 'app_title' ),
@@ -112,7 +112,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/createapp', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_createapp'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_name'     => $this->get_param( 'app_name' ),
                 'app_title'    => $this->get_param( 'app_title' ),
@@ -124,7 +124,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/copy', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_copy'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id' => $this->get_param( 'app_id' ),
             ),
@@ -132,7 +132,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/export', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_export'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id' => $this->get_param( 'app_id' ),
             ),
@@ -159,7 +159,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/detailreorder', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_detail_reorder'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id'      => $this->get_param( 'app_id' ),
                 'cnt_id_from' => $this->get_param( 'cnt_id' ),
@@ -169,7 +169,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/relationship/create', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_relationship_create'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id'       => $this->get_param( 'app_id' ),
                 'app_title'    => $this->get_param( 'app_title' ),
@@ -188,7 +188,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/relationship/update', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_relationship_update'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id'       => $this->get_param( 'app_id' ),
                 'app_cnt'      => $this->get_param( 'cnt_id' ),
@@ -208,7 +208,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/relationship/delete', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_relationship_delete'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'cnt_id' => $this->get_param( 'cnt_id' ),
             ),
@@ -216,7 +216,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/save', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_save'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id'          => $this->get_param( 'app_id' ),
                 'app_name'        => $this->get_param( 'app_name' ),
@@ -233,7 +233,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/saveapp', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_saveapp'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id'          => $this->get_param( 'app_id' ),
                 'app_name'        => $this->get_param( 'app_name' ),
@@ -247,7 +247,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/remove', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_remove'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id' => $this->get_param( 'app_id' ),
             ),
@@ -255,7 +255,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/settings', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_settings'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id'   => $this->get_param( 'app_id' ),
                 'cnt_id'   => $this->get_param( 'cnt_id' ),
@@ -469,7 +469,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/lookup/dbs', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_lookup_dbs'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id' => $this->get_param( 'app_id' ),
                 'cnt_id' => $this->get_param( 'cnt_id' ),
@@ -478,7 +478,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/lookup/tbl', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_lookup_tbl'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id' => $this->get_param( 'app_id' ),
                 'cnt_id' => $this->get_param( 'cnt_id' ),
@@ -488,7 +488,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/lookup/cls', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_lookup_cls'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id' => $this->get_param( 'app_id' ),
                 'cnt_id' => $this->get_param( 'cnt_id' ),
@@ -499,7 +499,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/qb/list', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_qb_list'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/chart/data', array(
             'methods'             => array('POST'),
@@ -514,7 +514,7 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/dbs/rename', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_dbs_rename'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'dbs_source'      => $this->get_param( 'dbs' ),
                 'dbs_destination' => $this->get_param( 'dbs' ),
@@ -530,12 +530,12 @@ class WPDA_Apps extends WPDA_API_Core {
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/lang/get', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_lang_get'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/lang/set', array(
             'methods'             => array('POST'),
             'callback'            => array($this, 'app_lang_set'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'localizations' => array(
                     'required'          => true,
@@ -594,24 +594,24 @@ class WPDA_Apps extends WPDA_API_Core {
         // PWA
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/pwa/get', array(
             'methods'             => array('POST'),
-            'callback'            => array($this, 'app_wpa_get'),
-            'permission_callback' => '__return_true',
+            'callback'            => array($this, 'app_pwa_get'),
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id' => $this->get_param( 'app_id' ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/pwa/activate', array(
             'methods'             => array('POST'),
-            'callback'            => array($this, 'app_wpa_activate'),
-            'permission_callback' => '__return_true',
+            'callback'            => array($this, 'app_pwa_activate'),
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id' => $this->get_param( 'app_id' ),
             ),
         ) );
         register_rest_route( WPDA_API::WPDA_NAMESPACE, 'app/pwa/deactivate', array(
             'methods'             => array('POST'),
-            'callback'            => array($this, 'app_wpa_deactivate'),
-            'permission_callback' => '__return_true',
+            'callback'            => array($this, 'app_pwa_deactivate'),
+            'permission_callback' => array($this, 'admins_only'),
             'args'                => array(
                 'app_id' => $this->get_param( 'app_id' ),
             ),
@@ -676,36 +676,15 @@ class WPDA_Apps extends WPDA_API_Core {
         return $this->WPDA_Rest_Response( 'OK' );
     }
 
-    public function app_wpa_deactivate( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            // Only admins
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
+    public function app_pwa_deactivate( $request ) {
         return $this->WPDA_Rest_Response( 'OK' );
     }
 
-    public function app_wpa_activate( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            // Only admins
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
+    public function app_pwa_activate( $request ) {
         return $this->WPDA_Rest_Response( 'OK' );
     }
 
-    public function app_wpa_get( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            // Only admins
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
+    public function app_pwa_get( $request ) {
         return $this->WPDA_Rest_Response( 'NOT FOUND' );
     }
 
@@ -713,25 +692,11 @@ class WPDA_Apps extends WPDA_API_Core {
         return $this->bad_request();
     }
 
-    public function app_lang_get( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            // Only admins
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
+    public function app_lang_get() {
         return $this->WPDA_Rest_Response( '', WPDA_App_Localization::get() );
     }
 
     public function app_lang_set( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            // Only admins
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $localizations = $request->get_param( 'localizations' );
         WPDA_App_Localization::set( $localizations );
         return $this->WPDA_Rest_Response( 'Translation successfully saved' );
@@ -790,29 +755,11 @@ class WPDA_Apps extends WPDA_API_Core {
 
     public function app_export( $request ) {
         $app_id = $request->get_param( 'app_id' );
-        if ( !$this->main_app_access( $app_id, $msg ) ) {
-            if ( 'rest_cookie_invalid_nonce' === $msg ) {
-                return $this->invalid_nonce();
-            }
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         return $this->do_app_export( $app_id );
     }
 
     public function app_copy( $request ) {
         $app_id = $request->get_param( 'app_id' );
-        if ( !$this->main_app_access( $app_id, $msg ) ) {
-            if ( 'rest_cookie_invalid_nonce' === $msg ) {
-                return $this->invalid_nonce();
-            }
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         return $this->do_app_copy( $app_id );
     }
 
@@ -903,12 +850,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_relationship_create( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $app_id = $request->get_param( 'app_id' );
         $app_title = $request->get_param( 'app_title' );
         $app_dbs = $request->get_param( 'app_dbs' );
@@ -928,12 +869,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_relationship_update( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $app_id = $request->get_param( 'app_id' );
         $app_cnt = $request->get_param( 'app_cnt' );
         $app_title = $request->get_param( 'app_title' );
@@ -953,12 +888,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_relationship_delete( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $cnt_id = $request->get_param( 'cnt_id' );
         return $this->WPDA_Rest_Response( '', WPDA_App_Container_Model::delete_container( $cnt_id ) );
     }
@@ -1195,10 +1124,42 @@ class WPDA_Apps extends WPDA_API_Core {
             'insert',
             $dbs,
             $tbl,
-            $msg
+            $msg,
+            $settings
         ) ) {
+            $column_names = $this->get_app_form_columns( $settings );
+            if ( false === $column_names ) {
+                $column_names = array();
+            }
+            $vals_verified = array_filter( $val, function ( $k ) use($column_names) {
+                return in_array( $k, $column_names );
+            }, ARRAY_FILTER_USE_KEY );
+            $default_where = '';
+            // Get default where clause
+            if ( isset( $settings['table']['table']['defaultWhere'] ) ) {
+                $default_where = $settings['table']['table']['defaultWhere'];
+            }
+            // Remove WHERE from where clause
+            if ( stripos( trim( $default_where ), 'where' ) === 0 ) {
+                $default_where = preg_replace(
+                    '/^\\s*where\\s*/i',
+                    '',
+                    $default_where,
+                    1
+                );
+            }
             $table_api = new WPDA_Table();
-            return $table_api->insert( $dbs, $tbl, $val );
+            return $table_api->insert(
+                $dbs,
+                $tbl,
+                $vals_verified,
+                $this->process_params(
+                    $default_where,
+                    array(),
+                    array(),
+                    array()
+                )
+            );
         } else {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {
                 return $this->invalid_nonce();
@@ -1239,15 +1200,41 @@ class WPDA_Apps extends WPDA_API_Core {
                     }
                 }
             }
+            $default_where = '';
+            // Get default where clause
+            if ( isset( $settings['table']['table']['defaultWhere'] ) ) {
+                $default_where = $settings['table']['table']['defaultWhere'];
+            }
+            // Remove WHERE from where clause
+            if ( stripos( trim( $default_where ), 'where' ) === 0 ) {
+                $default_where = preg_replace(
+                    '/^\\s*where\\s*/i',
+                    '',
+                    $default_where,
+                    1
+                );
+            }
+            $keys_verified = array_filter( $key, function ( $k ) use($column_names) {
+                return in_array( $k, $column_names );
+            }, ARRAY_FILTER_USE_KEY );
+            $vals_verified = array_filter( $val, function ( $k ) use($column_names) {
+                return in_array( $k, $column_names );
+            }, ARRAY_FILTER_USE_KEY );
             $table_api = new WPDA_Table();
             return $table_api->update(
                 $dbs,
                 $tbl,
-                $key,
-                $val,
+                $keys_verified,
+                $vals_verified,
                 $column_names,
                 $code_columns,
-                $html_columns
+                $html_columns,
+                $this->process_params(
+                    $default_where,
+                    array(),
+                    array(),
+                    array()
+                )
             );
         } else {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {
@@ -1274,10 +1261,35 @@ class WPDA_Apps extends WPDA_API_Core {
             'delete',
             $dbs,
             $tbl,
-            $msg
+            $msg,
+            $settings
         ) ) {
+            $default_where = '';
+            // Get default where clause
+            if ( isset( $settings['table']['table']['defaultWhere'] ) ) {
+                $default_where = $settings['table']['table']['defaultWhere'];
+            }
+            // Remove WHERE from where clause
+            if ( stripos( trim( $default_where ), 'where' ) === 0 ) {
+                $default_where = preg_replace(
+                    '/^\\s*where\\s*/i',
+                    '',
+                    $default_where,
+                    1
+                );
+            }
             $table_api = new WPDA_Table();
-            return $table_api->delete( $dbs, $tbl, $key );
+            return $table_api->delete(
+                $dbs,
+                $tbl,
+                $key,
+                $this->process_params(
+                    $default_where,
+                    array(),
+                    array(),
+                    array()
+                )
+            );
         } else {
             if ( 'rest_cookie_invalid_nonce' === $msg ) {
                 return $this->invalid_nonce();
@@ -1413,10 +1425,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_lookup_dbs( $request ) {
-        // Only admins are allowed to configre lookups
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
         $app_id = $request->get_param( 'app_id' );
         $cnt_id = $request->get_param( 'cnt_id' );
         if ( $this->check_app_access(
@@ -1441,10 +1449,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_lookup_tbl( $request ) {
-        // Only admins are allowed to configre lookups
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
         $app_id = $request->get_param( 'app_id' );
         $cnt_id = $request->get_param( 'cnt_id' );
         $dbs = $request->get_param( 'dbs' );
@@ -1470,10 +1474,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_lookup_cls( $request ) {
-        // Only admins are allowed to configre lookups
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
         $app_id = $request->get_param( 'app_id' );
         $cnt_id = $request->get_param( 'cnt_id' );
         $dbs = $request->get_param( 'dbs' );
@@ -1505,13 +1505,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_dbs_rename( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            // Only admins
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $dbs_source = $request->get_param( 'dbs_source' );
         $dbs_destination = $request->get_param( 'dbs_destination' );
         if ( '' === trim( $dbs_source ) || '' === trim( $dbs_destination ) ) {
@@ -1707,12 +1700,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_lang( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $lang = $request->get_param( 'lang' );
         update_option( self::WPDA_APP_DEFAULT_LANG, $lang );
         return $this->WPDA_Rest_Response( __( 'Successfully saved changes', 'wp-data-access' ) );
@@ -1733,12 +1720,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_settings( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $app_id = $request->get_param( 'app_id' );
         $cnt_id = $request->get_param( 'cnt_id' );
         $target = $request->get_param( 'target' );
@@ -1757,23 +1738,11 @@ class WPDA_Apps extends WPDA_API_Core {
         );
     }
 
-    public function app_init( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
+    public function app_init() {
         return $this->get_app_init();
     }
 
-    public function app_list( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
+    public function app_list() {
         return $this->get_app_list();
     }
 
@@ -1781,23 +1750,11 @@ class WPDA_Apps extends WPDA_API_Core {
         $dbs = $request->get_param( 'dbs' );
         $tbl = $request->get_param( 'tbl' );
         $waa = $request->get_param( 'waa' );
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $table_api = new WPDA_Table();
         return $this->WPDA_Rest_Response( '', $table_api->get_table_meta_data( $dbs, $tbl, $waa ) );
     }
 
     public function app_create( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         // App details
         $app_name = $request->get_param( 'app_name' );
         $app_title = $request->get_param( 'app_title' );
@@ -1823,12 +1780,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_createapp( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $app_name = $request->get_param( 'app_name' );
         $app_title = $request->get_param( 'app_title' );
         $app_type = $request->get_param( 'app_type' );
@@ -1844,23 +1795,11 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_remove( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $app_id = $request->get_param( 'app_id' );
         return $this->do_app_remove( $app_id );
     }
 
     public function app_save( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         // App details
         $app_id = $request->get_param( 'app_id' );
         $app_name = $request->get_param( 'app_name' );
@@ -1888,12 +1827,6 @@ class WPDA_Apps extends WPDA_API_Core {
     }
 
     public function app_saveapp( $request ) {
-        if ( !$this->current_user_can_access() ) {
-            return $this->unauthorized();
-        }
-        if ( !$this->current_user_token_valid( $request ) ) {
-            return $this->invalid_nonce();
-        }
         $app_id = $request->get_param( 'app_id' );
         $app_name = $request->get_param( 'app_name' );
         $app_title = $request->get_param( 'app_title' );
@@ -2306,10 +2239,23 @@ class WPDA_Apps extends WPDA_API_Core {
         $table_settings = json_decode( (string) $container[0]['cnt_table'], true );
         if ( isset( $table_settings['table']['defaultWhere'] ) ) {
             $default_where = $table_settings['table']['defaultWhere'];
+            if ( '' !== $default_where ) {
+                $default_where = ' where ' . preg_replace(
+                    '/^\\s*where\\s*/i',
+                    '',
+                    $default_where,
+                    1
+                );
+            }
         } else {
             $default_where = '';
         }
-        $response['table_info'] = $this->get_table_info( $dbs, $tbl, $default_where );
+        $response['table_info'] = $this->get_table_info( $dbs, $tbl, $this->process_params(
+            $default_where,
+            array(),
+            array(),
+            array()
+        ) );
         return $this->WPDA_Rest_Response( '', $response );
     }
 
@@ -2823,6 +2769,21 @@ SQL;
             }
         }
         return strtr( $where, $replacements );
+    }
+
+    /**
+     * Allow only administrators.
+     *
+     * @return bool|\WP_Error
+     */
+    public function admins_only() {
+        if ( !$this->current_user_can_access() ) {
+            // Only admins
+            return new \WP_Error('rest_forbidden', 'Forbidden', array(
+                'status' => 403,
+            ));
+        }
+        return true;
     }
 
 }
