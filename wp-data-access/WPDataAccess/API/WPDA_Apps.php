@@ -2771,19 +2771,4 @@ SQL;
         return strtr( $where, $replacements );
     }
 
-    /**
-     * Allow only administrators.
-     *
-     * @return bool|\WP_Error
-     */
-    public function admins_only() {
-        if ( !$this->current_user_can_access() ) {
-            // Only admins
-            return new \WP_Error('rest_forbidden', 'Forbidden', array(
-                'status' => 403,
-            ));
-        }
-        return true;
-    }
-
 }
