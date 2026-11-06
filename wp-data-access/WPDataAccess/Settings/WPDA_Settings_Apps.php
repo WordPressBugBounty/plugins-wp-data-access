@@ -74,7 +74,7 @@ namespace WPDataAccess\Settings {
                                 <option value="spacious" <?php echo 'spacious' === $default_density ? 'selected' : ''; ?>>Spacious</option>
                             </select>
                             <div style="margin-top:10px">
-                                Default density for apps and Data Explorer.
+                                Default density for apps and Data Explorer. Does not affect saved configurations.
                             </div>
                         </td>
                     </tr>

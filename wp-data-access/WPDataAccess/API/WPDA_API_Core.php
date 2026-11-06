@@ -610,6 +610,7 @@ abstract class WPDA_API_Core {
             'user'  => WPDA::get_current_user_login(),
             'roles' => WPDA::get_current_user_roles(),
             'login' => 'anonymous' !== WPDA::get_current_user_login(),
+            'dnst'  => WPDA::get_option( WPDA::OPTION_APPS_DEFAULT_DENSITY ),
         );
         return $env;
     }

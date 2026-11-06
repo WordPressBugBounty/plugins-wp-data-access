@@ -1138,8 +1138,11 @@ class WPDA_Apps extends WPDA_API_Core {
             // Get default where clause
             if ( isset( $settings['table']['table']['defaultWhere'] ) ) {
                 $default_where = $settings['table']['table']['defaultWhere'];
+                if ( isset( $settings['table']['table']['skipDefaultWhereOnInsert'] ) && false !== $settings['table']['table']['skipDefaultWhereOnInsert'] ) {
+                    $default_where = '';
+                }
             }
-            // Remove WHERE from where clause
+            // Remove WHERE from WHERE clause
             if ( stripos( trim( $default_where ), 'where' ) === 0 ) {
                 $default_where = preg_replace(
                     '/^\\s*where\\s*/i',
