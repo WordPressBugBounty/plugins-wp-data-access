@@ -410,10 +410,13 @@ class WPDA_Data_Tables {
                         return __( 'ERROR: Column', 'wp-data-access' ) . ' ' . esc_attr( $column ) . ' ' . __( 'not found', 'wp-data-access' );
                     }
                 } else {
-                    $this->hyperlink_positions[] = $i;
+                    if ( is_numeric( substr( $column, 15 ) ) ) {
+                        $this->hyperlink_positions[] = $i;
+                    }
                 }
                 $i++;
             }
+            WPDA::wpda_log_wp_error( $columns );
             return $columns;
         }
     }
@@ -437,7 +440,9 @@ class WPDA_Data_Tables {
             if ( 'wpda_hyperlink_' !== substr( $this->columns[$i], 0, 15 ) ) {
                 $column_label = ( isset( $this->column_labels[$this->columns[$i]] ) ? $this->column_labels[$this->columns[$i]] : $this->columns[$i] );
             } else {
-                $column_label = $hyperlinks[substr( $this->columns[$i], strrpos( $this->columns[$i], '_' ) + 1 )];
+                if ( is_numeric( substr( $this->columns[$i], 15 ) ) ) {
+                    $column_label = $hyperlinks[substr( $this->columns[$i], strrpos( $this->columns[$i], '_' ) + 1 )];
+                }
             }
             $data_type = WPDA::get_type( $this->wpda_list_columns->get_column_data_type( $this->columns[$i] ) );
             $data_type_class = "wpda_format_{$data_type}";
@@ -574,7 +579,9 @@ class WPDA_Data_Tables {
             if ( 'wpda_hyperlink_' !== substr( $column, 0, 15 ) ) {
                 $column_label = ( isset( $this->column_labels[$column] ) ? $this->column_labels[$column] : $column );
             } else {
-                $column_label = $hyperlinks[substr( $column, strrpos( $column, '_' ) + 1 )];
+                if ( is_numeric( substr( $column, 15 ) ) ) {
+                    $column_label = $hyperlinks[substr( $column, strrpos( $column, '_' ) + 1 )];
+                }
             }
             if ( 'header' === $header2 || 'both' === $header2 ) {
                 $html_search .= "<td class=\"{$class}\" data-column_name_search=\"{$column}\" data-column_name_label=\"{$column_label}\"></td>";
@@ -814,7 +821,9 @@ class WPDA_Data_Tables {
                         wp_die();
                     }
                 } else {
-                    $has_dynamic_hyperlinks = true;
+                    if ( is_numeric( substr( $column, 15 ) ) ) {
+                        $has_dynamic_hyperlinks = true;
+                    }
                 }
             }
             if ( $has_dynamic_hyperlinks ) {
@@ -967,8 +976,10 @@ class WPDA_Data_Tables {
         $hyperlinks_column_index = array();
         foreach ( $column_array as $col ) {
             if ( 'wpda_hyperlink_' === substr( $col, 0, 15 ) ) {
-                $update[$col] = "'x' as {$col}";
-                $hyperlinks_column_index[$i] = substr( $col, 15 );
+                if ( is_numeric( substr( $col, 15 ) ) ) {
+                    $update[$col] = $wpdadb->prepare( "'x' as %i", $col );
+                    $hyperlinks_column_index[$i] = substr( $col, 15 );
+                }
             } else {
                 $update[$col] = '`' . str_replace( '`', '', $col ) . '`';
             }

@@ -624,7 +624,7 @@ abstract class WPDA_API_Core {
                 'count'  => null,
             );
         }
-        $query = $wpdadb->prepare( "\n\t\t\t\t\tselect table_type,\n\t\t\t\t\t       engine,\n\t\t\t\t\t       table_rows\n\t\t\t\t\t  from information_schema.tables\n\t\t\t\t\t where table_schema = %s\n\t\t\t\t\t   and table_name   = %s\n\t\t\t\t", array($wpdadb->dbname, $tbl) );
+        $query = $wpdadb->prepare( "\n\t\t\t\t\tselect table_type,\n\t\t\t\t\t       engine,\n\t\t\t\t\t       table_rows\n\t\t\t\t\t  from `information_schema`.`tables`\n\t\t\t\t\t where table_schema = %s\n\t\t\t\t\t   and table_name   = %s\n\t\t\t\t", array($wpdadb->dbname, $tbl) );
         $resultset = $wpdadb->get_results( $query, 'ARRAY_N' );
         if ( count( $resultset ) === 1 ) {
             if ( null !== $resultset[0][2] && '' === $default_where ) {
@@ -658,12 +658,15 @@ abstract class WPDA_API_Core {
         if ( null === $wpdadb ) {
             return -1;
         }
+        $suppress = $wpdadb->suppress_errors;
+        $wpdadb->suppress_errors( true );
         $explain = $wpdadb->get_results( $wpdadb->prepare( "explain select count(*) from %i {$default_where}", array($tbl) ), 'ARRAY_A' );
+        $wpdadb->suppress_errors( $suppress );
         if ( isset( $explain[0]['rows'] ) ) {
             return $explain[0]['rows'];
         } else {
             // This should never happen
-            return -1;
+            return 0;
         }
     }
 

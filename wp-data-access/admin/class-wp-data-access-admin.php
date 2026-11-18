@@ -595,13 +595,15 @@ class WP_Data_Access_Admin {
                 return;
             }
             // Main menu and items are only available to admin users (set capability to 'manage_options').
+            $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20"><path fill="#f3f1f1" d="M10 6c3.9 0 7-.9 7-2s-3.1-2-7-2-7 .9-7 2 3.1 2 7 2zm0 9c-3.9 0-7-.9-7-2v3c0 1.1 3.1 2 7 2s7-.9 7-2v-3c0 1.1-3.1 2-7 2zm0-4c-3.9 0-7-.9-7-2v3c0 1.1 3.1 2 7 2s7-.9 7-2V9c0 1.1-3.1 2-7 2zm0-4c-3.9 0-7-.9-7-2v3c0 1.1 3.1 2 7 2s7-.9 7-2V5c0 1.1-3.1 2-7 2z"/></svg>';
+            $icon = 'data:image/svg+xml;base64,' . base64_encode( $svg );
             add_menu_page(
                 'WP Data Access',
                 'WP Data Access',
                 'manage_options',
                 self::MAIN_PAGE_SLUG,
                 null,
-                'dashicons-database',
+                $icon,
                 999999999
             );
             // Add navigator page to WPDA menu.

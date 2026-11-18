@@ -234,17 +234,22 @@ namespace WPDataAccess\WPDA_Navi {
 						<div class="wpda-navi-container-content-item-facts whats-new">
 							<ul>
                                 <li>
+                                    <a href="?page=wpda_navi-affiliation" class="whatsnew">
+                                        ⭐⭐⭐ Affiliates Program Live ⭐⭐⭐
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://docs.rad.wpdataaccess.com/table-builder/menu/table/bulk-actions.html#toggle-select-all" target="_blank" class="whatsnew">
+                                        Changed "toggle select all" behavior
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="https://docs.legacy.wpdataaccess.com/docs/from-legacy-to-apps/"
                                        target="_blank"
                                        class="wpda_tooltip whatsnew"
                                        title="Contact us if you need assistance"
                                     >
                                         Removed legacy tool activation and deactivation.
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="?page=wpda_navi-affiliation" class="whatsnew">
-                                        ⭐⭐⭐ Affiliates Program ⭐⭐⭐<br/>Become our ambassador and earn on every referral.
                                     </a>
                                 </li>
                                 <li>
